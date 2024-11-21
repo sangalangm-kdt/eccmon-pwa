@@ -12,53 +12,66 @@ import {
 } from "../styles/main";
 
 import { Logo, LogoText } from "../assets/Logo";
-import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../features/auth/authSlice"; //nasa path po na to yung pagcconect sa server
-import { useNavigate } from "react-router-dom";
+import { useAuthentication } from "../../hooks/auth";
 
 const Login = () => {
   const { t, i18n } = useTranslation(["login", "common"]);
+  const {login} = useAuthentication({middleware: "guest", redirectIfAuthenticated: "/"});
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState("");
+  const [status, setStatus] = useState(null);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const loading = useSelector((state) => state.auth.loading);
-  const authError = useSelector((state) => state.auth.error);
+  // const dispatch = useDispatch();
+  // const navigate = useNavigate();
+  // const loading = useSelector((state) => state.auth.loading);
+  // const authError = useSelector((state) => state.auth.error);
 
   // UseEffect to update error state when authError changes
-  useEffect(() => {
-    if (authError) {
-      setError(authError);
-    }
-  }, [authError]);
+  // useEffect(() => {
+  //   if (authError) {
+  //     setError(authError);
+  //   }
+  // }, [authError]);
 
-  // UseEffect to update error message when language changes
-  useEffect(() => {
-    if (authError) {
-      setError(t(authError));
-    }
-  }, [i18n.language, authError, t]);
+  // // UseEffect to update error message when language changes
+  // useEffect(() => {
+  //   if (authError) {
+  //     setError(t(authError));
+  //   }
+  // }, [i18n.language, authError, t]);
 
   // Handle form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError(""); // Clear previous errors
+
+  //   try {
+  //     const response = await dispatch(login({ email, password, t })).unwrap();
+
+  //     if (response && response.error) {
+  //       setError(response.error);
+  //     } else {
+  //       navigate("/");
+  //     }
+  //   } catch (error) {
+  //     setError(authError || error.message || t("common:anErrorOccured"));
+  //     console.error("Login error:", error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setErrors("");
 
-    try {
-      const response = await dispatch(login({ email, password, t })).unwrap();
-
-      if (response && response.error) {
-        setError(response.error);
-      } else {
-        navigate("/");
-      }
-    } catch (error) {
-      setError(authError || error.message || t("common:anErrorOccured"));
-      console.error("Login error:", error);
-    }
+    login({
+      setErrors,
+      setStatus,
+      email,
+      password,
+      remember: false,
+    });
   };
 
   return (
@@ -82,11 +95,11 @@ const Login = () => {
               <label>{t("login:loginDetails")}</label>
             </div>
             <div>
-              {error && (
+              {errors && (
                 <p
                   className={`${inputStyles.inputContainer} bg-red-200 text-red-500 w-full text-sm text-center`}
                 >
-                  {error}
+                  {errors}
                 </p>
               )}
             </div>
@@ -123,9 +136,10 @@ const Login = () => {
               <button
                 type="submit"
                 className={`${buttonStyles.primary} ${buttonStyles.base}`}
-                disabled={loading}
+                // disabled={loading}
               >
-                {loading ? t("common:loading") : t("login:signIn")}
+                {/* {loading ? t("common:loading") : t("login:signIn")} */}
+                Sign In
               </button>
               <div className={`${inputStyles.container} `}>
                 <label className="text-sm py-2">

@@ -62,11 +62,11 @@ function App() {
 
   return (
     <div className="App">
-      <AuthProvider>
+      {/* <AuthProvider> */}
         <Suspense fallback={<div>Loading...</div>}>
           <RouterProvider router={router} />
         </Suspense>
-      </AuthProvider>
+      {/* </AuthProvider> */}
     </div>
   );
 }
