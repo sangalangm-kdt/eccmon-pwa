@@ -1,0 +1,14 @@
+{
+  "login": "ログイン",
+  "email": "メール",
+  "enterEmail": "メールアドレスを入力",
+  "username": "ユーザー名",
+  "enterUsername": "ユーザー名を入力",
+  "password": "パスワード",
+  "enterPassword": "パスワードを入力",
+  "signIn": "サインイン",
+  "forgotPassword": "サインインに問題がありますか？",
+  "noAccount": "アカウントをお持ちではありませんか？",
+  "requestNow": "今すぐリクエスト",
+  "loginDetails": "アカウントにサインインするための詳細を入力してください"
+}

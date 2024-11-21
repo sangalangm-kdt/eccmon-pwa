@@ -1,0 +1,13 @@
+{
+  "installApp": "Install App",
+  "userDoesNotExist": "User does not exist",
+  "invalidUserOrPass": "Invalid email or password. Please try again.",
+  "errorNetwork": "An unexpected error occurred. Please try again.",
+  "anErrorOccured": "An error occurred. Please check your network connection and try again.",
+  "installAppSafari": "Add to Home Screen",
+  "installAppSafariInstructions": "Tap the share button and then 'Add to Home Screen'.",
+  "home": "Home",
+  "profile": "Profile",
+  "scanner": "Scanner",
+  "logout": "Logout"
+}
