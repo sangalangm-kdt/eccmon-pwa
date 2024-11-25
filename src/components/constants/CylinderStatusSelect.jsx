@@ -11,7 +11,7 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
     (state) => state.status.cylinderStatusOptions,
   );
   const status = useSelector((state) => state.status.status);
-  console.log("statuss:", status);
+  console.log("statuss:", cylinderStatusOptions);
 
   // Local state for selected status
   const [selectedStatus, setSelectedStatus] = useState("");

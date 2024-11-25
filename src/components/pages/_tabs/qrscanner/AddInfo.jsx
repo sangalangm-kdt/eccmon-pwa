@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCylinderStatus } from "../../../../features/status/statusSlice"; // Adjust path as necessary
+import { fetchCylinderStatus } from "../../../../features/status/statusSlice";
 import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
@@ -14,16 +14,19 @@ const ScannedResult = () => {
   const cylinderStatus = useSelector((state) => state.status.cylinderStatus);
 
   const [isScannedResultComplete, setIsScannedResultComplete] = useState(false);
-  const [isDisposalComplete, setIsDisposalComplete] = useState(false);
+  const [isStatusComplete, setIsStatusComplete] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [eccId, setEccId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDisposed, setIsDisposed] = useState(0);
-  const [existingData, setExistingData] = useState(null);
+  const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true); // Default to true
 
   const isFormComplete =
-    isScannedResultComplete && isDisposalComplete && selectedDate !== "";
+    isScannedResultComplete &&
+    isStatusComplete &&
+    eccId !== "" &&
+    selectedStatus !== "";
 
   useEffect(() => {
     dispatch(fetchCylinderStatus());
@@ -34,6 +37,10 @@ const ScannedResult = () => {
       setSelectedStatus(cylinderStatus.currentStatus);
     }
   }, [cylinderStatus]);
+
+  useEffect(() => {
+    setIsSaveButtonDisabled(!isFormComplete); // Update button state based on form completion
+  }, [isFormComplete]); // Depend on form completion state
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -53,17 +60,11 @@ const ScannedResult = () => {
       setIsModalOpen(true);
     } else if (selectedStatus === "Storage") {
       const storageData = { eccId, startDate: selectedDate, isDisposed };
-      setExistingData(storageData);
       handleSave(storageData);
     }
   };
 
   const handleSave = (storageData) => {
-    if (!eccId || !storageData) {
-      console.log("ECC ID or Storage data is empty. Cannot save data.");
-      return;
-    }
-
     const actionHistory = {
       eccId,
       isDisposed: storageData.isDisposed,
@@ -75,8 +76,8 @@ const ScannedResult = () => {
     console.log("Action history to be saved:", actionHistory);
     try {
       localStorage.setItem("actionHistory", JSON.stringify(actionHistory));
-      console.log("Action history saved to localStorage.");
-      navigate("/index");
+      console.log("Action history saved to localStorage.", actionHistory);
+      navigate("/"); // Navigate to home or relevant page after saving
     } catch (error) {
       console.error("Error saving data:", error);
     }
@@ -85,16 +86,6 @@ const ScannedResult = () => {
   const handleConfirmDelete = () => {
     handleDeletion();
     setIsModalOpen(false);
-  };
-
-  const handleStatusChange = (status) => {
-    console.log("New status selected", status);
-    setSelectedStatus(status);
-  };
-
-  const handleScannedCodeChange = (code, eccId) => {
-    setEccId(eccId);
-    setIsScannedResultComplete(true);
   };
 
   const handleDeletion = () => {
@@ -119,11 +110,24 @@ const ScannedResult = () => {
         JSON.stringify(actionHistory),
       );
       console.log("Disposal action saved.");
-      setExistingData(actionHistory);
-      navigate("/qrscanner");
+      navigate("/qrscanner"); // Navigate to relevant page after deletion
     } catch (error) {
       console.error("Error saving disposal data:", error);
     }
+  };
+
+  const handleStatusChange = (status) => {
+    console.log("New status selected", status);
+    setSelectedStatus(status);
+  };
+
+  const handleScannedCodeChange = (code, eccId) => {
+    setEccId(eccId);
+    setIsScannedResultComplete(true);
+  };
+
+  const handleStatusCompletion = (isComplete) => {
+    setIsStatusComplete(isComplete);
   };
 
   return (
@@ -134,18 +138,17 @@ const ScannedResult = () => {
         setSelectedStatus={handleStatusChange}
         onScannedCodeChange={handleScannedCodeChange}
       />
-      <div className="mt-2">
+      <div className="mt-4">
         <CylinderInfo
           selectedStatus={selectedStatus}
-          setIsComplete={setIsDisposalComplete}
+          setIsComplete={handleStatusCompletion}
           onDateChange={setSelectedDate}
           selectedDate={selectedDate}
           handleSaveStorageData={handleSave}
-          existingData={existingData} // Pass existing data to CylinderInfo
         />
       </div>
 
-      <SaveButton disabled={!isFormComplete || !eccId} onClick={handleSubmit} />
+      <SaveButton disabled={isSaveButtonDisabled} onClick={handleSubmit} />
 
       <Modal
         isOpen={isModalOpen}

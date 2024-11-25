@@ -9,7 +9,7 @@ const SaveButton = ({ disabled, onClick }) => {
         </button>
         <button
           type="submit"
-          className={`w-50 py-4 px-2 font-semibold hover:cursor-pointer ${
+          className={`w-50 py-4 px-2 font-semibold hover:cursor-pointer rounded ${
             disabled ? "bg-cyan-300 text-gray-700" : "bg-tertiary text-white"
           }`}
           disabled={disabled}

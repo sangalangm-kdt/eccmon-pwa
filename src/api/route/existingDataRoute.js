@@ -18,11 +18,9 @@ const dataStore = [
   },
 ];
 
-// POST endpoint to check if the scanned code exists
 router.post("/check-code", (req, res) => {
   const { eccId } = req.body;
 
-  // Validate eccId format
   if (!eccId || typeof eccId !== "string") {
     return res.status(400).json({ message: "Invalid ECC ID format" });
   }
@@ -30,9 +28,10 @@ router.post("/check-code", (req, res) => {
   const entry = dataStore.find((item) => item.eccId === eccId);
 
   if (entry) {
-    console.log(entry);
-    return res.status(200).json(entry);
+    // If entry exists, return the entry with exists flag
+    return res.status(200).json({ exists: true, entry });
   } else {
+    // If entry does not exist, create a new entry
     const newEntry = {
       eccId,
       cylinderStatus: "",
@@ -46,9 +45,8 @@ router.post("/check-code", (req, res) => {
       orderNo: "",
     };
 
-    // Add the new entry to the mock database
     dataStore.push(newEntry);
-    return res.status(201).json(newEntry); // Return the newly created entry
+    return res.status(201).json({ exists: false, entry: newEntry }); // Return the newly created entry
   }
 });
 

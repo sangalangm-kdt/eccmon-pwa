@@ -10,7 +10,7 @@ export const store = configureStore({
     page: pageReducer,
     scannedCode: scannedCodeReducer,
     status: statusReducer,
-    processLocation: processLocationReducer,
+    process: processLocationReducer,
   },
 });
 

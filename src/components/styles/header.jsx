@@ -19,7 +19,7 @@ const navbarStyles = {
   bottomNavbarButton: `flex flex-col items-center justify-center p-2`, // Centering buttons
   iconContainer: "w-6 h-6 mb-1 focus:fill-primary focus:outline-none",
   navbarLinkBottom: "text-sm",
-  qrContainer: "border border-none bg-primary rounded-full p-4", // Removed absolute positioning
+  qrContainer: "border border-none bg-primary rounded-full p-4 ml-3", // Removed absolute positioning
 };
 const modal = {
   modalContent: "bg-primary text-white px-2 py-2 rounded mr-0",

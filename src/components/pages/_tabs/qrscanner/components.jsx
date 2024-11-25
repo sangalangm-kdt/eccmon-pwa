@@ -25,26 +25,23 @@ export const QrHeader = () => {
 
 export const CylinderInfo = ({
   selectedStatus,
-  selectedProcessorStatus,
   setIsComplete,
   onDateChange,
-  isNewScan, // Flag for new scan
-  onDisposedChange, // Callback for disposal change
-  existingData, // Data passed from the previous scan
+  isNewScan,
+  onDisposedChange,
+
   handleSaveStorageData,
-  selectedDate,
 }) => {
-  // Common props that will be passed to each component
+  // Common props to be passed to components
   const commonProps = {
     setIsComplete,
-    existingData,
   };
 
   console.log("Current Selected Status:", selectedStatus);
 
   // Render content based on selectedStatus
   const renderContent = () => {
-    console.log("Rendering content for status:", selectedStatus); // Debugging log
+    console.log("Rendering content for status:", selectedStatus);
 
     switch (selectedStatus) {
       case "Disposal":
@@ -65,16 +62,21 @@ export const CylinderInfo = ({
               isNewScan={isNewScan}
               onSaveData={handleSaveStorageData}
               onDateChange={onDateChange}
-              existingData={existingData} // Pass existing data
             />
           </div>
         );
-      case "Process":
+      // Grouping Process-related statuses
+      case "Material and Machining":
+      case "Disassembly":
+      case "Grooving":
+      case "LMD":
+      case "Assembly":
+      case "Finishing":
         return (
           <div className={containerClass}>
             <Process
               {...commonProps}
-              selectedProcessorStatus={selectedProcessorStatus}
+              selectedProcessorStatus={selectedStatus}
             />
           </div>
         );
@@ -91,7 +93,11 @@ export const CylinderInfo = ({
           </div>
         );
       default:
-        return <div className="w-full pl-6">Please select a valid status.</div>; // Improved default message
+        return (
+          <div className={containerClass}>
+            <div className="border p-2">Please select a valid status</div>
+          </div>
+        );
     }
   };
 

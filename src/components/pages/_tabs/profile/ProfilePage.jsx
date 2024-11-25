@@ -11,7 +11,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div>
+    <div className="lg:mt-28 lg:p-4">
       <button onClick={handleLogout} className="text-black">
         {t("common:logout")}
       </button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ResultsModal from "./ResultsModal"; // Your modal component
 import {
   BrowserMultiFormatReader,
   BarcodeFormat,
@@ -20,10 +21,12 @@ const QRScanner = () => {
   const [error, setError] = useState(null);
   const [torchOn, setTorchOn] = useState(false);
   const [scannedData, setScannedData] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [actionType, setActionType] = useState(null);
   const videoRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation("qrScanner");
+  const { t } = useTranslation("qrScanner", "common");
 
   useEffect(() => {
     const codeReader = new BrowserMultiFormatReader();
@@ -46,7 +49,7 @@ const QRScanner = () => {
               if (result) {
                 try {
                   const jsonData = JSON.parse(result.text);
-                  console.log("Dispatching Scanned Code:", jsonData);
+
                   if (!jsonData.eccId) {
                     setError("The scanned code does not contain a valid code.");
                     return;
@@ -55,15 +58,21 @@ const QRScanner = () => {
                   dispatch(setScannedCode(jsonData));
                   dispatch(checkScannedCode(jsonData.eccId)).then((action) => {
                     if (checkScannedCode.fulfilled.match(action)) {
-                      console.log(
-                        "Check scanned code successful:",
-                        action.payload,
-                      );
-                      navigate("/scanned-result");
+                      const { exists, entry } = action.payload;
+                      console.log("API Response:", exists); // Log the entire payload for inspection
+                      console.log("Scanned Code:", jsonData); // Log the scanned code
+
+                      if (exists) {
+                        // Entry exists, update logic
+                        setActionType("update");
+                        setModalOpen(true);
+                      } else {
+                        // Entry does not exist, add logic
+                        setActionType("add");
+                        setModalOpen(true);
+                      }
                     } else {
-                      setError(
-                        "The scanned ECC ID does not exist. A new entry will be created.",
-                      );
+                      setError("Failed to check scanned code.");
                     }
                   });
 
@@ -104,7 +113,6 @@ const QRScanner = () => {
   }, [dispatch]);
 
   const handleBack = () => {
-    dispatch(setPage("/")); // Update the page state to 'home'
     navigate("/"); // Navigate to the home page
   };
 
@@ -121,6 +129,20 @@ const QRScanner = () => {
         console.error("Torch is not supported on this device.");
       }
     }
+  };
+
+  const handleConfirm = () => {
+    setModalOpen(false);
+    // Navigate to the adding or updating info page
+    if (actionType === "add") {
+      navigate("/add-info"); // Adjust this path as necessary
+    } else {
+      navigate("/update-info"); // Navigate to the update info page
+    }
+  };
+
+  const handleClose = () => {
+    setModalOpen(false);
   };
 
   const renderComponentBasedOnStatus = () => {
@@ -147,7 +169,7 @@ const QRScanner = () => {
         onClick={handleBack}
       >
         <ArrowBackIcon />
-        <label className="text-white">Back</label>
+        <label className="text-white">{t("common:backButton")}</label>
       </div>
       <div
         className={`${qrScannerStyles.scannerContainerClass} w-full h-full sm:h-screen sm:w-screen`}
@@ -179,10 +201,9 @@ const QRScanner = () => {
             </div>
           </div>
         </div>
-        <div className="fixed xs:top-72 xs:text-sm text-white">
-          {t("barcodePlaceCode")}
+        <div className="absolute xs:top-60 xs:text-sm text-white z-60">
+          {t("qrScanner:barcodePlaceCode")}
         </div>
-
         <button
           className="absolute bottom-4 left-4 bg-white p-2 text-blue-500 rounded-full shadow-md"
           onClick={toggleTorch}
@@ -222,6 +243,14 @@ const QRScanner = () => {
       </div>
 
       {renderComponentBasedOnStatus()}
+
+      {/* Render the confirmation modal */}
+      <ResultsModal
+        isOpen={modalOpen}
+        onClose={handleClose}
+        onConfirm={handleConfirm}
+        actionType={actionType} // Pass action type to the modal
+      />
     </div>
   );
 };

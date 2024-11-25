@@ -10,10 +10,9 @@ const cylinderStatus = [
   { id: 5, cylinderStatus: "LMD" },
   { id: 6, cylinderStatus: "Finishing" },
   { id: 7, cylinderStatus: "Assembly" },
-  { id: 8, cylinderStatus: "Process" },
-  { id: 9, cylinderStatus: "Mounted" },
-  { id: 10, cylinderStatus: "Dismounted" },
-  { id: 11, cylinderStatus: "Disposal" },
+  { id: 8, cylinderStatus: "Mounted" },
+  { id: 9, cylinderStatus: "Dismounted" },
+  { id: 10, cylinderStatus: "Disposal" },
 ];
 
 // Endpoint to get cylinder status options

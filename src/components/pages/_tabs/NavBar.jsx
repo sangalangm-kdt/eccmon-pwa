@@ -98,7 +98,7 @@ const NavBar = () => {
                 className={`${navbarStyles.bottomNavbar} sm:flex xs:flex lg:hidden md:hidden`}
               >
                 <div className={navbarStyles.navbarContainer}>
-                  <ul className="flex space-x-14">
+                  <ul className="flex justify-center space-x-8">
                     <li className={navbarStyles.bottomNavbarButton}>
                       <NavLink
                         to="/"

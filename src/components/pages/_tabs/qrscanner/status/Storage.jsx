@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from "react";
 import DateField from "../../../../constants/DateField";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import LocationDropdown from "../../../../constants/LocationDropdown";
+import { fetchProcessStorageLocation } from "../../../../../features/process/processLocationSlice";
 
-const Storage = ({
-  setIsComplete,
-  // existingData,
-  onDateChange,
-}) => {
+const Storage = ({ setIsComplete, onDateChange }) => {
+  const dispatch = useDispatch();
   const [disposedStatus, setDisposedStatus] = useState(0);
   const [startDate, setStartDate] = useState("");
-  const [location, setLocation] = useState("Unknown");
-  const scannedCode = useSelector((state) => state.scannedCode.data);
+  const [location, setLocation] = useState("");
 
-  // Handle date change from DateField component
+  // Accessing scanned code and storage options from Redux state
+  const scannedCode = useSelector((state) => state.scannedCode.data);
+  const { storage, loading, error } = useSelector((state) => state.process);
+
+  useEffect(() => {
+    dispatch(fetchProcessStorageLocation());
+  }, [dispatch]);
+
   const handleDateChange = (date) => {
     setStartDate(date);
-    if (onDateChange) {
-      onDateChange(date);
-    }
+    onDateChange(date);
 
+    // Update completion state
     if (setIsComplete) {
-      setIsComplete(date !== "" && disposedStatus === 0);
+      setIsComplete(date !== "" && location !== ""); // Check if both date and location are filled
     }
   };
 
-  const handleLocationChange = (event) => {
-    setLocation(event.target.value);
+  const handleLocationChange = (newLocation) => {
+    setLocation(newLocation);
+    console.log("Selected Location:", newLocation);
+
+    // Update completion state
+    if (setIsComplete) {
+      setIsComplete(startDate !== "" && newLocation !== ""); // Check if both date and location are filled
+    }
   };
 
   return (
@@ -43,19 +53,18 @@ const Storage = ({
           </span>
         </div>
         <div>
-          <label>Start Date</label>
-          <DateField onChange={handleDateChange} value={startDate} />
-        </div>
-        <div>
-          <label>Location</label>
-          <div className="w-full border rounded ">
-            <input
-              className="w-full mb-0 p-2 rounded"
-              type="text"
-              value={location}
-              onChange={handleLocationChange}
-              placeholder="Enter location"
+          <label>Location site</label>
+          <div className="border rounded">
+            <LocationDropdown
+              options={storage}
+              onLocationChange={handleLocationChange}
+              loading={loading}
+              error={error}
             />
+          </div>
+          <div>
+            <label>Start Date</label>
+            <DateField onChange={handleDateChange} value={startDate} />
           </div>
         </div>
       </div>

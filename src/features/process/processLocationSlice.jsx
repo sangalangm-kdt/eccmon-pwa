@@ -90,6 +90,7 @@ const processSlice = createSlice({
       .addCase(fetchProcessStorageLocation.fulfilled, (state, action) => {
         state.loading = false;
         state.storage = action.payload;
+        console.log("storage option:", action.payload);
       })
       .addCase(fetchProcessStorageLocation.rejected, (state, action) => {
         state.loading = false;

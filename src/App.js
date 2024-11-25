@@ -5,7 +5,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import NavBar from "./components/pages/_tabs/NavBar";
 import { AuthProvider } from "./components/auth/AuthContext";
 import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
-import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
+import AddInfo from "./components/pages/_tabs/qrscanner/AddInfo";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
@@ -44,7 +44,7 @@ function App() {
           children: [
             { path: "/", element: <Home /> },
             { path: "/qrscanner", element: <QRScanner /> },
-            { path: "/scanned-result", element: <ScannedResult /> },
+            { path: "/add-info", element: <AddInfo /> },
             { path: "/profile", element: <ProfilePage /> },
           ],
         },

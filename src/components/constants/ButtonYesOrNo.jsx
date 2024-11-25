@@ -12,7 +12,7 @@ const ButtonYesOrNo = ({ onChange, isNew }) => {
 
   return (
     <div>
-      <div className="flex flex-row w-full justify-between items-center border rounded-full">
+      <div className="flex flex-row w-full justify-between items-center border rounded-full p-1">
         <button
           className={`p-2 grow rounded-full transition-colors duration-300 ${
             selectedValue === 1 ? "bg-green-500 text-white" : "bg-white"

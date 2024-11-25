@@ -9,5 +9,7 @@
   "home": "Home",
   "profile": "Profile",
   "scanner": "Scanner",
-  "logout": "Logout"
+  "logout": "Logout",
+  "backButton": "Back",
+  "backToScan": "Back to scan"
 }

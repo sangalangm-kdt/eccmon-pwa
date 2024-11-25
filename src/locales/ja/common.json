@@ -9,5 +9,7 @@
   "home": "ホーム",
   "profile": "プロフィール",
   "scanner": "スキャナー",
-  "logout": "ログアウト"
+  "logout": "ログアウト",
+  "backButton": "戻る",
+  "backToScan": "スキャンに戻る"
 }
