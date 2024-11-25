@@ -3,9 +3,10 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import NavBar from "./components/pages/_tabs/NavBar";
-import { AuthProvider } from "./components/auth/AuthContext";
+// import { AuthProvider } from "./components/auth/AuthContext";
 import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
 import AddInfo from "./components/pages/_tabs/qrscanner/AddInfo";
+import Preloader from "./components/constants/preloader/Preloader";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
@@ -63,9 +64,15 @@ function App() {
   return (
     <div className="App">
       {/* <AuthProvider> */}
-        <Suspense fallback={<div>Loading...</div>}>
-          <RouterProvider router={router} />
-        </Suspense>
+      <Suspense
+        fallback={
+          <div>
+            <Preloader />
+          </div>
+        }
+      >
+        <RouterProvider router={router} />
+      </Suspense>
       {/* </AuthProvider> */}
     </div>
   );

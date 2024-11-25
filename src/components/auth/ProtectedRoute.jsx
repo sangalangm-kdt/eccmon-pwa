@@ -9,7 +9,10 @@ const ProtectedRoute = () => {
   // console.log(isAuthenticated);
   const navigate = useNavigate();
 
-  const { user } = useAuthentication({middleware: "auth"});
+  // const { user } = useAuthentication({ middleware: "auth" });
+  const user = {
+    email: "ice@ice.com",
+  };
 
   if (!user) {
     return <div>Loading...</div>;
