@@ -1,15 +1,18 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
+import { useLocation } from "react-router-dom";
 
 const ScanCodes = ({
   setIsComplete,
   setSelectedStatus,
   onScannedCodeChange,
+
 }) => {
-  const scannedCode = useSelector((state) => state.scannedCode.data);
+  const location = useLocation();
+  const scannedCode = location.state?.data;
   const loading = useSelector((state) => state.scannedCode.loading);
-  const eccId = scannedCode?.eccId || "";
+  const eccId = scannedCode?.serialNumber || "";
 
   useEffect(() => {
     console.log("Scanned Code:", scannedCode);
@@ -21,6 +24,7 @@ const ScanCodes = ({
     }
   }, [scannedCode, setIsComplete, onScannedCodeChange, eccId]);
 
+  console.log(location.state?.data)
   return (
     <div className="flex flex-col py-0 px-4">
       <div className="border p-2 w-full">

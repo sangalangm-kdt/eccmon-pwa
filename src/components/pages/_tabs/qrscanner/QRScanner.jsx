@@ -16,6 +16,7 @@ import qrScannerStyles from "../../../styles/main";
 import { useTranslation } from "react-i18next";
 import { ArrowBackIcon } from "../../../assets/icons";
 import Storage from "./status/Storage";
+import { useCylinderCover } from "../../../../hooks/cylinderCover";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -27,86 +28,94 @@ const QRScanner = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation("qrScanner", "common");
+  const {checkSerial, addCylinder} = useCylinderCover();
+  const [willScan, setWillScan] = useState(true);
 
   useEffect(() => {
     const codeReader = new BrowserMultiFormatReader();
     let selectedDeviceId;
 
-    codeReader
-      .listVideoInputDevices()
-      .then((videoInputDevices) => {
-        const backCamera =
-          videoInputDevices.find((device) =>
-            device.label.toLowerCase().includes("back"),
-          ) || videoInputDevices[0];
+    if(willScan === true) {
+      codeReader
+        .listVideoInputDevices()
+        .then((videoInputDevices) => {
+          const backCamera =
+            videoInputDevices.find((device) =>
+              device.label.toLowerCase().includes("back"),
+            ) || videoInputDevices[0];
 
-        if (backCamera) {
-          selectedDeviceId = backCamera.deviceId;
-          codeReader.decodeFromVideoDevice(
-            selectedDeviceId,
-            videoRef.current,
-            (result, err) => {
-              if (result) {
-                try {
-                  const jsonData = JSON.parse(result.text);
+          if (backCamera) {
+            selectedDeviceId = backCamera.deviceId;
+            codeReader.decodeFromVideoDevice(
+              selectedDeviceId,
+              videoRef.current,
+              (result, err) => {
+                if (result) {
+                  try {
+                    const jsonData = JSON.parse(result.text);
+                    const eccId = jsonData.eccId;
 
-                  if (!jsonData.eccId) {
-                    setError("The scanned code does not contain a valid code.");
-                    return;
-                  }
-
-                  dispatch(setScannedCode(jsonData));
-                  dispatch(checkScannedCode(jsonData.eccId)).then((action) => {
-                    if (checkScannedCode.fulfilled.match(action)) {
-                      const { exists, entry } = action.payload;
-                      console.log("API Response:", exists); // Log the entire payload for inspection
-                      console.log("Scanned Code:", jsonData); // Log the scanned code
-
-                      if (exists) {
-                        // Entry exists, update logic
-                        setActionType("update");
-                        setModalOpen(true);
-                      } else {
-                        // Entry does not exist, add logic
-                        setActionType("add");
-                        setModalOpen(true);
-                      }
-                    } else {
-                      setError("Failed to check scanned code.");
+                    if (!jsonData.eccId) {
+                      setError("The scanned code does not contain a valid code.");
+                      return;
                     }
-                  });
 
-                  setScannedData(jsonData);
-                } catch (e) {
-                  setError("Invalid JSON data. Please check the QR code.");
+                    // dispatch(setScannedCode(jsonData));
+                    // dispatch(checkScannedCode(jsonData.eccId)).then((action) => {
+                    //   if (checkScannedCode.fulfilled.match(action)) {
+                    //     const { exists, entry } = action.payload;
+                    //     console.log("API Response:", exists); // Log the entire payload for inspection
+                    //     console.log("Scanned Code:", jsonData); // Log the scanned code
+
+                    //     if (exists) {
+                    //       // Entry exists, update logic
+                    //       setActionType("update");
+                    //       setModalOpen(true);
+                    //     } else {
+                    //       // Entry does not exist, add logic
+                    //       setActionType("add");
+                    //       setModalOpen(true);
+                    //     }
+                    //   } else {
+                    //     setError("Failed to check scanned code.");
+                    //   }
+                    // });
+                    if(modalOpen === false) {
+                      setWillScan(false)
+                      checkSerial({setModalOpen, setActionType, eccId});
+                    }
+                    setScannedData(eccId);
+                  } catch (e) {
+                    setError("Invalid JSON data. Please check the QR code.");
+                  }
                 }
-              }
-              if (err && !(err instanceof NotFoundException)) {
-                console.error(err);
-                setError("Error scanning QR code. Please try again.");
-              }
-            },
-            {
-              area: {
-                x: 0.25,
-                y: 0.25,
-                width: 0.5,
-                height: 0.5,
+                if (err && !(err instanceof NotFoundException)) {
+                  console.error(err);
+                  setError("Error scanning QR code. Please try again.");
+                }
               },
-              formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
-            },
+              {
+                area: {
+                  x: 0.25,
+                  y: 0.25,
+                  width: 0.5,
+                  height: 0.5,
+                },
+                formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
+              },
+            );
+          }
+        })
+        .catch((err) => {
+          console.error("Error accessing video devices: ", err);
+          setError(
+            "Error accessing video devices. Please check your camera permissions.",
           );
-        }
-      })
-      .catch((err) => {
-        console.error("Error accessing video devices: ", err);
-        setError(
-          "Error accessing video devices. Please check your camera permissions.",
-        );
       });
+    }
 
-    return () => codeReader.reset();
-  }, [dispatch, navigate]);
+    // return () => codeReader.reset();
+  }, []);
 
   useEffect(() => {
     dispatch(setPage("qrscanner"));
@@ -133,15 +142,11 @@ const QRScanner = () => {
 
   const handleConfirm = () => {
     setModalOpen(false);
-    // Navigate to the adding or updating info page
-    if (actionType === "add") {
-      navigate("/add-info"); // Adjust this path as necessary
-    } else {
-      navigate("/update-info"); // Navigate to the update info page
-    }
+    addCylinder(scannedData);
   };
 
   const handleClose = () => {
+    setWillScan(true)
     setModalOpen(false);
   };
 
@@ -249,7 +254,6 @@ const QRScanner = () => {
         isOpen={modalOpen}
         onClose={handleClose}
         onConfirm={handleConfirm}
-        actionType={actionType} // Pass action type to the modal
       />
     </div>
   );

@@ -3,20 +3,21 @@ import DateField from "../../../../constants/DateField";
 import { useDispatch, useSelector } from "react-redux";
 import LocationDropdown from "../../../../constants/LocationDropdown";
 import { fetchProcessStorageLocation } from "../../../../../features/process/processLocationSlice";
+import { useLocationProcess } from "../../../../../hooks/locationProcess";
 
 const Storage = ({ setIsComplete, onDateChange }) => {
-  const dispatch = useDispatch();
-  const [disposedStatus, setDisposedStatus] = useState(0);
+  // const dispatch = useDispatch();
+  // const [disposedStatus, setDisposedStatus] = useState(0);
   const [startDate, setStartDate] = useState("");
-  const [location, setLocation] = useState("");
+  // const [location, setLocation] = useState("");
 
-  // Accessing scanned code and storage options from Redux state
-  const scannedCode = useSelector((state) => state.scannedCode.data);
-  const { storage, loading, error } = useSelector((state) => state.process);
+  // // Accessing scanned code and storage options from Redux state
+  // const scannedCode = useSelector((state) => state.scannedCode.data);
+  // const { storage, loading, error } = useSelector((state) => state.process);
 
-  useEffect(() => {
-    dispatch(fetchProcessStorageLocation());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchProcessStorageLocation());
+  // }, [dispatch]);
 
   const handleDateChange = (date) => {
     setStartDate(date);
@@ -24,19 +25,20 @@ const Storage = ({ setIsComplete, onDateChange }) => {
 
     // Update completion state
     if (setIsComplete) {
-      setIsComplete(date !== "" && location !== ""); // Check if both date and location are filled
+      setIsComplete(date !== ""); // Check if both date and location are filled
     }
   };
 
-  const handleLocationChange = (newLocation) => {
-    setLocation(newLocation);
-    console.log("Selected Location:", newLocation);
+  // const handleLocationChange = (newLocation) => {
+  //   setLocation(newLocation);
+  //   console.log("Selected Location:", newLocation);
 
-    // Update completion state
-    if (setIsComplete) {
-      setIsComplete(startDate !== "" && newLocation !== ""); // Check if both date and location are filled
-    }
-  };
+  //   // Update completion state
+  //   if (setIsComplete) {
+  //     setIsComplete(startDate !== "" && newLocation !== ""); // Check if both date and location are filled
+  //   }
+  // };
+  const {storage, storageMutate} = useLocationProcess();
 
   return (
     <div className="flex flex-col">
@@ -44,22 +46,19 @@ const Storage = ({ setIsComplete, onDateChange }) => {
         <h2 className="font-semibold mb-6">Storage Status</h2>
         <div className="flex flex-col mb-4">
           <label>Disposed Status:</label>
-          <span
+          {/* <span
             className={
               disposedStatus === 0 ? "text-red-500 font-bold" : "text-green-500"
             }
           >
             {disposedStatus === 0 ? "No" : "Yes"}
-          </span>
+          </span> */}
         </div>
         <div>
           <label>Location site</label>
           <div className="border rounded">
             <LocationDropdown
-              options={storage}
-              onLocationChange={handleLocationChange}
-              loading={loading}
-              error={error}
+              options={storage?.data}
             />
           </div>
           <div>

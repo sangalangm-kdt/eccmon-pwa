@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 
 const ResultsModal = ({ isOpen, onClose, onConfirm, actionType }) => {
-  const getMessage = () => {
-    return actionType === "add"
-      ? "The cylinder cover does not exist. Do you want to add it?"
-      : "The cylinder cover already exists. Do you want to update the data?";
-  };
+  console.log(actionType);
+  const message = "The cylinder cover does not exist. Do you want to add it?";
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -38,7 +35,7 @@ const ResultsModal = ({ isOpen, onClose, onConfirm, actionType }) => {
         <h2 id="modal-title" className="text-lg font-semibold">
           Confirmation
         </h2>
-        <p id="modal-description">{getMessage()}</p>
+        <p id="modal-description">{message}</p>
         <div className="flex justify-end mt-4">
           <button
             className="mr-2 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
