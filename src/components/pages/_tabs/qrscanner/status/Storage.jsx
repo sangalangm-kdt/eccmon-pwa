@@ -44,21 +44,21 @@ const Storage = ({ setIsComplete, onDateChange }) => {
     <div className="flex flex-col">
       <div className="border p-2 w-full">
         <h2 className="font-semibold mb-6">Storage Status</h2>
-        <div className="flex flex-col mb-4">
+        {/* <div className="flex flex-col mb-4">
           <label>Disposed Status:</label>
-          {/* <span
+          <span
             className={
-              disposedStatus === 0 ? "text-red-500 font-bold" : "text-green-500"
+              st === 0 ? "text-red-500 font-bold" : "text-green-500"
             }
           >
             {disposedStatus === 0 ? "No" : "Yes"}
-          </span> */}
-        </div>
+          </span>
+        </div> */}
         <div>
           <label>Location site</label>
           <div className="border rounded">
             <LocationDropdown
-              options={storage?.data}
+              options={storage?.data.filter((item) => {return item.status !== 2})}
             />
           </div>
           <div>

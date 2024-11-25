@@ -40,6 +40,7 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
         options={cylinderStatusOptions}
         selectedValue={selectedStatus} // Use local state for selected status
         onChange={handleSelectChange}
+        scannedCode={scannedCode}
         // disabled={isLoading} // Disable only if loading
       />
       {!hasOptions && (

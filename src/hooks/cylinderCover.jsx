@@ -1,12 +1,26 @@
 import axiosLib from "../lib/axios"
 import { useNavigate } from "react-router-dom";
 import { useScanHistory } from "./scanHistory";
+import useSWR from "swr";
 
 
 export const useCylinderCover = () => {
     const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
     const navigate = useNavigate();
     const {addHistory} = useScanHistory();
+
+    const {
+        data: cylinder,
+        error,
+        mutate
+    } = useSWR("/api/cylinder", () =>
+        axiosLib
+            .get("/api/cylinder")
+            .then((res) => res.data)
+            .catch((error) => {
+                if(error.response.status !== 409) throw error;
+            })
+    )
 
     const checkSerial = async ({setModalOpen, setActionType, ...props}) => {
         await csrf();
@@ -26,7 +40,7 @@ export const useCylinderCover = () => {
                 } else {
                     setModalOpen(true);
                 }
-                
+                mutate()
             })
             .catch((error) => {
                 if (error.response.status !== 422) throw error;
@@ -50,7 +64,8 @@ export const useCylinderCover = () => {
                 }
 
                 addHistory(data2)
-                navigate("/add-info", {state : res.data}); 
+                navigate("/add-info", {state : res.data});
+                mutate()
             })
             .catch((error) => {
                 if (error.response.status !== 422) throw error;
@@ -58,6 +73,7 @@ export const useCylinderCover = () => {
     }
 
     return {
+        cylinder,
         checkSerial,
         addCylinder
     }

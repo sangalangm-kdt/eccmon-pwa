@@ -51,7 +51,7 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={disassembly?.data}
+                options={disassembly?.data.filter((item) => {return item.status !== 2})}
                 // onLocationChange={setSelectedProcessor}
                 // loading={loading}
                 // error={error}
@@ -79,7 +79,7 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={assembly?.data}
+                options={assembly?.data.filter((item) => {return item.status !== 2})}
                 // onLocationChange={setSelectedProcessor}
                 // loading={loading}
                 // error={error}
@@ -107,7 +107,7 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={finishing?.data}
+                options={finishing?.data.filter((item) => {return item.status !== 2})}
                 // onLocationChange={setSelectedProcessor}
                 // loading={loading}
                 // error={error}
@@ -135,7 +135,7 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={grooving?.data}
+                options={grooving?.data.filter((item) => {return item.status !== 2})}
                 // onLocationChange={setSelectedProcessor}
                 // loading={loading}
                 // error={error}
@@ -163,7 +163,7 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={lmd?.data}
+                options={lmd?.data.filter((item) => {return item.status !== 2})}
                 // onLocationChange={setSelectedProcessor}
                 // loading={loading}
                 // error={error}
