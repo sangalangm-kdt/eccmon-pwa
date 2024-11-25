@@ -9,28 +9,35 @@ import { languagess } from "../../styles/header";
 import { useTranslation } from "react-i18next";
 import { HomeIcon, ProfileIcon, QRScanIcon } from "../../assets/icons";
 import { NavLink, useLocation } from "react-router-dom";
+import { useAuthentication } from "../../../hooks/auth";
 
 const NavBar = () => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const currentPage = useSelector((state) => state.page.currentPage);
   const dispatch = useDispatch();
   const { t } = useTranslation("common");
   const location = useLocation();
+  const { user } = useAuthentication();
 
   useEffect(() => {
     const path = location.pathname.slice(1);
     dispatch(setPage(path));
   }, [location, dispatch]);
 
-  if (currentPage === "scanned-result") {
-    return null;
-  }
+  useEffect(() => {
+    console.log(currentPage);
+    console.log(user);
+  }, [location])
+
+  // if (currentPage === "scanned-result") {
+  //   return null;
+  // }
   return (
     <div className="flex flex-col fixed w-full top-0 z-50">
       <div className={`${languagess.container} ${languagess.languageSwitcher}`}>
         <LanguageSwitcher />
       </div>
-      {currentPage === "login" ? (
+      {currentPage == "login" ? (
         <nav className={`${navbarStyles.topNavbar}`}>
           <div className={navbarStyles.navbarContainer}>
             <div className="flex flex-row justify-between m-2">
@@ -47,7 +54,7 @@ const NavBar = () => {
             <div className={navbarStyles.navbarContainer}>
               <div className="flex flex-row justify-between m-2">
                 <img src={logo} alt="Logo" className={navbarStyles.logo} />
-                {isAuthenticated && (
+                {user && (
                   <div>
                     <ul className="flex space-x-4">
                       <li className={navbarStyles.navbarLink}>
@@ -92,7 +99,7 @@ const NavBar = () => {
               </div>
             </div>
           </nav>
-          {isAuthenticated ? (
+          {user ? (
             <>
               <nav
                 className={`${navbarStyles.bottomNavbar} sm:flex xs:flex lg:hidden md:hidden`}
