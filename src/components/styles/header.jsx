@@ -2,7 +2,7 @@ const commonContainerStyles =
   "flex min-w-full lg:relative lg:bottom-0 xs:fixed xs:bottom-0 xs:left-1/2 xs:transform xs:-translate-x-1/2 md:relative md:bottom-auto sm:relative sm:bottom-auto";
 
 const languagess = {
-  container: `${commonContainerStyles} m-0 p-1 flex items-center justify-center xs:bg-white lg:bg-languageSwitchBackground`, // Centering the container
+  container: `${commonContainerStyles} m-0 p-1 flex items-center justify-center xs:bg-white lg:bg-languageSwitchBackground xs:hidden`, // Centering the container
   languageSwitcher: `border-b-2 p-1 focus:outline-none text-gray-800 hover:underline lg:relative lg:top-0 lg:right-0 md:relative md:top-0 md:right-0 sm:relative sm:top-0 sm:left-1/2 sm:transform sm:-translate-x-1/2 xs:bottom-0 xs:justify-center xs:items-center`,
   installationButton: ` lg:relative lg:mr-3 xs:fixed xs:top-2 xs:left-1/2 xs:transform xs:-translate-x-1/2`, // Adjusted positioning for the installation button
 };
@@ -19,7 +19,7 @@ const navbarStyles = {
   bottomNavbarButton: `flex flex-col items-center justify-center p-2`, // Centering buttons
   iconContainer: "w-6 h-6 mb-1 focus:fill-primary focus:outline-none",
   navbarLinkBottom: "text-sm",
-  qrContainer: "border border-none bg-primary rounded-full p-4 ml-3", // Removed absolute positioning
+  qrContainer: "border border-none bg-primary rounded-full p-4", // Removed absolute positioning
 };
 const modal = {
   modalContent: "bg-primary text-white px-2 py-2 rounded mr-0",

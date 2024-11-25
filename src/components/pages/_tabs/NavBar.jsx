@@ -24,10 +24,10 @@ const NavBar = () => {
     dispatch(setPage(path));
   }, [location, dispatch]);
 
-  useEffect(() => {
-    console.log(currentPage);
-    console.log(user);
-  }, [location])
+  // useEffect(() => {
+  //   console.log(currentPage);
+  //   console.log(user);
+  // }, [location]);
 
   // if (currentPage === "scanned-result") {
   //   return null;
@@ -37,7 +37,7 @@ const NavBar = () => {
       <div className={`${languagess.container} ${languagess.languageSwitcher}`}>
         <LanguageSwitcher />
       </div>
-      {currentPage == "login" ? (
+      {currentPage === "login" ? (
         <nav className={`${navbarStyles.topNavbar}`}>
           <div className={navbarStyles.navbarContainer}>
             <div className="flex flex-row justify-between m-2">
@@ -53,7 +53,11 @@ const NavBar = () => {
           <nav className={`${navbarStyles.topNavbar} lg:flex md:flex hidden`}>
             <div className={navbarStyles.navbarContainer}>
               <div className="flex flex-row justify-between m-2">
-                <img src={logo} alt="Logo" className={navbarStyles.logo} />
+                <NavLink to="/">
+                  {" "}
+                  <img src={logo} alt="Logo" className={navbarStyles.logo} />
+                </NavLink>
+
                 {user && (
                   <div>
                     <ul className="flex space-x-4">
