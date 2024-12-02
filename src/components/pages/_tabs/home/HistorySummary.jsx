@@ -2,6 +2,9 @@ import { useState } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import dateFormat from 'dateformat';
+import { fullscreenClass } from "../../../styles/home";
+import { CloseRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 // const useRecentHistory = () => {
 //   const location = useLocation();
@@ -51,15 +54,29 @@ const HistorySummary = () => {
   const {cylinder} = useCylinderCover();
   const history = cylinder?.data;
   const [showAll, setShowAll] = useState(false); // State to track if showing all entries
+  const {t} = useTranslation("common")
 
   // Determine which entries to display
   const displayedHistory = showAll ? history : history?.slice(0, 5);
 
+
   return (
-    <div className="w-full p-2 overflow-hidden">
+     <div
+      className={`w-full p-2 overflow-hidden z-20 ${
+        history?.length > 5 && !showAll ? "" : fullscreenClass
+      }`}
+    >
+       {showAll && (
+        <button
+          onClick={() => setShowAll(false)}
+          className="absolute top-4 right-4 p-2 text-gray rounded-full"
+        >
+          <CloseRounded />
+        </button>
+      )}
       <div className="py-4 px-0">
         <div className="flex flex-row justify-between px-1 mb-2">
-          <label className="px-1 py-2 font-semibold">Recent History</label>
+          <label className="px-1 py-2 font-semibold">{t("common:recentHistory")}</label>
           {history?.length > 5 &&
             !showAll && ( // Show button if there are more than 5 items
               <button

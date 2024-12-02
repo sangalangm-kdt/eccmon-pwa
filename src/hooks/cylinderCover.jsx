@@ -36,7 +36,7 @@ export const useCylinderCover = () => {
                     }
 
                     addHistory(data)
-                    navigate("/add-info", {state : res.data})
+                    navigate("/scanned-result", {state : res.data})
                 } else {
                     setModalOpen(true);
                 }
@@ -64,7 +64,7 @@ export const useCylinderCover = () => {
                 }
 
                 addHistory(data2)
-                navigate("/add-info", {state : res.data});
+                navigate("/scanned-result", {state : res.data});
                 mutate()
             })
             .catch((error) => {
@@ -72,9 +72,31 @@ export const useCylinderCover = () => {
             })
     }
 
+    const updateCylinder = async (input) => {
+        const data = {
+            serialNumber : input.serialNumber,
+            isDisposed : input.isDisposed,
+            status : input.status,
+            cycle : input.cycle
+        }
+        const id = input.id;
+
+        await csrf();
+
+        axiosLib
+            .put(`/api/cylinder/${id}`, data)
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((error) => {
+                if(error.response.status !== 409) throw error;
+            })
+    }
+
     return {
         cylinder,
         checkSerial,
-        addCylinder
+        addCylinder,
+        updateCylinder
     }
 }

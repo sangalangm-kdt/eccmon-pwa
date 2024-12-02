@@ -3,9 +3,9 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import NavBar from "./components/pages/_tabs/NavBar";
-// import { AuthProvider } from "./components/auth/AuthContext";
+import { AuthProvider } from "./components/auth/AuthContext";
 import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
-import AddInfo from "./components/pages/_tabs/qrscanner/AddInfo";
+import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
 
 const QRScanner = lazy(
@@ -45,7 +45,7 @@ function App() {
           children: [
             { path: "/", element: <Home /> },
             { path: "/qrscanner", element: <QRScanner /> },
-            { path: "/add-info", element: <AddInfo /> },
+            { path: "/scanned-result", element: <ScannedResult /> },
             { path: "/profile", element: <ProfilePage /> },
           ],
         },
@@ -63,7 +63,7 @@ function App() {
 
   return (
     <div className="App">
-      {/* <AuthProvider> */}
+      <AuthProvider>
       <Suspense
         fallback={
           <div>
@@ -73,7 +73,7 @@ function App() {
       >
         <RouterProvider router={router} />
       </Suspense>
-      {/* </AuthProvider> */}
+      </AuthProvider>
     </div>
   );
 }

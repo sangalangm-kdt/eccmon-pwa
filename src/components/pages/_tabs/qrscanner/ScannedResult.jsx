@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCylinderStatus } from "../../../../features/status/statusSlice";
+// import { fetchCylinderStatus } from "../../../../features/status/statusSlice";
 import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
-import { CylinderInfo, QrHeader } from "./components";
+import {QrHeader } from "./components";
 import Modal from "../../../constants/Modal";
 import { useNavigate } from "react-router-dom";
 
@@ -28,9 +28,9 @@ const ScannedResult = () => {
     eccId !== "" &&
     selectedStatus !== "";
 
-  useEffect(() => {
-    dispatch(fetchCylinderStatus());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchCylinderStatus());
+  // }, [dispatch]);
 
   useEffect(() => {
     if (cylinderStatus && cylinderStatus.currentStatus) {
@@ -60,28 +60,28 @@ const ScannedResult = () => {
       setIsModalOpen(true);
     } else if (selectedStatus === "Storage") {
       const storageData = { eccId, startDate: selectedDate, isDisposed };
-      handleSave(storageData);
+      // handleSave(storageData);
     }
   };
 
-  const handleSave = (storageData) => {
-    const actionHistory = {
-      eccId,
-      isDisposed: storageData.isDisposed,
-      cylinderStatus: selectedStatus,
-      startDate: storageData.startDate,
-      action: "saved",
-    };
+  // const handleSave = (storageData) => {
+  //   // const actionHistory = {
+  //   //   eccId,
+  //   //   isDisposed: storageData.isDisposed,
+  //   //   cylinderStatus: selectedStatus,
+  //   //   startDate: storageData.startDate,
+  //   //   action: "saved",
+  //   // };
 
-    console.log("Action history to be saved:", actionHistory);
-    try {
-      localStorage.setItem("actionHistory", JSON.stringify(actionHistory));
-      console.log("Action history saved to localStorage.", actionHistory);
-      navigate("/"); // Navigate to home or relevant page after saving
-    } catch (error) {
-      console.error("Error saving data:", error);
-    }
-  };
+  //   console.log("Action history to be saved:", actionHistory);
+  //   try {
+  //     // localStorage.setItem("actionHistory", JSON.stringify(actionHistory));
+  //     console.log("Action history saved to localStorage.", actionHistory);
+  //     navigate("/"); // Navigate to home or relevant page after saving
+  //   } catch (error) {
+  //     console.error("Error saving data:", error);
+  //   }
+  // };
 
   const handleConfirmDelete = () => {
     handleDeletion();
@@ -121,7 +121,7 @@ const ScannedResult = () => {
     setSelectedStatus(status);
   };
 
-  const handleScannedCodeChange = (code, eccId) => {
+  const handleScannedCodeChange = ( eccId) => {
     setEccId(eccId);
     setIsScannedResultComplete(true);
   };
@@ -138,7 +138,7 @@ const ScannedResult = () => {
         setSelectedStatus={handleStatusChange}
         onScannedCodeChange={handleScannedCodeChange}
       />
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <CylinderInfo
           selectedStatus={selectedStatus}
           setIsComplete={handleStatusCompletion}
@@ -146,7 +146,7 @@ const ScannedResult = () => {
           selectedDate={selectedDate}
           handleSaveStorageData={handleSave}
         />
-      </div>
+      </div> */}
 
       <SaveButton disabled={isSaveButtonDisabled} onClick={handleSubmit} />
 

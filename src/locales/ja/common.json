@@ -1,15 +1,16 @@
 {
-  "installApp": "アプリをインストール",
+  "installApp": "PWA",
   "userDoesNotExist": "ユーザーが存在しません",
   "invalidUserOrPass": "無効なメールアドレスまたはパスワードです。もう一度お試しください。",
   "errorNetwork": "予期しないエラーが発生しました。もう一度お試しください。",
-  "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認して、もう一度お試しください。",
-  "installAppSafari": "ホーム画面に追加",
-  "installAppSafariInstructions": "共有ボタンをタップして、「ホーム画面に追加」を選択してください。",
+  "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認してもう一度お試しください。",
+  "installAppSafari": "ホーム画面にインストール",
+  "installAppSafariInstructions": "1. Safariを開き、このページにアクセスします。\n2. 共有ボタン（上矢印付きの四角）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面でアプリアイコンを見つけてタップして開きます。",
   "home": "ホーム",
   "profile": "プロフィール",
   "scanner": "スキャナー",
   "logout": "ログアウト",
   "backButton": "戻る",
-  "backToScan": "スキャンに戻る"
+  "backToScan": "スキャンに戻る",
+  "recentHistory": "最近の履歴"
 }

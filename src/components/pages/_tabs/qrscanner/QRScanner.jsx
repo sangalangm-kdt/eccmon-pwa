@@ -82,7 +82,8 @@ const QRScanner = () => {
                     // });
                     if(modalOpen === false) {
                       setWillScan(false)
-                      checkSerial({setModalOpen, setActionType, eccId});
+                      checkSerial({setModalOpen, eccId});
+                      setActionType("add")
                     }
                     setScannedData(eccId);
                   } catch (e) {

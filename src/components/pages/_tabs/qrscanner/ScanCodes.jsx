@@ -1,30 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useLocation } from "react-router-dom";
+import {CylinderInfo} from "./components";
 
 const ScanCodes = ({
   setIsComplete,
-  setSelectedStatus,
   onScannedCodeChange,
-
 }) => {
   const location = useLocation();
   const scannedCode = location.state?.data;
   const loading = useSelector((state) => state.scannedCode.loading);
   const eccId = scannedCode?.serialNumber || "";
 
+  // Manage selected status locally
+  const [selectedStatus, setSelectedStatus] = useState(scannedCode?.cylinderStatus || "");
+
   useEffect(() => {
     console.log("Scanned Code:", scannedCode);
-    const isComplete = eccId && scannedCode?.cylinderStatus;
+
+    const isComplete = !!eccId && !!scannedCode?.cylinderStatus;
     setIsComplete(isComplete);
 
     if (onScannedCodeChange) {
       onScannedCodeChange(scannedCode, eccId);
     }
-  }, [scannedCode, setIsComplete, onScannedCodeChange, eccId]);
 
-  console.log(location.state?.data)
+    // Update the selectedStatus based on scannedCode
+    if (scannedCode?.cylinderStatus) {
+      setSelectedStatus(scannedCode.cylinderStatus);
+    }
+  }, [scannedCode, eccId, setIsComplete, onScannedCodeChange]);
+
+  console.log("Current Status:", selectedStatus);
+
   return (
     <div className="flex flex-col py-0 px-4">
       <div className="border p-2 w-full">
@@ -47,12 +56,24 @@ const ScanCodes = ({
             />
           </div>
         </div>
-
         <CylinderStatusSelect
-          onStatusChange={setSelectedStatus}
+          onStatusChange={setSelectedStatus} // Update selectedStatus on change
           scannedCode={scannedCode}
         />
       </div>
+
+      {/* Pass selectedStatus to CylinderInfo */}
+      <div className="mt-4">
+        <CylinderInfo
+        selectedStatus={selectedStatus}
+        setIsComplete={setIsComplete}
+        // isNewScan={!scannedCode?.cylinderStatus}
+        onDateChange={(date) => console.log("Date changed:", date)}
+        onDisposedChange={(disposed) => console.log("Disposed:", disposed)}
+        handleSaveStorageData={(data) => console.log("Save data:", data)}
+      />
+      </div>
+    
     </div>
   );
 };

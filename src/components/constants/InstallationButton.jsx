@@ -18,7 +18,6 @@ const InstallationButton = () => {
     window.addEventListener("appinstalled", handleAppInstalled);
 
     const handleBeforeInstallPrompt = (e) => {
-      // console.log("beforeinstallprompt event fired");
       e.preventDefault();
       setDeferredPrompt(e);
     };
@@ -56,9 +55,9 @@ const InstallationButton = () => {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
-          console.log("User accepted the install prompt");
+          // User accepted the install prompt
         } else {
-          console.log("User dismissed the install prompt");
+          // User dismissed the install prompt
         }
         setDeferredPrompt(null);
       });
@@ -87,6 +86,7 @@ const InstallationButton = () => {
         <button
           onClick={handleSafariInstallClick}
           className={`${modal.modalContent}`}
+          aria-label={t("installApp")}
         >
           {t("installApp")}
         </button>
@@ -98,7 +98,9 @@ const InstallationButton = () => {
               ×
             </span>
             <p className="text-lg font-bold ">{t("installAppSafari")}</p>
-            <p>{t("installAppSafariInstructions")}</p>
+            <p className="ml-2 whitespace-pre-line mt-5">
+              {t("installAppSafariInstructions")}
+            </p>
           </div>
         </div>
       )}
@@ -106,6 +108,7 @@ const InstallationButton = () => {
         <button
           onClick={handleInstallClick}
           className={`${modal.modalContent}`}
+          aria-label={t("installApp")}
         >
           {t("installApp")}
         </button>

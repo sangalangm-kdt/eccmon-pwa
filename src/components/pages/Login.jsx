@@ -139,7 +139,7 @@ const Login = () => {
                 // disabled={loading}
               >
                 {/* {loading ? t("common:loading") : t("login:signIn")} */}
-                Sign In
+                {t("login:signIn")}
               </button>
               <div className={`${inputStyles.container} `}>
                 <label className="text-sm py-2">

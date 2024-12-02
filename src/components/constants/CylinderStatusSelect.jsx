@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCylinderStatus } from "../../features/status/statusSlice";
 import StatusDropdown from "./StatusDropdown";
+import { useCylinderCover } from "../../hooks/cylinderCover";
 
 export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
   const dispatch = useDispatch();
+  const {updateCylinder} = useCylinderCover();
 
   // Get cylinder status options 
   const cylinderStatusOptions =[ "Storage", "Material and Machining","Disassembly", "Grooving", "LMD", "Finishing","Assembly","Mounted","Dismounted","Disposal"
@@ -21,7 +23,7 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
     if (scannedCode?.status) {
       setSelectedStatus(scannedCode.cylinderStatus);
     } else {
-      setSelectedStatus(""); // Reset if no options
+      setSelectedStatus(scannedCode?.status); // Reset if no options
     }
   }, [scannedCode, cylinderStatusOptions]);
 
