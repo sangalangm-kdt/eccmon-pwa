@@ -22,7 +22,7 @@ export const useCylinderCover = () => {
             })
     )
 
-    const checkSerial = async ({setModalOpen, setActionType, ...props}) => {
+    const checkSerial = async ({setModalOpen, ...props}) => {
         await csrf();
 
         axiosLib
