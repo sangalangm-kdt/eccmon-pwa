@@ -68,6 +68,10 @@ function App() {
           element: <ForgotPass />,
         },
         {
+          path: "/engine-info",
+          element: <Dismounting />,
+        },
+        {
           path: "*",
           element: <NotFoundPage />,
         },

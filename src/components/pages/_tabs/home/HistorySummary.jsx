@@ -1,59 +1,59 @@
 /* eslint-disable no-undef */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronIcon } from "../../../assets/icons";
-import { fullscreenClass } from "../../../styles/home";
 import { CloseRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { GoSortDesc, GoSortAsc } from "react-icons/go";
+import dateFormat from "dateformat";
 
 // Custom hook to get the recent history (dummy data for now)
 const useRecentHistory = () => {
-  // const location = useLocation();
-  // const [history, setHistory] = useState([]);
-  // const createDate = (year, month, day) => {
-  //   return new Date(Date.UTC(year, month - 1, day));
-  // };
-  // useEffect(() => {
-  //   const dummyData = [
-  //     { eccId: "T-12345", status: "Storage", date: createDate(2024, 11, 1) },
-  //     {
-  //       eccId: "T-12346",
-  //       status: "Disassembly",
-  //       date: createDate(2024, 11, 2),
-  //     },
-  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
-  //     { eccId: "T-12348", status: "Inspection", date: createDate(2024, 9, 15) },
-  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
-  //     { eccId: "T-12350", status: "Shipping", date: createDate(2024, 11, 12) },
-  //     { eccId: "T-12351", status: "Storage", date: createDate(2024, 10, 5) },
-  //     { eccId: "T-12353", status: "Storage", date: createDate(2024, 11, 16) },
-  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
-  //     { eccId: "T-12348", status: "Inspection", date: createDate(2024, 9, 15) },
-  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
-  //     { eccId: "T-12350", status: "Shipping", date: createDate(2024, 11, 12) },
-  //     { eccId: "T-12351", status: "Storage", date: createDate(2024, 10, 5) },
-  //     { eccId: "T-12353", status: "Storage", date: createDate(2024, 11, 16) },
-  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
-  //     {
-  //       eccId: "T-12348",
-  //       status: "Inspection",
-  //       date: createDate(2024, 12, 15),
-  //     },
-  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
-  //     { eccId: "T-12350", status: "Shipping", date: createDate(2024, 12, 12) },
-  //     { eccId: "T-12351", status: "Storage", date: createDate(2024, 12, 5) },
-  //     { eccId: "T-12353", status: "Storage", date: createDate(2024, 12, 16) },
-  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 12, 1) },
-  //     {
-  //       eccId: "T-12348",
-  //       status: "Inspection",
-  //       date: createDate(2024, 12, 15),
-  //     },
-  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 12, 10) },
-  //   ];
-  //   setHistory(dummyData);
-  // }, [location]);
-  //   return history;
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    const dummyData = [
+      {
+        eccId: "T-12345",
+        status: "Storage",
+        date: "2024-11-01T00:00:00Z",
+      },
+      {
+        eccId: "T-12346",
+        status: "Disassembly",
+        date: "2024-11-02T00:00:00Z",
+      },
+      { eccId: "T-12347", status: "LMD", date: "2024-10-01T00:00:00Z" },
+      {
+        eccId: "T-12348",
+        status: "Inspection",
+        date: "2024-09-15T00:00:00Z",
+      },
+      {
+        eccId: "T-12349",
+        status: "Packing",
+        date: "2024-11-10T00:00:00Z",
+      },
+      {
+        eccId: "T-12350",
+        status: "Shipping",
+        date: "2024-11-12T00:00:00Z",
+      },
+      {
+        eccId: "T-12351",
+        status: "Storage",
+        date: "2024-10-05T00:00:00Z",
+      },
+      {
+        eccId: "T-12353",
+        status: "Storage",
+        date: "2024-11-16T00:00:00Z",
+      },
+      // Add more data as needed...
+    ];
+    setHistory(dummyData);
+  }, []);
+
+  return history;
 };
 
 const HistorySummary = () => {
@@ -69,9 +69,9 @@ const HistorySummary = () => {
   // Sort history by date based on the sortOrder state
   const sortedHistory = [...history].sort((a, b) => {
     if (sortOrder === "asc") {
-      return a.date - b.date; // Ascending
+      return new Date(a.date) - new Date(b.date); // Ascending
     } else {
-      return b.date - a.date; // Descending
+      return new Date(b.date) - new Date(a.date); // Descending
     }
   });
 
@@ -84,17 +84,23 @@ const HistorySummary = () => {
       case "last7":
         const last7Days = new Date();
         last7Days.setDate(currentDate.getDate() - 7);
-        filteredData = filteredData.filter((item) => item.date >= last7Days);
+        filteredData = filteredData.filter(
+          (item) => new Date(item.date) >= last7Days,
+        );
         break;
       case "last30":
         const last30Days = new Date();
         last30Days.setDate(currentDate.getDate() - 30);
-        filteredData = filteredData.filter((item) => item.date >= last30Days);
+        filteredData = filteredData.filter(
+          (item) => new Date(item.date) >= last30Days,
+        );
         break;
       case "custom":
         if (startDate && endDate) {
           filteredData = filteredData.filter(
-            (item) => item.date >= startDate && item.date <= endDate,
+            (item) =>
+              new Date(item.date) >= startDate &&
+              new Date(item.date) <= endDate,
           );
         }
         break;
@@ -104,8 +110,8 @@ const HistorySummary = () => {
         const currentYear = currentDate.getFullYear();
         filteredData = filteredData.filter(
           (item) =>
-            item.date.getMonth() === currentMonth &&
-            item.date.getFullYear() === currentYear,
+            new Date(item.date).getMonth() === currentMonth &&
+            new Date(item.date).getFullYear() === currentYear,
         );
         break;
     }
@@ -138,7 +144,7 @@ const HistorySummary = () => {
   return (
     <div
       className={`w-full p-2 overflow-hidden ${
-        history.length > 5 && !showAll ? "" : fullscreenClass
+        history.length > 5 && !showAll ? "" : "h-full"
       }`}
     >
       {showAll && (
@@ -180,13 +186,9 @@ const HistorySummary = () => {
               </select>
               <button className="py-2" onClick={toggleSortOrder}>
                 {sortOrder === "asc" ? (
-                  <>
-                    <GoSortAsc size={24} />
-                  </>
+                  <GoSortAsc size={24} />
                 ) : (
-                  <>
-                    <GoSortDesc size={24} />
-                  </>
+                  <GoSortDesc size={24} />
                 )}
               </button>
             </div>
@@ -219,11 +221,10 @@ const HistorySummary = () => {
         >
           {filteredHistory.map((item, index) => (
             <li className="py-2 flex flex-col border-t-0.5" key={index}>
-              <p className="p-2 font-semibold">{item.serialNumber}</p>
+              <p className="p-2 font-semibold">{item.eccId}</p>
               <div className="px-2 flex flex-row justify-between text-sm">
                 <p>{item.status}</p>
-
-                <p>{dateFormat(item.createdAt, "mmmm dS, yyyy")}</p>
+                <p>{dateFormat(item.date, "mmmm dS, yyyy")}</p>
               </div>
             </li>
           ))}

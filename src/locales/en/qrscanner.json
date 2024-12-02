@@ -9,5 +9,8 @@
   "assembly": "Assembly",
   "mounted": "Mounted",
   "dismounted": "Dismounted",
-  "disposal": "Disposal"
+  "disposal": "Disposal",
+  "siteName": "Site name",
+  "engineNo": "Engine no.",
+  "operatingHours": "Operating hours"
 }
