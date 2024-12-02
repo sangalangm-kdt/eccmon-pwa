@@ -1,29 +1,21 @@
-// src/components/auth/ProtectedRoute.js
-import React, { Suspense } from "react";
-import { Navigate, Outlet, useNavigate, Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuthentication } from "../../hooks/auth";
 import Preloader from "../constants/preloader/Preloader";
 
 const ProtectedRoute = () => {
-  // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  // console.log(isAuthenticated);
-  const navigate = useNavigate();
+  const { user, loading } = useAuthentication({ middleware: "auth" });
 
-  const { user } = useAuthentication({ middleware: "auth" });
-  // const user = {
-  //   email: "ice@ice.com",
-  // };
-
-  if (!user) {
-    return (
-      <Suspense fallback={<Preloader/>}>
-        <Link to="/login"/>
-      </Suspense>
-    );
+  if (loading) {
+    // Display a preloader while the authentication state is being checked
+    return <Preloader />;
   }
 
-  return !user ? <Link to="/login"/>: <Outlet />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />; // If authenticated, render the child route
 };
 
 export default ProtectedRoute;

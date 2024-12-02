@@ -9,6 +9,8 @@ import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
 import SiteNameOptions from "./components/constants/SiteNameOptions";
 import EngineInfo from "./components/pages/_tabs/qrscanner/status/mountAndDismountInfo/EngineInfo";
+import Mounting from "./components/pages/_tabs/qrscanner/status/Mounting";
+import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
@@ -66,10 +68,6 @@ function App() {
           element: <ForgotPass />,
         },
         {
-          path: "/engine-info",
-          element: <EngineInfo />,
-        },
-        {
           path: "*",
           element: <NotFoundPage />,
         },
@@ -80,16 +78,16 @@ function App() {
   return (
     <div className="App">
       <AuthProvider>
-      <Suspense
-        fallback={
-          <div>
-            {isLoading ? <Preloader /> : null}{" "}
-            {/* Preloader stays for 3 seconds */}
-          </div>
-        }
-      >
-        <RouterProvider router={router} />
-      </Suspense>
+        <Suspense
+          fallback={
+            <div>
+              {isLoading ? <Preloader /> : null}{" "}
+              {/* Preloader stays for 3 seconds */}
+            </div>
+          }
+        >
+          <RouterProvider router={router} />
+        </Suspense>
       </AuthProvider>
     </div>
   );

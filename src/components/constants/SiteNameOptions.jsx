@@ -1,5 +1,5 @@
-import { ArrowBackIosNewRounded } from "@mui/icons-material";
 import React, { useState } from "react";
+import { FaChevronRight } from "react-icons/fa6";
 
 const siteNames = [
   "アサヒビール",
@@ -103,14 +103,25 @@ const SiteNameOptions = () => {
     return acc;
   }, {});
 
+  // Filter grouped names based on search term
   const filteredGroupedNames = Object.keys(groupedNames)
     .sort()
     .reduce((acc, letter) => {
-      acc[letter] = groupedNames[letter].filter((name) =>
+      const filteredNames = groupedNames[letter].filter((name) =>
         name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
+      if (filteredNames.length > 0) {
+        acc[letter] = filteredNames;
+      }
       return acc;
     }, {});
+
+  // If search term exists, flatten the filtered names
+  const searchResults = searchTerm
+    ? siteNames.filter((name) =>
+        name.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+    : [];
 
   const handleSelectName = (name) => {
     setSelectedSite(name);
@@ -120,8 +131,8 @@ const SiteNameOptions = () => {
 
   return (
     <div className="w-full flex flex-col mt-24">
-      {/* Input Field */}
-      <div className="relative">
+      <div className="relative w-full ">
+        <label>Site name</label>
         <input
           className="border w-full p-2 rounded"
           type="text"
@@ -131,10 +142,10 @@ const SiteNameOptions = () => {
           onClick={() => setIsModalOpen(true)}
         />
         <button
-          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+          className="absolute mt-3 right-2 top-1/2 transform -translate-y-1/2"
           onClick={() => setIsModalOpen(true)}
         >
-          <ArrowBackIosNewRounded />
+          <FaChevronRight />
         </button>
       </div>
 
@@ -149,7 +160,6 @@ const SiteNameOptions = () => {
             >
               Close
             </button>
-            <h2 className="text-lg font-bold">Select Site Name</h2>
           </div>
 
           {/* Search Input */}
@@ -165,24 +175,39 @@ const SiteNameOptions = () => {
 
           {/* Vertical List */}
           <div className="flex-1 overflow-y-auto p-4">
-            {Object.keys(filteredGroupedNames).map((letter) => (
-              <div key={letter} className="mb-4">
-                <h3 className="text-lg font-bold">{letter}</h3>
-                <ul className="ml-4 space-y-2">
-                  {filteredGroupedNames[letter].map((name) => (
+            {searchTerm ? (
+              <ul className="space-y-2">
+                {searchResults.length > 0 ? (
+                  searchResults.map((name) => (
                     <li
                       key={name}
-                      className="cursor-pointer hover:bg-gray-100"
+                      className="cursor-pointer hover:bg-cyan-100"
                       onClick={() => handleSelectName(name)}
                     >
                       {name}
                     </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-            {Object.keys(filteredGroupedNames).length === 0 && (
-              <p className="text-gray-500">No results found</p>
+                  ))
+                ) : (
+                  <p className="text-gray-500">No results found</p>
+                )}
+              </ul>
+            ) : (
+              Object.keys(filteredGroupedNames).map((letter) => (
+                <div key={letter} className="mb-4">
+                  <h3 className="text-lg font-bold">{letter}</h3>
+                  <ul className="ml-4 space-y-2">
+                    {filteredGroupedNames[letter].map((name) => (
+                      <li
+                        key={name}
+                        className="cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSelectName(name)}
+                      >
+                        {name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
             )}
           </div>
         </div>
