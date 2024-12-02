@@ -21,9 +21,8 @@ const StatusDropdown = ({
   return (
     <select
       id="status-select"
-      value={selectedValue || ""} // Ensure selectedValue is passed correctly here
+      value={selectedValue ? selectedValue : null} // Ensure selectedValue is passed correctly here
       onChange={(e) => onChange(e.target.value)}
-      disabled={isDisabled} // Now this will only depend on the disabled prop
       className="p-2 border rounded"
     >
       <option value="">{t("qrScanner:selectAStatus")}</option>

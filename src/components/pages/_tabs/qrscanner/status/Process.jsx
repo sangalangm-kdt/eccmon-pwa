@@ -12,15 +12,17 @@ import DateField from "../../../../constants/DateField";
 import ButtonYesOrNo from "../../../../constants/ButtonYesOrNo";
 import Cycle from "../../../../constants/Cycle";
 import OrderNo from "../../../../constants/OrderNo";
+import { useLocationProcess } from "../../../../../hooks/locationProcess";
 
 const Process = ({ selectedProcessorStatus, onDateChange }) => {
   const [selectedProcessor, setSelectedProcessor] = useState("");
   const [completionDate, setCompletionDate] = useState("");
+  const {grooving, groovingMutate, disassembly, disassemblyMutate, lmd, lmdMutate, finishing, finishingMutate, assembly, assemblyMutate} = useLocationProcess();
   const dispatch = useDispatch();
 
   // Accessing process location options and loading state from Redux
-  const { disassembly, assembly, finishing, grooving, lmd, loading, error } =
-    useSelector((state) => state.process);
+  // const { disassembly, assembly, finishing, grooving, lmd, loading, error } =
+  //   useSelector((state) => state.process);
 
   // Fetch process locations on component mount
   useEffect(() => {
@@ -32,13 +34,13 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
   }, [dispatch]);
 
   // Handle loading and error states
-  if (loading) {
-    return <div>Loading process locations...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading process locations...</div>;
+  // }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  // if (error) {
+  //   return <div>Error: {error}</div>;
+  // }
 
   // Render locations based on selectedProcessorStatus
   const renderLocations = () => {
@@ -49,10 +51,10 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={disassembly}
-                onLocationChange={setSelectedProcessor}
-                loading={loading}
-                error={error}
+                options={disassembly?.data.filter((item) => {return item.status !== 2})}
+                // onLocationChange={setSelectedProcessor}
+                // loading={loading}
+                // error={error}
               />
             </div>
             <div>
@@ -77,10 +79,10 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={assembly}
-                onLocationChange={setSelectedProcessor}
-                loading={loading}
-                error={error}
+                options={assembly?.data.filter((item) => {return item.status !== 2})}
+                // onLocationChange={setSelectedProcessor}
+                // loading={loading}
+                // error={error}
               />
             </div>
             <div>
@@ -105,10 +107,10 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={finishing}
-                onLocationChange={setSelectedProcessor}
-                loading={loading}
-                error={error}
+                options={finishing?.data.filter((item) => {return item.status !== 2})}
+                // onLocationChange={setSelectedProcessor}
+                // loading={loading}
+                // error={error}
               />
             </div>
             <div>
@@ -133,10 +135,10 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={grooving}
-                onLocationChange={setSelectedProcessor}
-                loading={loading}
-                error={error}
+                options={grooving?.data.filter((item) => {return item.status !== 2})}
+                // onLocationChange={setSelectedProcessor}
+                // loading={loading}
+                // error={error}
               />
             </div>
             <div>
@@ -161,10 +163,10 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <div>
               <label>Processor</label>
               <LocationDropdown
-                options={lmd}
-                onLocationChange={setSelectedProcessor}
-                loading={loading}
-                error={error}
+                options={lmd?.data.filter((item) => {return item.status !== 2})}
+                // onLocationChange={setSelectedProcessor}
+                // loading={loading}
+                // error={error}
               />
             </div>
             <div>

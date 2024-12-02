@@ -29,9 +29,9 @@ const NavBar = () => {
   //   console.log(user);
   // }, [location]);
 
-  // if (currentPage === "scanned-result") {
-  //   return null;
-  // }
+  if (currentPage === "scanned-result") {
+    return null;
+  }
   return (
     <div className="flex flex-col fixed w-full top-0 z-50">
       <div className={`${languagess.container} ${languagess.languageSwitcher}`}>
@@ -50,7 +50,7 @@ const NavBar = () => {
         </nav>
       ) : (
         <>
-          <nav className={`${navbarStyles.topNavbar} lg:flex md:flex hidden`}>
+          <nav className={`${navbarStyles.topNavbar} sm:flex lg:flex md:flex xs:hidden`}>
             <div className={navbarStyles.navbarContainer}>
               <div className="flex flex-row justify-between m-2">
                 <NavLink to="/">
@@ -106,7 +106,7 @@ const NavBar = () => {
           {user ? (
             <>
               <nav
-                className={`${navbarStyles.bottomNavbar} sm:flex xs:flex lg:hidden md:hidden`}
+                className={`${navbarStyles.bottomNavbar} xs:flex lg:hidden md:hidden`}
               >
                 <div className={navbarStyles.navbarContainer}>
                   <ul className="flex justify-center space-x-8">
@@ -176,7 +176,7 @@ const NavBar = () => {
             </>
           ) : (
             <nav
-              className={`${navbarStyles.topNavbar} sm:flex md:flex lg:hidden`}
+              className={`${navbarStyles.topNavbar} sm:flex md:hidden lg:hidden`}
             >
               <div className={navbarStyles.navbarContainer}>
                 <div className="flex flex-row justify-between m-2">

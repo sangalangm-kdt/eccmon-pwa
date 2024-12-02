@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+/* eslint-disable no-undef */
+import { useState } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { fullscreenClass } from "../../../styles/home";
 import { CloseRounded } from "@mui/icons-material";
@@ -8,55 +8,52 @@ import { GoSortDesc, GoSortAsc } from "react-icons/go";
 
 // Custom hook to get the recent history (dummy data for now)
 const useRecentHistory = () => {
-  const location = useLocation();
-  const [history, setHistory] = useState([]);
-
-  const createDate = (year, month, day) => {
-    return new Date(Date.UTC(year, month - 1, day));
-  };
-
-  useEffect(() => {
-    const dummyData = [
-      { eccId: "T-12345", status: "Storage", date: createDate(2024, 11, 1) },
-      {
-        eccId: "T-12346",
-        status: "Disassembly",
-        date: createDate(2024, 11, 2),
-      },
-      { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
-      { eccId: "T-12348", status: "Inspection", date: createDate(2024, 9, 15) },
-      { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
-      { eccId: "T-12350", status: "Shipping", date: createDate(2024, 11, 12) },
-      { eccId: "T-12351", status: "Storage", date: createDate(2024, 10, 5) },
-      { eccId: "T-12353", status: "Storage", date: createDate(2024, 11, 16) },
-      { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
-      { eccId: "T-12348", status: "Inspection", date: createDate(2024, 9, 15) },
-      { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
-      { eccId: "T-12350", status: "Shipping", date: createDate(2024, 11, 12) },
-      { eccId: "T-12351", status: "Storage", date: createDate(2024, 10, 5) },
-      { eccId: "T-12353", status: "Storage", date: createDate(2024, 11, 16) },
-      { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
-      {
-        eccId: "T-12348",
-        status: "Inspection",
-        date: createDate(2024, 12, 15),
-      },
-      { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
-      { eccId: "T-12350", status: "Shipping", date: createDate(2024, 12, 12) },
-      { eccId: "T-12351", status: "Storage", date: createDate(2024, 12, 5) },
-      { eccId: "T-12353", status: "Storage", date: createDate(2024, 12, 16) },
-      { eccId: "T-12347", status: "LMD", date: createDate(2024, 12, 1) },
-      {
-        eccId: "T-12348",
-        status: "Inspection",
-        date: createDate(2024, 12, 15),
-      },
-      { eccId: "T-12349", status: "Packing", date: createDate(2024, 12, 10) },
-    ];
-    setHistory(dummyData);
-  }, [location]);
-
-  return history;
+  // const location = useLocation();
+  // const [history, setHistory] = useState([]);
+  // const createDate = (year, month, day) => {
+  //   return new Date(Date.UTC(year, month - 1, day));
+  // };
+  // useEffect(() => {
+  //   const dummyData = [
+  //     { eccId: "T-12345", status: "Storage", date: createDate(2024, 11, 1) },
+  //     {
+  //       eccId: "T-12346",
+  //       status: "Disassembly",
+  //       date: createDate(2024, 11, 2),
+  //     },
+  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
+  //     { eccId: "T-12348", status: "Inspection", date: createDate(2024, 9, 15) },
+  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
+  //     { eccId: "T-12350", status: "Shipping", date: createDate(2024, 11, 12) },
+  //     { eccId: "T-12351", status: "Storage", date: createDate(2024, 10, 5) },
+  //     { eccId: "T-12353", status: "Storage", date: createDate(2024, 11, 16) },
+  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
+  //     { eccId: "T-12348", status: "Inspection", date: createDate(2024, 9, 15) },
+  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
+  //     { eccId: "T-12350", status: "Shipping", date: createDate(2024, 11, 12) },
+  //     { eccId: "T-12351", status: "Storage", date: createDate(2024, 10, 5) },
+  //     { eccId: "T-12353", status: "Storage", date: createDate(2024, 11, 16) },
+  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 10, 1) },
+  //     {
+  //       eccId: "T-12348",
+  //       status: "Inspection",
+  //       date: createDate(2024, 12, 15),
+  //     },
+  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 11, 10) },
+  //     { eccId: "T-12350", status: "Shipping", date: createDate(2024, 12, 12) },
+  //     { eccId: "T-12351", status: "Storage", date: createDate(2024, 12, 5) },
+  //     { eccId: "T-12353", status: "Storage", date: createDate(2024, 12, 16) },
+  //     { eccId: "T-12347", status: "LMD", date: createDate(2024, 12, 1) },
+  //     {
+  //       eccId: "T-12348",
+  //       status: "Inspection",
+  //       date: createDate(2024, 12, 15),
+  //     },
+  //     { eccId: "T-12349", status: "Packing", date: createDate(2024, 12, 10) },
+  //   ];
+  //   setHistory(dummyData);
+  // }, [location]);
+  //   return history;
 };
 
 const HistorySummary = () => {
@@ -222,14 +219,11 @@ const HistorySummary = () => {
         >
           {filteredHistory.map((item, index) => (
             <li className="py-2 flex flex-col border-t-0.5" key={index}>
-              <p className="p-2 font-semibold">{item.eccId}</p>
+              <p className="p-2 font-semibold">{item.serialNumber}</p>
               <div className="px-2 flex flex-row justify-between text-sm">
                 <p>{item.status}</p>
-                <p>
-                  {new Date(item.date).toLocaleDateString("en-US", {
-                    timeZone: "UTC",
-                  })}
-                </p>
+
+                <p>{dateFormat(item.createdAt, "mmmm dS, yyyy")}</p>
               </div>
             </li>
           ))}

@@ -1,1 +1,1 @@
-export const containerClass = "flex flex-col px-4";
+export const containerClass = "flex flex-col";

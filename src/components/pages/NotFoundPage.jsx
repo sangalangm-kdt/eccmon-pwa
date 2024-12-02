@@ -1,8 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LinkBroken from "../assets/svg/link-broken.svg";
+import { useAuthentication } from "../../hooks/auth";
 
 const NotFoundPage = () => {
+  const { user } = useAuthentication();
+
   return (
     <div className="h-screen flex flex-col items-center justify-center ">
       <div className=" flex flex-col items-center justify-center">

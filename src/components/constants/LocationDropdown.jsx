@@ -30,8 +30,8 @@ const StorageLocationDropdown = ({
         <option value="">Select a location</option>
         {options.length > 0 ? (
           options.map((option) => (
-            <option key={option.id} value={option.locationName}>
-              {option.locationName}
+            <option key={option.id} value={option.name}>
+              {option.name}
             </option>
           ))
         ) : (

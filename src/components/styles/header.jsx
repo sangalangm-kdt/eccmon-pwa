@@ -2,9 +2,9 @@ const commonContainerStyles =
   "flex min-w-full lg:relative lg:bottom-0 xs:fixed xs:bottom-0 xs:left-1/2 xs:transform xs:-translate-x-1/2 md:relative md:bottom-auto sm:relative sm:bottom-auto";
 
 const languagess = {
-  container: `${commonContainerStyles} m-0 p-1 flex items-center justify-center xs:bg-white lg:bg-languageSwitchBackground `, // Centering the container
-  languageSwitcher: `border-b-2 p-1 focus:outline-none text-gray-800 hover:underline lg:relative lg:top-0 lg:right-0 md:relative md:top-0 md:right-0 sm:relative sm:top-0 sm:left-1/2 sm:transform sm:-translate-x-1/2 xs:bottom-0 xs:justify-center xs:items-center`,
-  installationButton: ` lg:relative lg:mr-3 xs:fixed xs:top-2 xs:left-1/2 xs:transform xs:-translate-x-1/2`, // Adjusted positioning for the installation button
+  container: `${commonContainerStyles} m-0 p-1 flex items-center justify-center z-50 xs:bg-white lg:bg-languageSwitchBackground`, // Added z-index
+  languageSwitcher: `border-b-2 p-1 z-0 focus:outline-none text-gray-800 hover:underline lg:relative lg:top-0 lg:right-0 md:relative md:top-0 md:right-0 sm:relative sm:top-0 sm:left-1/2 sm:transform sm:-translate-x-1/2 xs:bottom-0 xs:justify-center xs:items-center`,
+  installationButton: `lg:relative lg:mr-3 xs:fixed xs:top-2 xs:left-1/2 xs:transform xs:-translate-x-1/2`,
 };
 
 const navbarStyles = {

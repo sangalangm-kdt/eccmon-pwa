@@ -5,7 +5,7 @@ import axiosLib from "../lib/axios";
 
 
 export const useAuthentication = ({middleware, redirectIfAuthenticated} = {}) => {
-    const navigation = useNavigate();
+    // const navigation = useNavigate();
 
     const {
         data : user,
@@ -17,8 +17,8 @@ export const useAuthentication = ({middleware, redirectIfAuthenticated} = {}) =>
             .then((res) => res.data)
             .catch((error) => {
                 if (error.response.status !== 409) throw error;
-
-                navigation("/login");
+                
+                // navigation("/login");
             })
     )
 
@@ -30,7 +30,10 @@ export const useAuthentication = ({middleware, redirectIfAuthenticated} = {}) =>
 
         axiosLib
             .post("/login", props)
-            .then(() => mutate())
+            .then((res) => {
+                console.log(res);
+                mutate()
+            })
             .catch((error) => {
                 if (error.response.status !== 409) throw error;
             })
@@ -46,7 +49,7 @@ export const useAuthentication = ({middleware, redirectIfAuthenticated} = {}) =>
 
     useEffect(() => {
         if(middleware === "guest" && redirectIfAuthenticated && user)
-            navigation(redirectIfAuthenticated);
+            // navigation(redirectIfAuthenticated);
 
         if(middleware === "auth" && error) logout();
     }, [user, error]);
