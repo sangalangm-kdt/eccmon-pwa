@@ -1,51 +1,51 @@
-/* eslint-disable no-undef */
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { CylinderInfo } from "./components";
+import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";
 
-const ScanCodes = ({ setIsComplete, onScannedCodeChange }) => {
+const ScanCodes = ({
+  setIsComplete,
+  setSelectedStatus,
+  onScannedCodeChange,
+}) => {
   const location = useLocation();
   const { t } = useTranslation();
   const scannedCode = location.state?.data;
-  const loading = useSelector((state) => state.scannedCode.loading);
   const eccId = scannedCode?.eccId || "";
 
   useEffect(() => {
-    console.log("Scanned Code:", scannedCode);
-
     const isComplete = !!eccId && !!scannedCode?.cylinderStatus;
     setIsComplete(isComplete);
 
     if (onScannedCodeChange) {
-      onScannedCodeChange(scannedCode, eccId);
+      onScannedCodeChange(eccId);
     }
 
-    // Update the selectedStatus based on scannedCode
     if (scannedCode?.cylinderStatus) {
       setSelectedStatus(scannedCode.cylinderStatus);
     }
-  }, [scannedCode, eccId, setIsComplete, onScannedCodeChange]);
-
-  console.log("Current Status:", selectedStatus);
+  }, [
+    scannedCode,
+    eccId,
+    setIsComplete,
+    onScannedCodeChange,
+    setSelectedStatus,
+  ]);
 
   return (
     <div className="flex flex-col py-0 px-4">
       <div className="border p-2 w-full">
-        <h1 className="font-bold leading-loose ">
+        <h1 className="font-bold leading-loose">
           {t("qrScanner:cylinderInformation")}
         </h1>
-        {loading && <p>Loading...</p>}
-        {!loading && !eccId && (
+        {!eccId && (
           <p className="text-red-500 text-sm mb-7">
             {t("qrScanner:noCylinderDataScanned")}
           </p>
         )}
         <div className="mt-4 text-lg w-full">
           <div className="mt-2 w-full">
-            <label className="block text-sm  text-primaryText font-semibold">
+            <label className="block text-sm text-primaryText font-semibold">
               {t("qrScanner:serialNumber")}
             </label>
             <input
@@ -58,22 +58,10 @@ const ScanCodes = ({ setIsComplete, onScannedCodeChange }) => {
           </div>
         </div>
         <CylinderStatusSelect
-          onStatusChange={setSelectedStatus} // Update selectedStatus on change
+          onStatusChange={setSelectedStatus}
           scannedCode={scannedCode}
         />
       </div>
-
-      {/* Pass selectedStatus to CylinderInfo */}
-      {/* <div className="mt-4">
-        <CylinderInfo
-          selectedStatus={selectedStatus}
-          setIsComplete={setIsComplete}
-          // isNewScan={!scannedCode?.cylinderStatus}
-          onDateChange={(date) => console.log("Date changed:", date)}
-          onDisposedChange={(disposed) => console.log("Disposed:", disposed)}
-          handleSaveStorageData={(data) => console.log("Save data:", data)}
-        />
-      </div> */}
     </div>
   );
 };
