@@ -1,12 +1,10 @@
-/* eslint-disable no-undef */
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { GoSortDesc, GoSortAsc } from "react-icons/go";
-import dateFormat from "dateformat";
+import { sortHistoryByDate, filterHistory, formatDate } from "../../../utils"; // Import utility functions
 
-// Custom hook to get the recent history (dummy data for now)
 const useRecentHistory = () => {
   const [history, setHistory] = useState([]);
 
@@ -60,66 +58,20 @@ const HistorySummary = () => {
   const history = useRecentHistory();
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("thisMonth");
-  const [sortOrder, setSortOrder] = useState("asc"); // Track sorting order
+  const [sortOrder, setSortOrder] = useState("asc");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const { t } = useTranslation("common");
 
-  // Sort history by date based on the sortOrder state
-  const sortedHistory = [...history].sort((a, b) => {
-    if (sortOrder === "asc") {
-      return new Date(a.date) - new Date(b.date); // Ascending
-    } else {
-      return new Date(b.date) - new Date(a.date); // Descending
-    }
-  });
-
-  // Filter history based on selected filter
-  const filterHistory = () => {
-    const currentDate = new Date();
-    let filteredData = [...sortedHistory];
-
-    switch (filter) {
-      case "last7":
-        const last7Days = new Date();
-        last7Days.setDate(currentDate.getDate() - 7);
-        filteredData = filteredData.filter(
-          (item) => new Date(item.date) >= last7Days,
-        );
-        break;
-      case "last30":
-        const last30Days = new Date();
-        last30Days.setDate(currentDate.getDate() - 30);
-        filteredData = filteredData.filter(
-          (item) => new Date(item.date) >= last30Days,
-        );
-        break;
-      case "custom":
-        if (startDate && endDate) {
-          filteredData = filteredData.filter(
-            (item) =>
-              new Date(item.date) >= startDate &&
-              new Date(item.date) <= endDate,
-          );
-        }
-        break;
-      default:
-        // Default to current month
-        const currentMonth = currentDate.getMonth();
-        const currentYear = currentDate.getFullYear();
-        filteredData = filteredData.filter(
-          (item) =>
-            new Date(item.date).getMonth() === currentMonth &&
-            new Date(item.date).getFullYear() === currentYear,
-        );
-        break;
-    }
-
-    return filteredData;
-  };
-
-  const filteredHistory = filterHistory();
+  // Use utility functions to sort and filter history
+  const sortedHistory = sortHistoryByDate(history, sortOrder);
+  const filteredHistory = filterHistory(
+    sortedHistory,
+    filter,
+    startDate,
+    endDate,
+  );
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
@@ -127,8 +79,8 @@ const HistorySummary = () => {
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
-    const selectedDate = new Date(value); // Create a Date object from the selected date string
-    selectedDate.setHours(0, 0, 0, 0); // Set the time to midnight to avoid timezone shifting
+    const selectedDate = new Date(value);
+    selectedDate.setHours(0, 0, 0, 0);
 
     if (name === "startDate") {
       setStartDate(selectedDate);
@@ -224,7 +176,7 @@ const HistorySummary = () => {
               <p className="p-2 font-semibold">{item.eccId}</p>
               <div className="px-2 flex flex-row justify-between text-sm">
                 <p>{item.status}</p>
-                <p>{dateFormat(item.date, "mmmm dS, yyyy")}</p>
+                <p>{formatDate(item.date)}</p> {/* Use formatDate here */}
               </div>
             </li>
           ))}

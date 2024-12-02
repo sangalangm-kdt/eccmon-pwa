@@ -3,9 +3,9 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import loginEN from "./locales/en/login";
 import loginJA from "./locales/ja/login.json";
-import commonEN from "./locales/en/common.json";
+import commonEN from "./locales/en/common";
 import commonJA from "./locales/ja/common.json";
-import qrScannerEN from "./locales/en/qrscanner.json";
+import qrScannerEN from "./locales/en/qrscanner";
 import qrScannerJA from "./locales/ja/qrscanner.json";
 
 const resources = {
