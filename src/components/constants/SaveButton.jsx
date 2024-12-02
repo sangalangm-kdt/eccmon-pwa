@@ -4,7 +4,7 @@ const SaveButton = ({ disabled, onClick }) => {
   return (
     <div className="fixed inset-x-0 bottom-0">
       <div className="w-full flex justify-center items-center p-4 bg-gray-100">
-        <button type="button" className="">
+        <button type="submit" className=" ">
           Update
         </button>
         <button

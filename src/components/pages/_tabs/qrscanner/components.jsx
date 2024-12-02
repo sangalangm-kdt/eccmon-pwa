@@ -8,8 +8,11 @@ import { containerClass } from "../../../styles/components";
 import { useDispatch } from "react-redux";
 import { setPage } from "../../../../features/page/pageSlice";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import AddIcon from "../../../constants/AddIcon";
 
 export const QrHeader = () => {
+  const { t } = useTranslation("common");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleBack = () => {
@@ -18,7 +21,7 @@ export const QrHeader = () => {
   };
   return (
     <div className="flex flex-col w-full py-8 px-6" onClick={handleBack}>
-      <label>Back</label>
+      <label>{t("backButton")}</label>
     </div>
   );
 };
@@ -95,7 +98,9 @@ export const CylinderInfo = ({
       default:
         return (
           <div className={containerClass}>
-            <div className="border p-2">Please select a valid status</div>
+            <div className="border p-2">
+              <AddIcon />
+            </div>
           </div>
         );
     }

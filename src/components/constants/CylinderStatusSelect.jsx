@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCylinderStatus } from "../../features/status/statusSlice";
 import StatusDropdown from "./StatusDropdown";
+import { useTranslation } from "react-i18next";
 
 export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   // Get cylinder status options from Redux store
   const cylinderStatusOptions = useSelector(
@@ -42,16 +44,18 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
 
   return (
     <div className="flex flex-col w-full">
-      <label htmlFor="status-select">Status</label>
+      <label htmlFor="status-select" className="text-sm mt-2 font-semibold">
+        {t("qrScanner:status")}
+      </label>
       <StatusDropdown
         options={cylinderStatusOptions}
         selectedValue={selectedStatus} // Use local state for selected status
         onChange={handleSelectChange}
         disabled={isLoading} // Disable only if loading
       />
-      {!hasOptions && !isLoading && (
+      {/* {!hasOptions && !isLoading && (
         <p className="text-gray-500">No options available</p> // Optional message
-      )}
+      )} */}
     </div>
   );
 };

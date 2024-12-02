@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -7,6 +7,8 @@ import NavBar from "./components/pages/_tabs/NavBar";
 import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
 import AddInfo from "./components/pages/_tabs/qrscanner/AddInfo";
 import Preloader from "./components/constants/preloader/Preloader";
+import SiteNameOptions from "./components/constants/SiteNameOptions";
+import EngineInfo from "./components/pages/_tabs/qrscanner/status/mountAndDismountInfo/EngineInfo";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
@@ -28,6 +30,16 @@ const Layout = () => {
 };
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Make sure preloader stays for at least 3 seconds
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // 3 seconds
+
+    return () => clearTimeout(timer); // Cleanup on unmount
+  }, []);
   const router = createBrowserRouter([
     {
       element: <Layout />,
@@ -54,6 +66,10 @@ function App() {
           element: <ForgotPass />,
         },
         {
+          path: "/engine-info",
+          element: <EngineInfo />,
+        },
+        {
           path: "*",
           element: <NotFoundPage />,
         },
@@ -67,7 +83,8 @@ function App() {
       <Suspense
         fallback={
           <div>
-            <Preloader />
+            {isLoading ? <Preloader /> : null}{" "}
+            {/* Preloader stays for 3 seconds */}
           </div>
         }
       >

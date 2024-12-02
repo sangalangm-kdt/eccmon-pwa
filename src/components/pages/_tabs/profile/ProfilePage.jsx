@@ -13,9 +13,9 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="lg:mt-28 lg:p-4">
+    <div className="lg:mt-28 lg:p-8">
       <button onClick={handleLogout} className="text-black">
-        {/* {t("common:logout")} */} LOGOUT
+        {t("common:logout")}
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const StatusDropdown = ({
   options = [],
@@ -7,11 +8,12 @@ const StatusDropdown = ({
   disabled,
 }) => {
   const isDisabled = disabled; // Change logic to only depend on the disabled prop
+  const { t } = useTranslation("qrScanner");
 
   if (options.length === 0) {
     return (
       <select id="status-select" disabled className="p-2 border rounded">
-        <option value="">No options available</option>
+        <option value="">{t("qrScanner:noOptionsAvailable")}</option>
       </select>
     );
   }
@@ -24,7 +26,7 @@ const StatusDropdown = ({
       disabled={isDisabled} // Now this will only depend on the disabled prop
       className="p-2 border rounded"
     >
-      <option value="">Select a status</option>
+      <option value="">{t("qrScanner:selectAStatus")}</option>
       {options.map((option) => (
         <option key={option.id} value={option.cylinderStatus}>
           {option.cylinderStatus}

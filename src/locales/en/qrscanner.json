@@ -1,1 +1,19 @@
-{ "barcodePlaceCode": "Place the code inside the frame", "select": "" }
+{
+  "barcodePlaceCode": "Place the code inside the frame",
+  "storage": "Storage",
+  "materialAndMachining": "Material and Machining",
+  "disassembly": "Disassembly",
+  "grooving": "Grooving",
+  "lmd": "LMD",
+  "finishing": "Finishing",
+  "assembly": "Assembly",
+  "mounted": "Mounted",
+  "dismounted": "Dismounted",
+  "disposal": "Disposal",
+  "selectAStatus": "Select a status",
+  "noOptionsAvailable": "No options available",
+  "status": "Status",
+  "cylinderInformation": "Cylinder Information",
+  "noCylinderDataScanned": "No cylinder data scanned.",
+  "serialNumber": "Serial number"
+}

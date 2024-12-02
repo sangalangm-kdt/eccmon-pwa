@@ -15,8 +15,11 @@ import { Logo, LogoText } from "../assets/Logo";
 import { useAuthentication } from "../../hooks/auth";
 
 const Login = () => {
-  const { t, i18n } = useTranslation(["login", "common"]);
-  const {login} = useAuthentication({middleware: "guest", redirectIfAuthenticated: "/"});
+  const { t } = useTranslation(["login", "common"]);
+  const { login } = useAuthentication({
+    middleware: "guest",
+    redirectIfAuthenticated: "/",
+  });
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -138,11 +141,10 @@ const Login = () => {
                 className={`${buttonStyles.primary} ${buttonStyles.base}`}
                 // disabled={loading}
               >
-                {/* {loading ? t("common:loading") : t("login:signIn")} */}
-                Sign In
+                {t("login:signIn")}
               </button>
               <div className={`${inputStyles.container} `}>
-                <label className="text-sm py-2">
+                <label className="text-base py-2 text-center">
                   {t("login:noAccount")}
                   <a href="blank" className="font-semibold hover:underline">
                     {t("login:requestNow")}
