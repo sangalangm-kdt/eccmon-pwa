@@ -62,30 +62,32 @@ const QRScanner = () => {
                       return;
                     }
 
-                    dispatch(setScannedCode(jsonData));
-                    dispatch(checkScannedCode(jsonData.eccId)).then(
-                      (action) => {
-                        if (checkScannedCode.fulfilled.match(action)) {
-                          const { exists, entry } = action.payload;
-                          console.log("API Response:", exists); // Log the entire payload for inspection
-                          console.log("Scanned Code:", jsonData); // Log the scanned code
+                    // dispatch(setScannedCode(jsonData));
+                    // dispatch(checkScannedCode(jsonData.eccId)).then((action) => {
+                    //   if (checkScannedCode.fulfilled.match(action)) {
+                    //     const { exists, entry } = action.payload;
+                    //     console.log("API Response:", exists); // Log the entire payload for inspection
+                    //     console.log("Scanned Code:", jsonData); // Log the scanned code
 
-                          if (exists) {
-                            // Entry exists, update logic
-                            setActionType("update");
-                            setModalOpen(true);
-                          } else {
-                            // Entry does not exist, add logic
-                            setActionType("add");
-                            setModalOpen(true);
-                          }
-                        } else {
-                          setError("Failed to check scanned code.");
-                        }
-                      },
-                    );
-
-                    setScannedData(jsonData);
+                    //     if (exists) {
+                    //       // Entry exists, update logic
+                    //       setActionType("update");
+                    //       setModalOpen(true);
+                    //     } else {
+                    //       // Entry does not exist, add logic
+                    //       setActionType("add");
+                    //       setModalOpen(true);
+                    //     }
+                    //   } else {
+                    //     setError("Failed to check scanned code.");
+                    //   }
+                    // });
+                    if (modalOpen === false) {
+                      setWillScan(false);
+                      checkSerial({ setModalOpen, eccId });
+                      setActionType("add");
+                    }
+                    setScannedData(eccId);
                   } catch (e) {
                     setError("Invalid JSON data. Please check the QR code.");
                   }
