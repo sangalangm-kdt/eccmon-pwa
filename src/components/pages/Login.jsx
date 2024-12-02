@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import useTranslationUtils from "../utils/useTranslationUtils"; // Import the utility
 import {
   buttonStyles,
   container,
@@ -17,7 +16,6 @@ import { useAuthentication } from "../../hooks/auth";
 
 const Login = () => {
   const { t } = useTranslation(["login", "common"]);
-  const utils = useTranslationUtils("login"); // Use the utility with the 'login' namespace
   const { login } = useAuthentication({
     middleware: "guest",
     redirectIfAuthenticated: "/",
@@ -27,6 +25,44 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState("");
   const [status, setStatus] = useState(null);
+
+  // const dispatch = useDispatch();
+  // const navigate = useNavigate();
+  // const loading = useSelector((state) => state.auth.loading);
+  // const authError = useSelector((state) => state.auth.error);
+
+  // UseEffect to update error state when authError changes
+  // useEffect(() => {
+  //   if (authError) {
+  //     setError(authError);
+  //   }
+  // }, [authError]);
+
+  // // UseEffect to update error message when language changes
+  // useEffect(() => {
+  //   if (authError) {
+  //     setError(t(authError));
+  //   }
+  // }, [i18n.language, authError, t]);
+
+  // Handle form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError(""); // Clear previous errors
+
+  //   try {
+  //     const response = await dispatch(login({ email, password, t })).unwrap();
+
+  //     if (response && response.error) {
+  //       setError(response.error);
+  //     } else {
+  //       navigate("/");
+  //     }
+  //   } catch (error) {
+  //     setError(authError || error.message || t("common:anErrorOccured"));
+  //     console.error("Login error:", error);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +87,7 @@ const Login = () => {
           </div>
           <div className={inputStyles.container}>
             <h2 className={`${textStyles.heading} ${margin.responsive}`}>
-              {utils.Login} {/* Access translations directly */}
+              {t("login:login")}
             </h2>
           </div>
 
@@ -59,8 +95,7 @@ const Login = () => {
             <div
               className={`text-center text-base text-primaryText xs:text-sm xs:p-3 lg:text-base lg:p-0`}
             >
-              <label>{utils.LoginDetails}</label>{" "}
-              {/* Access translation directly */}
+              <label>{t("login:loginDetails")}</label>
             </div>
             <div>
               {errors && (
@@ -72,48 +107,47 @@ const Login = () => {
               )}
             </div>
             <div className={inputStyles.inputContainer}>
-              <label className={inputStyles.label}>{utils.Email}</label>{" "}
-              {/* Access translation directly */}
+              <label className={inputStyles.label}>{t("login:email")}</label>
               <input
                 type="email"
                 name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={inputStyles.input}
-                placeholder={utils.EnterEmail}
+                placeholder={t("login:enterEmail")}
                 autoComplete="off"
               />
             </div>
             <div className={inputStyles.inputContainer}>
-              <label className={inputStyles.label}>{utils.Password}</label>{" "}
-              {/* Access translation directly */}
+              <label className={inputStyles.label}>{t("login:password")}</label>
               <input
                 type="password"
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={inputStyles.input}
-                placeholder={utils.EnterPassword}
+                placeholder={t("login:enterPassword")}
                 autoComplete="off"
               />
             </div>
             <div className={`${inputStyles.container} ${link.color}`}>
               <a href="/forgotpass" className="hover:underline">
-                {utils.ForgotPassword} {/* Access translation directly */}
+                {t("login:forgotPassword")}
               </a>
             </div>
             <div className={inputStyles.inputContainer}>
               <button
                 type="submit"
                 className={`${buttonStyles.primary} ${buttonStyles.base}`}
+                // disabled={loading}
               >
-                {utils.SignIn} {/* Access translation directly */}
+                {t("login:signIn")}
               </button>
               <div className={`${inputStyles.container} `}>
                 <label className="text-base py-2 text-center">
-                  {utils.NoAccount} {/* Access translation directly */}
+                  {t("login:noAccount")}
                   <a href="blank" className="font-semibold hover:underline">
-                    {utils.RequestNow} {/* Access translation directly */}
+                    {t("login:requestNow")}
                   </a>
                 </label>
               </div>

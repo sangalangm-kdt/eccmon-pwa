@@ -1,62 +1,65 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 import { useEffect } from "react";
 import axiosLib from "../lib/axios";
 
+export const useAuthentication = ({
+  middleware,
+  redirectIfAuthenticated,
+} = {}) => {
+  // const navigation = useNavigate();
 
-export const useAuthentication = ({middleware, redirectIfAuthenticated} = {}) => {
-    // const navigation = useNavigate();
+  const {
+    data: user,
+    error,
+    mutate,
+  } = useSWR("/api/user", () =>
+    axiosLib
+      .get("/api/user")
+      .then((res) => res.data)
+      .catch((error) => {
+        if (error.response.status !== 409) throw error;
 
-    const {
-        data : user,
-        error,
-        mutate,
-    } = useSWR("/api/user", () => 
-        axiosLib
-            .get("/api/user")
-            .then((res) => res.data)
-            .catch((error) => {
-                if (error.response.status !== 409) throw error;
-                
-                // navigation("/login");
-            })
-    )
+        // navigation("/login");
+      }),
+  );
 
-    const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
-    
-    const login = async ({setStatus, ...props}) => {
-        await csrf();
-        setStatus(null);
+  const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
 
-        axiosLib
-            .post("/login", props)
-            .then((res) => {
-                console.log(res);
-                mutate()
-            })
-            .catch((error) => {
-                if (error.response.status !== 409) throw error;
-            })
+  const login = async ({ setStatus, ...props }) => {
+    await csrf();
+    setStatus(null);
+
+    axiosLib
+      .post("/login", props)
+      .then((res) => {
+        console.log(res);
+        mutate();
+      })
+      .catch((error) => {
+        if (error.response.status !== 409) throw error;
+      });
+  };
+
+  const logout = async () => {
+    if (!error) {
+      await axiosLib.post("/logout").then(() => mutate());
     }
 
-    const logout = async () => {
-        if (!error) {
-            await axiosLib.post("/logout").then(() => mutate());
-        }
+    window.location.pathname = "login";
+  };
 
-        window.location.pathname = "login";
-    }
+  useEffect(() => {
+    if (middleware === "guest" && redirectIfAuthenticated && user)
+      if (middleware === "auth" && error)
+        // navigation(redirectIfAuthenticated);
 
-    useEffect(() => {
-        if(middleware === "guest" && redirectIfAuthenticated && user)
-            // navigation(redirectIfAuthenticated);
+        logout();
+  }, [user, error]);
 
-        if(middleware === "auth" && error) logout();
-    }, [user, error]);
-
-    return {
-        user,
-        login,
-        logout,
-    }
-}
+  return {
+    user,
+    login,
+    logout,
+  };
+};

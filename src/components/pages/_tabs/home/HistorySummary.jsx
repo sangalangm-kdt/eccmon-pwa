@@ -3,7 +3,11 @@ import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { GoSortDesc, GoSortAsc } from "react-icons/go";
-import { sortHistoryByDate, filterHistory, formatDate } from "../../../utils"; // Import utility functions
+import {
+  sortHistoryByDate,
+  filterHistory,
+  formatDate,
+} from "../../../utils/utils";
 
 const useRecentHistory = () => {
   const [history, setHistory] = useState([]);
