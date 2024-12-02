@@ -64,7 +64,7 @@ const ScanCodes = ({ setIsComplete, onScannedCodeChange }) => {
       </div>
 
       {/* Pass selectedStatus to CylinderInfo */}
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <CylinderInfo
           selectedStatus={selectedStatus}
           setIsComplete={setIsComplete}
@@ -73,7 +73,7 @@ const ScanCodes = ({ setIsComplete, onScannedCodeChange }) => {
           onDisposedChange={(disposed) => console.log("Disposed:", disposed)}
           handleSaveStorageData={(data) => console.log("Save data:", data)}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

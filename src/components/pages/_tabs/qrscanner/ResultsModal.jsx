@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 const ResultsModal = ({ isOpen, onClose, onConfirm, actionType }) => {
-  console.log(actionType);
   const message = "The cylinder cover does not exist. Do you want to add it?";
 
   // Handle Escape key to close modal

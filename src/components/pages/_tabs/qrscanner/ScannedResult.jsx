@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 // import { fetchCylinderStatus } from "../../../../features/status/statusSlice";
 import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
-import {QrHeader } from "./components";
+import { CylinderInfo, QrHeader } from "./components";
 import Modal from "../../../constants/Modal";
 import { useNavigate } from "react-router-dom";
 
@@ -121,7 +121,7 @@ const ScannedResult = () => {
     setSelectedStatus(status);
   };
 
-  const handleScannedCodeChange = ( eccId) => {
+  const handleScannedCodeChange = (eccId) => {
     setEccId(eccId);
     setIsScannedResultComplete(true);
   };
@@ -138,15 +138,15 @@ const ScannedResult = () => {
         setSelectedStatus={handleStatusChange}
         onScannedCodeChange={handleScannedCodeChange}
       />
-      {/* <div className="mt-4">
+      <div className="mt-4">
         <CylinderInfo
           selectedStatus={selectedStatus}
           setIsComplete={handleStatusCompletion}
           onDateChange={setSelectedDate}
           selectedDate={selectedDate}
-          handleSaveStorageData={handleSave}
+          // handleSaveStorageData={handleSave}
         />
-      </div> */}
+      </div>
 
       <SaveButton disabled={isSaveButtonDisabled} onClick={handleSubmit} />
 
