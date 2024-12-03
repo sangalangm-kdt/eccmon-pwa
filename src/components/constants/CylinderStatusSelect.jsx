@@ -1,13 +1,12 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import { fetchCylinderStatus } from "../../features/status/statusSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCylinderStatus } from "../../features/status/statusSlice";
 import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
 import { useCylinderCover } from "../../hooks/cylinderCover";
 
 export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const { updateCylinder } = useCylinderCover();
 
@@ -63,6 +62,7 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
       {!hasOptions && (
         <p className="text-gray-500">No options available</p> // Optional message
       )}{" "}
+      */}
     </div>
   );
 };
