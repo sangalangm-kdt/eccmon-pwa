@@ -1,5 +1,5 @@
 export const fullscreenClass =
-  "fixed top-0 left-0 w-full h-full z-50 bg-white overscroll-auto";
+  "fixed top-0 left-0 w-full h-full  bg-white overscroll-auto";
 
 // For Slide-Up Effect
 export const slideUpClass = "transform translate-y-[0%]";

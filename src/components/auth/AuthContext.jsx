@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 import { useAuthentication } from "../../hooks/auth";
-import axios from "axios";
+// import axios from "axios";
 
 const AuthContext = createContext();
 

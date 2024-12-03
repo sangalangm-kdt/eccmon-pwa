@@ -3,8 +3,9 @@ import SiteNameOptions from "../../../../../constants/SiteNameOptions";
 
 const EngineInfo = () => {
   return (
-    <div className="flex flex-col p-4">
-      <div className="flex w-full">
+    <div className="flex flex-col p-2">
+      <div className="flex flex-col w-full">
+        <label>Engine information</label>
         <SiteNameOptions />
       </div>
       <div>

@@ -34,9 +34,13 @@ const NavBar = () => {
   }
   return (
     <div className="flex flex-col fixed w-full top-0 z-50">
-      <div className={`${languagess.container} ${languagess.languageSwitcher}`}>
-        <LanguageSwitcher />
-      </div>
+      {!user && (
+        <div
+          className={`${languagess.container} ${languagess.languageSwitcher}`}
+        >
+          <LanguageSwitcher />
+        </div>
+      )}
       {currentPage === "login" ? (
         <nav className={`${navbarStyles.topNavbar}`}>
           <div className={navbarStyles.navbarContainer}>
@@ -50,7 +54,9 @@ const NavBar = () => {
         </nav>
       ) : (
         <>
-          <nav className={`${navbarStyles.topNavbar} sm:flex lg:flex md:flex xs:hidden`}>
+          <nav
+            className={`${navbarStyles.topNavbar} sm:flex lg:flex md:flex xs:hidden`}
+          >
             <div className={navbarStyles.navbarContainer}>
               <div className="flex flex-row justify-between m-2">
                 <NavLink to="/">

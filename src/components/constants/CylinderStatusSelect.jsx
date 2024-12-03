@@ -13,15 +13,15 @@ export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const cylinderStatusOptions = [
     { id: 1, status: "Storage" },
-    { id: 2, status: "Material and Machining" },
-    { id: 3, status: "Disassembly" },
-    { id: 4, status: "Grooving" },
-    { id: 5, status: "LMD" },
-    { id: 6, status: "Finishing" },
-    { id: 7, status: "Assembly" },
-    { id: 8, status: "Mounted" },
-    { id: 9, status: "Dismounted" },
-    { id: 10, status: "Disposal" },
+    { id: 2, status: "Disassembly" },
+    { id: 3, status: "Grooving" },
+    { id: 4, status: "LMD" },
+    { id: 5, status: "Finishing" },
+    { id: 6, status: "Assembly" },
+    { id: 7, status: "Mounted" },
+    { id: 8, status: "Dismounted" },
+    { id: 9, status: "Disposal" },
+    { id: 10, status: "Disassembly" },
   ];
 
   // const isLoading ? === "loading"; // Check if loading

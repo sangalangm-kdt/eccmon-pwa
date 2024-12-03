@@ -4,12 +4,12 @@ import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 
 const Mounting = () => {
   return (
-    <div className="flex flex-col">
-      <div className="w-full border p-2  mb-4">
+    <div className="flex flex-col h-screen">
+      <div className="w-full border">
         <EngineInfo />
       </div>
 
-      <div className="w-full border p-2">
+      <div className="w-full border mt-2">
         <AdditionalInfo />
       </div>
     </div>

@@ -5,7 +5,7 @@ import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 const Dismounting = () => {
   return (
     <div className="flex flex-col">
-      <div className="w-full border p-2  mb-4">
+      <div className="w-full border p-2">
         <EngineInfo />
       </div>
 

@@ -7,16 +7,13 @@ import {
 } from "@zxing/library";
 import { useDispatch } from "react-redux";
 import { setPage } from "../../../../features/page/pageSlice";
-// import {
-//   setScannedCode,
-//   checkScannedCode,
-// } from "../../../../features/scannedResult/scannedCodeSlice";
 import { useNavigate } from "react-router-dom";
 import qrScannerStyles from "../../../styles/main";
 import { useTranslation } from "react-i18next";
 import { ArrowBackIcon } from "../../../assets/icons";
 import Storage from "./status/Storage";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
+import Preloader from "../../../constants/preloader/Preloader";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -35,7 +32,7 @@ const QRScanner = () => {
     const codeReader = new BrowserMultiFormatReader();
     let selectedDeviceId;
 
-    if (willScan === true) {
+    if (willScan) {
       codeReader
         .listVideoInputDevices()
         .then((videoInputDevices) => {
@@ -55,39 +52,25 @@ const QRScanner = () => {
                     const jsonData = JSON.parse(result.text);
                     const eccId = jsonData.eccId;
 
-                    if (!jsonData.eccId) {
+                    if (!eccId) {
                       setError(
                         "The scanned code does not contain a valid code.",
                       );
                       return;
                     }
 
-                    // dispatch(setScannedCode(jsonData));
-                    // dispatch(checkScannedCode(jsonData.eccId)).then((action) => {
-                    //   if (checkScannedCode.fulfilled.match(action)) {
-                    //     const { exists, entry } = action.payload;
-                    //     console.log("API Response:", exists); // Log the entire payload for inspection
-                    //     console.log("Scanned Code:", jsonData); // Log the scanned code
-
-                    //     if (exists) {
-                    //       // Entry exists, update logic
-                    //       setActionType("update");
-                    //       setModalOpen(true);
-                    //     } else {
-                    //       // Entry does not exist, add logic
-                    //       setActionType("add");
-                    //       setModalOpen(true);
-                    //     }
-                    //   } else {
-                    //     setError("Failed to check scanned code.");
-                    //   }
-                    // });
-                    if (modalOpen === false) {
+                    if (!modalOpen) {
                       setWillScan(false);
                       checkSerial({ setModalOpen, eccId });
                       setActionType("add");
                     }
                     setScannedData(eccId);
+
+                    const track =
+                      videoRef.current?.srcObject?.getVideoTracks()[0];
+                    if (track) {
+                      track.stop();
+                    }
                   } catch (e) {
                     setError("Invalid JSON data. Please check the QR code.");
                   }
@@ -117,19 +100,22 @@ const QRScanner = () => {
         });
     }
 
-    return () => codeReader.reset();
-  }, []);
+    return () => {
+      codeReader.reset();
+    };
+  }, [checkSerial, modalOpen, willScan]);
 
   useEffect(() => {
     dispatch(setPage("qrscanner"));
   }, [dispatch]);
 
   const handleBack = () => {
-    navigate("/"); // Navigate to the home page
+    setWillScan(false); // Stop scanning on navigation
+    navigate("/");
   };
 
   const toggleTorch = () => {
-    const track = videoRef.current.srcObject?.getVideoTracks()[0];
+    const track = videoRef.current?.srcObject?.getVideoTracks()[0];
     if (track) {
       const capabilities = track.getCapabilities();
       if (capabilities.torch) {
@@ -217,34 +203,12 @@ const QRScanner = () => {
           onClick={toggleTorch}
         >
           {torchOn ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
+              {/* Torch On Icon */}
             </svg>
           ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
+              {/* Torch Off Icon */}
             </svg>
           )}
         </button>
@@ -252,7 +216,6 @@ const QRScanner = () => {
 
       {renderComponentBasedOnStatus()}
 
-      {/* Render the confirmation modal */}
       <ResultsModal
         isOpen={modalOpen}
         onClose={handleClose}

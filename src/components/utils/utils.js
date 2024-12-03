@@ -16,6 +16,13 @@ export const filterHistory = (history, filter, startDate, endDate) => {
   const currentDate = new Date();
   let filteredData = history;
 
+  // Ensure the comparison dates are set to the start of the day (midnight)
+  const clearTime = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0); // Strip out time for date comparison
+    return d;
+  };
+
   switch (filter) {
     case "last7":
       const last7Days = new Date();
@@ -33,10 +40,14 @@ export const filterHistory = (history, filter, startDate, endDate) => {
       break;
     case "custom":
       if (startDate && endDate) {
+        // Compare against the cleared startDate and endDate to avoid time issues
+        const start = clearTime(startDate);
+        const end = clearTime(endDate);
+
         filteredData = filteredData?.filter(
           (item) =>
-            new Date(item.createdAt) >= startDate &&
-            new Date(item.createdAt) <= endDate,
+            new Date(item.createdAt) >= start &&
+            new Date(item.createdAt) <= end,
         );
       }
       break;

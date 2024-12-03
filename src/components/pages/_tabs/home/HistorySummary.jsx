@@ -9,68 +9,20 @@ import {
   formatDate,
 } from "../../../utils/utils";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
-
-// const useRecentHistory = () => {
-//   const [history, setHistory] = useState([]);
-
-//   useEffect(() => {
-//     const dummyData = [
-//       {
-//         eccId: "T-12345",
-//         status: "Storage",
-//         date: "2024-11-01T00:00:00Z",
-//       },
-//       {
-//         eccId: "T-12346",
-//         status: "Disassembly",
-//         date: "2024-11-02T00:00:00Z",
-//       },
-//       { eccId: "T-12347", status: "LMD", date: "2024-10-01T00:00:00Z" },
-//       {
-//         eccId: "T-12348",
-//         status: "Inspection",
-//         date: "2024-09-15T00:00:00Z",
-//       },
-//       {
-//         eccId: "T-12349",
-//         status: "Packing",
-//         date: "2024-11-10T00:00:00Z",
-//       },
-//       {
-//         eccId: "T-12350",
-//         status: "Shipping",
-//         date: "2024-11-12T00:00:00Z",
-//       },
-//       {
-//         eccId: "T-12351",
-//         status: "Storage",
-//         date: "2024-10-05T00:00:00Z",
-//       },
-//       {
-//         eccId: "T-12353",
-//         status: "Storage",
-//         date: "2024-11-16T00:00:00Z",
-//       },
-//       // Add more data as needed...
-//     ];
-//     setHistory(dummyData);
-//   }, []);
-
-//   return history;
-// };
+import { fullscreenClass } from "../../../styles/home";
 
 const HistorySummary = () => {
-  const history = useCylinderCover().cylinder?.data;
+  const history = useCylinderCover().cylinder?.data; // Get history data
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("thisMonth");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortOrder, setSortOrder] = useState("desc"); // Start with descending order to show recent first
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const { t } = useTranslation("common");
 
   // Use utility functions to sort and filter history
-  const sortedHistory = sortHistoryByDate(history, sortOrder);
+  const sortedHistory = sortHistoryByDate(history, sortOrder); // Ensure history is sorted
   const filteredHistory = filterHistory(
     sortedHistory,
     filter,
@@ -78,10 +30,12 @@ const HistorySummary = () => {
     endDate,
   );
 
+  // Handle filter change (like "This Month", "Last 7 Days", "Last 30 Days", etc.)
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
 
+  // Handle start and end date changes for the custom filter
   const handleDateChange = (e) => {
     const { name, value } = e.target;
     const selectedDate = new Date(value);
@@ -94,6 +48,7 @@ const HistorySummary = () => {
     }
   };
 
+  // Toggle sorting order between ascending and descending
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
@@ -101,7 +56,7 @@ const HistorySummary = () => {
   return (
     <div
       className={`w-full p-2 overflow-hidden ${
-        history?.length > 5 && !showAll ? "" : "h-full"
+        history?.length > 5 && !showAll ? "" : fullscreenClass
       }`}
     >
       {showAll && (
@@ -114,7 +69,7 @@ const HistorySummary = () => {
       )}
 
       <div className="py-4 px-0">
-        <div className="flex flex-row justify-between px-1 mb-2">
+        <div className="flex flex-row justify-between px-1 pb-2 border-b-0.5">
           <label className="px-1 py-2 font-semibold">
             {t("common:recentHistory")}
           </label>
@@ -129,7 +84,7 @@ const HistorySummary = () => {
         </div>
 
         {showAll && (
-          <div className="mb-4">
+          <div className="mb-4 mt-2">
             <div className="flex justify-between mb-2 mr-2">
               <select
                 className="px-2 py-1 border ml-2"
@@ -177,11 +132,11 @@ const HistorySummary = () => {
           } ${showAll ? "overflow-y-auto" : ""}`}
         >
           {filteredHistory?.map((item, index) => (
-            <li className="py-2 flex flex-col border-t-0.5" key={index}>
+            <li className="py-2 flex flex-col" key={index}>
               <p className="p-2 font-semibold">{item.serialNumber}</p>
               <div className="px-2 flex flex-row justify-between text-sm">
                 <p>{item.status}</p>
-                <p>{formatDate(item.createadAt)}</p> {/* Use formatDate here */}
+                <p>{formatDate(item.createdAt)}</p>
               </div>
             </li>
           ))}

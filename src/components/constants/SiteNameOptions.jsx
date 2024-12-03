@@ -130,11 +130,11 @@ const SiteNameOptions = () => {
   };
 
   return (
-    <div className="w-full flex flex-col mt-24">
+    <div className="w-full flex flex-col mt-2 ">
       <div className="relative w-full ">
         <label>Site name</label>
         <input
-          className="border w-full p-2 rounded"
+          className="border w-full py-2 px-2 rounded"
           type="text"
           placeholder="Select a site"
           value={selectedSite}
