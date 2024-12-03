@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchCylinderStatus } from "../../features/status/statusSlice";
+// import { useSelector, useDispatch } from "react-redux";
+// import { fetchCylinderStatus } from "../../features/status/statusSlice";
 import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
 import { useCylinderCover } from "../../hooks/cylinderCover";
 
 export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { t } = useTranslation();
   const { updateCylinder } = useCylinderCover();
 
   // Get cylinder status options
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const cylinderStatusOptions = [
-    {"id" : 1, "status" : "Storage"},
-    {"id" : 2, "status" : "Material and Machining"},
-    {"id" : 3, "status" : "Disassembly"},
-    {"id" : 4, "status" : "Grooving"},
-    {"id" : 5, "status" : "LMD"},
-    {"id" : 6, "status" : "Finishing"},
-    {"id" : 7, "status" : "Assembly"},
-    {"id" : 8, "status" : "Mounted"},
-    {"id" : 9, "status" : "Dismounted"},
-    {"id" : 10, "status" : "Disposal"},
+    { id: 1, status: "Storage" },
+    { id: 2, status: "Material and Machining" },
+    { id: 3, status: "Disassembly" },
+    { id: 4, status: "Grooving" },
+    { id: 5, status: "LMD" },
+    { id: 6, status: "Finishing" },
+    { id: 7, status: "Assembly" },
+    { id: 8, status: "Mounted" },
+    { id: 9, status: "Dismounted" },
+    { id: 10, status: "Disposal" },
   ];
+
   // const status = useSelector((state) => state.status.status);
   console.log("statuss:", cylinderStatusOptions);
 
@@ -33,9 +34,9 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
   // Sync selected status with existing cylinder status from scanned code
   useEffect(() => {
     if (scannedCode?.status) {
-      setSelectedStatus(scannedCode.cylinderStatus);
+      setSelectedStatus(scannedCode.status);
     } else {
-      setSelectedStatus(scannedCode?.status); // Reset if no options
+      setSelectedStatus(""); // Reset if no options
     }
   }, [scannedCode, cylinderStatusOptions]);
 
@@ -61,8 +62,7 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
       />
       {!hasOptions && (
         <p className="text-gray-500">No options available</p> // Optional message
-      )}{" "}
-      */}
+      )}
     </div>
   );
 };

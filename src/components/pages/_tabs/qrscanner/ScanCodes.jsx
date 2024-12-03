@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const ScanCodes = ({
   setIsComplete,
@@ -11,9 +12,9 @@ const ScanCodes = ({
   const location = useLocation();
   const { t } = useTranslation();
   const scannedCode = location.state?.data;
-  const loading = useSelector((state) => state.scannedCode.loading);
+  // const loading = useSelector((state) => state.scannedCode.loading);
   const eccId = scannedCode?.serialNumber || "";
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  // const [selectedStatus, setSelectedStatus] = useState(null);
 
   useEffect(() => {
     console.log("Scanned Code:", scannedCode);

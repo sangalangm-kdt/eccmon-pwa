@@ -50,13 +50,18 @@ const ScannedResult = () => {
     setIsScannedResultComplete(true);
   };
 
+  const handleStatusChange = (status) => {
+    console.log("New status selected", status);
+    setSelectedStatus(status);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col w-full">
       <QrHeader />
       <ScanCodes
         setIsComplete={setIsScannedResultComplete}
         setSelectedStatus={handleStatusChange}
-        selectedStatus={selectedStatus}
+        // selectedStatus={selectedStatus}
         onScannedCodeChange={handleScannedCodeChange}
       />
       <div className="mt-4">

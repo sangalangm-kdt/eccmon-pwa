@@ -7,10 +7,10 @@ import {
 } from "@zxing/library";
 import { useDispatch } from "react-redux";
 import { setPage } from "../../../../features/page/pageSlice";
-import {
-  setScannedCode,
-  checkScannedCode,
-} from "../../../../features/scannedResult/scannedCodeSlice";
+// import {
+//   setScannedCode,
+//   checkScannedCode,
+// } from "../../../../features/scannedResult/scannedCodeSlice";
 import { useNavigate } from "react-router-dom";
 import qrScannerStyles from "../../../styles/main";
 import { useTranslation } from "react-i18next";

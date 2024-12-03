@@ -7,15 +7,10 @@ const ProtectedRoute = () => {
   const { user, loading } = useAuthentication({ middleware: "auth" });
 
   if (loading) {
-    // Display a preloader while the authentication state is being checked
     return <Preloader />;
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <Outlet />; // If authenticated, render the child route
+  return !user ? <Navigate to="/login" /> : <Outlet />;
 };
 
 export default ProtectedRoute;
