@@ -13,7 +13,7 @@ const StatusDropdown = ({
   if (options.length === 0) {
     return (
       <select id="status-select" disabled className="p-2 border rounded">
-        <option value="">{t("qrScanner:noOptionsAvailable")}</option>
+        <option value="sdfff">{t("qrScanner:noOptionsAvailable")}</option>
       </select>
     );
   }
@@ -25,10 +25,10 @@ const StatusDropdown = ({
       onChange={(e) => onChange(e.target.value)}
       className="p-2 border rounded"
     >
-      <option value="">{t("qrScanner:selectAStatus")}</option>
+      <option value="None" disabled>{t("qrScanner:selectAStatus")}</option>
       {options.map((option) => (
-        <option key={option.id} value={option.cylinderStatus}>
-          {option.cylinderStatus}
+        <option key={option.id} value={option.status}>
+          {option.status}
         </option>
       ))}
     </select>

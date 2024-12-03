@@ -136,6 +136,7 @@ const ScannedResult = () => {
       <ScanCodes
         setIsComplete={setIsScannedResultComplete}
         setSelectedStatus={handleStatusChange}
+        selectedStatus={selectedStatus}
         onScannedCodeChange={handleScannedCodeChange}
       />
       <div className="mt-4">

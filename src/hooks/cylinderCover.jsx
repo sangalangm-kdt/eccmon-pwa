@@ -28,7 +28,7 @@ export const useCylinderCover = () => {
         axiosLib
             .get(`/api/cylinder/${props.eccId}`)
             .then((res) => {
-                console.log(res)
+                console.log(res.data)
                 if(res.data.data) {
                     const data = {
                         serialNumber : props.eccId,
@@ -36,7 +36,7 @@ export const useCylinderCover = () => {
                     }
 
                     addHistory(data)
-                    navigate("/scanned-result", {state : res.data})
+                    navigate("/scanned-result", {replace: true, state : res.data})
                 } else {
                     setModalOpen(true);
                 }

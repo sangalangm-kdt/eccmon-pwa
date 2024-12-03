@@ -11,12 +11,13 @@ const ScanCodes = ({ setIsComplete, onScannedCodeChange }) => {
   const { t } = useTranslation();
   const scannedCode = location.state?.data;
   const loading = useSelector((state) => state.scannedCode.loading);
-  const eccId = scannedCode?.eccId || "";
+  const eccId = scannedCode?.serialNumber || "";
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   useEffect(() => {
     console.log("Scanned Code:", scannedCode);
 
-    const isComplete = !!eccId && !!scannedCode?.cylinderStatus;
+    const isComplete = !!eccId && !!scannedCode?.status;
     setIsComplete(isComplete);
 
     if (onScannedCodeChange) {
@@ -24,8 +25,8 @@ const ScanCodes = ({ setIsComplete, onScannedCodeChange }) => {
     }
 
     // Update the selectedStatus based on scannedCode
-    if (scannedCode?.cylinderStatus) {
-      setSelectedStatus(scannedCode.cylinderStatus);
+    if (scannedCode?.status) {
+      setSelectedStatus(scannedCode.status);
     }
   }, [scannedCode, eccId, setIsComplete, onScannedCodeChange]);
 

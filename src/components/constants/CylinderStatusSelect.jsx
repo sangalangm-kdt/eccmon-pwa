@@ -14,16 +14,16 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
   // Get cylinder status options
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const cylinderStatusOptions = [
-    "Storage",
-    "Material and Machining",
-    "Disassembly",
-    "Grooving",
-    "LMD",
-    "Finishing",
-    "Assembly",
-    "Mounted",
-    "Dismounted",
-    "Disposal",
+    {"id" : 1, "status" : "Storage"},
+    {"id" : 2, "status" : "Material and Machining"},
+    {"id" : 3, "status" : "Disassembly"},
+    {"id" : 4, "status" : "Grooving"},
+    {"id" : 5, "status" : "LMD"},
+    {"id" : 6, "status" : "Finishing"},
+    {"id" : 7, "status" : "Assembly"},
+    {"id" : 8, "status" : "Mounted"},
+    {"id" : 9, "status" : "Dismounted"},
+    {"id" : 10, "status" : "Disposal"},
   ];
   // const status = useSelector((state) => state.status.status);
   console.log("statuss:", cylinderStatusOptions);

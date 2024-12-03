@@ -178,10 +178,10 @@ const HistorySummary = () => {
         >
           {filteredHistory?.map((item, index) => (
             <li className="py-2 flex flex-col border-t-0.5" key={index}>
-              <p className="p-2 font-semibold">{item.eccId}</p>
+              <p className="p-2 font-semibold">{item.serialNumber}</p>
               <div className="px-2 flex flex-row justify-between text-sm">
                 <p>{item.status}</p>
-                <p>{formatDate(item.date)}</p> {/* Use formatDate here */}
+                <p>{formatDate(item.createadAt)}</p> {/* Use formatDate here */}
               </div>
             </li>
           ))}
