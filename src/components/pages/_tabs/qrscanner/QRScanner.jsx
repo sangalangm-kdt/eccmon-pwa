@@ -117,7 +117,7 @@ const QRScanner = () => {
         });
     }
 
-    // return () => codeReader.reset();
+    return () => codeReader.reset();
   }, []);
 
   useEffect(() => {

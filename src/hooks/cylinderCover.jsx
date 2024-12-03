@@ -35,7 +35,7 @@ export const useCylinderCover = () => {
                         status : 1,
                     }
 
-                    addHistory(data)
+                    // addHistory(data)
                     navigate("/scanned-result", {replace: true, state : res.data})
                 } else {
                     setModalOpen(true);

@@ -3,11 +3,9 @@ import { useTranslation } from "react-i18next";
 
 const StatusDropdown = ({
   options = [],
-  selectedValue,
-  onChange,
-  disabled,
+  selectedStatus,
+  setSelectedStatus,
 }) => {
-  const isDisabled = disabled; // Change logic to only depend on the disabled prop
   const { t } = useTranslation("qrScanner");
 
   if (options.length === 0) {
@@ -21,8 +19,8 @@ const StatusDropdown = ({
   return (
     <select
       id="status-select"
-      value={selectedValue ? selectedValue : null} // Ensure selectedValue is passed correctly here
-      onChange={(e) => onChange(e.target.value)}
+      value={selectedStatus} // Ensure selectedValue is passed correctly here
+      onChange={(e) => setSelectedStatus(e.target.value)}
       className="p-2 border rounded"
     >
       <option value="None" disabled>{t("qrScanner:selectAStatus")}</option>

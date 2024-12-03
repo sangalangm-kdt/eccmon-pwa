@@ -5,10 +5,9 @@ import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
 import { useCylinderCover } from "../../hooks/cylinderCover";
 
-export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
+export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
   // const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { updateCylinder } = useCylinderCover();
 
   // Get cylinder status options
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -25,26 +24,6 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
     { id: 10, status: "Disposal" },
   ];
 
-  // const status = useSelector((state) => state.status.status);
-  console.log("statuss:", cylinderStatusOptions);
-
-  // Local state for selected status
-  const [selectedStatus, setSelectedStatus] = useState("");
-
-  // Sync selected status with existing cylinder status from scanned code
-  useEffect(() => {
-    if (scannedCode?.status) {
-      setSelectedStatus(scannedCode.status);
-    } else {
-      setSelectedStatus(""); // Reset if no options
-    }
-  }, [scannedCode, cylinderStatusOptions]);
-
-  const handleSelectChange = (newStatus) => {
-    setSelectedStatus(newStatus); // Update local state
-    onStatusChange(newStatus); // Pass selected status to parent component
-  };
-
   // const isLoading ? === "loading"; // Check if loading
   const hasOptions = cylinderStatusOptions.length > 0; // Check if options are available
 
@@ -55,9 +34,8 @@ export const CylinderStatusSelect = ({ onStatusChange, scannedCode }) => {
       </label>
       <StatusDropdown
         options={cylinderStatusOptions}
-        selectedValue={selectedStatus} // Use local state for selected status
-        onChange={handleSelectChange}
-        scannedCode={scannedCode}
+        selectedStatus={selectedStatus} // Use local state for selected status
+        setSelectedStatus={setSelectedStatus}
         // disabled={isLoading} // Disable only if loading
       />
       {!hasOptions && (
