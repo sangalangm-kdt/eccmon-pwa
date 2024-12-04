@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import axiosLib from "../lib/axios";
 import { useNavigate } from "react-router-dom";
 import { useScanHistory } from "./scanHistory";

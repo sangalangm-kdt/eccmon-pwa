@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import DateField from "../../../../constants/DateField";
-import { useDispatch, useSelector } from "react-redux";
+
 import LocationDropdown from "../../../../constants/LocationDropdown";
-import { fetchProcessStorageLocation } from "../../../../../features/process/processLocationSlice";
+
 import { useLocationProcess } from "../../../../../hooks/locationProcess";
 
 const Storage = ({ setIsComplete, onDateChange }) => {
@@ -38,7 +39,7 @@ const Storage = ({ setIsComplete, onDateChange }) => {
   //     setIsComplete(startDate !== "" && newLocation !== ""); // Check if both date and location are filled
   //   }
   // };
-  const {storage, storageMutate} = useLocationProcess();
+  const { storage, storageMutate } = useLocationProcess();
 
   return (
     <div className="flex flex-col">
@@ -58,7 +59,9 @@ const Storage = ({ setIsComplete, onDateChange }) => {
           <label>Location site</label>
           <div className="border rounded">
             <LocationDropdown
-              options={storage?.data.filter((item) => {return item.status !== 2})}
+              options={storage?.data.filter((item) => {
+                return item.status !== 2;
+              })}
             />
           </div>
           <div>

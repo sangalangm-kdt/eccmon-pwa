@@ -1,7 +1,8 @@
 //color styles
 
 const colors = {
-  primary: "bg-primary hover:bg-tertiary focus:ring-blue-200",
+  primary:
+    "bg-cyan-to-blue hover:bg-tertiary focus:ring-blue-200 active:bg-cyan-to-blue-active",
   secondary: "bg-gray-500",
   primaryText: "text-white",
 };
@@ -24,7 +25,7 @@ const margin = {
   small: "m-1",
   medium: "m-2",
   large: "m-4",
-  responsive: "m-2 sm:m-4 md:m-6 lg:m-8",
+  responsive: "m-2 sm:m-4 md:m-6 ",
 };
 
 //size
@@ -37,14 +38,14 @@ const sizes = {
 
 //button styles
 const buttonStyles = {
-  base: `rounded-md transition focus:outline-none focus:ring cursor-pointer ${sizes.responsive}`,
+  base: `rounded-md transition-all duration-300 ease-in-out transform active:scale-95 cursor-pointer ${sizes.responsive}`,
   primary: `${colors.primary} ${padding.responsive} ${colors.primaryText} font-semibold py-2 px-4 w-50`,
   installPWAButton: ` border border-1 border-primary  ${padding.responsive} hover:bg-primary hover:text-white text-primary font-semibold py-2 px-4 w-50`,
 };
 
 //text styles
 const textStyles = {
-  heading: `text-xl font-bold text-primaryText sm:text-xl md:text-2xl lg:text-3xl`,
+  heading: `text-xl font-bold text-primaryText `,
   subheading: "text-sm font-semibold",
   paragraph: `${sizes.responsive} text-gray-700`,
 };
@@ -63,7 +64,7 @@ const backgroundDrop = {
 
 //container
 const container = {
-  containerDiv: `flex flex-col items-center justify-center w-full h-128 bg-white rounded-md border shadow-md p-12 xs:border-none xs:shadow-none sm:border sm:shadow-md`,
+  containerDiv: `flex flex-col items-center justify-center w-full  bg-white rounded-lg border shadow-md p-12 xs:border-none xs:shadow-none sm:border sm:shadow-md`,
 };
 
 //links

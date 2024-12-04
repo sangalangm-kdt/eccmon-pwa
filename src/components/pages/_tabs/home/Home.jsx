@@ -10,7 +10,7 @@ const Home = () => {
         <InventorySummary />
       </div>
 
-      <div className="flex w-full h-full xs:w-96 xs:h-96 lg:w-full  bg-white rounded-lg">
+      <div className="flex w-full h-full xs:w-full xs:h-full  lg:w-full xs:px-1  bg-white rounded-lg">
         <HistorySummary />
       </div>
     </div>

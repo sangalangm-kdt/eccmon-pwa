@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import ResultsModal from "./ResultsModal"; // Your modal component
 import {
@@ -13,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { ArrowBackIcon } from "../../../assets/icons";
 import Storage from "./status/Storage";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
-import Preloader from "../../../constants/preloader/Preloader";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);

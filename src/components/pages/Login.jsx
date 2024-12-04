@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   buttonStyles,
   container,
   inputStyles,
   link,
-  margin,
-  padding,
-  textStyles,
   width,
 } from "../styles/main";
 
@@ -26,44 +24,6 @@ const Login = () => {
   const [errors, setErrors] = useState("");
   const [status, setStatus] = useState(null);
 
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // const loading = useSelector((state) => state.auth.loading);
-  // const authError = useSelector((state) => state.auth.error);
-
-  // UseEffect to update error state when authError changes
-  // useEffect(() => {
-  //   if (authError) {
-  //     setError(authError);
-  //   }
-  // }, [authError]);
-
-  // // UseEffect to update error message when language changes
-  // useEffect(() => {
-  //   if (authError) {
-  //     setError(t(authError));
-  //   }
-  // }, [i18n.language, authError, t]);
-
-  // Handle form submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError(""); // Clear previous errors
-
-  //   try {
-  //     const response = await dispatch(login({ email, password, t })).unwrap();
-
-  //     if (response && response.error) {
-  //       setError(response.error);
-  //     } else {
-  //       navigate("/");
-  //     }
-  //   } catch (error) {
-  //     setError(authError || error.message || t("common:anErrorOccured"));
-  //     console.error("Login error:", error);
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors("");
@@ -79,21 +39,23 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center w-full min-h-screen lg:bg-secondary xs:bg-none ">
-      <div className="flex w-full max-w-md items-center sm:p-6 md:p-2 lg:p-0">
+      <div className="flex w-full max-w-md items-center sm:p-6 md:p-2 ">
         <div className={container.containerDiv}>
-          <div className={`${padding.responsive} ${inputStyles.container}`}>
+          <div className="flex justify-center items-center w-52 xs:mb-8 lg:mt-4">
             <Logo />
             <LogoText />
           </div>
           <div className={inputStyles.container}>
-            <h2 className={`${textStyles.heading} ${margin.responsive}`}>
+            <h2
+              className={`text-3xl text-primaryText font-bold mb-8 xs:text-2xl`}
+            >
               {t("login:login")}
             </h2>
           </div>
 
           <form className={width.responsive} onSubmit={handleSubmit}>
             <div
-              className={`text-center text-base text-primaryText xs:text-sm xs:p-3 lg:text-base lg:p-0`}
+              className={`text-center text-base text-primaryText xs:text-sm xs:p-3 lg:text-md lg:mb-0`}
             >
               <label>{t("login:loginDetails")}</label>
             </div>
@@ -143,8 +105,8 @@ const Login = () => {
               >
                 {t("login:signIn")}
               </button>
-              <div className={`${inputStyles.container} `}>
-                <label className="text-base py-2 text-center">
+              <div className={`${inputStyles.container}`}>
+                <label className="text-sm py-2 text-center">
                   {t("login:noAccount")}
                   <a href="blank" className="font-semibold hover:underline">
                     {t("login:requestNow")}

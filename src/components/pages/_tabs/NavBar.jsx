@@ -125,7 +125,7 @@ const NavBar = () => {
                         }
                       >
                         {({ isActive }) => (
-                          <div className="flex flex-col items-center font-medium text-sm">
+                          <div className="flex flex-col items-center font-medium text-tiny">
                             <HomeIcon
                               className={`${navbarStyles.iconContainer} ${
                                 isActive ? "fill-primary" : ""
@@ -165,7 +165,7 @@ const NavBar = () => {
                         }
                       >
                         {({ isActive }) => (
-                          <div className="flex flex-col items-center font-medium text-sm">
+                          <div className="flex flex-col items-center font-medium text-tiny">
                             <ProfileIcon
                               className={`${navbarStyles.iconContainer} ${
                                 isActive ? "fill-primary" : ""

@@ -94,11 +94,11 @@ const InstallationButton = () => {
       {isSafari && showModal && (
         <div className={`${modal.modalBackground}`} onClick={handleModalClick}>
           <div className={`${modal.modalContainer}`}>
-            <span className={`${modal.exitButton}`} onClick={closeModal}>
+            {/* <span className={`${modal.exitButton}`} onClick={closeModal}>
               ×
-            </span>
+            </span> */}
             <p className="text-lg font-bold ">{t("installAppSafari")}</p>
-            <p className="ml-2 whitespace-pre-line mt-5">
+            <p className="ml-2 whitespace-pre-line mt-5 text-sm">
               {t("installAppSafariInstructions")}
             </p>
           </div>

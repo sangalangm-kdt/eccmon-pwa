@@ -1,9 +1,9 @@
 import logo from "./svg/logo.svg";
-import logoText from "./svg/eccmon_text.svg";
+import logoText from "./svg/logotext_revised3.svg";
 
 export const Logo = () => {
   return (
-    <div className="w-12 pb-6">
+    <div className="mr-4">
       <img src={logo} alt="logo" />
     </div>
   );
@@ -11,7 +11,7 @@ export const Logo = () => {
 
 export const LogoText = () => {
   return (
-    <div className="container w-5/12 p-2">
+    <div className="w-50">
       <img src={logoText} alt="background" />
     </div>
   );

@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+/* eslint-disable react-hooks/exhaustive-deps */
+// import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 import { useEffect } from "react";
 import axiosLib from "../lib/axios";

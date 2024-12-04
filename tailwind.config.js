@@ -3,6 +3,10 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      backgroundImage: {
+        "cyan-to-blue": "linear-gradient(to right, #22d3ee, #3b82f6)",
+        "cyan-to-blue-active": "linear-gradient(to right, #1ca1c9, #2a6edc)",
+      },
       colors: {
         primary: "#00bfff",
         secondary: "#cfeeff",
@@ -20,6 +24,11 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
+      },
+      fontSize: {
+        tiny: "0.625rem", // Custom size: 10px
+        huge: "3rem", // Custom size: 48px
+        xxl: "4rem", // Custom size: 64px
       },
       screens: {
         xs: "300px", // Custom breakpoint for extra small screens
