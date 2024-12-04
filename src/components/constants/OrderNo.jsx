@@ -1,23 +1,25 @@
 import React, { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
+import { useLocationProcess } from "../../hooks/locationProcess";
 
-const orderNoData = [
-  "3103MELQZG1",
-  "3179M8YPV6",
-  "3103JMK9A8",
-  "3173M0RFXZ",
-  "3107M3VXBG",
-  // Add more order numbers as needed
-];
+// const orderNoData = [
+//   "3103MELQZG1",
+//   "3179M8YPV6",
+//   "3103JMK9A8",
+//   "3173M0RFXZ",
+//   "3107M3VXBG",
+//   // Add more order numbers as needed
+// ];
 
 const OrderNo = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrderNo, setSelectedOrderNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {orderNumber} = useLocationProcess();
 
   // Filter order numbers based on search term
-  const filteredOrderNos = orderNoData.filter((orderNo) =>
-    orderNo.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredOrderNos = orderNumber.data?.filter((orderNo) =>
+    orderNo.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleSelectOrderNo = (orderNo) => {
@@ -75,13 +77,13 @@ const OrderNo = () => {
             {searchTerm ? (
               <ul className="space-y-2">
                 {filteredOrderNos.length > 0 ? (
-                  filteredOrderNos.map((orderNo) => (
+                  filteredOrderNos?.map((orderNo) => (
                     <li
-                      key={orderNo}
+                      key={orderNo.id}
                       className="cursor-pointer hover:bg-cyan-100"
-                      onClick={() => handleSelectOrderNo(orderNo)}
+                      onClick={() => handleSelectOrderNo(orderNo.name)}
                     >
-                      {orderNo}
+                      {orderNo.name}
                     </li>
                   ))
                 ) : (
@@ -90,13 +92,13 @@ const OrderNo = () => {
               </ul>
             ) : (
               <ul className="space-y-2">
-                {orderNoData.map((orderNo) => (
+                {orderNumber.data?.map((orderNo) => (
                   <li
-                    key={orderNo}
+                    key={orderNo.id}
                     className="cursor-pointer hover:bg-cyan-100"
-                    onClick={() => handleSelectOrderNo(orderNo)}
+                    onClick={() => handleSelectOrderNo(orderNo.name)}
                   >
-                    {orderNo}
+                    {orderNo.name}
                   </li>
                 ))}
               </ul>
