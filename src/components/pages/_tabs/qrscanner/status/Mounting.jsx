@@ -9,7 +9,7 @@ const Mounting = () => {
         <EngineInfo />
       </div>
 
-      <div className="w-full border mt-2">
+      <div className="w-full border mt-4">
         <AdditionalInfo />
       </div>
     </div>

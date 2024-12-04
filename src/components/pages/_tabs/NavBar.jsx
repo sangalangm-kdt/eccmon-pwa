@@ -150,7 +150,7 @@ const NavBar = () => {
                           >
                             <QRScanIcon
                               className={`${navbarStyles.iconContainer} 
-                               ${isActive ? "fill-primary" : ""}`}
+                               ${isActive ? "bg-cyan-to-blue" : ""}`}
                             />
                           </div>
                         )}

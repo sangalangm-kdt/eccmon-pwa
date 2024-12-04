@@ -22,7 +22,6 @@ export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
     { id: 7, status: "Mounted" },
     { id: 8, status: "Dismounted" },
     { id: 9, status: "Disposal" },
-    { id: 10, status: "Disassembly" },
   ];
 
   // const isLoading ? === "loading"; // Check if loading
@@ -30,7 +29,10 @@ export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
 
   return (
     <div className="flex flex-col w-full">
-      <label htmlFor="status-select" className="text-sm mt-2 font-semibold">
+      <label
+        htmlFor="status-select"
+        className="text-sm text-primaryText mt-2 mb-1 font-semibold"
+      >
         {t("qrScanner:status")}
       </label>
       <StatusDropdown

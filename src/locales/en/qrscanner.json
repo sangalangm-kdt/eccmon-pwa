@@ -10,7 +10,12 @@
   "mounted": "Mounted",
   "dismounted": "Dismounted",
   "disposal": "Disposal",
-  "siteName": "Site name",
-  "engineNo": "Engine no.",
-  "operatingHours": "Operating hours"
+  "selectAStatus": "Please select a status",
+  "noOptionsAvailable": "No options available",
+  "status": "Operation",
+  "cylinderInformation": "Cylinder Information",
+  "noCylinderDataScanned": "No cylinder data scanned.",
+  "serialNumber": "Serial Number",
+  "cylinderDetailsInfo": "Kindly fill out the needed information below",
+  "locationSite": "Location site"
 }

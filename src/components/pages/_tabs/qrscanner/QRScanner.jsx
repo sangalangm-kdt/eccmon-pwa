@@ -64,12 +64,12 @@ const QRScanner = () => {
                       checkSerial({ setModalOpen, eccId });
                       setActionType("add");
                     }
-                    setScannedData(eccId);
 
                     const track =
                       videoRef.current?.srcObject?.getVideoTracks()[0];
                     if (track) {
-                      track.stop();
+                      setScannedData(eccId);
+                      codeReader.reset();
                     }
                   } catch (e) {
                     setError("Invalid JSON data. Please check the QR code.");

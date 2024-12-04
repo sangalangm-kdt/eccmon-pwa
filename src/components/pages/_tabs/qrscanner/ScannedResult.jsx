@@ -4,7 +4,6 @@ import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
 
 const ScannedResult = () => {
-
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("None");
 
@@ -14,26 +13,26 @@ const ScannedResult = () => {
 
   return (
     <div>
-    <form className="flex flex-col w-full">
-      <QrHeader />
-      <ScanCodes
-          selectedStatus = {selectedStatus}
-          setSelectedStatus = {setSelectedStatus}
-      />
-      <div className="mt-4">
-        <CylinderInfo
+      <form className="flex flex-col w-full bg-gray-100 h-screen">
+        <QrHeader />
+        <ScanCodes
           selectedStatus={selectedStatus}
-          onDateChange={setSelectedDate}
-          selectedDate={selectedDate}
+          setSelectedStatus={setSelectedStatus}
         />
-      </div>
-      <SaveButton disabled />
-      {/* <Modal
+        <div className="mt-2">
+          <CylinderInfo
+            selectedStatus={selectedStatus}
+            onDateChange={setSelectedDate}
+            selectedDate={selectedDate}
+          />
+        </div>
+        <SaveButton disabled />
+        {/* <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmDelete}
       /> */}
-    </form>
+      </form>
     </div>
   );
 };

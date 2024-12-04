@@ -42,7 +42,7 @@ const DateField = ({ onChange }) => {
 
   return (
     <div>
-      <div className="p-2 border rounded">
+      <div className="p-2 border rounded text-sm">
         <input
           className="w-full mb-0"
           type="date"

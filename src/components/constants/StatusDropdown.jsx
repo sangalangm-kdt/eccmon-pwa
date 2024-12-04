@@ -1,5 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import Select from "react-select";
+import {
+  transformStatusOptions,
+  customSelectStyles,
+} from "../utils/selectUtils";
 
 const StatusDropdown = ({
   options = [],
@@ -10,26 +15,27 @@ const StatusDropdown = ({
 
   if (options.length === 0) {
     return (
-      <select id="status-select" disabled className="p-2 border rounded">
+      <select id="status-select" disabled>
         <option value="sdfff">{t("qrScanner:noOptionsAvailable")}</option>
       </select>
     );
   }
 
+  // Use utility function to transform options
+  const statusOptions = transformStatusOptions(options);
+
   return (
-    <select
-      id="status-select"
-      value={selectedStatus} // Ensure selectedValue is passed correctly here
-      onChange={(e) => setSelectedStatus(e.target.value)}
-      className="p-2 border rounded"
-    >
-      <option value="None" disabled>{t("qrScanner:selectAStatus")}</option>
-      {options.map((option) => (
-        <option key={option.id} value={option.status}>
-          {option.status}
-        </option>
-      ))}
-    </select>
+    <div className="">
+      <Select
+        options={statusOptions}
+        value={statusOptions.find((option) => option.value === selectedStatus)}
+        onChange={(selectedOption) => setSelectedStatus(selectedOption.value)}
+        styles={customSelectStyles}
+        placeholder={t("qrScanner:selectAStatus")}
+        isDisabled={options.length === 0} // Disable if no options
+        // className="text-sm border-gray-300 rounded-md p-2" // Tailwind classes for styling
+      />
+    </div>
   );
 };
 

@@ -26,3 +26,6 @@ export const bottomRightCornerClass = "bottom-0 right-0 border-b-4 border-r-4";
 export const backButtonClass =
   "absolute bottom-4 right-4 bg-white p-2 text-blue-500 rounded-full shadow-md";
 export const backButtonIconClass = "h-6 w-6";
+
+export const caseButton =
+  "border border-primary text-primary px-5 py-2 rounded-full mr-2 ml-2 focus:text-white focus:border-none focus:font-semibold focus:bg-primary";

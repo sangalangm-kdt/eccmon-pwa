@@ -24,8 +24,7 @@ const StorageLocationDropdown = ({
         value={selectedLocation}
         onChange={handleChange}
         disabled={loading || options.length === 0}
-        required
-        className="p-2 rounded"
+        className="p-2 rounded focus:ring-primary text-sm text-primaryText"
       >
         <option value="">Select a location</option>
         {options.length > 0 ? (

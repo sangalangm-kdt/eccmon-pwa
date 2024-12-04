@@ -1,9 +1,9 @@
 {
-  "barcodePlaceCode": "枠内にコードを配置してください",
+  "barcodePlaceCode": "コードを枠内に配置してください",
   "storage": "保管",
   "materialAndMachining": "材料と加工",
   "disassembly": "分解",
-  "grooving": "溝入れ",
+  "grooving": "溝加工",
   "lmd": "LMD",
   "finishing": "仕上げ",
   "assembly": "組み立て",
@@ -12,7 +12,7 @@
   "disposal": "廃棄",
   "selectAStatus": "ステータスを選択してください",
   "noOptionsAvailable": "選択肢がありません",
-  "status": "ステータス",
+  "status": "稼働中",
   "cylinderInformation": "シリンダー情報",
   "noCylinderDataScanned": "スキャンされたシリンダーデータがありません。",
   "serialNumber": "シリアル番号"

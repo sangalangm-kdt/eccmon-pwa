@@ -56,7 +56,7 @@ const HistorySummary = () => {
   return (
     <div
       className={`w-full p-2 overflow-hidden ${
-        history?.length > 5 && !showAll ? "" : fullscreenClass
+        history?.length > 5 && !showAll ? "" : fullscreenClass // Apply fullscreen only on smaller screens
       }`}
     >
       {showAll && (
@@ -70,7 +70,7 @@ const HistorySummary = () => {
 
       <div className="py-4 px-0">
         <div className="flex flex-row justify-between px-1 pb-2 border-b-0.5">
-          <label className="px-1 py-2 font-semibold">
+          <label className="px-1 py-2 font-semibold text-primaryText">
             {t("common:recentHistory")}
           </label>
           {history?.length > 5 && !showAll && (
@@ -128,13 +128,13 @@ const HistorySummary = () => {
 
         <ul
           className={`transition-transform duration-500 ease-in-out ${
-            showAll ? "max-h-[1000px]" : "max-h-[200px]"
+            showAll ? "max-h-[1500px]" : "max-h-[350px]"
           } ${showAll ? "overflow-y-auto" : ""}`}
         >
           {filteredHistory?.map((item, index) => (
             <li className="py-2 flex flex-col" key={index}>
-              <p className="p-2 font-semibold">{item.serialNumber}</p>
-              <div className="px-2 flex flex-row justify-between text-sm">
+              <p className="p-2 font-normal">{item.serialNumber}</p>
+              <div className="px-2 flex flex-row justify-between text-xs font-light ">
                 <p>{item.status}</p>
                 <p>{formatDate(item.createdAt)}</p>
               </div>

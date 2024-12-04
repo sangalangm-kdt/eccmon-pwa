@@ -10,6 +10,7 @@ import { setPage } from "../../../../features/page/pageSlice";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AddIcon from "../../../constants/AddIcon";
+import { TiArrowBack } from "react-icons/ti";
 
 export const QrHeader = () => {
   const { t } = useTranslation("common");
@@ -20,8 +21,18 @@ export const QrHeader = () => {
     navigate("/qrscanner"); // Navigate to the home page
   };
   return (
-    <div className="flex flex-col w-full py-8 px-6" onClick={handleBack}>
-      <label>{t("backButton")}</label>
+    <div>
+      <div className="flex flex-row w-full py-8 px-4 bg-white absolute rounded-b-3xl mb-3">
+        {/* Back arrow */}
+        <div className="flex-shrink-0 " onClick={handleBack}>
+          <TiArrowBack size={24} className="fill-primaryText" />
+        </div>
+
+        {/* Centered text */}
+        <p className="flex-grow text-center text-base text-primaryText font-semibold">
+          Scanned Result
+        </p>
+      </div>
     </div>
   );
 };
@@ -106,5 +117,5 @@ export const CylinderInfo = ({
     }
   };
 
-  return <>{renderContent()}</>; // Return the rendered content
+  return <div className="min-h-screen bg-gray-50">{renderContent()}</div>; // Return the rendered content
 };
