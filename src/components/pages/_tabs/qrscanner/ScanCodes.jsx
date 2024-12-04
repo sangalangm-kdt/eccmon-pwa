@@ -16,7 +16,7 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus }) => {
   }, []);
 
   return (
-    <div className="flex flex-col py-0 px-4">
+    <div className="flex flex-col py-0 px-4 mt-28">
       <div className=" px-2 py-8 w-full rounded-lg bg-white">
         <h1 className="font-semibold leading-loose color-primary">
           Cylinder Information
