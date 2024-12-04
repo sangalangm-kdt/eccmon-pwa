@@ -46,7 +46,7 @@ export const customSelectStyles = {
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
     maxHeight: "unset", // Remove height restrictions
     overflow: "visible", // Ensure no content is cut off
-    zIndex: 50,
+    zIndex: 10,
   }),
   menuList: (base) => ({
     ...base,
