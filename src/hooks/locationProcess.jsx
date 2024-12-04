@@ -83,6 +83,32 @@ export const useLocationProcess = () => {
       }),
   );
 
+  const {
+    data : siteData,
+    error : siteError,
+    mutate : siteMutate,
+  } = useSWR("/api/site", () => 
+        axiosLib
+            .get("/api/site")
+            .then((res) => res.data)
+            .catch((siteError) => {
+                if (siteError.response.status !== 422) throw siteError;
+            })
+    )
+
+    const {
+        data : orderNumber,
+        error : orderError,
+        mutate: orderMutate,
+    } = useSWR("/api/order-number", () => 
+        axiosLib
+            .get("/api/order-number")
+            .then((res) => res.data)
+            .catch((orderError) => {
+                if (orderError.response.status !== 422) throw orderError;
+            })
+    )
+
   return {
     storage,
     storageMutate,
@@ -96,5 +122,9 @@ export const useLocationProcess = () => {
     finishingMutate,
     assembly,
     assemblyMutate,
+    siteData,
+    siteMutate,
+    orderNumber,
+    orderMutate,
   };
 };
