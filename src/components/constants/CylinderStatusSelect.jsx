@@ -24,8 +24,7 @@ export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
     { id: 9, status: "Disposal" },
   ];
 
-  // const isLoading ? === "loading"; // Check if loading
-  const hasOptions = cylinderStatusOptions.length > 0; // Check if options are available
+  const hasOptions = cylinderStatusOptions.length > 0;
 
   return (
     <div className="flex flex-col w-full">

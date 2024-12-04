@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { caseButton } from "../../../styles/qrscanner";
 
 const ScanCodes = ({ selectedStatus, setSelectedStatus }) => {
   const { t } = useTranslation();
