@@ -22,7 +22,7 @@ export const QrHeader = () => {
   };
   return (
     <div>
-      <div className="flex flex-row w-full py-8 px-4 bg-white absolute rounded-b-3xl mb-3 z-20">
+      <div className="flex flex-row w-full py-8 px-4 bg-white fixed rounded-b-3xl mb-3 z-20">
         {/* Back arrow */}
         <div className="flex-shrink-0 " onClick={handleBack}>
           <TiArrowBack size={24} className="fill-primaryText" />
@@ -117,5 +117,5 @@ export const CylinderInfo = ({
     }
   };
 
-  return <div className="min-h-screen bg-gray-50">{renderContent()}</div>; // Return the rendered content
+  return <div>{renderContent()}</div>; // Return the rendered content
 };

@@ -29,16 +29,6 @@ const Layout = () => {
 };
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Make sure preloader stays for at least 3 seconds
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000); // 3 seconds
-
-    return () => clearTimeout(timer); // Cleanup on unmount
-  }, []);
   const router = createBrowserRouter([
     {
       element: <Layout />,
@@ -79,14 +69,7 @@ function App() {
   return (
     <div className="App">
       <AuthProvider>
-        <Suspense
-          fallback={
-            <div>
-              {isLoading ? <Preloader /> : null}{" "}
-              {/* Preloader stays for 3 seconds */}
-            </div>
-          }
-        >
+        <Suspense fallback={<Preloader />}>
           <RouterProvider router={router} />
         </Suspense>
       </AuthProvider>

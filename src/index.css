@@ -2,21 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  @apply font-sans;
+  @apply min-h-screen;
+  @apply overflow-x-hidden;
+  @apply overflow-y-visible;
+}
 
-html,body{
-    @apply font-sans
-    min-h-screen
-    overflow-x-hidden
-    overflow-y-visible
-}
 .fill-primary {
-  fill: bg-primary; /* Replace with your primary color */
+  @apply text-primary; /* Use a text color utility or set custom fill color */
 }
+
 .active {
-  color: #bg-primary; /* Replace with your primary color */
+  @apply text-primary; /* Apply Tailwind text-primary for active state */
 }
 
 .active .fill-primary {
-  fill: bg-primary; /* Replace with your primary color */
+  @apply text-primary; /* Apply Tailwind color to fill in active state */
 }
-

@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LinkBroken from "../assets/svg/link-broken.svg";
-import { useAuthentication } from "../../hooks/auth";
+// import { useAuthentication } from "../../hooks/auth";
 
 const NotFoundPage = () => {
   // const { user } = useAuthentication();

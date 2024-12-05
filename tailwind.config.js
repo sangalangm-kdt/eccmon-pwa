@@ -29,6 +29,7 @@ module.exports = {
         tiny: "0.625rem", // Custom size: 10px
         huge: "3rem", // Custom size: 48px
         xxl: "4rem", // Custom size: 64px
+        md: "0.9375rem",
       },
       screens: {
         xs: "300px", // Custom breakpoint for extra small screens

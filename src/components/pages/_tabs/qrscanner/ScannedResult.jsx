@@ -13,7 +13,7 @@ const ScannedResult = () => {
 
   return (
     <div>
-      <form className="flex flex-col w-full bg-gray-100 h-screen">
+      <form className="flex flex-col w-full bg-gray-100">
         <QrHeader />
         <ScanCodes
           selectedStatus={selectedStatus}
@@ -27,11 +27,6 @@ const ScannedResult = () => {
           />
         </div>
         <SaveButton disabled />
-        {/* <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-      /> */}
       </form>
     </div>
   );

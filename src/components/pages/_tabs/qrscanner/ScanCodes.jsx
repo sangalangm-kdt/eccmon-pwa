@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
+
 import React, { useEffect, useState } from "react";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";

@@ -1,14 +1,9 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthentication } from "../../hooks/auth";
-import Preloader from "../constants/preloader/Preloader";
+import { useAuth } from "./AuthContext";
 
 const ProtectedRoute = () => {
-  const { user, loading } = useAuthentication({ middleware: "auth" });
-
-  if (loading) {
-    return <Preloader />;
-  }
+  const { user } = useAuth();
 
   return !user ? <Navigate to="/login" /> : <Outlet />;
 };

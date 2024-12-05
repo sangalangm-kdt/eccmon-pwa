@@ -1,12 +1,19 @@
 import React, { createContext, useContext } from "react";
-// import { useDispatch, useSelector } from "react-redux";
 import { useAuthentication } from "../../hooks/auth";
-// import axios from "axios";
+import Preloader from "../constants/preloader/Preloader";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const { user, login, logout } = useAuthentication();
+  const { user, login, logout, isLoading } = useAuthentication();
+
+  if (isLoading) {
+    return (
+      <div>
+        <Preloader />
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

@@ -39,9 +39,6 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
           <div>
             <div>
               <CaseButton />
-              <label className="text-sm text-primaryText font-semibold">
-                Processor
-              </label>
               <LocationDropdown
                 options={disassembly?.data.filter((item) => {
                   return item.status !== 2;
@@ -75,9 +72,6 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               <div>
                 <CaseButton />
               </div>
-              <label className="text-sm text-primaryText font-semibold">
-                Processor
-              </label>
               <LocationDropdown
                 options={assembly?.data.filter((item) => {
                   return item.status !== 2;
@@ -111,9 +105,6 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               <div>
                 <CaseButton />
               </div>
-              <label className="text-sm text-primaryText font-semibold">
-                Processor
-              </label>
               <LocationDropdown
                 options={finishing?.data.filter((item) => {
                   return item.status !== 2;
@@ -147,9 +138,6 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               <div>
                 <CaseButton />
               </div>
-              <label className="text-sm text-primaryText font-semibold">
-                Processor
-              </label>
               <LocationDropdown
                 options={grooving?.data.filter((item) => {
                   return item.status !== 2;
@@ -183,9 +171,6 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               <div>
                 <CaseButton />
               </div>
-              <label className="text-sm text-primaryText font-semibold">
-                Processor
-              </label>
               <LocationDropdown
                 options={lmd?.data.filter((item) => {
                   return item.status !== 2;
