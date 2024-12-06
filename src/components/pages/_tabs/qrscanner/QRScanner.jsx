@@ -27,9 +27,10 @@ const QRScanner = () => {
   const { t } = useTranslation("qrScanner", "common");
   const { checkSerial, addCylinder } = useCylinderCover();
   const [willScan, setWillScan] = useState(true);
+  const codeReader = new BrowserMultiFormatReader();
 
   useEffect(() => {
-    const codeReader = new BrowserMultiFormatReader();
+    
     let selectedDeviceId;
 
     if (willScan) {
@@ -110,6 +111,7 @@ const QRScanner = () => {
   }, [dispatch]);
 
   const handleBack = () => {
+    codeReader.reset();
     setWillScan(false); // Stop scanning on navigation
     navigate("/");
   };
@@ -196,7 +198,7 @@ const QRScanner = () => {
           </div>
         </div>
         <div className="absolute xs:top-60 xs:text-sm text-white z-60">
-          {t("qrScanner:barcodePlaceCode")}
+          {/* {t("qrScanner:barcodePlaceCode")} */}TEXT
         </div>
         <button
           className="absolute bottom-4 left-4 bg-white p-2 text-blue-500 rounded-full shadow-md"

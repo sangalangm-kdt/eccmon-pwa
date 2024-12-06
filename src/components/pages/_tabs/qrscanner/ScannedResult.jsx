@@ -11,6 +11,14 @@ const ScannedResult = () => {
   //   setSelectedStatus(cylinder.status);
   // }, [cylinder])
 
+  const data = {
+    
+  }
+
+  const handleClick = () => {
+
+  }
+
   return (
     <div>
       <form className="flex flex-col w-full bg-gray-100">
@@ -26,7 +34,10 @@ const ScannedResult = () => {
             selectedDate={selectedDate}
           />
         </div>
-        <SaveButton disabled />
+        <SaveButton 
+          disabled
+          onClick={handleClick}
+        />
       </form>
     </div>
   );
