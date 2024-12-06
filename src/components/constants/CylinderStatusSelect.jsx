@@ -13,15 +13,15 @@ export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
   // Get cylinder status options
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const cylinderStatusOptions = [
-    { id: 1, status: "Storage" },
-    { id: 2, status: "Disassembly" },
-    { id: 3, status: "Grooving" },
-    { id: 4, status: "LMD" },
-    { id: 5, status: "Finishing" },
-    { id: 6, status: "Assembly" },
-    { id: 7, status: "Mounted" },
-    { id: 8, status: "Dismounted" },
-    { id: 9, status: "Disposal" },
+    { id: 1, status: t("qrScanner:storage") }, // Translated
+    { id: 2, status: t("qrScanner:disassembly") }, // Translated
+    { id: 3, status: t("qrScanner:grooving") }, // Translated
+    { id: 4, status: t("qrScanner:lmd") }, // Translated
+    { id: 5, status: t("qrScanner:finishing") }, // Translated
+    { id: 6, status: t("qrScanner:assembly") }, // Translated
+    { id: 7, status: t("qrScanner:mounted") }, // Translated
+    { id: 8, status: t("qrScanner:dismounted") }, // Translated
+    { id: 9, status: t("qrScanner:disposal") }, // Translated
   ];
 
   const hasOptions = cylinderStatusOptions.length > 0;

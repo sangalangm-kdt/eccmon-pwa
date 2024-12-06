@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
+import React, { Suspense, lazy } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -8,6 +8,7 @@ import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
 import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
 import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
+import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
@@ -55,8 +56,8 @@ function App() {
           element: <ForgotPass />,
         },
         {
-          path: "/engine-info",
-          element: <Dismounting />,
+          path: "/view-info",
+          element: <ViewInfo />,
         },
         {
           path: "*",

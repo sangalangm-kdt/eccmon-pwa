@@ -28,4 +28,4 @@ export const backButtonClass =
 export const backButtonIconClass = "h-6 w-6";
 
 export const caseButton =
-  "border border-primary text-primary px-5 py-2 rounded-full mr-2 ml-2 focus:text-white focus:border-none focus:font-semibold focus:bg-primary";
+  "text-primary px-9 py-2 rounded-full focus:text-white focus:border-none focus:font-semibold focus:bg-primary";

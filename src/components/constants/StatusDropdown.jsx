@@ -24,6 +24,29 @@ const StatusDropdown = ({
   // Use utility function to transform options
   const statusOptions = transformStatusOptions(options);
 
+  // Function to highlight matching text in options
+  const getOptionLabel = (option, inputValue) => {
+    if (!inputValue) {
+      return option.label; // If no input, just return the label
+    }
+
+    const regex = new RegExp(`(${inputValue})`, "gi"); // Case-insensitive match
+    const parts = option.label.split(regex);
+
+    return (
+      <div>
+        {parts.map((part, index) => (
+          <span
+            key={index}
+            style={{ fontWeight: regex.test(part) ? "normal" : "" }}
+          >
+            {part}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="">
       <Select
@@ -33,7 +56,7 @@ const StatusDropdown = ({
         styles={customSelectStyles}
         placeholder={t("qrScanner:selectAStatus")}
         isDisabled={options.length === 0} // Disable if no options
-        // className="text-sm border-gray-300 rounded-md p-2" // Tailwind classes for styling
+        getOptionLabel={(option) => getOptionLabel(option, selectedStatus)}
       />
     </div>
   );

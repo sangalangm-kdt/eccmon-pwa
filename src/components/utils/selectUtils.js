@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import zIndex from "@mui/material/styles/zIndex";
 
 export const transformStatusOptions = (options) => {

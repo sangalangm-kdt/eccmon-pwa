@@ -32,10 +32,10 @@ const Disposal = ({ setIsComplete, onDateChange, onDisposedChange }) => {
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="border p-2 w-full ">
+    <div className="flex flex-col bg-white rounded-lg pb-1">
+      <div className=" p-2 w-full ">
         <h2 className="font-semibold mb-6">Disposal Status</h2>
-        <div>
+        <div className="text-sm">
           <label>Disposal date</label>
           <DateField onChange={handleDateChange} />
         </div>

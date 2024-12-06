@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
 import {
   fetchProcessDisassemblyLocation,
   fetchProcessAssemblyLocation,
@@ -17,8 +16,8 @@ import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import CaseButton from "../../../../constants/CaseButton";
 
 const Process = ({ selectedProcessorStatus, onDateChange }) => {
-  const [selectedProcessor, setSelectedProcessor] = useState("");
-  const [completionDate, setCompletionDate] = useState("");
+  const [selectedCase, setSelectedCase] = useState(""); // Initially null, means no case selected
+
   const {
     grooving,
     groovingMutate,
@@ -32,19 +31,19 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
     assemblyMutate,
   } = useLocationProcess();
 
+  // Function to render different locations based on selectedProcessorStatus
   const renderLocations = () => {
     switch (selectedProcessorStatus) {
       case "Disassembly":
         return (
           <div>
-            <div>
-              <CaseButton />
-              <LocationDropdown
-                options={disassembly?.data.filter((item) => {
-                  return item.status !== 2;
-                })}
-              />
-            </div>
+            <CaseButton
+              initialSelectedCase={selectedCase} // Pass selectedCase, initially null for no selection
+              setSelectedCase={setSelectedCase}
+            />
+            <LocationDropdown
+              options={disassembly?.data.filter((item) => item.status !== 2)}
+            />
             <div>
               <label className="text-sm text-primaryText font-semibold">
                 Completion Date
@@ -57,27 +56,20 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               </label>
               <ButtonYesOrNo />
             </div>
-            <div>
-              <Cycle />
-            </div>
-            <div>
-              <OrderNo />
-            </div>
+            <Cycle />
+            <OrderNo />
           </div>
         );
       case "Assembly":
         return (
           <div>
-            <div>
-              <div>
-                <CaseButton />
-              </div>
-              <LocationDropdown
-                options={assembly?.data.filter((item) => {
-                  return item.status !== 2;
-                })}
-              />
-            </div>
+            <CaseButton
+              initialSelectedCase={selectedCase}
+              setSelectedCase={setSelectedCase}
+            />
+            <LocationDropdown
+              options={assembly?.data.filter((item) => item.status !== 2)}
+            />
             <div>
               <label className="text-sm text-primaryText font-semibold">
                 Completion Date
@@ -90,27 +82,20 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               </label>
               <ButtonYesOrNo />
             </div>
-            <div>
-              <Cycle />
-            </div>
-            <div>
-              <OrderNo />
-            </div>
+            <Cycle />
+            <OrderNo />
           </div>
         );
       case "Finishing":
         return (
           <div>
-            <div>
-              <div>
-                <CaseButton />
-              </div>
-              <LocationDropdown
-                options={finishing?.data.filter((item) => {
-                  return item.status !== 2;
-                })}
-              />
-            </div>
+            <CaseButton
+              initialSelectedCase={selectedCase}
+              setSelectedCase={setSelectedCase}
+            />
+            <LocationDropdown
+              options={finishing?.data.filter((item) => item.status !== 2)}
+            />
             <div>
               <label className="text-sm text-primaryText font-semibold">
                 Completion Date
@@ -123,27 +108,20 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               </label>
               <ButtonYesOrNo />
             </div>
-            <div>
-              <Cycle />
-            </div>
-            <div>
-              <OrderNo />
-            </div>
+            <Cycle />
+            <OrderNo />
           </div>
         );
       case "Grooving":
         return (
           <div>
-            <div>
-              <div>
-                <CaseButton />
-              </div>
-              <LocationDropdown
-                options={grooving?.data.filter((item) => {
-                  return item.status !== 2;
-                })}
-              />
-            </div>
+            <CaseButton
+              initialSelectedCase={selectedCase}
+              setSelectedCase={setSelectedCase}
+            />
+            <LocationDropdown
+              options={grooving?.data.filter((item) => item.status !== 2)}
+            />
             <div>
               <label className="text-sm text-primaryText font-semibold">
                 Completion Date
@@ -156,27 +134,20 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               </label>
               <ButtonYesOrNo />
             </div>
-            <div>
-              <Cycle />
-            </div>
-            <div>
-              <OrderNo />
-            </div>
+            <Cycle />
+            <OrderNo />
           </div>
         );
       case "LMD":
         return (
           <div>
-            <div>
-              <div>
-                <CaseButton />
-              </div>
-              <LocationDropdown
-                options={lmd?.data.filter((item) => {
-                  return item.status !== 2;
-                })}
-              />
-            </div>
+            <CaseButton
+              initialSelectedCase={selectedCase}
+              setSelectedCase={setSelectedCase}
+            />
+            <LocationDropdown
+              options={lmd?.data.filter((item) => item.status !== 2)}
+            />
             <div>
               <label className="text-sm text-primaryText font-semibold">
                 Completion Date
@@ -189,12 +160,8 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
               </label>
               <ButtonYesOrNo />
             </div>
-            <div>
-              <Cycle />
-            </div>
-            <div>
-              <OrderNo />
-            </div>
+            <Cycle />
+            <OrderNo />
           </div>
         );
       default:
@@ -203,8 +170,8 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
   };
 
   return (
-    <div className="flex flex-col  w-full p-2 bg-white rounded-lg">
-      <h2 className="font-semibold text-md leading-loose text-primaryText  mt-2">
+    <div className="flex flex-col w-full p-2 bg-white rounded-lg">
+      <h2 className="font-semibold text-md leading-loose text-primaryText mt-2">
         Process Status
       </h2>
       {renderLocations()}
