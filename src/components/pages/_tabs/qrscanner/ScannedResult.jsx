@@ -1,23 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
+import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 
 const ScannedResult = () => {
-  const [selectedDate, setSelectedDate] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("None");
+  const [data, setData] = useState({});
+  const {addUpdate} = useCylinderUpdate();
 
   // useEffect(() => {
   //   setSelectedStatus(cylinder.status);
   // }, [cylinder])
-
-  const data = {
-    
+  const handleClick = (e) => {
+    e.preventDefault();
+    console.log(data ,selectedStatus);
+    addUpdate(data, selectedStatus);
   }
 
-  const handleClick = () => {
-
-  }
+  useEffect(() => {
+    console.log(data, selectedStatus);
+  }, [data])
 
   return (
     <div>
@@ -30,12 +33,10 @@ const ScannedResult = () => {
         <div className="mt-2">
           <CylinderInfo
             selectedStatus={selectedStatus}
-            onDateChange={setSelectedDate}
-            selectedDate={selectedDate}
+            setData={setData}
           />
         </div>
         <SaveButton 
-          disabled
           onClick={handleClick}
         />
       </form>

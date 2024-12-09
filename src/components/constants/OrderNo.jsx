@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 
-const OrderNo = () => {
+const OrderNo = ({selectedOrderNo, setSelectedOrderNo}) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedOrderNo, setSelectedOrderNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { orderNumber } = useLocationProcess();
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 
-const SiteNameOptions = () => {
+const SiteNameOptions = ({setSite}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSite, setSelectedSite] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,6 +46,7 @@ const SiteNameOptions = () => {
 
   const handleSelectName = (name) => {
     setSelectedSite(name);
+    setSite(name)
     setSearchTerm("");
     setIsModalOpen(false);
   };

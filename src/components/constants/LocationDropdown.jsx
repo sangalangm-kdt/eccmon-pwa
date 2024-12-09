@@ -5,12 +5,14 @@ const StorageLocationDropdown = ({
   options = [],
   loading,
   error,
+  setProcessor,
 }) => {
   const [selectedLocation, setSelectedLocation] = useState("");
 
   const handleChange = (e) => {
     const newLocation = e.target.value;
     setSelectedLocation(newLocation);
+    setProcessor(newLocation);
     if (onLocationChange) {
       onLocationChange(newLocation); // Call the passed function
     }

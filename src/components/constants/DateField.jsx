@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-const DateField = ({ onChange }) => {
+const DateField = ({ date, setDate }) => {
   // Initialize with current date in "yyyy-mm-dd" format
-  const [date, setDate] = useState(() => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  });
 
   const [dateTime, setDateTime] = useState(() => {
     const today = new Date();
@@ -20,12 +13,12 @@ const DateField = ({ onChange }) => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   });
 
-  // Effect to call the onChange when the dateTime changes
-  useEffect(() => {
-    if (onChange) {
-      onChange(dateTime);
-    }
-  }, [dateTime, onChange]);
+  // // Effect to call the onChange when the dateTime changes
+  // useEffect(() => {
+  //   if (onChange) {
+  //     onChange(dateTime);
+  //   }
+  // }, [dateTime, onChange]);
 
   // Handle date change
   const handleDateChange = (event) => {
