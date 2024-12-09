@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import ResultsModal from "./ResultsModal"; // Your modal component
@@ -30,7 +31,6 @@ const QRScanner = () => {
   const codeReader = new BrowserMultiFormatReader();
 
   useEffect(() => {
-    
     let selectedDeviceId;
 
     if (willScan) {
@@ -198,7 +198,7 @@ const QRScanner = () => {
           </div>
         </div>
         <div className="absolute xs:top-60 xs:text-sm text-white z-60">
-          {/* {t("qrScanner:barcodePlaceCode")} */}TEXT
+          {t("qrScanner:barcodePlaceCode")}
         </div>
         <button
           className="absolute bottom-4 left-4 bg-white p-2 text-blue-500 rounded-full shadow-md"

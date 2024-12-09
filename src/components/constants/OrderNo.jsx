@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
+import { useTranslation } from "react-i18next";
 
 const OrderNo = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrderNo, setSelectedOrderNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { orderNumber } = useLocationProcess();
+  const { t } = useTranslation();
 
   // Filter order numbers based on search term
   const filteredOrderNos = orderNumber?.data?.filter((orderNo) =>
@@ -22,7 +24,7 @@ const OrderNo = () => {
   return (
     <div className="w-full flex flex-col mt-2 text-sm  text-primaryText">
       <div className="relative w-full">
-        <label className="font-semibold">Order No.</label>
+        <label className="font-semibold">{t("qrScanner:orderNo")}</label>
         <input
           className="border w-full py-2 px-2 rounded"
           type="text"

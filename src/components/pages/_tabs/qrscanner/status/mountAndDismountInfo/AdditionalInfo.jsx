@@ -5,7 +5,7 @@ import MountingPositionSelect from "../../../../../constants/MountingPositionSel
 const AdditionalInfo = () => {
   return (
     <div className="flex flex-col w-full p-2">
-      <label>Additional Information</label>
+      <label className="font-semibold">Additional Information</label>
       <div>
         <label>Mounting position on engine</label>
         <MountingPositionSelect />

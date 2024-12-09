@@ -7,17 +7,9 @@ const ScannedResult = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("None");
 
-  // useEffect(() => {
-  //   setSelectedStatus(cylinder.status);
-  // }, [cylinder])
+  const data = {};
 
-  const data = {
-    
-  }
-
-  const handleClick = () => {
-
-  }
+  const handleClick = () => {};
 
   return (
     <div>
@@ -34,10 +26,7 @@ const ScannedResult = () => {
             selectedDate={selectedDate}
           />
         </div>
-        <SaveButton 
-          disabled
-          onClick={handleClick}
-        />
+        <SaveButton disabled onClick={handleClick} />
       </form>
     </div>
   );

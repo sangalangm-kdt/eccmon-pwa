@@ -5,7 +5,7 @@ const EngineInfo = () => {
   return (
     <div className="flex flex-col p-2">
       <div className="flex flex-col w-full">
-        <label>Engine information</label>
+        <label className="font-semibold">Engine information</label>
         <SiteNameOptions />
       </div>
       <div>

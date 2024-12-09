@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { caseButton } from "../styles/qrscanner";
+import { useTranslation } from "react-i18next";
 
 const CaseButton = ({ initialSelectedCase, setSelectedCase }) => {
   const [selectedCaseState, setSelectedCaseState] =
     useState(initialSelectedCase);
+  const { t } = useTranslation("qrScanner");
   const cases = [
-    { id: 0, name: "Case 0" },
-    { id: 1, name: "Case 1" },
-    { id: 2, name: "Case 2" },
+    { id: 0, name: t("case0") },
+    { id: 1, name: t("case1") },
+    { id: 2, name: t("case2") },
   ];
 
   useEffect(() => {
@@ -23,8 +25,8 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase }) => {
   };
 
   return (
-    <div className="mt-4 text-sm text-primaryText">
-      <label className="font-semibold">Case</label>
+    <div className="mt-4 text-xs text-primaryText">
+      <label className="font-semibold">{t("qrScanner:case")}</label>
       <div className="rounded flex flex-row items-center justify-between">
         {cases.map((caseItem) => (
           <button

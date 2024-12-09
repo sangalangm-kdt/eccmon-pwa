@@ -17,5 +17,20 @@
   "noCylinderDataScanned": "No cylinder data scanned.",
   "serialNumber": "Serial Number",
   "cylinderDetailsInfo": "Kindly fill out the needed information below",
-  "locationSite": "Location site"
+  "locationSite": "Location site",
+  "scannedResult": "Scanned Result",
+  "processStatus": "Process Status",
+  "processor": "Processor",
+  "completionDate": "Completion Date",
+  "case": "Case",
+  "passed": "Passed",
+  "cycle": "Cycle",
+  "orderNo": "Order No.",
+  "storageStatus": "Storage Status",
+  "startDate": "Start Date",
+  "selectALocation": "Please select a location",
+  "case0": "Case 0",
+  "case1": "Case 1",
+  "case2": "Case 2",
+  "selectAnOrderNumber": "Please select an order number"
 }

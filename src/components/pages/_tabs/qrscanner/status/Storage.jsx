@@ -5,9 +5,11 @@ import DateField from "../../../../constants/DateField";
 import LocationDropdown from "../../../../constants/LocationDropdown";
 
 import { useLocationProcess } from "../../../../../hooks/locationProcess";
+import { useTranslation } from "react-i18next";
 
 const Storage = ({ setIsComplete, onDateChange }) => {
   const [startDate, setStartDate] = useState("");
+  const { t } = useTranslation();
 
   const handleDateChange = (date) => {
     setStartDate(date);
@@ -25,11 +27,11 @@ const Storage = ({ setIsComplete, onDateChange }) => {
     <div className="flex flex-col rounded-lg bg-white">
       <div className="p-2 w-full">
         <h2 className="font-semibold text-base leading-loose text-primaryText mb-6 mt-2">
-          Storage Status
+          {t("qrScanner:storageStatus")}
         </h2>
         <div>
           <label className="text-sm font-semibold text-primaryText">
-            Location site
+            {t("qrScanner:locationSite")}
           </label>{" "}
           <LocationDropdown
             options={storage?.data.filter((item) => {
@@ -39,7 +41,7 @@ const Storage = ({ setIsComplete, onDateChange }) => {
         </div>
         <div className="mt-2 mb-4">
           <label className="text-sm font-semibold text-primaryText">
-            Start Date
+            {t("qrScanner:startDate")}
           </label>
           <DateField onChange={handleDateChange} value={startDate} />
         </div>

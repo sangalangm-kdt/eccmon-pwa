@@ -7,7 +7,7 @@ import { AuthProvider } from "./components/auth/AuthContext";
 import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
 import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
-import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
+// import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
 import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
 
 const QRScanner = lazy(

@@ -14,8 +14,10 @@ import Cycle from "../../../../constants/Cycle";
 import OrderNo from "../../../../constants/OrderNo";
 import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import CaseButton from "../../../../constants/CaseButton";
+import { useTranslation } from "react-i18next"; // Import useTranslation for translations
 
 const Process = ({ selectedProcessorStatus, onDateChange }) => {
+  const { t } = useTranslation("qrScanner"); // Use the correct namespace
   const [selectedCase, setSelectedCase] = useState(""); // Initially null, means no case selected
 
   const {
@@ -34,25 +36,28 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
   // Function to render different locations based on selectedProcessorStatus
   const renderLocations = () => {
     switch (selectedProcessorStatus) {
-      case "Disassembly":
+      case t("qrScanner:disassembly"):
         return (
           <div>
             <CaseButton
               initialSelectedCase={selectedCase} // Pass selectedCase, initially null for no selection
               setSelectedCase={setSelectedCase}
             />
+            <label className="text-sm text-primaryText font-semibold mt-2">
+              {t("qrScanner:processor")}
+            </label>
             <LocationDropdown
               options={disassembly?.data.filter((item) => item.status !== 2)}
             />
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Completion Date
+                {t("qrScanner:completionDate")}
               </label>
               <DateField />
             </div>
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Passed?
+                {t("qrScanner:passed")}
               </label>
               <ButtonYesOrNo />
             </div>
@@ -60,25 +65,28 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <OrderNo />
           </div>
         );
-      case "Assembly":
+      case t("qrScanner:assembly"):
         return (
           <div>
             <CaseButton
               initialSelectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
             />
+            <label className="text-sm text-primaryText font-semibold mt-2">
+              {t("qrScanner:processor")}
+            </label>
             <LocationDropdown
               options={assembly?.data.filter((item) => item.status !== 2)}
             />
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Completion Date
+                {t("qrScanner:completionDate")}
               </label>
               <DateField />
             </div>
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Passed?
+                {t("qrScanner:passed")}
               </label>
               <ButtonYesOrNo />
             </div>
@@ -86,25 +94,28 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <OrderNo />
           </div>
         );
-      case "Finishing":
+      case t("qrScanner:finishing"):
         return (
           <div>
             <CaseButton
               initialSelectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
             />
+            <label className="text-sm text-primaryText font-semibold mt-2">
+              {t("qrScanner:processor")}
+            </label>
             <LocationDropdown
               options={finishing?.data.filter((item) => item.status !== 2)}
             />
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Completion Date
+                {t("qrScanner:completionDate")}
               </label>
               <DateField />
             </div>
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Passed?
+                {t("qrScanner:passed")}
               </label>
               <ButtonYesOrNo />
             </div>
@@ -112,25 +123,28 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <OrderNo />
           </div>
         );
-      case "Grooving":
+      case t("qrScanner:grooving"):
         return (
           <div>
             <CaseButton
               initialSelectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
             />
+            <label className="text-sm text-primaryText font-semibold mt-2">
+              {t("qrScanner:processor")}
+            </label>
             <LocationDropdown
               options={grooving?.data.filter((item) => item.status !== 2)}
             />
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Completion Date
+                {t("qrScanner:completionDate")}
               </label>
               <DateField />
             </div>
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Passed?
+                {t("qrScanner:passed")}
               </label>
               <ButtonYesOrNo />
             </div>
@@ -138,25 +152,28 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
             <OrderNo />
           </div>
         );
-      case "LMD":
+      case t("qrScanner:lmd"):
         return (
           <div>
             <CaseButton
               initialSelectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
             />
+            <label className="text-sm text-primaryText font-semibold mt-2">
+              {t("qrScanner:processor")}
+            </label>
             <LocationDropdown
               options={lmd?.data.filter((item) => item.status !== 2)}
             />
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Completion Date
+                {t("qrScanner:completionDate")}
               </label>
               <DateField />
             </div>
             <div>
               <label className="text-sm text-primaryText font-semibold">
-                Passed?
+                {t("qrScanner:passed")}
               </label>
               <ButtonYesOrNo />
             </div>
@@ -165,14 +182,14 @@ const Process = ({ selectedProcessorStatus, onDateChange }) => {
           </div>
         );
       default:
-        return <div>Please select a valid processor status.</div>;
+        return <div>{t("qrScanner:selectValidProcessorStatus")}</div>;
     }
   };
 
   return (
     <div className="flex flex-col w-full p-2 bg-white rounded-lg">
       <h2 className="font-semibold text-md leading-loose text-primaryText mt-2">
-        Process Status
+        {t("qrScanner:processStatus")}
       </h2>
       {renderLocations()}
     </div>

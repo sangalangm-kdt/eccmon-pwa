@@ -14,16 +14,20 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus }) => {
 
   useEffect(() => {
     setSelectedStatus(cylinderData.status);
-  }, []);
+  }, [cylinderData.status]);
+
+  // Translate selectedStatus dynamically
+  const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
+  console.log();
 
   return (
     <div className="flex flex-col py-0 px-4 mt-28">
       <div className=" px-2 py-8 w-full rounded-lg bg-white">
         <h1 className="font-semibold leading-loose color-primary">
-          Cylinder Information
+          {t("qrScanner:cylinderInformation")}
         </h1>
         <label className="text-xs text-secondaryText">
-          Kindly fill out the needed information below
+          {t("qrScanner:cylinderDetailsInfo")}
         </label>
         <div className="mt-4 text-lg w-full">
           <div className="mt-2 w-full mb-2">
@@ -39,7 +43,7 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus }) => {
             />
           </div>
           <CylinderStatusSelect
-            selectedStatus={selectedStatus}
+            selectedStatus={translatedStatus} // Use translated status here
             setSelectedStatus={setSelectedStatus}
           />
         </div>
