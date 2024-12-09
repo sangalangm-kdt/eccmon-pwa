@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
-const ButtonYesOrNo = ({ onChange, isNew, passed, setPassed }) => {
+const ButtonYesOrNo = ({ onChange, isNew }) => {
+  const [selectedValue, setSelectedValue] = useState(null);
+  const { t } = useTranslation();
 
   const handleButtonClick = (value) => {
     setPassed(value);
@@ -19,7 +22,7 @@ const ButtonYesOrNo = ({ onChange, isNew, passed, setPassed }) => {
           type="button"
           onClick={() => handleButtonClick(1)}
         >
-          Yes
+          {t("common:yes")}
         </button>
         <button
           type="button"
@@ -32,7 +35,7 @@ const ButtonYesOrNo = ({ onChange, isNew, passed, setPassed }) => {
           }`}
           onClick={() => handleButtonClick(0)}
         >
-          No
+          {t("common.no")}
         </button>
       </div>
     </div>

@@ -12,5 +12,11 @@
   "logout": "Logout",
   "backButton": "Back",
   "backToScan": "Back to scan",
-  "recentHistory": "Recent History"
+  "recentHistory": "Recent History",
+  "yes": "Yes",
+  "no": "No",
+  "thisMonth": "This month",
+  "last7Days": "Last 7 days",
+  "last30Days": "Last 30 days",
+  "customDateRange": "Custom Date Range"
 }

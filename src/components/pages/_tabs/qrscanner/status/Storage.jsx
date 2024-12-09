@@ -6,6 +6,7 @@ import LocationDropdown from "../../../../constants/LocationDropdown";
 
 import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Storage = ({ setData }) => {
   const [date, setDate] = useState(() => {
@@ -26,6 +27,19 @@ const Storage = ({ setData }) => {
   //     setIsComplete(date !== "");
   //   }
   // };
+const Storage = ({ setIsComplete, onDateChange }) => {
+  const [startDate, setStartDate] = useState("");
+  const { t } = useTranslation();
+
+  const handleDateChange = (date) => {
+    setStartDate(date);
+    onDateChange(date);
+
+    // Update completion state
+    if (setIsComplete) {
+      setIsComplete(date !== "");
+    }
+  };
 
   const { storage, storageMutate } = useLocationProcess();
   const [processor, setProcessor] = useState();
@@ -43,11 +57,11 @@ const Storage = ({ setData }) => {
     <div className="flex flex-col rounded-lg bg-white">
       <div className="p-2 w-full">
         <h2 className="font-semibold text-base leading-loose text-primaryText mb-6 mt-2">
-          Storage Status
+          {t("qrScanner:storageStatus")}
         </h2>
         <div>
           <label className="text-sm font-semibold text-primaryText">
-            Location site
+            {t("qrScanner:locationSite")}
           </label>{" "}
           <LocationDropdown
             options={storage?.data.filter((item) => {
@@ -58,7 +72,7 @@ const Storage = ({ setData }) => {
         </div>
         <div className="mt-2 mb-4">
           <label className="text-sm font-semibold text-primaryText">
-            Start Date
+            {t("qrScanner:startDate")}
           </label>
           <DateField date={date} setDate={setDate} />
         </div>

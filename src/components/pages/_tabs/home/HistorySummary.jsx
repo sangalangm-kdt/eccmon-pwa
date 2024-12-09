@@ -19,7 +19,7 @@ const HistorySummary = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
 
   // Use utility functions to sort and filter history
   const sortedHistory = sortHistoryByDate(history, sortOrder); // Ensure history is sorted
@@ -91,10 +91,10 @@ const HistorySummary = () => {
                 value={filter}
                 onChange={handleFilterChange}
               >
-                <option value="thisMonth">This Month</option>
-                <option value="last7">Last 7 Days</option>
-                <option value="last30">Last 30 Days</option>
-                <option value="custom">Custom Date Range</option>
+                <option value="thisMonth">{t("common:thisMonth")}</option>
+                <option value="last7">{t("common:last7Days")}</option>
+                <option value="last30">{t("common:last30Days")}</option>
+                <option value="custom">{t("common:customDateRange")}</option>
               </select>
               <button className="py-2" onClick={toggleSortOrder}>
                 {sortOrder === "asc" ? (
@@ -131,15 +131,18 @@ const HistorySummary = () => {
             showAll ? "max-h-[1500px]" : "max-h-[350px]"
           } ${showAll ? "overflow-y-auto" : ""}`}
         >
-          {filteredHistory?.map((item, index) => (
-            <li className="py-2 flex flex-col" key={index}>
-              <p className="p-2 font-normal">{item.serialNumber}</p>
-              <div className="px-2 flex flex-row justify-between text-xs font-light ">
-                <p>{item.status}</p>
-                <p>{formatDate(item.createdAt)}</p>
-              </div>
-            </li>
-          ))}
+          {filteredHistory?.map((item, index) => {
+            console.log("Item Status:", item.status); // Logging the status for debugging
+            return (
+              <li className="py-2 flex flex-col" key={index}>
+                <p className="p-2 font-normal">{item.serialNumber}</p>
+                <div className="px-2 flex flex-row justify-between text-xs font-light ">
+                  <p>{t(`qrScanner:${item.status.toLowerCase()}`)}</p>
+                  <p>{formatDate(item.createdAt)}</p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

@@ -14,7 +14,7 @@ import AddIcon from "../../../constants/AddIcon";
 import { TiArrowBack } from "react-icons/ti";
 
 export const QrHeader = ({ isNewScan, setIsNewScan }) => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("qrScanner");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleBack = () => {
@@ -31,20 +31,20 @@ export const QrHeader = ({ isNewScan, setIsNewScan }) => {
         <div className="flex-shrink-0 " onClick={handleBack}>
           <TiArrowBack size={24} className="fill-primaryText" />
         </div>
-
         {/* Centered text */}
         <p className="flex-grow text-center text-base text-primaryText font-semibold">
-          Scanned Result
+          {t("qrScanner:scannedResult")}
         </p>
         {/* Edit Button */}
-        {!isNewScan && (
+        {/* Uncomment and enable if needed */}
+        {/* {!isNewScan && (
           <button
             className="flex-shrink-0 bg-primaryText text-white px-4 py-2 rounded-lg ml-4"
             onClick={handleEdit}
           >
-            Edit
+            {t("qrScanner:edit")}
           </button>
-        )}
+        )} */}
       </div>
     </div>
   );
@@ -54,11 +54,20 @@ export const CylinderInfo = ({
   selectedStatus,
   setData,
 }) => {
+  // Common props to be passed to components
+  const commonProps = {
+    setIsComplete,
+  };
+  const { t } = useTranslation("qrScanner");
+
+  const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
+
   // Render content based on selectedStatus
   const renderContent = () => {
+    console.log("Rendering content for status:", translatedStatus);
 
-    switch (selectedStatus) {
-      case "Disposal":
+    switch (translatedStatus) {
+      case t("qrScanner:disposal"):
         return (
           <div className={containerClass}>
             <Disposal
@@ -66,7 +75,7 @@ export const CylinderInfo = ({
             />
           </div>
         );
-      case "Storage":
+      case t("qrScanner:storage"):
         return (
           <div className={containerClass}>
             <Storage
@@ -75,12 +84,12 @@ export const CylinderInfo = ({
           </div>
         );
       // Grouping Process-related statuses
-      case "Material and Machining":
-      case "Disassembly":
-      case "Grooving":
-      case "LMD":
-      case "Assembly":
-      case "Finishing":
+      case t("qrScanner:materialAndMachining"):
+      case t("qrScanner:disassembly"):
+      case t("qrScanner:grooving"):
+      case t("qrScanner:lmd"):
+      case t("qrScanner:assembly"):
+      case t("qrScanner:finishing"):
         return (
           <div className={containerClass}>
             <Process
@@ -89,7 +98,7 @@ export const CylinderInfo = ({
             />
           </div>
         );
-      case "Mounted":
+      case t("qrScanner:mounted"):
         return (
           <div className={containerClass}>
             <Mounting 
@@ -97,7 +106,7 @@ export const CylinderInfo = ({
             />
           </div>
         );
-      case "Dismounted":
+      case t("qrScanner:dismounted"):
         return (
           <div className={containerClass}>
             <Dismounting 
