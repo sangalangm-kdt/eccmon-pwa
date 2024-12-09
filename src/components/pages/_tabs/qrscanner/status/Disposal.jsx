@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import DateField from "../../../../constants/DateField"; // Assuming DateField component is working as expected
+import { useTranslation } from "react-i18next";
 
 const Disposal = ({ setIsComplete, onDateChange, onDisposedChange }) => {
   const [disposalDate, setDisposalDate] = useState(""); // Disposal date state
   const [isDisposed, setIsDisposed] = useState(0); // Automatically set to 0 (not disposed) or 1 (disposed)
 
+  const { t } = useTranslation();
   useEffect(() => {
     // Automatically mark as disposed when a disposal date is set
     if (disposalDate !== "") {
@@ -34,9 +36,9 @@ const Disposal = ({ setIsComplete, onDateChange, onDisposedChange }) => {
   return (
     <div className="flex flex-col bg-white rounded-lg pb-1">
       <div className=" p-2 w-full ">
-        <h2 className="font-semibold mb-6">Disposal Status</h2>
+        <h2 className="font-semibold mb-6">{t("qrScanner:disposalStatus")}</h2>
         <div className="text-sm">
-          <label>Disposal date</label>
+          <label>{t("qrScanner:disposalDate")}</label>
           <DateField onChange={handleDateChange} />
         </div>
       </div>

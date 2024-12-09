@@ -28,7 +28,7 @@ const OrderNo = () => {
         <input
           className="border w-full py-2 px-2 rounded"
           type="text"
-          placeholder="Select an order number"
+          placeholder={t("qrScanner:selectAnOrderNumber")}
           value={selectedOrderNo}
           readOnly
           onClick={() => setIsModalOpen(true)}

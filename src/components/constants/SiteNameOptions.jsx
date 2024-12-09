@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
+import { useTranslation } from "react-i18next";
 
 const SiteNameOptions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSite, setSelectedSite] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { siteData } = useLocationProcess();
+  const { t } = useTranslation();
 
   // Ensure `siteData` is properly structured
   const siteList = siteData?.data || []; // Fallback to an empty array if undefined
@@ -53,11 +55,11 @@ const SiteNameOptions = () => {
   return (
     <div className="w-full flex flex-col mt-2 ">
       <div className="relative w-full ">
-        <label>Site name</label>
+        <label>{t("qrScanner:siteName")}</label>
         <input
           className="border w-full py-2 px-2 rounded"
           type="text"
-          placeholder="Select a site"
+          placeholder={t("qrScanner:selectaSite")}
           value={selectedSite}
           readOnly
           onClick={() => setIsModalOpen(true)}

@@ -1,6 +1,6 @@
 // For smaller screens, fullscreen is applied
 export const fullscreenClass =
-  "xs:fixed xs:top-0 xs:left-0 xs:w-full xs:h-full xs:bg-white xs:overscroll-auto";
+  "xs:fixed xs:top-0 xs:left-0 xs:w-full xs:h-full xs:bg-white xs:overscroll-auto z-10";
 
 // For Slide-Up Effect
 export const slideUpClass = "xs:transform xs:translate-y-[0%]";

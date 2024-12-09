@@ -35,7 +35,7 @@ const ButtonYesOrNo = ({ onChange, isNew }) => {
           }`}
           onClick={() => handleButtonClick(0)}
         >
-          {t("common.no")}
+          {t("common:no")}
         </button>
       </div>
     </div>
