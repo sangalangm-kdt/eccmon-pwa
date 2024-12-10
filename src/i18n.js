@@ -7,17 +7,21 @@ import commonEN from "./locales/en/common";
 import commonJA from "./locales/ja/common.json";
 import qrScannerEN from "./locales/en/qrscanner";
 import qrScannerJA from "./locales/ja/qrscanner.json";
+import dateEN from "./locales/en/date.json";
+import dateJA from "./locales/ja/date.json";
 
 const resources = {
   en: {
     common: commonEN,
     login: loginEN,
     qrScanner: qrScannerEN,
+    date: dateEN,
   },
   ja: {
     common: commonJA,
     login: loginJA,
     qrScanner: qrScannerJA,
+    date: dateJA,
   },
 };
 

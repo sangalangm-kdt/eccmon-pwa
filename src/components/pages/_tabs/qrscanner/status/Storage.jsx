@@ -28,54 +28,54 @@ const Storage = ({ setData }) => {
   // };
   const { t } = useTranslation();
 
-  const handleDateChange = (date) => {
-    setStartDate(date);
-    onDateChange(date);
+    const handleDateChange = (date) => {
+      setStartDate(date);
+      onDateChange(date);
 
-    // Update completion state
-    if (setIsComplete) {
-      setIsComplete(date !== "");
-    }
-  };
+      // Update completion state
+      if (setIsComplete) {
+        setIsComplete(date !== "");
+      }
+    };
 
-  const { storage, storageMutate } = useLocationProcess();
-  const [processor, setProcessor] = useState();
+    const { storage, storageMutate } = useLocationProcess();
+    const [processor, setProcessor] = useState();
 
-  useEffect(() => {
-    setData({
-      "serialNumber" : cylinderData?.serialNumber,
-      "location" : processor,
-      "cycle" : cylinderData?.cycle,
-      "dateDone" : date,
-    })
-  }, [processor, date])
+    useEffect(() => {
+      setData({
+        serialNumber: cylinderData?.serialNumber,
+        location: processor,
+        cycle: cylinderData?.cycle,
+        dateDone: date,
+      });
+    }, [processor, date]);
 
-  return (
-    <div className="flex flex-col rounded-lg bg-white">
-      <div className="p-2 w-full">
-        <h2 className="font-semibold text-base leading-loose text-primaryText mb-6 mt-2">
-          {t("qrScanner:storageStatus")}
-        </h2>
-        <div>
-          <label className="text-sm font-semibold text-primaryText">
-            {t("qrScanner:locationSite")}
-          </label>{" "}
-          <LocationDropdown
-            options={storage?.data.filter((item) => {
-              return item.status !== 2;
-            })}
-            setProcessor={setProcessor}
-          />
-        </div>
-        <div className="mt-2 mb-4">
-          <label className="text-sm font-semibold text-primaryText">
-            {t("qrScanner:startDate")}
-          </label>
-          <DateField date={date} setDate={setDate} />
+    return (
+      <div className="flex flex-col rounded-lg bg-white">
+        <div className="p-2 w-full">
+          <h2 className="font-semibold text-base leading-loose text-primaryText mb-6 mt-2">
+            {t("qrScanner:storageStatus")}
+          </h2>
+          <div>
+            <label className="text-sm font-semibold text-primaryText">
+              {t("qrScanner:locationSite")}
+            </label>{" "}
+            <LocationDropdown
+              options={storage?.data.filter((item) => {
+                return item.status !== 2;
+              })}
+              setProcessor={setProcessor}
+            />
+          </div>
+          <div className="mt-2 mb-4">
+            <label className="text-sm font-semibold text-primaryText">
+              {t("qrScanner:startDate")}
+            </label>
+            <DateField date={date} setDate={setDate} />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 };
-
 export default Storage;

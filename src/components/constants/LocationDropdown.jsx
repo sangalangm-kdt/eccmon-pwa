@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { inputContainerClass } from "../styles/components";
 
 const StorageLocationDropdown = ({
   onLocationChange,
@@ -29,7 +30,7 @@ const StorageLocationDropdown = ({
           value={selectedLocation}
           onChange={handleChange}
           disabled={loading || options.length === 0}
-          className="p-2 rounded focus:ring-primary text-sm text-primaryText"
+          className={inputContainerClass}
         >
           <option value="">{t("qrScanner:selectALocation")}</option>
           {options.length > 0 ? (

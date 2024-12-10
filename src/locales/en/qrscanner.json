@@ -32,5 +32,15 @@
   "case0": "Case 0",
   "case1": "Case 1",
   "case2": "Case 2",
-  "selectAnOrderNumber": "Please select an order number"
+  "selectAnOrderNumber": "Please select an order number",
+  "engineInfo": "Engine Information",
+  "engineNo": "Engine no.",
+  "operatingHours": "Operating hours",
+  "additionalInfo": "Additional Information",
+  "mountingPosition": "Mounting position on engine",
+  "selectaSite": "Select a site",
+  "enterNumber": "Enter number",
+  "siteName": "Site name",
+  "disposalStatus": "Disposal Status",
+  "disposalDate": "Disposal date"
 }

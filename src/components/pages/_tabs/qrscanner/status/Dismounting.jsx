@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
 
-const Dismounting = ({setData}) => {
+const Dismounting = ({ setData }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
 
