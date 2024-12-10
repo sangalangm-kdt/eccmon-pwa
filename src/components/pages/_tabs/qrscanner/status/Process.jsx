@@ -46,7 +46,7 @@ const Process = ({ selectedProcessorStatus, setData }) => {
       "location" : processor,
       "dateDone" : date,
       "cycle" : cycle,
-      "otherDetails" : `{"case" : ${selectedCase}, "isPassed" : ${passed}, "orderNumber" : ${selectedOrderNo}}`
+      "otherDetails" : `{"case" : "${selectedCase}", "isPassed" : "${passed}", "orderNumber" : "${selectedOrderNo}"}`
     })
   }, [processor, date, passed, cycle, selectedOrderNo, selectedCase])
 

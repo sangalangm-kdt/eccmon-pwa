@@ -18,7 +18,6 @@ const Storage = ({ setData }) => {
   });
   const location = useLocation();
   const cylinderData = location.state?.data;
-
   // const handleDateChange = (date) => {
   //   setDate(date);
 
@@ -27,8 +26,6 @@ const Storage = ({ setData }) => {
   //     setIsComplete(date !== "");
   //   }
   // };
-const Storage = ({ setIsComplete, onDateChange }) => {
-  const [startDate, setStartDate] = useState("");
   const { t } = useTranslation();
 
   const handleDateChange = (date) => {

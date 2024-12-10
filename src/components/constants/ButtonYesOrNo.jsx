@@ -1,15 +1,11 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const ButtonYesOrNo = ({ onChange, isNew }) => {
-  const [selectedValue, setSelectedValue] = useState(null);
+const ButtonYesOrNo = ({ passed, setPassed }) => {
   const { t } = useTranslation();
 
   const handleButtonClick = (value) => {
     setPassed(value);
-    if (onChange) {
-      onChange(value);
-    }
   };
 
   return (
@@ -28,9 +24,7 @@ const ButtonYesOrNo = ({ onChange, isNew }) => {
           type="button"
           className={`p-2 grow rounded-full transition-colors duration-300 ${
             passed === 0
-              ? isNew
-                ? "bg-gray-300 text-black" // New data, color change (gray or other color)
-                : "bg-red-400 text-white" // For normal case, keep it red
+              ?  "bg-red-400 text-white" // For normal case, keep it red
               : "bg-white"
           }`}
           onClick={() => handleButtonClick(0)}

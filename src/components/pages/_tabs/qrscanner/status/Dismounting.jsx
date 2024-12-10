@@ -29,7 +29,7 @@ const Dismounting = ({setData}) => {
       "mountPos" : mountPos,
       "dateDone" : date,
       "cycle" : cycle,
-      "otherDetails" : `{"engineNumber" : ${engineNum}, "operationHours" : ${opHours}, "mountingPosition" : ${mountPos}}`
+      "otherDetails" : `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`
     })
   }, [site, engineNum, opHours, mountPos, date, cycle])
 

@@ -55,9 +55,6 @@ export const CylinderInfo = ({
   setData,
 }) => {
   // Common props to be passed to components
-  const commonProps = {
-    setIsComplete,
-  };
   const { t } = useTranslation("qrScanner");
 
   const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
