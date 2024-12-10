@@ -6,7 +6,7 @@ const ButtonYesOrNo = ({ onChange, isNew }) => {
   const { t } = useTranslation();
 
   const handleButtonClick = (value) => {
-    setSelectedValue(value);
+    setPassed(value);
     if (onChange) {
       onChange(value);
     }
@@ -17,7 +17,7 @@ const ButtonYesOrNo = ({ onChange, isNew }) => {
       <div className="flex flex-row w-full justify-between items-center border rounded-full p-1 text-sm text-primaryText">
         <button
           className={`p-2 grow rounded-full transition-colors duration-300 ${
-            selectedValue === 1 ? "bg-green-400 text-white" : "bg-white"
+            passed === 1 ? "bg-green-400 text-white" : "bg-white"
           }`}
           type="button"
           onClick={() => handleButtonClick(1)}
@@ -27,7 +27,7 @@ const ButtonYesOrNo = ({ onChange, isNew }) => {
         <button
           type="button"
           className={`p-2 grow rounded-full transition-colors duration-300 ${
-            selectedValue === 0
+            passed === 0
               ? isNew
                 ? "bg-gray-300 text-black" // New data, color change (gray or other color)
                 : "bg-red-400 text-white" // For normal case, keep it red

@@ -1,37 +1,32 @@
 import React, { useState, useEffect } from "react";
 import DateField from "../../../../constants/DateField"; // Assuming DateField component is working as expected
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 
-const Disposal = ({ setIsComplete, onDateChange, onDisposedChange }) => {
-  const [disposalDate, setDisposalDate] = useState(""); // Disposal date state
-  const [isDisposed, setIsDisposed] = useState(0); // Automatically set to 0 (not disposed) or 1 (disposed)
+const Disposal = ({ setData }) => {
+  // const [disposalDate, setDisposalDate] = useState(""); // Disposal date state
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  });
 
   const { t } = useTranslation();
+
+  const location = useLocation();
+  const cylinderData = location.state?.data;
+  // const [isDisposed, setIsDisposed] = useState(0); // Automatically set to 0 (not disposed) or 1 (disposed)
+
   useEffect(() => {
-    // Automatically mark as disposed when a disposal date is set
-    if (disposalDate !== "") {
-      setIsDisposed(1); // Set to 1 to indicate disposal
-    }
-
-    // Notify parent about disposal status change and disposal date
-    if (typeof onDisposedChange === "function") {
-      onDisposedChange(isDisposed); // Pass isDisposed to parent when it changes
-    }
-
-    // Notify parent about completion (date and disposal status)
-    if (typeof setIsComplete === "function") {
-      const isComplete = disposalDate !== "" && isDisposed === 1; // Complete if disposal date is set and disposed
-      setIsComplete(isComplete); // Set completion status
-    }
-  }, [disposalDate, isDisposed, setIsComplete, onDisposedChange]);
-
-  // Handle the disposal date change
-  const handleDateChange = (date) => {
-    setDisposalDate(date); // Update the disposal date
-    if (onDateChange) {
-      onDateChange(date); // Notify parent about the disposal date change
-    }
-  };
+    setData({
+      serialNumber: cylinderData?.serialNumber,
+      location: "None",
+      dateDone: date,
+      cycle: cylinderData?.cycle,
+    });
+  }, [date]);
 
   return (
     <div className="flex flex-col bg-white rounded-lg pb-1">
@@ -39,7 +34,8 @@ const Disposal = ({ setIsComplete, onDateChange, onDisposedChange }) => {
         <h2 className="font-semibold mb-6">{t("qrScanner:disposalStatus")}</h2>
         <div className="text-sm">
           <label>{t("qrScanner:disposalDate")}</label>
-          <DateField onChange={handleDateChange} />
+
+          <DateField date={date} setDate={setDate} />
         </div>
       </div>
     </div>

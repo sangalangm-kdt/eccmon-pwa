@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 
-const MountingPositionSelect = () => {
-  const [selectedPosition, setSelectedPosition] = useState("");
+const MountingPositionSelect = ({mountPos, setMountPos}) => {
 
-  const handleChange = (event) => {
-    setSelectedPosition(event.target.value);
-  };
 
   return (
     <div className="flex flex-col space-y-2">
       <select
         id="mountingPosition"
-        value={selectedPosition}
-        onChange={handleChange}
+        value={mountPos}
+        onChange={(e) => setMountPos(e.target.value)}
         className="px-1 py-2 border border-gray-300 rounded-md text-gray-500 focus:outline-none "
       >
-        <option value="" disabled className="text-gray-400">
-          A1
-        </option>
+        <option value="A1">A1</option>
         <option value="A2">A2</option>
         <option value="A3">A3</option>
         <option value="A4">A4</option>

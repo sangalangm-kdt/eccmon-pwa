@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { inputContainerClass } from "../styles/components";
 
-const Cycle = () => {
+const Cycle = ({ cycle, setCycle }) => {
   const { t } = useTranslation();
   return (
     <div className="w-full ">
@@ -10,7 +10,14 @@ const Cycle = () => {
         {t("qrScanner:cycle")}
       </label>
       <div className="border rounded">
-        <input type="text" className={inputContainerClass} />
+        <input
+          type="number"
+          className="border w-full p-2 rounded"
+          value={cycle}
+          onChange={(e) => {
+            setCycle(e.target.value);
+          }}
+        />
       </div>
     </div>
   );

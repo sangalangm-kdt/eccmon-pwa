@@ -3,9 +3,8 @@ import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 import { useTranslation } from "react-i18next";
 
-const OrderNo = () => {
+const OrderNo = ({selectedOrderNo, setSelectedOrderNo}) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedOrderNo, setSelectedOrderNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { orderNumber } = useLocationProcess();
   const { t } = useTranslation();
