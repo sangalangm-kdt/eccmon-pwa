@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
@@ -7,20 +8,20 @@ import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 const ScannedResult = () => {
   const [selectedStatus, setSelectedStatus] = useState("None");
   const [data, setData] = useState({});
-  const {addUpdate} = useCylinderUpdate();
+  const { addUpdate } = useCylinderUpdate();
 
   // useEffect(() => {
   //   setSelectedStatus(cylinder.status);
   // }, [cylinder])
   const handleClick = (e) => {
     e.preventDefault();
-    console.log(data ,selectedStatus);
+    console.log(data, selectedStatus);
     addUpdate(data, selectedStatus);
-  }
+  };
 
   useEffect(() => {
     console.log(data, selectedStatus);
-  }, [data])
+  }, [data]);
 
   return (
     <div>
@@ -31,14 +32,9 @@ const ScannedResult = () => {
           setSelectedStatus={setSelectedStatus}
         />
         <div className="mt-2">
-          <CylinderInfo
-            selectedStatus={selectedStatus}
-            setData={setData}
-          />
+          <CylinderInfo selectedStatus={selectedStatus} setData={setData} />
         </div>
-        <SaveButton 
-          onClick={handleClick}
-        />
+        <SaveButton onClick={handleClick} />
       </form>
     </div>
   );
