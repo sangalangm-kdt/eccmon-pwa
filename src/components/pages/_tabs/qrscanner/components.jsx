@@ -50,10 +50,7 @@ export const QrHeader = ({ isNewScan, setIsNewScan }) => {
   );
 };
 
-export const CylinderInfo = ({
-  selectedStatus,
-  setData,
-}) => {
+export const CylinderInfo = ({ selectedStatus, setData }) => {
   // Common props to be passed to components
   const commonProps = {
     setIsComplete,
@@ -70,17 +67,13 @@ export const CylinderInfo = ({
       case t("qrScanner:disposal"):
         return (
           <div className={containerClass}>
-            <Disposal
-              setData={setData}
-            />
+            <Disposal setData={setData} />
           </div>
         );
       case t("qrScanner:storage"):
         return (
           <div className={containerClass}>
-            <Storage
-              setData={setData}
-            />
+            <Storage setData={setData} />
           </div>
         );
       // Grouping Process-related statuses
@@ -101,17 +94,13 @@ export const CylinderInfo = ({
       case t("qrScanner:mounted"):
         return (
           <div className={containerClass}>
-            <Mounting 
-              setData={setData}
-            />
+            <Mounting setData={setData} />
           </div>
         );
       case t("qrScanner:dismounted"):
         return (
           <div className={containerClass}>
-            <Dismounting 
-              setData={setData}
-             />
+            <Dismounting setData={setData} />
           </div>
         );
       default:
