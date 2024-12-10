@@ -54,7 +54,7 @@ const textStyles = {
 const inputStyles = {
   container: `flex flex-col items-center justify-center  ${padding.responsive}`,
   inputContainer: `flex flex-col   ${padding.responsive}`,
-  input: `border border-inputBorderColor rounded-md  box-border ${sizes.responsive} focus:outline-primary ${padding.responsive} focus:${padding.responsive}`,
+  input: `border  rounded-md  box-border ${sizes.responsive} focus:outline-primary ${padding.responsive} focus:${padding.responsive}`,
   label: ` block font-semibold text-primaryText ${sizes.responsive}`,
 };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { inputContainerClass } from "../styles/components";
 
 const Cycle = () => {
   const { t } = useTranslation();
@@ -8,7 +9,9 @@ const Cycle = () => {
       <label className="text-sm text-primaryText font-semibold">
         {t("qrScanner:cycle")}
       </label>
-      <input type="text" className="border w-full p-2 rounded" />
+      <div className="border rounded">
+        <input type="text" className={inputContainerClass} />
+      </div>
     </div>
   );
 };

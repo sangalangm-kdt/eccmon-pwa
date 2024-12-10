@@ -66,7 +66,10 @@ export const filterHistory = (history, filter, startDate, endDate) => {
   return filteredData;
 };
 
-// Format date function for UI
-export const formatDate = (date) => {
-  return dateFormat(date, "mmmm dS, yyyy");
+export const formatDate = (date, t) => {
+  const month = new Date(date).getMonth() + 1;
+  const monthName = t(`date:months.${month}`);
+
+  const formattedDate = dateFormat(date, "dS, yyyy");
+  return `${monthName} ${formattedDate}`;
 };

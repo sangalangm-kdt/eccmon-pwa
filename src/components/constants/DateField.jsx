@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { inputContainerClass } from "../styles/components";
 
 const DateField = ({ onChange }) => {
   // Initialize with current date in "yyyy-mm-dd" format
@@ -42,9 +43,9 @@ const DateField = ({ onChange }) => {
 
   return (
     <div>
-      <div className="p-2 border rounded text-sm">
+      <div className="border rounded text-sm">
         <input
-          className="w-full mb-0"
+          className={inputContainerClass}
           type="date"
           value={date || ""}
           onChange={handleDateChange}

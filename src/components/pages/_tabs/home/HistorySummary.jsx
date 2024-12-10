@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -52,6 +52,19 @@ const HistorySummary = () => {
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
+
+  // Load the showAll state from sessionStorage when the component mounts
+  useEffect(() => {
+    const storedShowAll = sessionStorage.getItem("showAll");
+    if (storedShowAll !== null) {
+      setShowAll(JSON.parse(storedShowAll));
+    }
+  }, []);
+
+  // Save the showAll state to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem("showAll", JSON.stringify(showAll));
+  }, [showAll]);
 
   return (
     <div
@@ -138,7 +151,7 @@ const HistorySummary = () => {
                 <p className="p-2 font-normal">{item.serialNumber}</p>
                 <div className="px-2 flex flex-row justify-between text-xs font-light ">
                   <p>{t(`qrScanner:${item.status.toLowerCase()}`)}</p>
-                  <p>{formatDate(item.createdAt)}</p>
+                  <p>{formatDate(item.createdAt, t)}</p>
                 </div>
               </li>
             );
