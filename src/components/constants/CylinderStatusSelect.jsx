@@ -6,7 +6,11 @@ import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
 import { useCylinderCover } from "../../hooks/cylinderCover";
 
-export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
+export const CylinderStatusSelect = ({
+  selectedStatus,
+  setSelectedStatus,
+  disabled,
+}) => {
   // const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -38,7 +42,7 @@ export const CylinderStatusSelect = ({ selectedStatus, setSelectedStatus }) => {
         options={cylinderStatusOptions}
         selectedStatus={selectedStatus} // Use local state for selected status
         setSelectedStatus={setSelectedStatus}
-        // disabled={isLoading} // Disable only if loading
+        disabled={disabled}
       />
       {!hasOptions && (
         <p className="text-gray-500">No options available</p> // Optional message

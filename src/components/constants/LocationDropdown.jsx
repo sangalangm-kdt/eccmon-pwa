@@ -8,6 +8,7 @@ const StorageLocationDropdown = ({
   loading,
   error,
   setProcessor,
+  disabled,
 }) => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const { t } = useTranslation();
@@ -29,7 +30,7 @@ const StorageLocationDropdown = ({
         <select
           value={selectedLocation}
           onChange={handleChange}
-          disabled={loading || options.length === 0}
+          disabled={disabled}
           className={inputContainerClass}
         >
           <option value="">{t("qrScanner:selectALocation")}</option>

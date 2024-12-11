@@ -13,17 +13,16 @@ import { useTranslation } from "react-i18next";
 import AddIcon from "../../../constants/AddIcon";
 import { TiArrowBack } from "react-icons/ti";
 
-export const QrHeader = ({ isNewScan, setIsNewScan }) => {
+export const QrHeader = ({ step, handleEdit, disabled }) => {
   const { t } = useTranslation("qrScanner");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleBack = () => {
     dispatch(setPage("/qrscanner")); // Update the page state to 'home'
     navigate("/qrscanner"); // Navigate to the home page
   };
-  const handleEdit = () => {
-    setIsNewScan(true); // Switch to edit mode
-  };
+
   return (
     <div>
       <div className="flex flex-row w-full py-8 px-4 bg-white fixed rounded-b-3xl mb-3 z-20 shadow-sm">
@@ -35,22 +34,23 @@ export const QrHeader = ({ isNewScan, setIsNewScan }) => {
         <p className="flex-grow text-center text-base text-primaryText font-semibold">
           {t("qrScanner:scannedResult")}
         </p>
-        {/* Edit Button */}
-        {/* Uncomment and enable if needed */}
-        {/* {!isNewScan && (
+
+        {step === "review" && (
           <button
-            className="flex-shrink-0 bg-primaryText text-white px-4 py-2 rounded-lg ml-4"
+            type="button"
+            className="absolute bg-primary top-2 right-2 px-4 py-2 text-white rounded"
             onClick={handleEdit}
+            disabled={disabled}
           >
-            {t("qrScanner:edit")}
+            Edit
           </button>
-        )} */}
+        )}
       </div>
     </div>
   );
 };
 
-export const CylinderInfo = ({ selectedStatus, setData }) => {
+export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
   // Common props to be passed to components
   const { t } = useTranslation("qrScanner");
 
@@ -64,13 +64,13 @@ export const CylinderInfo = ({ selectedStatus, setData }) => {
       case t("qrScanner:disposal"):
         return (
           <div className={containerClass}>
-            <Disposal setData={setData} />
+            <Disposal setData={setData} disabled={disabled} />
           </div>
         );
       case t("qrScanner:storage"):
         return (
           <div className={containerClass}>
-            <Storage setData={setData} />
+            <Storage setData={setData} disabled={disabled} />
           </div>
         );
       // Grouping Process-related statuses
@@ -85,19 +85,20 @@ export const CylinderInfo = ({ selectedStatus, setData }) => {
             <Process
               selectedProcessorStatus={selectedStatus}
               setData={setData}
+              disabled={disabled}
             />
           </div>
         );
       case t("qrScanner:mounted"):
         return (
           <div className={containerClass}>
-            <Mounting setData={setData} />
+            <Mounting setData={setData} disabled={disabled} />
           </div>
         );
       case t("qrScanner:dismounted"):
         return (
           <div className={containerClass}>
-            <Dismounting setData={setData} />
+            <Dismounting setData={setData} disabled={disabled} />
           </div>
         );
       default:

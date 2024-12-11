@@ -6,7 +6,7 @@ import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-const ScanCodes = ({ selectedStatus, setSelectedStatus }) => {
+const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const cylinderData = location.state?.data;
@@ -20,8 +20,10 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus }) => {
   const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
   console.log();
 
+  const marginTop = step === "review" ? "mt-2" : "mt-28";
+
   return (
-    <div className="flex flex-col py-0 px-4 mt-28">
+    <div className={`flex flex-col py-0 px-4 ${marginTop}`}>
       <div className=" px-2 py-8 w-full rounded-lg bg-white">
         <h1 className="font-semibold leading-loose color-primary">
           {t("qrScanner:cylinderInformation")}
@@ -45,6 +47,7 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus }) => {
           <CylinderStatusSelect
             selectedStatus={translatedStatus} // Use translated status here
             setSelectedStatus={setSelectedStatus}
+            disabled={disabled}
           />
         </div>
       </div>

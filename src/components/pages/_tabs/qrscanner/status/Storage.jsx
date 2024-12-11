@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import DateField from "../../../../constants/DateField";
@@ -8,7 +10,7 @@ import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const Storage = ({ setData }) => {
+const Storage = ({ setData, disabled }) => {
   const [date, setDate] = useState(() => {
     const today = new Date();
     const year = today.getFullYear();
@@ -28,27 +30,27 @@ const Storage = ({ setData }) => {
   // };
   const { t } = useTranslation();
 
-    const handleDateChange = (date) => {
-      setStartDate(date);
-      onDateChange(date);
+  const handleDateChange = (date) => {
+    setStartDate(date);
+    onDateChange(date);
 
-      // Update completion state
-      if (setIsComplete) {
-        setIsComplete(date !== "");
-      }
-    };
+    // Update completion state
+    if (setIsComplete) {
+      setIsComplete(date !== "");
+    }
+  };
 
-    const { storage, storageMutate } = useLocationProcess();
-    const [processor, setProcessor] = useState();
+  const { storage, storageMutate } = useLocationProcess();
+  const [processor, setProcessor] = useState();
 
-    useEffect(() => {
-      setData({
-        serialNumber: cylinderData?.serialNumber,
-        location: processor,
-        cycle: cylinderData?.cycle,
-        dateDone: date,
-      });
-    }, [processor, date]);
+  useEffect(() => {
+    setData({
+      serialNumber: cylinderData?.serialNumber,
+      location: processor,
+      cycle: cylinderData?.cycle,
+      dateDone: date,
+    });
+  }, [processor, date]);
 
     return (
       <div className="flex flex-col rounded-lg bg-white">

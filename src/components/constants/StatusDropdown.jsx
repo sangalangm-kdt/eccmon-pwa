@@ -10,6 +10,7 @@ const StatusDropdown = ({
   options = [],
   selectedStatus,
   setSelectedStatus,
+  disabled,
 }) => {
   const { t } = useTranslation("qrScanner");
 
@@ -55,7 +56,7 @@ const StatusDropdown = ({
         onChange={(selectedOption) => setSelectedStatus(selectedOption.value)}
         styles={customSelectStyles}
         placeholder={t("qrScanner:selectAStatus")}
-        isDisabled={options.length === 0} // Disable if no options
+        isDisabled={disabled} // Disable if no options
         getOptionLabel={(option) => getOptionLabel(option, selectedStatus)}
       />
     </div>
