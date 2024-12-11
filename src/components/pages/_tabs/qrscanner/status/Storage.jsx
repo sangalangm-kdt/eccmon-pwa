@@ -77,5 +77,4 @@ const Storage = ({ setData }) => {
       </div>
     );
   };
-};
 export default Storage;

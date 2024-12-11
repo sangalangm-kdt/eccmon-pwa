@@ -62,6 +62,7 @@ export const useCylinderCover = () => {
           serialNumber: input,
           status: 2,
         };
+        console.log(res);
 
         addHistory(data2);
         navigate("/scanned-result", { state: res.data });

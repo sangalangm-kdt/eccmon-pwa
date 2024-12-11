@@ -17,6 +17,7 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase }) => {
     if (initialSelectedCase !== null) {
       setSelectedCaseState(initialSelectedCase);
     }
+    console.log(selectedCaseState)
   }, [initialSelectedCase]);
 
   const handleSelectCase = (caseId) => {
@@ -32,16 +33,16 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase }) => {
           <button
             type="button"
             className={`${caseButton} ${
-              selectedCaseState === caseItem.id
+              initialSelectedCase == caseItem.id
                 ? "font-semibold bg-primary text-white"
                 : "font-semibold text-primary border opacity-50 border-primary"
             }`}
             key={caseItem.id}
             onClick={() => handleSelectCase(caseItem.id)}
-            disabled={
-              selectedCaseState !== "" && selectedCaseState !== caseItem.id
-            } // Allow selection if selectedCaseState is ""
-            aria-pressed={selectedCaseState === caseItem.id}
+            // disabled={
+            //   selectedCaseState != "" && selectedCaseState != caseItem.id
+            // } // Allow selection if selectedCaseState is ""
+            // aria-pressed={selectedCaseState === caseItem.id}
           >
             {caseItem.name}
           </button>

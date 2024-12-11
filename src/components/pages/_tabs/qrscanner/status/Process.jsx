@@ -11,11 +11,12 @@ import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next"; // Import useTranslation for translations
 
 const Process = ({ selectedProcessorStatus, setData }) => {
-  const { t } = useTranslation("qrScanner"); // Use the correct namespace
-  const [selectedCase, setSelectedCase] = useState(""); // Initially null, means no case selected
-  const [processor, setProcessor] = useState();
   const location = useLocation();
   const cylinderData = location.state?.data;
+  const { t } = useTranslation("qrScanner"); // Use the correct namespace
+  const [selectedCase, setSelectedCase] = useState(cylinderData?.updates?.otherDetails?.case); // Initially null, means no case selected
+  const [processor, setProcessor] = useState();
+  
   const [date, setDate] = useState(() => {
     const today = new Date();
     const year = today.getFullYear();
@@ -23,9 +24,9 @@ const Process = ({ selectedProcessorStatus, setData }) => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   });
-  const [passed, setPassed] = useState();
+  const [passed, setPassed] = useState(cylinderData?.updates?.otherDetails?.isPassed);
   const [cycle, setCycle] = useState(cylinderData?.cycle);
-  const [selectedOrderNo, setSelectedOrderNo] = useState("");
+  const [selectedOrderNo, setSelectedOrderNo] = useState(cylinderData?.updates?.otherDetails?.orderNumber);
 
   const {
     grooving,
@@ -39,6 +40,11 @@ const Process = ({ selectedProcessorStatus, setData }) => {
     assembly,
     assemblyMutate,
   } = useLocationProcess();
+
+  useEffect(() => {
+    console.log(cylinderData)
+  }, [])
+
 
   useEffect(() => {
     setData({
