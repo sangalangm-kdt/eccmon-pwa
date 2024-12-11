@@ -48,6 +48,12 @@ const QRScanner = () => {
               selectedDeviceId,
               videoRef.current,
               (result, err) => {
+                // if (videoRef.current && videoRef.current.videoWidth === 0) {
+                //   setError(
+                //     "The video feed is not available. Please check the camera.",
+                //   );
+                //   return;
+                // }
                 if (result) {
                   try {
                     const jsonData = JSON.parse(result.text);
@@ -63,7 +69,6 @@ const QRScanner = () => {
                     if (!modalOpen) {
                       setWillScan(false);
                       checkSerial({ setModalOpen, eccId });
-                      setActionType("add");
                     }
 
                     const track =
@@ -141,21 +146,6 @@ const QRScanner = () => {
     setModalOpen(false);
   };
 
-  const renderComponentBasedOnStatus = () => {
-    if (scannedData) {
-      const { cylinderStatus } = scannedData;
-      if (cylinderStatus === "storage") {
-        return (
-          <Storage
-            setIsComplete={() => {}}
-            onSaveData={(data) => console.log("Saved storage data:", data)}
-          />
-        );
-      }
-    }
-    return null;
-  };
-
   return (
     <div
       className={`${qrScannerStyles.containerClass} w-full h-full sm:h-screen sm:w-screen`}
@@ -216,12 +206,11 @@ const QRScanner = () => {
         </button>
       </div>
 
-      {renderComponentBasedOnStatus()}
-
       <ResultsModal
         isOpen={modalOpen}
         onClose={handleClose}
         onConfirm={handleConfirm}
+        eccId={scannedData}
       />
     </div>
   );

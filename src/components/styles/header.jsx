@@ -15,11 +15,11 @@ const navbarStyles = {
     "hover:text-primary focus:text-primary text-secondaryText font-semibold p-2 flex flex-col items-center", // Centering text and icons
   activeLink: "text-primary",
   logo: "w-10 p-1 mr-4 xs:justify-center ",
-  bottomNavbar: `fixed bottom-0 w-full bg-navbar flex justify-center items-center float-none`,
-  bottomNavbarButton: `flex flex-col items-center justify-center p-2`, // Centering buttons
+  bottomNavbar: `fixed bottom-0 w-full bg-white flex justify-center items-center rounded-t-xl shadow-md p-2`,
+  bottomNavbarButton: `flex flex-col items-center justify-center px-8 py-2`, // Centering buttons
   iconContainer: "w-6 h-6 mb-1 focus:fill-primary focus:outline-none",
   navbarLinkBottom: "text-sm",
-  qrContainer: "border border-none bg-primary rounded-full p-4", // Removed absolute positioning
+  qrContainer: "border border-none bg-primary rounded-full p-4 w-full", // Removed absolute positioning
 };
 const modal = {
   modalContent: "bg-primary text-white px-2 py-2 rounded mr-0",

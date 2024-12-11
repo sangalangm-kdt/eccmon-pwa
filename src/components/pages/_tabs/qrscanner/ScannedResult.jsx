@@ -19,20 +19,19 @@ const ScannedResult = () => {
   const handleClick = (e) => {
     e.preventDefault();
     console.log(data, selectedStatus);
+
     if (step === "view") {
       setStep("review");
     } else if (step === "review") {
-      console.log(data, selectedStatus);
       addUpdate(data, selectedStatus);
       navigate("/qrscanner");
-      setData({});
     } else if (step === "edit") {
-      addUpdate(data, selectedStatus);
-      setStep("view");
+      setStep("review");
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.preventDefault();
     setStep("edit");
   };
 

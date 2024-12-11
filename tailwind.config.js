@@ -47,6 +47,28 @@ module.exports = {
       zIndex: {
         60: "60",
       },
+      keyframes: {
+        slideUp: {
+          "0%": { transform: "translateY(100%)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        slideDown: {
+          "0%": { transform: "translateY(0)", opacity: "1" },
+          "100%": { transform: "translateY(100%)", opacity: "0" },
+        },
+        // Adding bounce-fast keyframes
+        "bounce-fast": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1)" },
+        },
+      },
+      animation: {
+        slideUp: "slideUp 0.2s ease-out",
+        slideDown: "slideDown 0.2s ease-out",
+        // Adding bounce-fast animation
+        "bounce-fast": "bounce-fast 0.5s ease-in-out",
+      },
     },
   },
   plugins: [],

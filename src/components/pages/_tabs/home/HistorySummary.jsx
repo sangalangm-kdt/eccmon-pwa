@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -9,11 +9,11 @@ import {
   formatDate,
 } from "../../../utils/utils";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
-import { fullscreenClass } from "../../../styles/home";
+import { fullscreenClass } from "../../../styles/home"; // Import fullscreenClass from styles
 
 const HistorySummary = () => {
   const history = useCylinderCover().cylinder?.data; // Get history data
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(false); // Default value is false
   const [filter, setFilter] = useState("thisMonth");
   const [sortOrder, setSortOrder] = useState("desc"); // Start with descending order to show recent first
   const [startDate, setStartDate] = useState(null);
@@ -53,23 +53,15 @@ const HistorySummary = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  // Load the showAll state from sessionStorage when the component mounts
+  // Ensure fullscreen behavior starts in the collapsed state (showAll=false)
   useEffect(() => {
-    const storedShowAll = sessionStorage.getItem("showAll");
-    if (storedShowAll !== null) {
-      setShowAll(JSON.parse(storedShowAll));
-    }
+    setShowAll(false); // Set to false initially to avoid fullscreen on page reload
   }, []);
-
-  // Save the showAll state to sessionStorage whenever it changes
-  useEffect(() => {
-    sessionStorage.setItem("showAll", JSON.stringify(showAll));
-  }, [showAll]);
 
   return (
     <div
       className={`w-full p-2 overflow-hidden ${
-        history?.length > 5 && !showAll ? "" : fullscreenClass // Apply fullscreen only on smaller screens
+        history?.length > 5 && showAll ? fullscreenClass : "" // Apply fullscreenClass only when showAll is true
       }`}
     >
       {showAll && (
@@ -81,82 +73,89 @@ const HistorySummary = () => {
         </button>
       )}
 
-      <div className="py-4 px-0">
-        <div className="flex flex-row justify-between px-1 pb-2 border-b-0.5">
-          <label className="px-1 py-2 font-semibold text-primaryText">
-            {t("common:recentHistory")}
-          </label>
-          {history?.length > 5 && !showAll && (
-            <button
-              className="px-2 py-2 flex text-white"
-              onClick={() => setShowAll(true)}
-            >
-              <ChevronIcon />
-            </button>
-          )}
-        </div>
-
-        {showAll && (
-          <div className="mb-4 mt-2">
-            <div className="flex justify-between mb-2 mr-2">
-              <select
-                className="px-2 py-1 border ml-2"
-                value={filter}
-                onChange={handleFilterChange}
+      <div
+        className={`transition-transform duration-500 ease-in-out ${
+          showAll ? "animate-slideUp" : "animate-slideDown"
+        }`}
+      >
+        <div className="py-4 px-0">
+          <div className="flex flex-row justify-between px-1 pb-2 border-b border-gray-300">
+            <label className="px-1 py-2 font-semibold text-primaryText">
+              {t("common:recentHistory")}
+            </label>
+            {history?.length > 5 && !showAll && (
+              <button
+                className="px-2 py-2 flex text-white"
+                onClick={() => setShowAll(true)}
               >
-                <option value="thisMonth">{t("common:thisMonth")}</option>
-                <option value="last7">{t("common:last7Days")}</option>
-                <option value="last30">{t("common:last30Days")}</option>
-                <option value="custom">{t("common:customDateRange")}</option>
-              </select>
-              <button className="py-2" onClick={toggleSortOrder}>
-                {sortOrder === "asc" ? (
-                  <GoSortAsc size={24} />
-                ) : (
-                  <GoSortDesc size={24} />
-                )}
+                <ChevronIcon />
               </button>
-            </div>
-
-            {filter === "custom" && (
-              <div className="flex mt-2 px-2">
-                <input
-                  type="date"
-                  name="startDate"
-                  value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                  onChange={handleDateChange}
-                  className="px-2 py-1 border mr-2"
-                />
-                <input
-                  type="date"
-                  name="endDate"
-                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                  onChange={handleDateChange}
-                  className="px-2 py-1 border"
-                />
-              </div>
             )}
           </div>
-        )}
 
-        <ul
-          className={`transition-transform duration-500 ease-in-out ${
-            showAll ? "max-h-[1500px]" : "max-h-[350px]"
-          } ${showAll ? "overflow-y-auto" : ""}`}
-        >
-          {filteredHistory?.map((item, index) => {
-            console.log("Item Status:", item.status); // Logging the status for debugging
-            return (
-              <li className="py-2 flex flex-col" key={index}>
-                <p className="p-2 font-normal">{item.serialNumber}</p>
-                <div className="px-2 flex flex-row justify-between text-xs font-light ">
-                  <p>{t(`qrScanner:${item.status.toLowerCase()}`)}</p>
-                  <p>{formatDate(item.createdAt, t)}</p>
+          {showAll && (
+            <div className="mb-4 mt-2">
+              <div className="flex justify-between mb-2 mr-2">
+                <select
+                  className="px-2 py-1 border ml-2"
+                  value={filter}
+                  onChange={handleFilterChange}
+                >
+                  <option value="thisMonth">{t("common:thisMonth")}</option>
+                  <option value="last7">{t("common:last7Days")}</option>
+                  <option value="last30">{t("common:last30Days")}</option>
+                  <option value="custom">{t("common:customDateRange")}</option>
+                </select>
+                <button className="py-2" onClick={toggleSortOrder}>
+                  {sortOrder === "asc" ? (
+                    <GoSortAsc size={24} />
+                  ) : (
+                    <GoSortDesc size={24} />
+                  )}
+                </button>
+              </div>
+
+              {filter === "custom" && (
+                <div className="flex mt-2 px-2">
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={
+                      startDate ? startDate.toISOString().split("T")[0] : ""
+                    }
+                    onChange={handleDateChange}
+                    className="px-2 py-1 border mr-2"
+                  />
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                    onChange={handleDateChange}
+                    className="px-2 py-1 border"
+                  />
                 </div>
-              </li>
-            );
-          })}
-        </ul>
+              )}
+            </div>
+          )}
+
+          <ul
+            className={`transition-transform duration-500 ease-in-out ${
+              showAll ? "max-h-[1500px]" : "max-h-[430px] "
+            } ${showAll ? "overflow-y-auto" : ""}`}
+          >
+            {filteredHistory?.map((item, index) => {
+              return (
+                <li className="py-2 flex flex-col" key={index}>
+                  <p className="p-2 font-normal">{item.serialNumber}</p>
+                  <div className="px-2 flex flex-row justify-between text-xs font-light ">
+                    <p>{t(`qrScanner:${item.status.toLowerCase()}`)}</p>
+                    <p>{formatDate(item.createdAt, t)}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </div>
   );

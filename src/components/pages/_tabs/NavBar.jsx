@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setPage } from "../../../features/page/pageSlice";
 import { navbarStyles } from "../../styles/header";
@@ -13,6 +13,7 @@ import { useAuthentication } from "../../../hooks/auth";
 
 const NavBar = () => {
   // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
   const currentPage = useSelector((state) => state.page.currentPage);
   const dispatch = useDispatch();
   const { t } = useTranslation("common");
@@ -23,11 +24,6 @@ const NavBar = () => {
     const path = location.pathname.slice(1);
     dispatch(setPage(path));
   }, [location, dispatch]);
-
-  // useEffect(() => {
-  //   console.log(currentPage);
-  //   console.log(user);
-  // }, [location]);
 
   if (currentPage === "scanned-result") {
     return null;
@@ -42,80 +38,83 @@ const NavBar = () => {
         </div>
       )}
       {currentPage === "login" ? (
-        <nav className={`${navbarStyles.topNavbar}`}>
-          <div className={navbarStyles.navbarContainer}>
-            <div className="flex flex-row justify-between m-2">
-              <img src={logo} alt="Logo" className={navbarStyles.logo} />
-              <div>
-                <InstallationButton />
-              </div>
-            </div>
-          </div>
-        </nav>
-      ) : (
-        <>
-          <nav
-            className={`${navbarStyles.topNavbar} sm:flex lg:flex md:flex xs:hidden`}
-          >
+        <div>
+          <nav className={`${navbarStyles.topNavbar}`}>
             <div className={navbarStyles.navbarContainer}>
               <div className="flex flex-row justify-between m-2">
-                <NavLink to="/">
-                  {" "}
-                  <img src={logo} alt="Logo" className={navbarStyles.logo} />
-                </NavLink>
-
-                {user && (
-                  <div>
-                    <ul className="flex space-x-4">
-                      <li className={navbarStyles.navbarLink}>
-                        <NavLink
-                          to="/"
-                          aria-label="Home"
-                          className={({ isActive }) =>
-                            isActive ? `${navbarStyles.activeLink}` : ""
-                          }
-                        >
-                          {t("common:home")}
-                        </NavLink>
-                      </li>
-                      <li className={navbarStyles.navbarLink}>
-                        <NavLink
-                          to="/qrscanner"
-                          aria-label="QR Scanner"
-                          className={({ isActive }) =>
-                            isActive ? `${navbarStyles.activeLink}` : ""
-                          }
-                        >
-                          {t("scanner")}
-                        </NavLink>
-                      </li>
-                      <li className={navbarStyles.navbarLink}>
-                        <NavLink
-                          to="/profile"
-                          aria-label="Profile"
-                          className={({ isActive }) =>
-                            isActive ? `${navbarStyles.activeLink}` : ""
-                          }
-                        >
-                          {t("common:profile")}
-                        </NavLink>
-                      </li>
-                    </ul>
-                  </div>
-                )}
+                <img src={logo} alt="Logo" className={navbarStyles.logo} />
                 <div>
                   <InstallationButton />
                 </div>
               </div>
             </div>
           </nav>
+        </div>
+      ) : (
+        <>
+          <div>
+            <nav
+              className={`${navbarStyles.topNavbar} sm:flex lg:flex md:flex xs:hidden`}
+            >
+              <div className={navbarStyles.navbarContainer}>
+                <div className="flex flex-row justify-between m-2">
+                  <NavLink to="/">
+                    <img src={logo} alt="Logo" className={navbarStyles.logo} />
+                  </NavLink>
+
+                  {user && (
+                    <div>
+                      <ul className="flex space-x-4">
+                        <li className={navbarStyles.navbarLink}>
+                          <NavLink
+                            to="/"
+                            aria-label="Home"
+                            className={({ isActive }) =>
+                              isActive ? `${navbarStyles.activeLink}` : ""
+                            }
+                          >
+                            {t("common:home")}
+                          </NavLink>
+                        </li>
+                        <li className={navbarStyles.navbarLink}>
+                          <NavLink
+                            to="/qrscanner"
+                            aria-label="QR Scanner"
+                            className={({ isActive }) =>
+                              isActive ? `${navbarStyles.activeLink}` : ""
+                            }
+                          >
+                            {t("scanner")}
+                          </NavLink>
+                        </li>
+                        <li className={navbarStyles.navbarLink}>
+                          <NavLink
+                            to="/profile"
+                            aria-label="Profile"
+                            className={({ isActive }) =>
+                              isActive ? `${navbarStyles.activeLink}` : ""
+                            }
+                          >
+                            {t("common:profile")}
+                          </NavLink>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                  <div>
+                    <InstallationButton />
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
           {user ? (
-            <>
+            <div>
               <nav
                 className={`${navbarStyles.bottomNavbar} xs:flex lg:hidden md:hidden`}
               >
                 <div className={navbarStyles.navbarContainer}>
-                  <ul className="flex justify-center space-x-8">
+                  <ul className="flex justify-center">
                     <li className={navbarStyles.bottomNavbarButton}>
                       <NavLink
                         to="/"
@@ -149,8 +148,9 @@ const NavBar = () => {
                             className={`flex flex-col items-center ${navbarStyles.qrContainer}`}
                           >
                             <QRScanIcon
-                              className={`${navbarStyles.iconContainer} 
-                               ${isActive ? "bg-cyan-to-blue" : ""}`}
+                              className={`${navbarStyles.iconContainer} ${
+                                isActive ? "bg-cyan-to-blue" : ""
+                              }`}
                             />
                           </div>
                         )}
@@ -179,20 +179,22 @@ const NavBar = () => {
                   </ul>
                 </div>
               </nav>
-            </>
+            </div>
           ) : (
-            <nav
-              className={`${navbarStyles.topNavbar} sm:flex md:hidden lg:hidden`}
-            >
-              <div className={navbarStyles.navbarContainer}>
-                <div className="flex flex-row justify-between m-2">
-                  <img src={logo} alt="Logo" className={navbarStyles.logo} />
-                  <div>
-                    <InstallationButton />
+            <div>
+              <nav
+                className={`${navbarStyles.topNavbar} sm:flex md:hidden lg:hidden`}
+              >
+                <div className={navbarStyles.navbarContainer}>
+                  <div className="flex flex-row justify-between m-2">
+                    <img src={logo} alt="Logo" className={navbarStyles.logo} />
+                    <div>
+                      <InstallationButton />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </nav>
+              </nav>
+            </div>
           )}
         </>
       )}

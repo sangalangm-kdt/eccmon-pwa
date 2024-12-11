@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const ResultsModal = ({ isOpen, onClose, onConfirm, actionType }) => {
+const ResultsModal = ({ isOpen, onClose, onConfirm, eccId }) => {
   const message = "The cylinder cover does not exist. Do you want to add it?";
 
   // Handle Escape key to close modal
@@ -18,32 +18,41 @@ const ResultsModal = ({ isOpen, onClose, onConfirm, actionType }) => {
     return () => {
       window.removeEventListener("keydown", handleEscKey);
     };
-  }, [onClose]); // Only depend on onClose, no need for isOpen
+  }, [onClose]);
 
   if (!isOpen) return null; // Early return for rendering
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 flex items-end justify-center bg-black bg-opacity-50"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
-      <div className="bg-white p-6 rounded shadow-lg">
-        <h2 id="modal-title" className="text-lg font-semibold">
-          Confirmation
-        </h2>
-        <p id="modal-description">{message}</p>
-        <div className="flex justify-end mt-4">
+      <div
+        className={`bg-white w-full rounded-t-lg shadow-lg p-6 transform transition-transform ${
+          isOpen ? "animate-slideUp" : "animate-slideDown"
+        }`}
+      >
+        <div className="flex flex-col items-center ">
+          <p className="text-sm p-1">Serial number found</p>
+          <p className="text-lg font-semibold w-full text-cyan-500 rounded-full p-2 bg-cyan-100 text-center">
+            {eccId}
+          </p>
+        </div>
+
+        <p className="text-center text-sm py-10">{message}</p>
+
+        <div className="flex flex-row justify-between mt-4">
           <button
-            className="mr-2 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+            className="mr-2 px-4 py-2 bg-gray-200 rounded-full w-full "
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition"
+            className="px-4 py-2 bg-primary text-white rounded-full transition w-full"
             onClick={onConfirm}
           >
             Yes
