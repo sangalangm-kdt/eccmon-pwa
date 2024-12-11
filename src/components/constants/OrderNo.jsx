@@ -3,7 +3,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 import { useTranslation } from "react-i18next";
 
-const OrderNo = ({selectedOrderNo, setSelectedOrderNo}) => {
+const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { orderNumber } = useLocationProcess();
@@ -31,6 +31,7 @@ const OrderNo = ({selectedOrderNo, setSelectedOrderNo}) => {
           value={selectedOrderNo}
           readOnly
           onClick={() => setIsModalOpen(true)}
+          disabled={disabled}
         />
         <button
           className="absolute mt-3 right-2 top-1/2 transform -translate-y-1/2"

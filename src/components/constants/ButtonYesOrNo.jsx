@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const ButtonYesOrNo = ({ passed, setPassed }) => {
+const ButtonYesOrNo = ({ passed, setPassed, disabled }) => {
   const { t } = useTranslation();
 
   const handleButtonClick = (value) => {
@@ -17,6 +17,7 @@ const ButtonYesOrNo = ({ passed, setPassed }) => {
           }`}
           type="button"
           onClick={() => handleButtonClick(1)}
+          disabled={disabled}
         >
           {t("common:yes")}
         </button>
@@ -24,10 +25,11 @@ const ButtonYesOrNo = ({ passed, setPassed }) => {
           type="button"
           className={`p-2 grow rounded-full transition-colors duration-300 ${
             passed === 0
-              ?  "bg-red-400 text-white" // For normal case, keep it red
+              ? "bg-red-400 text-white" // For normal case, keep it red
               : "bg-white"
           }`}
           onClick={() => handleButtonClick(0)}
+          disabled={disabled}
         >
           {t("common:no")}
         </button>

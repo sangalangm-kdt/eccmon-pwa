@@ -26,6 +26,9 @@ const ScannedResult = () => {
       addUpdate(data, selectedStatus);
       navigate("/qrscanner");
       setData({});
+    } else if (step === "edit") {
+      addUpdate(data, selectedStatus);
+      setStep("view");
     }
   };
 

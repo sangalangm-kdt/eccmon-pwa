@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { caseButton } from "../styles/qrscanner";
 import { useTranslation } from "react-i18next";
 
-const CaseButton = ({ initialSelectedCase, setSelectedCase }) => {
+const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
   const [selectedCaseState, setSelectedCaseState] =
     useState(initialSelectedCase);
   const { t } = useTranslation("qrScanner");
@@ -34,14 +34,11 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase }) => {
             className={`${caseButton} ${
               selectedCaseState === caseItem.id
                 ? "font-semibold bg-primary text-white"
-                : "font-semibold text-primary border opacity-50 border-primary"
+                : "font-semibold text-primary border  border-primary"
             }`}
             key={caseItem.id}
             onClick={() => handleSelectCase(caseItem.id)}
-            disabled={
-              selectedCaseState !== "" && selectedCaseState !== caseItem.id
-            } // Allow selection if selectedCaseState is ""
-            aria-pressed={selectedCaseState === caseItem.id}
+            disabled={disabled}
           >
             {caseItem.name}
           </button>

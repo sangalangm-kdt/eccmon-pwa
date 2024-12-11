@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { inputContainerClass } from "../styles/components";
 
-const Cycle = ({ cycle, setCycle }) => {
+const Cycle = ({ cycle, setCycle,disabled }) => {
   const { t } = useTranslation();
   return (
     <div className="w-full ">
@@ -17,6 +17,7 @@ const Cycle = ({ cycle, setCycle }) => {
           onChange={(e) => {
             setCycle(e.target.value);
           }}
+          disabled={disabled}
         />
       </div>
     </div>
