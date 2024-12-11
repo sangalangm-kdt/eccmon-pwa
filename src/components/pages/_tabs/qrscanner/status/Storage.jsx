@@ -67,14 +67,13 @@ const Storage = ({ setData, disabled }) => {
               return item.status !== 2;
             })}
             setProcessor={setProcessor}
-            disabled={disabled}
           />
         </div>
         <div className="mt-2 mb-4">
           <label className="text-sm font-semibold text-primaryText">
             {t("qrScanner:startDate")}
           </label>
-          <DateField date={date} setDate={setDate} disabled={disabled} />
+          <DateField date={date} setDate={setDate} />
         </div>
       </div>
     </div>

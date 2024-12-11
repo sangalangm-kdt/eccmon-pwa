@@ -4,7 +4,7 @@ import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
 
-const Dismounting = ({ setData }) => {
+const Dismounting = ({ setData, disabled }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
 
@@ -23,17 +23,16 @@ const Dismounting = ({ setData }) => {
 
   useEffect(() => {
     setData({
-      "serialNumber" : cylinderData?.serialNumber,
-      "location" : site,
-      "engineNum" : engineNum,
-      "opHours" : opHours,
-      "mountPos" : mountPos,
-      "dateDone" : date,
-      "cycle" : cycle,
-      "otherDetails" : `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`
-    })
-  }, [site, engineNum, opHours, mountPos, date, cycle])
-
+      serialNumber: cylinderData?.serialNumber,
+      location: site,
+      engineNum: engineNum,
+      opHours: opHours,
+      mountPos: mountPos,
+      dateDone: date,
+      cycle: cycle,
+      otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,
+    });
+  }, [site, engineNum, opHours, mountPos, date, cycle]);
 
   return (
     <div className="flex flex-col">
@@ -45,6 +44,7 @@ const Dismounting = ({ setData }) => {
           setEngineNum={setEngineNum}
           opHours={opHours}
           setOpHours={setOpHours}
+          disabled={disabled}
         />
       </div>
 
@@ -56,6 +56,7 @@ const Dismounting = ({ setData }) => {
           setDate={setDate}
           cycle={cycle}
           setCycle={setCycle}
+          disabled={disabled}
         />
       </div>
     </div>

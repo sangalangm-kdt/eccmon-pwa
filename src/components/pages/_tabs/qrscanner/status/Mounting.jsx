@@ -3,8 +3,8 @@ import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
 
-const Mounting = ({setData}) => {
-    const location = useLocation();
+const Mounting = ({ setData, disabled }) => {
+  const location = useLocation();
   const cylinderData = location.state?.data;
 
   const [site, setSite] = useState("");
@@ -22,37 +22,39 @@ const Mounting = ({setData}) => {
 
   useEffect(() => {
     setData({
-      "serialNumber" : cylinderData?.serialNumber,
-      "location" : site,
-      "engineNum" : engineNum,
-      "opHours" : opHours,
-      "mountPos" : mountPos,
-      "dateDone" : date,
-      "cycle" : cycle,
-      "otherDetails" : `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`
-    })
-  }, [site, engineNum, opHours, mountPos, date, cycle])
+      serialNumber: cylinderData?.serialNumber,
+      location: site,
+      engineNum: engineNum,
+      opHours: opHours,
+      mountPos: mountPos,
+      dateDone: date,
+      cycle: cycle,
+      otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,
+    });
+  }, [site, engineNum, opHours, mountPos, date, cycle]);
   return (
     <div className="flex flex-col">
       <div className="w-full p-2 rounded-lg bg-white text-sm">
-        <EngineInfo 
+        <EngineInfo
           site={site}
           setSite={setSite}
           engineNum={engineNum}
           setEngineNum={setEngineNum}
           opHours={opHours}
           setOpHours={setOpHours}
+          disabled={disabled}
         />
       </div>
 
       <div className="w-full p-2 rounded-lg bg-white mt-3  text-sm">
-        <AdditionalInfo 
+        <AdditionalInfo
           mountPos={mountPos}
           setMountPos={setMountPos}
           date={date}
           setDate={setDate}
           cycle={cycle}
           setCycle={setCycle}
+          disabled={disabled}
         />
       </div>
     </div>

@@ -9,13 +9,14 @@ const EngineInfo = ({
   setEngineNum,
   opHours,
   setOpHours,
+  disabled,
 }) => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col p-2">
       <div className="flex flex-col w-full">
         <label className="font-semibold">{t("qrScanner:engineInfo")}</label>
-        <SiteNameOptions setSite={setSite} />
+        <SiteNameOptions setSite={setSite} disabled={disabled} />
       </div>
       <div>
         <label>{t("qrScanner:engineNo")}</label>
@@ -25,6 +26,7 @@ const EngineInfo = ({
           type="text"
           placeholder={t("qrScanner:enterNumber")}
           onChange={(e) => setEngineNum(e.target.value)}
+          disabled={disabled}
         />
       </div>
       <div>
@@ -34,6 +36,7 @@ const EngineInfo = ({
           type="number"
           value={opHours}
           onChange={(e) => setOpHours(e.target.value)}
+          disabled={disabled}
         />
       </div>
     </div>

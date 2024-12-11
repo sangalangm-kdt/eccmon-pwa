@@ -3,7 +3,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 import { useTranslation } from "react-i18next";
 
-const SiteNameOptions = ({setSite}) => {
+const SiteNameOptions = ({ setSite, disabled }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSite, setSelectedSite] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,7 +48,7 @@ const SiteNameOptions = ({setSite}) => {
 
   const handleSelectName = (name) => {
     setSelectedSite(name);
-    setSite(name)
+    setSite(name);
     setSearchTerm("");
     setIsModalOpen(false);
   };
@@ -64,6 +64,7 @@ const SiteNameOptions = ({setSite}) => {
           value={selectedSite}
           readOnly
           onClick={() => setIsModalOpen(true)}
+          disabled={disabled}
         />
         <button
           className="absolute mt-3 right-2 top-1/2 transform -translate-y-1/2"

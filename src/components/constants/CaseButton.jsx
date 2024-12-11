@@ -17,6 +17,7 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
     if (initialSelectedCase !== null) {
       setSelectedCaseState(initialSelectedCase);
     }
+    console.log(selectedCaseState);
   }, [initialSelectedCase]);
 
   const handleSelectCase = (caseId) => {
@@ -32,7 +33,7 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
           <button
             type="button"
             className={`${caseButton} ${
-              selectedCaseState === caseItem.id
+              initialSelectedCase == caseItem.id
                 ? "font-semibold bg-primary text-white"
                 : "font-semibold text-primary border  border-primary"
             }`}

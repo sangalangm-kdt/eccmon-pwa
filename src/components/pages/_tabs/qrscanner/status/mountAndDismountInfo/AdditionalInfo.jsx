@@ -10,6 +10,7 @@ const AdditionalInfo = ({
   setDate,
   cycle,
   setCycle,
+  disabled,
 }) => {
   const { t } = useTranslation();
 
@@ -17,22 +18,16 @@ const AdditionalInfo = ({
     <div className="flex flex-col w-full p-2">
       <label className="font-semibold">{t("qrScanner:additionalInfo")}</label>
       <div>
-        <label>{t("qrScanner:mountingPosition")}</label>
-        <MountingPositionSelect />
-      </div>
-      <div>
-        <label>{t("qrScanner:completionDate")}</label>
-        <DateField />
-      </div>
-      <div>
-        <label>{t("qrScanner:cycle")}</label>
-        <input className="w-full rounded p-2 border" type="number" />
         <label>Mounting position on engine</label>
-        <MountingPositionSelect mountPos={mountPos} setMountPos={setMountPos} />
+        <MountingPositionSelect
+          mountPos={mountPos}
+          setMountPos={setMountPos}
+          disabled={disabled}
+        />
       </div>
       <div>
         <label>Completion date</label>
-        <DateField date={date} setDate={setDate} />
+        <DateField date={date} setDate={setDate} disabled={disabled} />
       </div>
       <div>
         <label>Cycle</label>
@@ -41,6 +36,7 @@ const AdditionalInfo = ({
           type="number"
           value={cycle}
           onChange={(e) => setCycle(e.target.value)}
+          disabled={disabled}
         />
       </div>
     </div>

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 
-const MountingPositionSelect = ({mountPos, setMountPos}) => {
-
-
+const MountingPositionSelect = ({ mountPos, setMountPos, disabled }) => {
   return (
     <div className="flex flex-col space-y-2">
       <select
@@ -10,6 +8,7 @@ const MountingPositionSelect = ({mountPos, setMountPos}) => {
         value={mountPos}
         onChange={(e) => setMountPos(e.target.value)}
         className="px-1 py-2 border border-gray-300 rounded-md text-gray-500 focus:outline-none "
+        disabled={disabled}
       >
         <option value="A1">A1</option>
         <option value="A2">A2</option>
