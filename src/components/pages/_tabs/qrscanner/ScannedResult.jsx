@@ -21,9 +21,6 @@ const ScannedResult = () => {
     console.log(data, selectedStatus);
     if (step === "view") {
       setStep("review");
-    } else if (step === "edit") {
-      addUpdate(data, selec);
-      setStep("view");
     } else if (step === "review") {
       console.log(data, selectedStatus);
       addUpdate(data, selectedStatus);
