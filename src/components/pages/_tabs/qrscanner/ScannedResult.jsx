@@ -45,11 +45,15 @@ const ScannedResult = () => {
       <div className="flex flex-col w-full bg-gray-100">
         <QrHeader step={step} handleEdit={handleEdit} />
         {step === "review" && (
-          <div className="flex flex-col w-full mt-24 px-2 py-2 mb-0 bg-white rounded-lg ">
-            <p className="flex font-semibold text-base">Review information</p>
-            <p className="text-xs text-gray-500">
-              Is the information you submitted is correct?
-            </p>
+          <div className="flex flex-col w-full mt-24  py-2rounded-lg ">
+            <div className="bg-white m-4 m">
+              <p className=" flex font-semibold text-base twext-white">
+                Review information
+              </p>
+              <p className="flex text-xs text-gray-500">
+                Is the information you submitted is correct?
+              </p>
+            </div>
           </div>
         )}
         <ScanCodes

@@ -3,7 +3,7 @@ import DateField from "../../../../constants/DateField"; // Assuming DateField c
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-const Disposal = ({ setData }) => {
+const Disposal = ({ setData, disabled }) => {
   // const [disposalDate, setDisposalDate] = useState(""); // Disposal date state
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -35,7 +35,7 @@ const Disposal = ({ setData }) => {
         <div className="text-sm">
           <label>{t("qrScanner:disposalDate")}</label>
 
-          <DateField date={date} setDate={setDate} />
+          <DateField date={date} setDate={setDate} disabled={disabled} />
         </div>
       </div>
     </div>

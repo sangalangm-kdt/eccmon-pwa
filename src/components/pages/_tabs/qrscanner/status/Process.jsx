@@ -17,11 +17,6 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
   const [processor, setProcessor] = useState();
   const location = useLocation();
   const cylinderData = location.state?.data;
-  const { t } = useTranslation("qrScanner"); // Use the correct namespace
-  const [selectedCase, setSelectedCase] = useState(
-    cylinderData?.updates?.otherDetails?.case,
-  ); // Initially null, means no case selected
-  const [processor, setProcessor] = useState();
 
   const [date, setDate] = useState(() => {
     const today = new Date();
