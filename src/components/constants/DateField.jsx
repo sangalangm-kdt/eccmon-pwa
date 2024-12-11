@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { inputContainerClass } from "../styles/components";
 
-const DateField = ({ date, setDate }) => {
+const DateField = ({ date, setDate, disabled }) => {
   // Initialize with current date in "yyyy-mm-dd" format
 
   const [dateTime, setDateTime] = useState(() => {
@@ -43,6 +43,7 @@ const DateField = ({ date, setDate }) => {
           value={date || ""}
           onChange={handleDateChange}
           required
+          disabled={disabled}
         />
         <input type="hidden" value={dateTime} required />
       </div>

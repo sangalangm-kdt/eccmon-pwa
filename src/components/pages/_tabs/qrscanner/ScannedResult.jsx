@@ -4,11 +4,14 @@ import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
+import { useNavigate } from "react-router-dom";
 
 const ScannedResult = () => {
   const [selectedStatus, setSelectedStatus] = useState("None");
   const [data, setData] = useState({});
   const { addUpdate } = useCylinderUpdate();
+  const [step, setStep] = useState("view");
+  const navigate = useNavigate();
 
   // useEffect(() => {
   //   setSelectedStatus(cylinder.status);
@@ -16,7 +19,21 @@ const ScannedResult = () => {
   const handleClick = (e) => {
     e.preventDefault();
     console.log(data, selectedStatus);
-    addUpdate(data, selectedStatus);
+    if (step === "view") {
+      setStep("review");
+    } else if (step === "edit") {
+      addUpdate(data, selec);
+      setStep("view");
+    } else if (step === "review") {
+      console.log(data, selectedStatus);
+      addUpdate(data, selectedStatus);
+      navigate("/qrscanner");
+      setData({});
+    }
+  };
+
+  const handleEdit = () => {
+    setStep("edit");
   };
 
   useEffect(() => {
@@ -25,17 +42,35 @@ const ScannedResult = () => {
 
   return (
     <div>
-      <form className="flex flex-col w-full bg-gray-100">
-        <QrHeader />
+      <div className="flex flex-col w-full bg-gray-100">
+        <QrHeader step={step} handleEdit={handleEdit} />
+        {step === "review" && (
+          <div className="flex flex-col w-full mt-24 px-2 py-2 mb-0 bg-white rounded-lg ">
+            <p className="flex font-semibold text-base">Review information</p>
+            <p className="text-xs text-gray-500">
+              Is the information you submitted is correct?
+            </p>
+          </div>
+        )}
         <ScanCodes
           selectedStatus={selectedStatus}
           setSelectedStatus={setSelectedStatus}
+          disabled={step === "review"}
+          step={step}
         />
         <div className="mt-2">
-          <CylinderInfo selectedStatus={selectedStatus} setData={setData} />
+          <CylinderInfo
+            selectedStatus={selectedStatus}
+            setData={setData}
+            disabled={step === "review"}
+            step={step}
+          />
         </div>
-        <SaveButton onClick={handleClick} />
-      </form>
+        <SaveButton
+          onClick={handleClick}
+          text={step === "review" ? "Save" : "Continue"}
+        />
+      </div>
     </div>
   );
 };

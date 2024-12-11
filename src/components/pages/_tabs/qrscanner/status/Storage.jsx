@@ -10,7 +10,7 @@ import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const Storage = ({ setData }) => {
+const Storage = ({ setData, disabled }) => {
   const [date, setDate] = useState(() => {
     const today = new Date();
     const year = today.getFullYear();
@@ -67,13 +67,14 @@ const Storage = ({ setData }) => {
               return item.status !== 2;
             })}
             setProcessor={setProcessor}
+            disabled={disabled}
           />
         </div>
         <div className="mt-2 mb-4">
           <label className="text-sm font-semibold text-primaryText">
             {t("qrScanner:startDate")}
           </label>
-          <DateField date={date} setDate={setDate} />
+          <DateField date={date} setDate={setDate} disabled={disabled} />
         </div>
       </div>
     </div>
