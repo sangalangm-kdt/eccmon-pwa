@@ -10,7 +10,7 @@ import Preloader from "./components/constants/preloader/Preloader";
 // import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
 import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
 import AddedOrUpdateSuccessfully from "./components/constants/addedOrUpdateSuccessfully";
-import DismountedModal from "./components/constants/DismountedModal";
+import DismountedModal from "./components/constants/CycleModal";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),

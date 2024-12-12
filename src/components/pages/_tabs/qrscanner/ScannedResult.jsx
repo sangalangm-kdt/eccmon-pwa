@@ -5,7 +5,7 @@ import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import AddedOrUpdateSuccessfully from "../../../constants/addedOrUpdateSuccessfully";
-import DismountedModal from "../../../constants/DismountedModal";
+import CycleModal from "../../../constants/CycleModal";
 
 const ScannedResult = () => {
   const [selectedStatus, setSelectedStatus] = useState("None");
@@ -14,6 +14,7 @@ const ScannedResult = () => {
   const [step, setStep] = useState("view");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("success"); // To control the modal type
+  const [currentCycle, setCurrentCycle] = useState(0);
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -22,8 +23,11 @@ const ScannedResult = () => {
     if (step === "view") {
       setStep("review");
     } else if (step === "review") {
+      const updatedCycle = data.cycle;
+      setCurrentCycle(updatedCycle);
+
       addUpdate(data, selectedStatus);
-      setModalType(selectedStatus === "Dismounted" ? "Dismounted" : "success");
+      setModalType(selectedStatus === "Storage" ? "Storage" : "success");
       setModalOpen(true); // Open the modal
     } else if (step === "edit") {
       setStep("review");
@@ -76,8 +80,11 @@ const ScannedResult = () => {
       </div>
 
       {modalOpen &&
-        (modalType === "Dismounted" ? (
-          <DismountedModal onClose={() => setModalOpen(false)} />
+        (modalType === "Storage" ? (
+          <CycleModal
+            cycle={currentCycle}
+            onClose={() => setModalOpen(false)}
+          />
         ) : (
           <AddedOrUpdateSuccessfully onClose={() => setModalOpen(false)} />
         ))}
