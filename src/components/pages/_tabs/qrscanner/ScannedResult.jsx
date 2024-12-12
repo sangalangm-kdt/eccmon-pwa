@@ -5,6 +5,7 @@ import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import AddedOrUpdateSuccessfully from "../../../constants/addedOrUpdateSuccessfully";
+import DismountedModal from "../../../constants/DismountedModal";
 
 const ScannedResult = () => {
   const [selectedStatus, setSelectedStatus] = useState("None");
@@ -12,6 +13,7 @@ const ScannedResult = () => {
   const { addUpdate } = useCylinderUpdate();
   const [step, setStep] = useState("view");
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("success"); // To control the modal type
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -21,7 +23,8 @@ const ScannedResult = () => {
       setStep("review");
     } else if (step === "review") {
       addUpdate(data, selectedStatus);
-      setModalOpen(true); // Open the success modal
+      setModalType(selectedStatus === "Dismounted" ? "Dismounted" : "success");
+      setModalOpen(true); // Open the modal
     } else if (step === "edit") {
       setStep("review");
     }
@@ -72,10 +75,12 @@ const ScannedResult = () => {
         />
       </div>
 
-      {/* Success Modal */}
-      {modalOpen && (
-        <AddedOrUpdateSuccessfully onClose={() => setModalOpen(false)} />
-      )}
+      {modalOpen &&
+        (modalType === "Dismounted" ? (
+          <DismountedModal onClose={() => setModalOpen(false)} />
+        ) : (
+          <AddedOrUpdateSuccessfully onClose={() => setModalOpen(false)} />
+        ))}
     </div>
   );
 };

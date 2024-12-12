@@ -24,7 +24,7 @@ const DismountedModal = () => {
           <div className=" p-2">
             <GrPowerCycle size={32} color="#41c88b" />
           </div>
-          <p className="font-medium text-green-500">Dismounted successfully</p>
+          <p className="font-medium text-green-500">Dismounted successfully.</p>
 
           {/* Display the last update data */}
           <div className="w-full mt-4 p-2 bg-gray-100 rounded">
@@ -50,7 +50,7 @@ const DismountedModal = () => {
               className="flex w-full bg-gray-100 p-4 rounded-lg mr-3 items-center hover:bg-gray-200 transition"
             >
               <IoReturnUpBackOutline className="size-4" />
-              <p className="px-2">Back to QR</p>
+              <p className="px-2">Save storage</p>
             </button>
             <button
               onClick={handleGoToHome}
