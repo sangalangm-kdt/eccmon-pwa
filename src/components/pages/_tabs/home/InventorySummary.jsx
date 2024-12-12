@@ -1,5 +1,5 @@
 import React from "react";
-import backgroundShape from "../../../assets/svg/background.svg";
+// import backgroundShape from "../../../assets/svg/background.svg";
 import { DonutIcon } from "../../../assets/icons";
 
 const InventorySummary = () => {

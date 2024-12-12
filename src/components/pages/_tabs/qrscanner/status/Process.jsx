@@ -18,7 +18,9 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
   const [selectedCase, setSelectedCase] = useState(cylinderData?.case); // Initially null, means no case selected
   const [processor, setProcessor] = useState(cylinderData?.location);
   const [date, setDate] = useState(() => {
-    const today = cylinderData.updates.dateDone ? new Date(cylinderData.updates.dateDone) : new Date();
+    const today = cylinderData?.updates?.dateDone
+      ? new Date(cylinderData?.updates?.dateDone)
+      : new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
@@ -46,17 +48,37 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
   } = useLocationProcess();
 
   useEffect(() => {
-    setSelectedCase(selectedProcessorStatus === cylinderData.status ? cylinderData.case : null)
-    setProcessor(selectedProcessorStatus === cylinderData.status ? cylinderData.location : "")
+    setSelectedCase(
+      selectedProcessorStatus === cylinderData.status
+        ? cylinderData.case
+        : null,
+    );
+    setProcessor(
+      selectedProcessorStatus === cylinderData.status
+        ? cylinderData.location
+        : "",
+    );
     setDate(() => {
-      const today = selectedProcessorStatus === cylinderData.status && cylinderData.updates.dateDone ? new Date(cylinderData.updates.dateDone) : new Date();
+      const today =
+        selectedProcessorStatus === cylinderData.status &&
+        cylinderData.updates.dateDone
+          ? new Date(cylinderData.updates.dateDone)
+          : new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, "0");
       const day = String(today.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
-    })
-    setPassed(selectedProcessorStatus === cylinderData.status ? cylinderData?.updates?.otherDetails?.isPassed : 0)
-    setSelectedOrderNo(selectedProcessorStatus === cylinderData.status ? cylinderData?.updates?.otherDetails.orderNumber : "")
+    });
+    setPassed(
+      selectedProcessorStatus === cylinderData.status
+        ? cylinderData?.updates?.otherDetails?.isPassed
+        : 0,
+    );
+    setSelectedOrderNo(
+      selectedProcessorStatus === cylinderData.status
+        ? cylinderData?.updates?.otherDetails.orderNumber
+        : "",
+    );
   }, [selectedProcessorStatus]);
 
   useEffect(() => {
@@ -68,8 +90,6 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
       otherDetails: `{"case" : "${selectedCase}", "isPassed" : "${passed}", "orderNumber" : "${selectedOrderNo}"}`,
     });
   }, [processor, date, passed, cycle, selectedOrderNo, selectedCase]);
-
-
 
   // Function to render different locations based on selectedProcessorStatus
   const renderLocations = () => {

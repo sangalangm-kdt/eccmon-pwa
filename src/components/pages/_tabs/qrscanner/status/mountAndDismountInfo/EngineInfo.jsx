@@ -25,7 +25,12 @@ const EngineInfo = ({
           className="w-full p-2 rounded border"
           type="text"
           placeholder={t("qrScanner:enterNumber")}
-          onChange={(e) => setEngineNum(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value.length <= 2) {
+              setEngineNum(value);
+            }
+          }}
           disabled={disabled}
         />
       </div>

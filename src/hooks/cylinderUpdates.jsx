@@ -5,7 +5,7 @@ import { useCylinderCover } from "./cylinderCover";
 
 export const useCylinderUpdate = () => {
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
-  const navigate = useNavigate();
+  //   const navigate = useNavigate();
 
   const addUpdate = async (input, status) => {
     const eccId = input.serialNumber;
@@ -26,7 +26,7 @@ export const useCylinderUpdate = () => {
       .post("/api/cylinder-update", updateData)
       .then((res) => {
         console.log(res);
-        navigate("/qrscanner");
+        // navigate("/qrscanner");
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;

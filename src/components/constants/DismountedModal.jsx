@@ -1,13 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  IoCheckmarkDone,
-  IoReturnUpBackOutline,
-  IoHome,
-} from "react-icons/io5";
+import { IoReturnUpBackOutline, IoHome } from "react-icons/io5";
+import { GrPowerCycle } from "react-icons/gr";
 import { useCylinderUpdate } from "../../hooks/cylinderUpdates";
 
-const AddedOrUpdateSuccessfully = () => {
+const DismountedModal = () => {
   const navigate = useNavigate();
   const { addUpdate } = useCylinderUpdate(); // Access the last update data
 
@@ -24,14 +21,14 @@ const AddedOrUpdateSuccessfully = () => {
       <div className="bg-white w-80 max-w-md rounded-lg shadow-lg p-4 transform transition-transform">
         <div className="flex flex-col items-center justify-center">
           {/* Animated Checkmark */}
-          <div className="animate-bounce">
-            <IoCheckmarkDone size={32} color="#41c88b" />
+          <div className=" p-2">
+            <GrPowerCycle size={32} color="#41c88b" />
           </div>
-          <p className="font-medium text-green-500">Added successfully</p>
+          <p className="font-medium text-green-500">Dismounted successfully</p>
 
           {/* Display the last update data */}
           <div className="w-full mt-4 p-2 bg-gray-100 rounded">
-            <p className="text-sm font-semibold">Details:</p>
+            <p className="text-sm font-semibold">Cycle:</p>
             {addUpdate ? (
               <ul className="text-sm text-gray-700">
                 {Object.entries(addUpdate).map(([key, value]) => (
@@ -69,4 +66,4 @@ const AddedOrUpdateSuccessfully = () => {
   );
 };
 
-export default AddedOrUpdateSuccessfully;
+export default DismountedModal;
