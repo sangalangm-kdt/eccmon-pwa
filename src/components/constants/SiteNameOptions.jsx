@@ -3,9 +3,8 @@ import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 import { useTranslation } from "react-i18next";
 
-const SiteNameOptions = ({ setSite, disabled }) => {
+const SiteNameOptions = ({ site, setSite, disabled }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSite, setSelectedSite] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { siteData } = useLocationProcess();
   const { t } = useTranslation();
@@ -47,7 +46,6 @@ const SiteNameOptions = ({ setSite, disabled }) => {
     : [];
 
   const handleSelectName = (name) => {
-    setSelectedSite(name);
     setSite(name);
     setSearchTerm("");
     setIsModalOpen(false);
@@ -61,7 +59,7 @@ const SiteNameOptions = ({ setSite, disabled }) => {
           className="border w-full py-2 px-2 rounded"
           type="text"
           placeholder={t("qrScanner:selectaSite")}
-          value={selectedSite}
+          value={site}
           readOnly
           onClick={() => setIsModalOpen(true)}
           disabled={disabled}

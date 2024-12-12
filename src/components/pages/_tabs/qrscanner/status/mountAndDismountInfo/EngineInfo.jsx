@@ -16,7 +16,7 @@ const EngineInfo = ({
     <div className="flex flex-col p-2">
       <div className="flex flex-col w-full">
         <label className="font-semibold">{t("qrScanner:engineInfo")}</label>
-        <SiteNameOptions setSite={setSite} disabled={disabled} />
+        <SiteNameOptions site={site} setSite={setSite} disabled={disabled} />
       </div>
       <div>
         <label>{t("qrScanner:engineNo")}</label>

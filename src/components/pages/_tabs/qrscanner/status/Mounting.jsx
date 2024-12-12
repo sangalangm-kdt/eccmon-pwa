@@ -3,22 +3,37 @@ import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
 
-const Mounting = ({ setData, disabled }) => {
+const Mounting = ({ selectedStatus, setData, disabled }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
 
-  const [site, setSite] = useState("");
-  const [engineNum, setEngineNum] = useState("");
-  const [opHours, setOpHours] = useState(0);
-  const [mountPos, setMountPos] = useState("A1");
+  console.log(cylinderData);
+  const [site, setSite] = useState(cylinderData?.location);
+  const [engineNum, setEngineNum] = useState(cylinderData?.updates?.otherDetails?.engineNumber);
+  const [opHours, setOpHours] = useState(cylinderData?.updates?.otherDetails?.operationHours);
+  const [mountPos, setMountPos] = useState(cylinderData?.updates?.otherDetails?.mountingPosition);
   const [date, setDate] = useState(() => {
-    const today = new Date();
+    const today = cylinderData?.updates?.dateDone ? new Date(cylinderData?.updates?.dateDone) : new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   });
   const [cycle, setCycle] = useState(cylinderData?.cycle);
+
+  useEffect(() => {
+    setSite(selectedStatus === cylinderData?.status ? cylinderData?.location : "")
+    setEngineNum(selectedStatus === cylinderData?.status ? cylinderData?.updates?.otherDetails?.engineNumber : "")
+    setOpHours(selectedStatus === cylinderData?.status ? cylinderData?.updates?.otherDetails?.operationHours : 0)
+    setMountPos(selectedStatus === cylinderData?.status ? cylinderData?.updates?.otherDetails?.mountingPosition : "")
+    setDate(() => {
+      const today = selectedStatus === cylinderData?.status && cylinderData?.updates?.dateDone ? new Date(cylinderData?.updates?.dateDone) : new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    })
+  }, [selectedStatus])
 
   useEffect(() => {
     setData({
