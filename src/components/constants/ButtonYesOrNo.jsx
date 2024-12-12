@@ -24,7 +24,7 @@ const ButtonYesOrNo = ({ passed, setPassed, disabled }) => {
         <button
           type="button"
           className={`p-2 grow rounded-full transition-colors duration-300 ${
-            passed === 0
+            passed === 2
               ? "bg-red-400 text-white" // For normal case, keep it red
               : "bg-white"
           }`}

@@ -48,10 +48,12 @@ export const useCylinderCover = () => {
   };
 
   const addCylinder = async (input) => {
+    console.log(input);
     const data = {
       serialNumber: input,
       isDisposed: 2,
       status: "Storage",
+      location: "None",
     };
     await csrf();
 
