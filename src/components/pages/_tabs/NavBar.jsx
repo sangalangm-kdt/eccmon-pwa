@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setPage } from "../../../features/page/pageSlice";
 import { navbarStyles } from "../../styles/header";
@@ -7,9 +7,10 @@ import InstallationButton from "../../constants/InstallationButton";
 import LanguageSwitcher from "../../constants/LanguageSwitcher";
 import { languagess } from "../../styles/header";
 import { useTranslation } from "react-i18next";
-import { HomeIcon, ProfileIcon, QRScanIcon } from "../../assets/icons";
+import { HomeIcon, ProfileIcon } from "../../assets/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuthentication } from "../../../hooks/auth";
+import { PiQrCodeBold } from "react-icons/pi";
 
 const NavBar = () => {
   // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -111,7 +112,7 @@ const NavBar = () => {
           {user ? (
             <div>
               <nav
-                className={`${navbarStyles.bottomNavbar} xs:flex lg:hidden md:hidden`}
+                className={`${navbarStyles.bottomNavbar} xs:flex sm:hidden lg:hidden md:hidden `}
               >
                 <div className={navbarStyles.navbarContainer}>
                   <ul className="flex justify-center">
@@ -125,12 +126,14 @@ const NavBar = () => {
                       >
                         {({ isActive }) => (
                           <div className="flex flex-col items-center font-medium text-tiny">
-                            <HomeIcon
-                              className={`${navbarStyles.iconContainer} ${
-                                isActive ? "fill-primary" : ""
-                              }`}
-                            />
-                            {t("common:home")}
+                            <button className="flex flex-col items-center p-1">
+                              <HomeIcon
+                                className={`${navbarStyles.iconContainer} ${
+                                  isActive ? "fill-primary" : ""
+                                }`}
+                              />
+                              {/* {t("common:home")} */}
+                            </button>
                           </div>
                         )}
                       </NavLink>
@@ -147,11 +150,13 @@ const NavBar = () => {
                           <div
                             className={`flex flex-col items-center ${navbarStyles.qrContainer}`}
                           >
-                            <QRScanIcon
-                              className={`${navbarStyles.iconContainer} ${
-                                isActive ? "bg-cyan-to-blue" : ""
-                              }`}
-                            />
+                            <button className="flex flex-col items-center p-1 focus:bg-gray-100">
+                              <PiQrCodeBold
+                                className={` rounded-full size-6 text-white ${
+                                  isActive ? "fill-primary" : ""
+                                }`}
+                              />
+                            </button>
                           </div>
                         )}
                       </NavLink>
@@ -166,12 +171,14 @@ const NavBar = () => {
                       >
                         {({ isActive }) => (
                           <div className="flex flex-col items-center font-medium text-tiny">
-                            <ProfileIcon
-                              className={`${navbarStyles.iconContainer} ${
-                                isActive ? "fill-primary" : ""
-                              }`}
-                            />
-                            {t("common:profile")}
+                            <button className="flex flex-col items-center p-1">
+                              <ProfileIcon
+                                className={`${navbarStyles.iconContainer} ${
+                                  isActive ? "fill-primary" : ""
+                                }`}
+                              />
+                              {/* {t("common:profile")} */}
+                            </button>
                           </div>
                         )}
                       </NavLink>

@@ -21,6 +21,30 @@ const HistorySummary = () => {
 
   const { t } = useTranslation();
 
+  const statusColors = {
+    storage: "#66d8ff", // Pastel Blue (Blended with Primary)
+    process: "#48bf91", // Pastel Green (Blended with Primary)
+    mount: "#f9d030", // Pastel Yellow (Blended with Primary)
+    dismount: "#f4836b", // Pastel Orange (Blended with Primary)
+    disposal: "#ff708f", // Pastel Red (Blended with Primary)
+  };
+
+  // Get status colors dynamically
+  const getStatusColors = (status) => {
+    const processStages = [
+      "disassembly",
+      "grooving",
+      "lmd",
+      "finishing",
+      "assembly",
+    ];
+    const baseColor = processStages.includes(status.toLowerCase())
+      ? statusColors.process
+      : statusColors[status.toLowerCase()] || "#E0E0E0"; // Default pastel gray
+    const textColor = "#fff";
+    return { backgroundColor: baseColor, textColor };
+  };
+
   // Use utility functions to sort and filter history
   const sortedHistory = sortHistoryByDate(history, sortOrder); // Ensure history is sorted
   const filteredHistory = filterHistory(
@@ -97,7 +121,7 @@ const HistorySummary = () => {
             <div className="mb-4 mt-2">
               <div className="flex justify-between mb-2 mr-2">
                 <select
-                  className="px-2 py-1 border ml-2"
+                  className="px-2 py-1 border ml-2 focus:outline focus:outline-primar"
                   value={filter}
                   onChange={handleFilterChange}
                 >
@@ -108,9 +132,9 @@ const HistorySummary = () => {
                 </select>
                 <button className="py-2" onClick={toggleSortOrder}>
                   {sortOrder === "asc" ? (
-                    <GoSortAsc size={24} />
+                    <GoSortAsc size={24} color="#6e7271" />
                   ) : (
-                    <GoSortDesc size={24} />
+                    <GoSortDesc size={24} color="#6e7271" />
                   )}
                 </button>
               </div>
@@ -140,15 +164,32 @@ const HistorySummary = () => {
 
           <ul
             className={`transition-transform duration-500 ease-in-out ${
-              showAll ? "max-h-[1500px]" : "max-h-[430px] "
+              showAll ? "max-h-screen" : "max-h-[390px] "
             } ${showAll ? "overflow-y-auto" : ""}`}
           >
             {filteredHistory?.map((item, index) => {
+              const { backgroundColor, textColor } = getStatusColors(
+                item.status,
+              );
               return (
-                <li className="py-2 flex flex-col" key={index}>
+                <li
+                  className="py-2 flex flex-col"
+                  key={index}
+                  // style={{
+                  //   borderRight: `4px solid ${backgroundColor}`,
+                  // }}
+                >
                   <p className="p-2 font-normal">{item.serialNumber}</p>
-                  <div className="px-2 flex flex-row justify-between text-xs font-light ">
-                    <p>{t(`qrScanner:${item.status.toLowerCase()}`)}</p>
+                  <div className="px-2 flex flex-row justify-between text-xs ">
+                    <p
+                      className="rounded-full py-1 px-2  text-tiny "
+                      style={{
+                        backgroundColor,
+                        color: textColor,
+                      }}
+                    >
+                      {t(`qrScanner:${item.status.toLowerCase()}`)}
+                    </p>
                     <p>{formatDate(item.createdAt, t)}</p>
                   </div>
                 </li>

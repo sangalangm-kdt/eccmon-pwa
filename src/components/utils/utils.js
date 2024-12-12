@@ -16,7 +16,6 @@ export const filterHistory = (history, filter, startDate, endDate) => {
   const currentDate = new Date();
   let filteredData = history;
 
-  // Ensure the comparison dates are set to the start of the day (midnight)
   const clearTime = (date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0); // Strip out time for date comparison
@@ -27,39 +26,47 @@ export const filterHistory = (history, filter, startDate, endDate) => {
     case "last7":
       const last7Days = new Date();
       last7Days.setDate(currentDate.getDate() - 7);
-      filteredData = filteredData?.filter(
-        (item) => new Date(item.createdAt) >= last7Days,
-      );
+      filteredData = filteredData?.filter((item) => {
+        // console.log(`Checking last7Days filter: ${item.createdAt}`);
+        return new Date(item.createdAt) >= last7Days;
+      });
       break;
     case "last30":
       const last30Days = new Date();
       last30Days.setDate(currentDate.getDate() - 30);
-      filteredData = filteredData?.filter(
-        (item) => new Date(item.createdAt) >= last30Days,
-      );
+      filteredData = filteredData?.filter((item) => {
+        // console.log(`Checking last30Days filter: ${item.createdAt}`);
+        return new Date(item.createdAt) >= last30Days;
+      });
       break;
     case "custom":
       if (startDate && endDate) {
-        // Compare against the cleared startDate and endDate to avoid time issues
         const start = clearTime(startDate);
-        const end = clearTime(endDate);
+        const end = new Date(
+          clearTime(endDate).getTime() + 24 * 60 * 60 * 1000 - 1,
+        ); // Include entire end date
 
-        filteredData = filteredData?.filter(
-          (item) =>
-            new Date(item.createdAt) >= start &&
-            new Date(item.createdAt) <= end,
-        );
+        // console.log(`Start: ${start}, End: ${end}`);
+        filteredData = filteredData?.filter((item) => {
+          // console.log(
+          //   `Checking custom filter: ${item.createdAt}, Start: ${start}, End: ${end}`,
+          // );
+          return (
+            new Date(item.createdAt) >= start && new Date(item.createdAt) <= end
+          );
+        });
       }
       break;
     default:
-      // Default to current month
       const currentMonth = currentDate.getMonth();
       const currentYear = currentDate.getFullYear();
-      filteredData = filteredData?.filter(
-        (item) =>
-          new Date(item.createdAt).getMonth() === currentMonth &&
-          new Date(item.createdAt).getFullYear() === currentYear,
-      );
+      filteredData = filteredData?.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return (
+          itemDate.getMonth() === currentMonth &&
+          itemDate.getFullYear() === currentYear
+        );
+      });
       break;
   }
 
