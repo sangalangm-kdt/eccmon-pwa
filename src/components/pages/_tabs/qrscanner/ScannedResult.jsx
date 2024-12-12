@@ -4,18 +4,15 @@ import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
-import { useNavigate } from "react-router-dom";
+import AddedOrUpdateSuccessfully from "../../../constants/addedOrUpdateSuccessfully";
 
 const ScannedResult = () => {
   const [selectedStatus, setSelectedStatus] = useState("None");
   const [data, setData] = useState({});
   const { addUpdate } = useCylinderUpdate();
   const [step, setStep] = useState("view");
-  const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // useEffect(() => {
-  //   setSelectedStatus(cylinder.status);
-  // }, [cylinder])
   const handleClick = (e) => {
     e.preventDefault();
     console.log(data, selectedStatus);
@@ -24,7 +21,7 @@ const ScannedResult = () => {
       setStep("review");
     } else if (step === "review") {
       addUpdate(data, selectedStatus);
-      navigate("/qrscanner");
+      setModalOpen(true); // Open the success modal
     } else if (step === "edit") {
       setStep("review");
     }
@@ -44,13 +41,13 @@ const ScannedResult = () => {
       <div className="flex flex-col w-full bg-gray-100">
         <QrHeader step={step} handleEdit={handleEdit} />
         {step === "review" && (
-          <div className="flex flex-col w-full mt-20 rounded-lg ">
+          <div className="flex flex-col w-full mt-20 rounded-lg">
             <div className="bg-white py-6 px-3">
-              <p className=" flex font-semibold text-base px-2">
+              <p className="flex font-semibold text-base px-2">
                 Review information
               </p>
               <p className="flex text-xs text-gray-500 px-2">
-                Is the information you submitted is correct?
+                Is the information you submitted correct?
               </p>
             </div>
           </div>
@@ -74,6 +71,11 @@ const ScannedResult = () => {
           text={step === "review" ? "Save" : "Continue"}
         />
       </div>
+
+      {/* Success Modal */}
+      {modalOpen && (
+        <AddedOrUpdateSuccessfully onClose={() => setModalOpen(false)} />
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import React, { useState, useEffect } from "react";
 import { caseButton } from "../styles/qrscanner";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,8 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
     // Update the internal state when the initialSelectedCase changes
     if (initialSelectedCase !== null) {
       setSelectedCaseState(initialSelectedCase);
+    } else {
+      setSelectedCaseState("0");
     }
     console.log(selectedCaseState);
   }, [initialSelectedCase]);

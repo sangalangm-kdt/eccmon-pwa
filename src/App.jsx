@@ -9,6 +9,7 @@ import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
 // import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
 import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
+import AddedOrUpdateSuccessfully from "./components/constants/addedOrUpdateSuccessfully";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
@@ -57,7 +58,7 @@ function App() {
         },
         {
           path: "/view-info",
-          element: <ViewInfo />,
+          element: <AddedOrUpdateSuccessfully />,
         },
         {
           path: "*",
