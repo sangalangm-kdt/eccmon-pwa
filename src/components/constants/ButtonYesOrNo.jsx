@@ -13,7 +13,7 @@ const ButtonYesOrNo = ({ passed, setPassed, disabled }) => {
       <div className="flex flex-row w-full justify-between items-center border rounded-full p-1 text-sm text-primaryText">
         <button
           className={`p-2 grow rounded-full transition-colors duration-300 ${
-            passed === 1 ? "bg-green-400 text-white" : "bg-white"
+            +passed === 1 ? "bg-green-400 text-white" : "bg-white"
           }`}
           type="button"
           onClick={() => handleButtonClick(1)}
@@ -24,11 +24,11 @@ const ButtonYesOrNo = ({ passed, setPassed, disabled }) => {
         <button
           type="button"
           className={`p-2 grow rounded-full transition-colors duration-300 ${
-            passed === 2
+            +passed === 2
               ? "bg-red-400 text-white" // For normal case, keep it red
               : "bg-white"
           }`}
-          onClick={() => handleButtonClick(0)}
+          onClick={() => handleButtonClick(2)}
           disabled={disabled}
         >
           {t("common:no")}

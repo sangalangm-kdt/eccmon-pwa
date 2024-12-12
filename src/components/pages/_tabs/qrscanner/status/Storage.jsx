@@ -11,15 +11,18 @@ import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const Storage = ({ setData, disabled }) => {
+  const location = useLocation();
+  const cylinderData = location.state?.data;
+
   const [date, setDate] = useState(() => {
-    const today = new Date();
+    const today = cylinderData.updates.dateDone ? new Date(cylinderData.updates.dateDone) : new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   });
-  const location = useLocation();
-  const cylinderData = location.state?.data;
+  
+  console.log(cylinderData)
   // const handleDateChange = (date) => {
   //   setDate(date);
 
@@ -41,7 +44,7 @@ const Storage = ({ setData, disabled }) => {
   };
 
   const { storage, storageMutate } = useLocationProcess();
-  const [processor, setProcessor] = useState();
+  const [processor, setProcessor] = useState(cylinderData?.location);
 
   useEffect(() => {
     setData({
@@ -66,6 +69,7 @@ const Storage = ({ setData, disabled }) => {
             options={storage?.data.filter((item) => {
               return item.status !== 2;
             })}
+            processor={processor}
             setProcessor={setProcessor}
             disabled={disabled}
           />

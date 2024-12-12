@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { caseButton } from "../styles/qrscanner";
 import { useTranslation } from "react-i18next";
 
-const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
-  const [selectedCaseState, setSelectedCaseState] =
-    useState(initialSelectedCase);
+const CaseButton = ({ selectedCase, setSelectedCase, disabled }) => {
   const { t } = useTranslation("qrScanner");
   const cases = [
     { id: 0, name: t("case0") },
@@ -12,17 +10,8 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
     { id: 2, name: t("case2") },
   ];
 
-  useEffect(() => {
-    // Update the internal state when the initialSelectedCase changes
-    if (initialSelectedCase !== null) {
-      setSelectedCaseState(initialSelectedCase);
-    }
-    console.log(selectedCaseState);
-  }, [initialSelectedCase]);
-
   const handleSelectCase = (caseId) => {
-    setSelectedCase(caseId); // Notify parent component of the selected case
-    setSelectedCaseState(caseId); // Update internal state
+    setSelectedCase(caseId); // Update internal state
   };
 
   return (
@@ -33,7 +22,7 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
           <button
             type="button"
             className={`${caseButton} ${
-              initialSelectedCase == caseItem.id
+              selectedCase == caseItem.id
                 ? "font-semibold bg-primary text-white"
                 : "font-semibold text-primary border  border-primary"
             }`}
@@ -49,7 +38,7 @@ const CaseButton = ({ initialSelectedCase, setSelectedCase, disabled }) => {
       <input
         type="text"
         className="hidden"
-        value={selectedCaseState}
+        value={selectedCase}
         readOnly
       />
     </div>

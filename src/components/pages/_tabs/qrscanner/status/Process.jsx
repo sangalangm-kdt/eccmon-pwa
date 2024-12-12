@@ -12,14 +12,13 @@ import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next"; // Import useTranslation for translations
 
 const Process = ({ selectedProcessorStatus, setData, disabled }) => {
-  const { t } = useTranslation("qrScanner"); // Use the correct namespace
-  const [selectedCase, setSelectedCase] = useState(""); // Initially null, means no case selected
-  const [processor, setProcessor] = useState();
   const location = useLocation();
   const cylinderData = location.state?.data;
-
+  const { t } = useTranslation("qrScanner"); // Use the correct namespace
+  const [selectedCase, setSelectedCase] = useState(cylinderData?.case); // Initially null, means no case selected
+  const [processor, setProcessor] = useState(cylinderData?.location);
   const [date, setDate] = useState(() => {
-    const today = new Date();
+    const today = cylinderData.updates.dateDone ? new Date(cylinderData.updates.dateDone) : new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
@@ -67,7 +66,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
         return (
           <div>
             <CaseButton
-              initialSelectedCase={selectedCase} // Pass selectedCase, initially null for no selection
+              selectedCase={selectedCase} // Pass selectedCase, initially null for no selection
               setSelectedCase={setSelectedCase}
               disabled={disabled}
             />
@@ -76,6 +75,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
             </label>
             <LocationDropdown
               options={disassembly?.data.filter((item) => item.status !== 2)}
+              processor={processor}
               setProcessor={setProcessor}
               disabled={disabled}
             />
@@ -107,7 +107,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
         return (
           <div>
             <CaseButton
-              initialSelectedCase={selectedCase}
+              selectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
               disabled={disabled}
             />
@@ -116,6 +116,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
             </label>
             <LocationDropdown
               options={assembly?.data.filter((item) => item.status !== 2)}
+              processor={processor}
               setProcessor={setProcessor}
               disabled={disabled}
             />
@@ -147,7 +148,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
         return (
           <div>
             <CaseButton
-              initialSelectedCase={selectedCase}
+              selectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
               disabled={disabled}
             />
@@ -156,6 +157,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
             </label>
             <LocationDropdown
               options={finishing?.data.filter((item) => item.status !== 2)}
+              processor={processor}
               setProcessor={setProcessor}
               disabled={disabled}
             />
@@ -187,7 +189,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
         return (
           <div>
             <CaseButton
-              initialSelectedCase={selectedCase}
+              selectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
               disabled={disabled}
             />
@@ -196,6 +198,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
             </label>
             <LocationDropdown
               options={grooving?.data.filter((item) => item.status !== 2)}
+              processor={processor}
               setProcessor={setProcessor}
               disabled={disabled}
             />
@@ -227,7 +230,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
         return (
           <div>
             <CaseButton
-              initialSelectedCase={selectedCase}
+              selectedCase={selectedCase}
               setSelectedCase={setSelectedCase}
               disabled={disabled}
             />
@@ -236,6 +239,7 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
             </label>
             <LocationDropdown
               options={lmd?.data.filter((item) => item.status !== 2)}
+              processor={processor}
               setProcessor={setProcessor}
               disabled={disabled}
             />

@@ -21,6 +21,7 @@ export const useCylinderUpdate = () => {
 
         await csrf();
 
+        console.log(updateData)
         axiosLib
             .post("/api/cylinder-update", updateData)
             .then((res) => {

@@ -7,15 +7,14 @@ const StorageLocationDropdown = ({
   options = [],
   loading,
   error,
+  processor,
   setProcessor,
   disabled,
 }) => {
-  const [selectedLocation, setSelectedLocation] = useState("");
   const { t } = useTranslation();
 
   const handleChange = (e) => {
     const newLocation = e.target.value;
-    setSelectedLocation(newLocation);
     setProcessor(newLocation);
     if (onLocationChange) {
       onLocationChange(newLocation); // Call the passed function
@@ -28,7 +27,7 @@ const StorageLocationDropdown = ({
         {loading && <div>Loading options...</div>}
         {error && <div>Error: {error}</div>}
         <select
-          value={selectedLocation}
+          value={processor}
           onChange={handleChange}
           disabled={disabled}
           className={inputContainerClass}
