@@ -15,11 +15,15 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
   const cylinderData = location.state?.data;
 
   const [date, setDate] = useState(() => {
-    const today = cylinderData?.updates?.dateDone ? new Date(cylinderData?.updates?.dateDone) : new Date();
+    const today = cylinderData?.updates?.dateDone
+      ? new Date(cylinderData?.updates?.dateDone)
+      : new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    const hours = String(today.getHours()).padStart(2, "0");
+    const minutes = String(today.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
   });
   // const handleDateChange = (date) => {
   //   setDate(date);
@@ -45,17 +49,27 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
   const [processor, setProcessor] = useState(cylinderData?.updates?.location);
 
   useEffect(() => {
-    setProcessor(selectedStatus === cylinderData?.status ? cylinderData?.updates?.location : "");
+    setProcessor(
+      selectedStatus === cylinderData?.status
+        ? cylinderData?.updates?.location
+        : "",
+    );
     setDate(() => {
-      const today = selectedStatus === cylinderData?.status && cylinderData?.updates?.dateDone ? new Date(cylinderData?.updates?.dateDone) : new Date();
+      const today =
+        selectedStatus === cylinderData?.status &&
+        cylinderData?.updates?.dateDone
+          ? new Date(cylinderData?.updates?.dateDone)
+          : new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, "0");
       const day = String(today.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    })
-  }, [selectedStatus])
+      const hours = String(today.getHours()).padStart(2, "0");
+      const minutes = String(today.getMinutes()).padStart(2, "0");
+      return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
+    });
+  }, [selectedStatus]);
 
-  console.log(cylinderData)
+  console.log(cylinderData);
   useEffect(() => {
     setData({
       serialNumber: cylinderData?.serialNumber,

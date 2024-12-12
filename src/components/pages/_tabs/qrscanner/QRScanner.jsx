@@ -48,12 +48,16 @@ const QRScanner = () => {
               selectedDeviceId,
               videoRef.current,
               (result, err) => {
-                // if (videoRef.current && videoRef.current.videoWidth === 0) {
-                //   setError(
-                //     "The video feed is not available. Please check the camera.",
-                //   );
-                //   return;
-                // }
+                if (videoRef.current) {
+                  const videoWidth = videoRef.current.videoWidth;
+                  const videoHeight = videoRef.current.videoHeight;
+                  if (videoWidth === 0 || videoHeight === 0) {
+                    setError(
+                      "The video feed is not properly initialized. Please check your camera.",
+                    );
+                    return;
+                  }
+                }
                 if (result) {
                   try {
                     const jsonData = JSON.parse(result.text);

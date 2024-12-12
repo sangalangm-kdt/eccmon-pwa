@@ -27,8 +27,14 @@ const ScannedResult = () => {
       setCurrentCycle(updatedCycle);
 
       addUpdate(data, selectedStatus);
-      setModalType(selectedStatus === "Storage" ? "Storage" : "success");
-      setModalOpen(true); // Open the modal
+
+      if (selectedStatus === "Storage") {
+        setModalType("Storage");
+      } else {
+        setModalType("success");
+      }
+
+      setModalOpen(true);
     } else if (step === "edit") {
       setStep("review");
     }
@@ -42,6 +48,8 @@ const ScannedResult = () => {
   useEffect(() => {
     console.log(data, selectedStatus);
   }, [data]);
+
+  const isDataValid = Object.keys(data).length > 0; // Check if data is not empty
 
   return (
     <div>
@@ -80,13 +88,25 @@ const ScannedResult = () => {
       </div>
 
       {modalOpen &&
-        (modalType === "Storage" ? (
-          <CycleModal
-            cycle={currentCycle}
+        (isDataValid ? (
+          modalType === "Storage" ? (
+            <CycleModal
+              cycle={currentCycle}
+              onClose={() => setModalOpen(false)}
+            />
+          ) : (
+            <AddedOrUpdateSuccessfully
+              data={data}
+              selectedStatus={selectedStatus}
+              onClose={() => setModalOpen(false)}
+            />
+          )
+        ) : (
+          <AddedOrUpdateSuccessfully
+            data={data}
+            selectedStatus={selectedStatus}
             onClose={() => setModalOpen(false)}
           />
-        ) : (
-          <AddedOrUpdateSuccessfully onClose={() => setModalOpen(false)} />
         ))}
     </div>
   );

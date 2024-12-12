@@ -7,7 +7,7 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled }) => {
         id="mountingPosition"
         value={mountPos}
         onChange={(e) => setMountPos(e.target.value)}
-        className="px-1 py-2 border border-gray-300 rounded-md text-gray-500 focus:outline-none "
+        className="px-1 py-2 border border-gray-300 rounded-md text-gray-600 focus:outline-none "
         disabled={disabled}
       >
         <option value="A1">A1</option>

@@ -24,11 +24,14 @@ const CycleModal = ({ cycle, onClose }) => {
           <div className="p-2">
             <GrPowerCycle size={32} color="#41c88b" />
           </div>
-          <p className="font-medium text-green-500">Cycle Completed</p>
+          <p className="font-medium text-green-500">Current Cycle</p>
 
           {/* Display the current cycle */}
           <div className="w-full mt-4 p-2 bg-gray-100 rounded">
-            <p className="text-sm font-semibold">Current Cycle: {cycle}</p>
+            <p className="text-sm font-semibold items-center justify-center flex">
+              {" "}
+              {cycle}
+            </p>
           </div>
 
           {/* Buttons */}

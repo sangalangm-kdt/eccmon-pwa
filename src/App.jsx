@@ -8,9 +8,10 @@ import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
 import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
 // import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
-import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
-import AddedOrUpdateSuccessfully from "./components/constants/addedOrUpdateSuccessfully";
+// import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
+// import AddedOrUpdateSuccessfully from "./components/constants/addedOrUpdateSuccessfully";
 import DismountedModal from "./components/constants/CycleModal";
+import { HistoryProvider } from "./components/utils/HistoryContext";
 
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
@@ -72,9 +73,11 @@ function App() {
   return (
     <div className="App">
       <AuthProvider>
-        <Suspense fallback={<Preloader />}>
-          <RouterProvider router={router} />
-        </Suspense>
+        <HistoryProvider>
+          <Suspense fallback={<Preloader />}>
+            <RouterProvider router={router} />
+          </Suspense>
+        </HistoryProvider>
       </AuthProvider>
     </div>
   );

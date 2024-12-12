@@ -10,6 +10,7 @@ import {
 } from "../../../utils/utils";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import { fullscreenClass } from "../../../styles/home"; // Import fullscreenClass from styles
+import { getStatusColors } from "../../../utils/statusColors"; // Import status color utility
 
 const HistorySummary = () => {
   const history = useCylinderCover().cylinder?.data; // Get history data
@@ -20,30 +21,6 @@ const HistorySummary = () => {
   const [endDate, setEndDate] = useState(null);
 
   const { t } = useTranslation();
-
-  const statusColors = {
-    storage: "#66d8ff", // Pastel Blue (Blended with Primary)
-    process: "#48bf91", // Pastel Green (Blended with Primary)
-    mount: "#f9d030", // Pastel Yellow (Blended with Primary)
-    dismount: "#f4836b", // Pastel Orange (Blended with Primary)
-    disposal: "#ff708f", // Pastel Red (Blended with Primary)
-  };
-
-  // Get status colors dynamically
-  const getStatusColors = (status) => {
-    const processStages = [
-      "disassembly",
-      "grooving",
-      "lmd",
-      "finishing",
-      "assembly",
-    ];
-    const baseColor = processStages.includes(status.toLowerCase())
-      ? statusColors.process
-      : statusColors[status.toLowerCase()] || "#E0E0E0"; // Default pastel gray
-    const textColor = "#fff";
-    return { backgroundColor: baseColor, textColor };
-  };
 
   // Use utility functions to sort and filter history
   const sortedHistory = sortHistoryByDate(history, sortOrder); // Ensure history is sorted
@@ -85,7 +62,7 @@ const HistorySummary = () => {
   return (
     <div
       className={`w-full p-2 overflow-hidden ${
-        history?.length > 5 && showAll ? fullscreenClass : "" // Apply fullscreenClass only when showAll is true
+        history?.length > 5 && showAll ? fullscreenClass : ""
       }`}
     >
       {showAll && (
@@ -171,18 +148,25 @@ const HistorySummary = () => {
               const { backgroundColor, textColor } = getStatusColors(
                 item.status,
               );
+
+              const createdDate = new Date(item.createdAt);
+              const updatedDate = item.updatedAt
+                ? new Date(item.updatedAt)
+                : null;
+
               return (
-                <li
-                  className="py-2 flex flex-col"
-                  key={index}
-                  // style={{
-                  //   borderRight: `4px solid ${backgroundColor}`,
-                  // }}
-                >
-                  <p className="p-2 font-normal">{item.serialNumber}</p>
-                  <div className="px-2 flex flex-row justify-between text-xs ">
+                <li className="py-2 flex flex-col" key={index}>
+                  <p className="p-2 font-normal flex items-center justify-between">
+                    <span>{item.serialNumber}</span>
+                    <span className="text-xs text-gray-500 ml-2 font-semibold ">
+                      {`${createdDate.getHours()}:${String(
+                        createdDate.getMinutes(),
+                      ).padStart(2, "0")}`}
+                    </span>
+                  </p>
+                  <div className="px-2 flex flex-row justify-between text-xs">
                     <p
-                      className="rounded-full py-1 px-2  text-tiny "
+                      className="rounded-full py-1 px-2 text-tiny"
                       style={{
                         backgroundColor,
                         color: textColor,
@@ -190,7 +174,14 @@ const HistorySummary = () => {
                     >
                       {t(`qrScanner:${item.status.toLowerCase()}`)}
                     </p>
-                    <p>{formatDate(item.createdAt, t)}</p>
+                    <p className="text-xs text-gray-500">
+                      {formatDate(createdDate, t)}
+                    </p>
+                    {updatedDate && (
+                      <p className="text-xs text-gray-500">
+                        {t("common:updated")} {formatDate(updatedDate, t)}
+                      </p>
+                    )}
                   </div>
                 </li>
               );
