@@ -70,7 +70,7 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
       case t("qrScanner:storage"):
         return (
           <div className={containerClass}>
-            <Storage setData={setData} disabled={disabled} />
+            <Storage selectedStatus={selectedStatus} setData={setData} disabled={disabled} />
           </div>
         );
       // Grouping Process-related statuses
@@ -92,13 +92,13 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
       case t("qrScanner:mounted"):
         return (
           <div className={containerClass}>
-            <Mounting setData={setData} disabled={disabled} />
+            <Mounting selectedStatus={selectedStatus} setData={setData} disabled={disabled} />
           </div>
         );
       case t("qrScanner:dismounted"):
         return (
           <div className={containerClass}>
-            <Dismounting setData={setData} disabled={disabled} />
+            <Dismounting selectedStatus={selectedStatus} setData={setData} disabled={disabled} />
           </div>
         );
       default:

@@ -36,7 +36,7 @@ const AdditionalInfo = ({
           type="number"
           value={cycle}
           onChange={(e) => setCycle(e.target.value)}
-          disabled={disabled}
+          disabled={true}
         />
       </div>
     </div>

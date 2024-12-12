@@ -10,19 +10,17 @@ import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const Storage = ({ setData, disabled }) => {
+const Storage = ({ selectedStatus, setData, disabled }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
 
   const [date, setDate] = useState(() => {
-    const today = cylinderData.updates.dateDone ? new Date(cylinderData.updates.dateDone) : new Date();
+    const today = cylinderData?.updates?.dateDone ? new Date(cylinderData?.updates?.dateDone) : new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   });
-  
-  console.log(cylinderData)
   // const handleDateChange = (date) => {
   //   setDate(date);
 
@@ -44,8 +42,20 @@ const Storage = ({ setData, disabled }) => {
   };
 
   const { storage, storageMutate } = useLocationProcess();
-  const [processor, setProcessor] = useState(cylinderData?.location);
+  const [processor, setProcessor] = useState(cylinderData?.updates?.location);
 
+  useEffect(() => {
+    setProcessor(selectedStatus === cylinderData?.status ? cylinderData?.updates?.location : "");
+    setDate(() => {
+      const today = selectedStatus === cylinderData?.status && cylinderData?.updates?.dateDone ? new Date(cylinderData?.updates?.dateDone) : new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    })
+  }, [selectedStatus])
+
+  console.log(cylinderData)
   useEffect(() => {
     setData({
       serialNumber: cylinderData?.serialNumber,
