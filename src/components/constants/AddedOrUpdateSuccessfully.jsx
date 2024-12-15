@@ -22,40 +22,74 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
     navigate("/"); // Navigate to home
   };
 
-  // Function to render 'otherDetails' as parsed JSON
-  const renderOtherDetails = (otherDetails) => {
-    try {
-      const parsedDetails = JSON.parse(otherDetails);
-      return Object.entries(parsedDetails).map(([key, value]) => (
-        <li key={key} className="flex justify-between">
-          <span className="capitalize font-medium">{key}:</span>
-          <span>{String(value)}</span>
-        </li>
-      ));
-    } catch (error) {
-      return <p className="text-sm text-gray-500">Invalid data format</p>;
-    }
-  };
 
   const { backgroundColor, textColor } = getStatusColors(selectedStatus);
 
-  const renderData = (data) => {
-    const seenKeys = new Set();
+const renderData = (data) => {
+  const seenKeys = new Set();
 
-    return Object.entries(data).map(([key, value]) => {
-      if (seenKeys.has(key)) return null;
-      seenKeys.add(key);
-      if (key === "otherDetails") {
-        return renderOtherDetails(value);
-      }
-      return (
-        <li key={key} className="flex justify-between">
-          <span className="capitalize font-medium">{key}:</span>
-          <span>{String(value)}</span>
-        </li>
-      );
-    });
+  // Define a mapping of keys to labels
+  const labels = {
+    serialNumber: "Serial No.",
+    location: "Location",
+    dateDone: "Completion Date",
+    cycle: "Cycle",
+    case: "Case",
+    isPassed: "Status",
+    orderNumber: "Order No.",
+    otherDetails: "Additional Details",
+    engineNumber: "Engine Number",
+    operationHours: "Operation Hours",
+    mountingPosition: "Mounting Position",
   };
+
+  return Object.entries(data).map(([key, value]) => {
+    if (seenKeys.has(key)) return null;
+    seenKeys.add(key);
+
+    // Get the label for the key, default to the key if no label is defined
+    const displayKey = labels[key] || key;
+
+    // Format the dateDone field
+    if (key === "dateDone" && typeof value === "string") {
+      value = value.replace("T", ", "); // Replace T with a space
+    }
+
+    if (key === "otherDetails") {
+      try {
+        const parsedDetails = JSON.parse(value);
+  // Check and update isPassed value based on its initial value
+        if (parsedDetails.isPassed !== "") {
+          if (+parsedDetails.isPassed === 1) {
+            parsedDetails.isPassed = "Yes";
+          } else if (+parsedDetails.isPassed === 2) {
+            parsedDetails.isPassed = "No";
+          } else if (+parsedDetails.isPassed === 0) {
+            parsedDetails.isPassed = "Ongoing";
+          }
+        }
+     
+  
+        return Object.entries(parsedDetails).map(([subKey, subValue]) => (
+          <li key={subKey} className="flex justify-between">
+            <span className="capitalize font-medium ">{labels[subKey] || subKey}:</span>
+            <span>{String(subValue)}</span>
+          </li>
+        ));
+      } catch (error) {
+        return <p className="text-sm text-gray-500">Invalid data format</p>;
+      }
+    }
+    console.log(data)
+
+    return (
+      <li key={key} className="flex justify-between">
+        <span className="capitalize font-medium">{displayKey}:</span>
+        <span>{String(value)}</span>
+      </li>
+    );
+  });
+};
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

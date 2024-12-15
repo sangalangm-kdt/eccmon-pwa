@@ -70,9 +70,9 @@ const Mounting = ({ selectedStatus, setData, disabled }) => {
     setData({
       serialNumber: cylinderData?.serialNumber,
       location: site,
-      engineNum: engineNum,
-      opHours: opHours,
-      mountPos: mountPos,
+      // engineNum: engineNum,
+      // opHours: opHours,
+      // mountPos: mountPos,
       dateDone: date,
       cycle: cycle,
       otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,

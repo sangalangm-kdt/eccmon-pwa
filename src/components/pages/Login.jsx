@@ -14,23 +14,25 @@ import { useAuthentication } from "../../hooks/auth";
 
 const Login = () => {
   const { t } = useTranslation(["login", "common"]);
-  const { login } = useAuthentication({
+  const { login, errorMessage } = useAuthentication({
     middleware: "guest",
     redirectIfAuthenticated: "/",
   });
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState("");
   const [status, setStatus] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors("");
 
+    // Clear any previous error
+    setStatus(null);
+
+    // Call the login function
     login({
-      setErrors,
       setStatus,
+      setErrors: () => {}, // No need for setErrors since we're using errorMessage
       email,
       password,
       remember: false,
@@ -38,7 +40,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full min-h-screen lg:bg-secondary xs:bg-none ">
+    <div className="flex items-center justify-center w-full min-h-screen lg:bg-secondary xs:bg-none">
       <div className="flex w-full max-w-md items-center sm:p-6 md:p-2 ">
         <div className={container.containerDiv}>
           <div className="flex justify-center items-center w-52 xs:mb-8 lg:mt-4">
@@ -46,25 +48,22 @@ const Login = () => {
             <LogoText />
           </div>
           <div className={inputStyles.container}>
-            <h2
-              className={`text-3xl text-primaryText font-bold mb-8 xs:text-2xl`}
-            >
+            <h2 className={`text-3xl text-primaryText font-bold mb-8 xs:text-2xl`}>
               {t("login:login")}
             </h2>
           </div>
 
           <form className={width.responsive} onSubmit={handleSubmit}>
-            <div
-              className={`text-center text-base text-primaryText xs:text-sm xs:p-3 lg:text-md lg:mb-0`}
-            >
+            <div className={`text-center text-base text-primaryText xs:text-sm xs:p-3 lg:text-md lg:mb-0`}>
               <label>{t("login:loginDetails")}</label>
             </div>
             <div>
-              {errors && (
+              {/* Display the errorMessage from useAuthentication */}
+              {errorMessage && (
                 <p
                   className={`${inputStyles.inputContainer} bg-red-200 text-red-500 w-full text-sm text-center`}
                 >
-                  {errors}
+                  {errorMessage}
                 </p>
               )}
             </div>

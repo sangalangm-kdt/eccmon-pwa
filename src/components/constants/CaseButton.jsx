@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable eqeqeq */
 import React, { useState, useEffect } from "react";
 import { caseButton } from "../styles/qrscanner";

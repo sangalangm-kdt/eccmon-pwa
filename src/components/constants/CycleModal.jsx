@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { IoReturnUpBackOutline, IoHome } from "react-icons/io5";
 import { GrPowerCycle } from "react-icons/gr";
 
-const CycleModal = ({ cycle, onClose }) => {
+const CycleModal = ({data,  onClose }) => {
   const navigate = useNavigate();
+
+  const cycle = data?.cycle; 
 
   const handleBackToQR = () => {
     navigate("/qrscanner");

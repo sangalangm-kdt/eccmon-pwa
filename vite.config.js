@@ -4,7 +4,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({ fastRefresh: false }),
     VitePWA({
       manifest: "./public/manifest.json",
     }),

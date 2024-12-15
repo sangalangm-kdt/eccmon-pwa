@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axiosLib from "../lib/axios";
 
 export const useAuthentication = ({
@@ -9,6 +9,7 @@ export const useAuthentication = ({
   redirectIfAuthenticated,
 } = {}) => {
   // const navigation = useNavigate();
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const {
     data: user,
@@ -22,7 +23,9 @@ export const useAuthentication = ({
         .get("/api/user")
         .then((res) => res.data)
         .catch((error) => {
-          if (error.response.status !== 409) throw error;
+          if (error.response.status !== 409) {
+            setErrorMessage("Error fetching user data.");
+          }
 
           // navigation("/login");
         }),
@@ -46,7 +49,15 @@ export const useAuthentication = ({
         mutate();
       })
       .catch((error) => {
-        if (error.response.status !== 409) throw error;
+        if (error.response) {
+          if (error.response.status === 422) {
+            setErrorMessage("Invalid credentials.");
+          } else if (error.response.status === 409) {
+            setErrorMessage("User already logged in.");
+          } else {
+            setErrorMessage("An unexpected error occurred.");
+          }
+        }
       });
   };
 
@@ -66,10 +77,17 @@ export const useAuthentication = ({
         logout();
   }, [user, error]);
 
+  useEffect(() => {
+    if (error) {
+      setErrorMessage("Error fetching user data.");
+    }
+  }, [error]);
+
   return {
     user,
     login,
     logout,
     isLoading,
+    errorMessage,
   };
 };
