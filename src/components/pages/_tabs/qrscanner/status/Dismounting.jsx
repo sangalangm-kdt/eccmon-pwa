@@ -10,13 +10,13 @@ const Dismounting = ({ selectedStatus, setData, disabled }) => {
   console.log(cylinderData);
   const [site, setSite] = useState(cylinderData?.location);
   const [engineNum, setEngineNum] = useState(
-    cylinderData?.updates?.otherDetails?.engineNumber,
+    cylinderData?.updates?.otherDetails?.engineNumber
   );
   const [opHours, setOpHours] = useState(
-    cylinderData?.updates?.otherDetails?.operationHours,
+    cylinderData?.updates?.otherDetails?.operationHours
   );
   const [mountPos, setMountPos] = useState(
-    cylinderData?.updates?.otherDetails?.mountingPosition,
+    cylinderData?.updates?.otherDetails?.mountingPosition
   );
   const [date, setDate] = useState(() => {
     const today = cylinderData?.updates?.dateDone
@@ -33,22 +33,22 @@ const Dismounting = ({ selectedStatus, setData, disabled }) => {
 
   useEffect(() => {
     setSite(
-      selectedStatus === cylinderData?.status ? cylinderData?.location : "",
+      selectedStatus === cylinderData?.status ? cylinderData?.location : ""
     );
     setEngineNum(
       selectedStatus === cylinderData?.status
         ? cylinderData?.updates?.otherDetails?.engineNumber
-        : "",
+        : ""
     );
     setOpHours(
       selectedStatus === cylinderData?.status
         ? cylinderData?.updates?.otherDetails?.operationHours
-        : 0,
+        : 0
     );
     setMountPos(
       selectedStatus === cylinderData?.status
         ? cylinderData?.updates?.otherDetails?.mountingPosition
-        : "",
+        : ""
     );
     setDate(() => {
       const today =
@@ -69,9 +69,9 @@ const Dismounting = ({ selectedStatus, setData, disabled }) => {
     setData({
       serialNumber: cylinderData?.serialNumber,
       location: site,
-      engineNum: engineNum,
-      opHours: opHours,
-      mountPos: mountPos,
+      // engineNum: engineNum,
+      // opHours: opHours,
+      // mountPos: mountPos,
       dateDone: date,
       cycle: cycle,
       otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,

@@ -53,9 +53,7 @@ const StatusDropdown = ({
       <Select
         options={statusOptions}
         value={statusOptions.find((option) => option.value === selectedStatus)}
-        onChange={(selectedOption) =>
-          setSelectedStatus(selectedOption.value.toLowerCase())
-        }
+        onChange={(selectedOption) => setSelectedStatus(selectedOption.value)}
         styles={customSelectStyles}
         placeholder={t("qrScanner:selectAStatus")}
         isDisabled={disabled} // Disable if no options

@@ -52,7 +52,7 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
     setProcessor(
       selectedStatus === cylinderData?.status
         ? cylinderData?.updates?.location
-        : "",
+        : ""
     );
     setDate(() => {
       const today =

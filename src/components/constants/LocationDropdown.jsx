@@ -31,6 +31,7 @@ const StorageLocationDropdown = ({
           onChange={handleChange}
           disabled={disabled}
           className={inputContainerClass}
+          required
         >
           <option value="">{t("qrScanner:selectALocation")}</option>
           {options.length > 0 ? (

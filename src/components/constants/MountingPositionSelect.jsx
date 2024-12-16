@@ -6,14 +6,15 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled }) => {
       <select
         id="mountingPosition"
         value={mountPos}
-        onChange={(e) =>  {
+        onChange={(e) => {
           console.log("Selected Mounting Position:", e.target.value); // Debug log
           setMountPos(e.target.value); // Update state
         }}
         className="px-1 py-2 border border-gray-300 rounded-md text-gray-600 focus:outline-none "
         disabled={disabled}
+        required
       >
-        <option value ="">Select an engine position</option>
+        <option value="">Select an engine position</option>
         <option value="A1">A1</option>
         <option value="A2">A2</option>
         <option value="A3">A3</option>
@@ -23,8 +24,7 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled }) => {
         <option value="A7">A7</option>
         <option value="A8">A8</option>
         <option value="A9">A9</option>
-        <option value="B1">B1</option>
-        <option value="B2">B2</option>
+        <option value="B1">B1</option>s<option value="B2">B2</option>
         <option value="B3">B3</option>
         <option value="B4">B4</option>
         <option value="B5">B5</option>

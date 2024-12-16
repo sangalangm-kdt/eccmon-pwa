@@ -43,5 +43,6 @@
   "siteName": "Site name",
   "disposalStatus": "Disposal Status",
   "disposalDate": "Disposal date",
-  "engineNumError": "It should not exceed to more than two"
+  "engineNumError": "It should not exceed more than two characters",
+  "opHoursError": "Operating hours cannot be less than 0"
 }

@@ -39,7 +39,7 @@ const QRScanner = () => {
         .then((videoInputDevices) => {
           const backCamera =
             videoInputDevices.find((device) =>
-              device.label.toLowerCase().includes("back"),
+              device.label.toLowerCase().includes("back")
             ) || videoInputDevices[0];
 
           if (backCamera) {
@@ -52,9 +52,9 @@ const QRScanner = () => {
                   const videoWidth = videoRef.current.videoWidth;
                   const videoHeight = videoRef.current.videoHeight;
                   if (videoWidth === 0 || videoHeight === 0) {
-                    setError(
-                      "The video feed is not properly initialized. Please check your camera.",
-                    );
+                    // setError(
+                    //   "The video feed is not properly initialized. Please check your camera."
+                    // );
                     return;
                   }
                 }
@@ -65,7 +65,7 @@ const QRScanner = () => {
 
                     if (!eccId) {
                       setError(
-                        "The scanned code does not contain a valid code.",
+                        "The scanned code does not contain a valid code."
                       );
                       return;
                     }
@@ -98,14 +98,14 @@ const QRScanner = () => {
                   height: 0.5,
                 },
                 formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
-              },
+              }
             );
           }
         })
         .catch((err) => {
           console.error("Error accessing video devices: ", err);
           setError(
-            "Error accessing video devices. Please check your camera permissions.",
+            "Error accessing video devices. Please check your camera permissions."
           );
         });
     }

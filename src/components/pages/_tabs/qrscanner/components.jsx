@@ -50,23 +50,18 @@ export const QrHeader = ({ step, handleEdit, disabled }) => {
 };
 
 export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
-  // Common props to be passed to components
-  const { t } = useTranslation("qrScanner");
-
-  const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
-
   // Render content based on selectedStatus
   const renderContent = () => {
-    console.log("Rendering content for status:", translatedStatus);
+    console.log("Rendering content for status:", selectedStatus);
 
-    switch (translatedStatus) {
-      case t("qrScanner:disposal"):
+    switch (selectedStatus) {
+      case "Disposal":
         return (
           <div className={containerClass}>
             <Disposal setData={setData} disabled={disabled} />
           </div>
         );
-      case t("qrScanner:storage"):
+      case "Storage":
         return (
           <div className={containerClass}>
             <Storage
@@ -77,12 +72,12 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
           </div>
         );
       // Grouping Process-related statuses
-      case t("qrScanner:materialAndMachining"):
-      case t("qrScanner:disassembly"):
-      case t("qrScanner:grooving"):
-      case t("qrScanner:lmd"):
-      case t("qrScanner:assembly"):
-      case t("qrScanner:finishing"):
+
+      case "Disassembly":
+      case "Grooving":
+      case "LMD":
+      case "Assembly":
+      case "Finishing":
         return (
           <div className={containerClass}>
             <Process
@@ -92,7 +87,7 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
             />
           </div>
         );
-      case t("qrScanner:mounted"):
+      case "Mounted":
         return (
           <div className={containerClass}>
             <Mounting
@@ -102,7 +97,7 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
             />
           </div>
         );
-      case t("qrScanner:dismounted"):
+      case "Dismounted":
         return (
           <div className={containerClass}>
             <Dismounting
@@ -116,7 +111,7 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
         return (
           <div className={containerClass}>
             <div className="border p-2">
-              <AddIcon />
+              {/* AddIcon or any default component here */}
             </div>
           </div>
         );

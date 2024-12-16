@@ -42,5 +42,7 @@
   "enterNumber": "番号を入力してください",
   "siteName": "サイト名",
   "disposalStatus": "廃棄状況",
-  "disposalDate": "廃棄日"
+  "disposalDate": "廃棄日",
+  "engineNumError": "2文字を超えることはできません",
+  "opHoursError": "稼働時間は0未満にすることはできません"
 }

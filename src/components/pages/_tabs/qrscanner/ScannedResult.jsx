@@ -49,7 +49,7 @@ const ScannedResult = () => {
     console.log(data, selectedStatus);
   }, [data]);
 
-  const isDataValid = Object.keys(data).length > 0; // Check if data is not empty
+  const isDataValid = Object.keys(data).length > 0 && selectedStatus !== "None"; // Check if data is not empty
 
   return (
     <div>
@@ -84,6 +84,7 @@ const ScannedResult = () => {
         <SaveButton
           onClick={handleClick}
           text={step === "review" ? "Save" : "Continue"}
+          disabled={!isDataValid}
         />
       </div>
 
