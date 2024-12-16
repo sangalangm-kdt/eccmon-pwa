@@ -92,7 +92,7 @@ const ScannedResult = () => {
           modalType === "Storage" ? (
             <CycleModal
               cycle={currentCycle}
-              data ={data}
+              data={data}
               onClose={() => setModalOpen(false)}
             />
           ) : (

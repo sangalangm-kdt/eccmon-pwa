@@ -17,7 +17,7 @@ const navbarStyles = {
   logo: "w-10 p-1 mr-4 xs:justify-center ",
   bottomNavbar: `fixed bottom-0 w-full bg-white border flex justify-center items-center rounded-t-xl shadow-md p-2`,
   bottomNavbarButton: `flex flex-col items-center justify-center px-8 py-2`, // Centering buttons
-  iconContainer: "w-6 h-6 mb-1 focus:fill-primary focus:outline-none",
+  iconContainer: "w-6 h-6 mb-1  focus:fill-primary focus:outline-none",
   navbarLinkBottom: "text-sm",
   qrContainer: "border border-none bg-cyan-to-blue rounded-full p-4 shadow-md", // Removed absolute positioning
 };

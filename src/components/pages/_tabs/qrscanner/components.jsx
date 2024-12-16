@@ -19,7 +19,6 @@ export const QrHeader = ({ step, handleEdit, disabled }) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    dispatch(setPage("/qrscanner")); // Update the page state to 'home'
     navigate("/qrscanner"); // Navigate to the home page
   };
 
@@ -70,7 +69,11 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
       case t("qrScanner:storage"):
         return (
           <div className={containerClass}>
-            <Storage selectedStatus={selectedStatus} setData={setData} disabled={disabled} />
+            <Storage
+              selectedStatus={selectedStatus}
+              setData={setData}
+              disabled={disabled}
+            />
           </div>
         );
       // Grouping Process-related statuses
@@ -92,13 +95,21 @@ export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
       case t("qrScanner:mounted"):
         return (
           <div className={containerClass}>
-            <Mounting selectedStatus={selectedStatus} setData={setData} disabled={disabled} />
+            <Mounting
+              selectedStatus={selectedStatus}
+              setData={setData}
+              disabled={disabled}
+            />
           </div>
         );
       case t("qrScanner:dismounted"):
         return (
           <div className={containerClass}>
-            <Dismounting selectedStatus={selectedStatus} setData={setData} disabled={disabled} />
+            <Dismounting
+              selectedStatus={selectedStatus}
+              setData={setData}
+              disabled={disabled}
+            />
           </div>
         );
       default:

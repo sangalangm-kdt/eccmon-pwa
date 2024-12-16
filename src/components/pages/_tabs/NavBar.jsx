@@ -7,10 +7,10 @@ import InstallationButton from "../../constants/InstallationButton";
 import LanguageSwitcher from "../../constants/LanguageSwitcher";
 import { languagess } from "../../styles/header";
 import { useTranslation } from "react-i18next";
-import { HomeIcon, ProfileIcon } from "../../assets/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuthentication } from "../../../hooks/auth";
 import { PiQrCodeBold } from "react-icons/pi";
+import { RiSettingsLine, RiHome6Line } from "react-icons/ri";
 
 const NavBar = () => {
   // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -127,9 +127,9 @@ const NavBar = () => {
                         {({ isActive }) => (
                           <div className="flex flex-col items-center font-medium text-tiny">
                             <button className="flex flex-col items-center p-1">
-                              <HomeIcon
+                              <RiHome6Line
                                 className={`${navbarStyles.iconContainer} ${
-                                  isActive ? "fill-primary" : ""
+                                  isActive ? "fill-primary" : "text-gray-500"
                                 }`}
                               />
                               {/* {t("common:home")} */}
@@ -172,9 +172,9 @@ const NavBar = () => {
                         {({ isActive }) => (
                           <div className="flex flex-col items-center font-medium text-tiny">
                             <button className="flex flex-col items-center p-1">
-                              <ProfileIcon
+                              <RiSettingsLine
                                 className={`${navbarStyles.iconContainer} ${
-                                  isActive ? "fill-primary" : ""
+                                  isActive ? "fill-primary" : "text-gray-500"
                                 }`}
                               />
                               {/* {t("common:profile")} */}

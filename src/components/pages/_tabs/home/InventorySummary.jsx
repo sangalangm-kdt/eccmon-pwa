@@ -9,13 +9,6 @@ const InventorySummary = () => {
         <div className="pt-2">
           <DonutIcon />
         </div>
-        {/* <div className="absolute bottom-0 right-0 ">
-          <img
-            className="w-20 opacity-30"
-            src={backgroundShape}
-            alt="background"
-          />
-        </div> */}
       </div>
     </div>
   );

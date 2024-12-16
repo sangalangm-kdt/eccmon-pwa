@@ -3,26 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { IoReturnUpBackOutline, IoHome } from "react-icons/io5";
 import { GrPowerCycle } from "react-icons/gr";
 
-const CycleModal = ({data,  onClose }) => {
+const CycleModal = ({ data }) => {
   const navigate = useNavigate();
 
-  const cycle = data?.cycle; 
+  const cycle = data?.cycle;
 
   const handleBackToQR = () => {
     navigate("/qrscanner");
-    onClose();
+    // onClose();
   };
 
   const handleGoToHome = () => {
     navigate("/");
-    onClose();
+    // onClose();
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white w-80 max-w-md rounded-lg shadow-lg p-4 transform transition-transform">
         <div className="flex flex-col items-center justify-center">
-          {/* Animated Checkmark */}
           <div className="p-2">
             <GrPowerCycle size={32} color="#41c88b" />
           </div>

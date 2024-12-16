@@ -141,7 +141,9 @@ const HistorySummary = () => {
 
           {/* Check if filteredHistory has no data */}
           {filteredHistory?.length === 0 ? (
-            <div className="text-center text-gray-500 p-4 h-72">No recent history</div>
+            <div className="text-center text-gray-500 p-4 h-72">
+              No recent history
+            </div>
           ) : (
             <ul
               className={`transition-transform duration-500 ease-in-out ${
@@ -149,17 +151,23 @@ const HistorySummary = () => {
               } ${showAll ? "overflow-y-auto" : ""}`}
             >
               {filteredHistory?.map((item, index) => {
-                const { backgroundColor, textColor } = getStatusColors(item.status);
+                const { backgroundColor, textColor } = getStatusColors(
+                  item.status,
+                );
 
                 const createdDate = new Date(item.createdAt);
-                const updatedDate = item.updatedAt ? new Date(item.updatedAt) : null;
+                const updatedDate = item.updatedAt
+                  ? new Date(item.updatedAt)
+                  : null;
 
                 return (
                   <li className="py-2 flex flex-col" key={index}>
                     <p className="p-2 font-normal flex items-center justify-between">
                       <span>{item.serialNumber}</span>
                       <span className="text-xs text-gray-500 ml-2 font-semibold ">
-                        {`${createdDate.getHours()}:${String(createdDate.getMinutes()).padStart(2, "0")}`}
+                        {`${createdDate.getHours()}:${String(
+                          createdDate.getMinutes(),
+                        ).padStart(2, "0")}`}
                       </span>
                     </p>
                     <div className="px-2 flex flex-row justify-between text-xs">
@@ -193,4 +201,3 @@ const HistorySummary = () => {
 };
 
 export default HistorySummary;
-
