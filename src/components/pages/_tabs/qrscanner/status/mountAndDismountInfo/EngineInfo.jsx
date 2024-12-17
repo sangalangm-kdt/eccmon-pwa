@@ -21,12 +21,12 @@ const EngineInfo = ({
   const handleEngineNumChange = (e) => {
     const value = e.target.value;
 
-    // Ensure the engine number is required and has a length <= 2
+    // Validate engine number (must be <= 2 characters)
     if (value.length <= 2) {
       setEngineNum(value);
       setEngineNumError(""); // Clear error if valid
     } else {
-      setEngineNumError(t("qrScanner:engineNumError")); // Set error if not valid
+      setEngineNumError("Engine number cannot exceed 2 characters."); // Show error if invalid
     }
   };
 
@@ -39,17 +39,13 @@ const EngineInfo = ({
       setOpHours(value);
       setOpHoursError(""); // Clear error if valid
     } else {
-      setOpHoursError(t("qrScanner:opHoursError")); // Set error if not valid
+      setOpHoursError("Operating hours must be a non-negative number."); // Show error if invalid
     }
-  };
-
-  // Check if all required fields are filled in
-  const isFormValid = () => {
-    return engineNum && opHours >= 0 && site; // Ensure engineNum, opHours, and site are set
   };
 
   return (
     <div className="flex flex-col p-2">
+      {/* Site Name */}
       <div className="flex flex-col w-full">
         <label className="font-semibold">{t("qrScanner:engineInfo")}</label>
         <SiteNameOptions site={site} setSite={setSite} disabled={disabled} />
@@ -61,21 +57,16 @@ const EngineInfo = ({
         <input
           value={engineNum}
           className={`w-full p-2 rounded border ${
-            engineNumError || !engineNum ? "border-red-500" : ""
+            engineNumError ? "border-red-500" : ""
           }`}
           type="text"
-          placeholder={t("qrScanner:enterNumber")}
+          placeholder="Enter engine number (max 2 characters)"
           onChange={handleEngineNumChange}
           disabled={disabled}
           required
         />
         {engineNumError && (
           <p className="flex text-red-500 text-tiny">{engineNumError}</p>
-        )}
-        {!engineNum && (
-          <p className="flex text-red-500 text-tiny">
-            {t("qrScanner:engineNumRequired")}
-          </p>
         )}
       </div>
 
@@ -84,22 +75,17 @@ const EngineInfo = ({
         <label>{t("qrScanner:operatingHours")}</label>
         <input
           className={`w-full p-2 rounded border ${
-            opHoursError || opHours === "" ? "border-red-500" : ""
+            opHoursError ? "border-red-500" : ""
           }`}
           type="number"
           value={opHours}
-          placeholder={t("qrScanner:enterOperatingHours")}
+          placeholder="Enter operating hours"
           onChange={handleOpHoursChange}
           disabled={disabled}
           required
         />
         {opHoursError && (
           <p className="flex text-red-500 text-tiny">{opHoursError}</p>
-        )}
-        {opHours === "" && (
-          <p className="flex text-red-500 text-tiny">
-            {t("qrScanner:opHoursRequired")}
-          </p>
         )}
       </div>
     </div>

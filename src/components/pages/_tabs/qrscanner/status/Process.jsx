@@ -29,11 +29,11 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
     return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
   });
   const [passed, setPassed] = useState(
-    cylinderData?.updates?.otherDetails?.isPassed,
+    cylinderData?.updates?.otherDetails?.isPassed
   );
   const [cycle, setCycle] = useState(cylinderData?.cycle);
   const [selectedOrderNo, setSelectedOrderNo] = useState(
-    cylinderData?.updates?.otherDetails?.orderNumber,
+    cylinderData?.updates?.otherDetails?.orderNumber
   );
 
   const {
@@ -51,14 +51,12 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
 
   useEffect(() => {
     setSelectedCase(
-      selectedProcessorStatus === cylinderData.status
-        ? cylinderData.case
-        : null,
+      selectedProcessorStatus === cylinderData.status ? cylinderData.case : null
     );
     setProcessor(
       selectedProcessorStatus === cylinderData.status
         ? cylinderData.location
-        : "",
+        : ""
     );
     setDate(() => {
       const today =
@@ -76,12 +74,12 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
     setPassed(
       selectedProcessorStatus === cylinderData.status
         ? cylinderData?.updates?.otherDetails?.isPassed
-        : 0,
+        : 0
     );
     setSelectedOrderNo(
       selectedProcessorStatus === cylinderData.status
         ? cylinderData?.updates?.otherDetails.orderNumber
-        : "",
+        : ""
     );
   }, [selectedProcessorStatus]);
 
@@ -97,215 +95,68 @@ const Process = ({ selectedProcessorStatus, setData, disabled }) => {
 
   // Function to render different locations based on selectedProcessorStatus
   const renderLocations = () => {
-    switch (selectedProcessorStatus) {
-      case t("qrScanner:disassembly"):
-        return (
-          <div>
-            <CaseButton
-              selectedCase={selectedCase} // Pass selectedCase, initially null for no selection
-              setSelectedCase={setSelectedCase}
-              disabled={disabled}
-            />
-            <label className="text-sm text-primaryText font-semibold mt-2">
-              {t("qrScanner:processor")}
-            </label>
-            <LocationDropdown
-              options={disassembly?.data.filter((item) => item.status !== 2)}
-              processor={processor}
-              setProcessor={setProcessor}
-              disabled={disabled}
-            />
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:completionDate")}
-              </label>
-              <DateField date={date} setDate={setDate} disabled={disabled} />
-            </div>
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:passed")}
-              </label>
-              <ButtonYesOrNo
-                passed={passed}
-                setPassed={setPassed}
-                disabled={disabled}
-              />
-            </div>
-            <Cycle cycle={cycle} setCycle={setCycle} disabled={true} />
-            <OrderNo
-              selectedOrderNo={selectedOrderNo}
-              setSelectedOrderNo={setSelectedOrderNo}
-              disabled={disabled}
-            />
-          </div>
-        );
-      case t("qrScanner:assembly"):
-        return (
-          <div>
-            <CaseButton
-              selectedCase={selectedCase}
-              setSelectedCase={setSelectedCase}
-              disabled={disabled}
-            />
-            <label className="text-sm text-primaryText font-semibold mt-2">
-              {t("qrScanner:processor")}
-            </label>
-            <LocationDropdown
-              options={assembly?.data.filter((item) => item.status !== 2)}
-              processor={processor}
-              setProcessor={setProcessor}
-              disabled={disabled}
-            />
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:completionDate")}
-              </label>
-              <DateField date={date} setDate={setDate} disabled={disabled} />
-            </div>
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:passed")}
-              </label>
-              <ButtonYesOrNo
-                passed={passed}
-                setPassed={setPassed}
-                disabled={disabled}
-              />
-            </div>
-            <Cycle cycle={cycle} setCycle={setCycle} disabled={true} />
-            <OrderNo
-              selectedOrderNo={selectedOrderNo}
-              setSelectedOrderNo={setSelectedOrderNo}
-              disabled={disabled}
-            />
-          </div>
-        );
-      case t("qrScanner:finishing"):
-        return (
-          <div>
-            <CaseButton
-              selectedCase={selectedCase}
-              setSelectedCase={setSelectedCase}
-              disabled={disabled}
-            />
-            <label className="text-sm text-primaryText font-semibold mt-2">
-              {t("qrScanner:processor")}
-            </label>
-            <LocationDropdown
-              options={finishing?.data.filter((item) => item.status !== 2)}
-              processor={processor}
-              setProcessor={setProcessor}
-              disabled={disabled}
-            />
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:completionDate")}
-              </label>
-              <DateField date={date} setDate={setDate} disabled={disabled} />
-            </div>
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:passed")}
-              </label>
-              <ButtonYesOrNo
-                passed={passed}
-                setPassed={setPassed}
-                disabled={disabled}
-              />
-            </div>
-            <Cycle cycle={cycle} setCycle={setCycle} disabled={true} />
-            <OrderNo
-              selectedOrderNo={selectedOrderNo}
-              setSelectedOrderNo={setSelectedOrderNo}
-              disabled={disabled}
-            />
-          </div>
-        );
-      case t("qrScanner:grooving"):
-        return (
-          <div>
-            <CaseButton
-              selectedCase={selectedCase}
-              setSelectedCase={setSelectedCase}
-              disabled={disabled}
-            />
-            <label className="text-sm text-primaryText font-semibold mt-2">
-              {t("qrScanner:processor")}
-            </label>
-            <LocationDropdown
-              options={grooving?.data.filter((item) => item.status !== 2)}
-              processor={processor}
-              setProcessor={setProcessor}
-              disabled={disabled}
-            />
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:completionDate")}
-              </label>
-              <DateField date={date} setDate={setDate} disabled={disabled} />
-            </div>
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:passed")}
-              </label>
-              <ButtonYesOrNo
-                passed={passed}
-                setPassed={setPassed}
-                disabled={disabled}
-              />
-            </div>
-            <Cycle cycle={cycle} setCycle={setCycle} disabled={true} />
-            <OrderNo
-              selectedOrderNo={selectedOrderNo}
-              setSelectedOrderNo={setSelectedOrderNo}
-              disabled={disabled}
-            />
-          </div>
-        );
-      case t("qrScanner:lmd"):
-        return (
-          <div>
-            <CaseButton
-              selectedCase={selectedCase}
-              setSelectedCase={setSelectedCase}
-              disabled={disabled}
-            />
-            <label className="text-sm text-primaryText font-semibold mt-2">
-              {t("qrScanner:processor")}
-            </label>
-            <LocationDropdown
-              options={lmd?.data.filter((item) => item.status !== 2)}
-              processor={processor}
-              setProcessor={setProcessor}
-              disabled={disabled}
-            />
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:completionDate")}
-              </label>
-              <DateField date={date} setDate={setDate} disabled={disabled} />
-            </div>
-            <div>
-              <label className="text-sm text-primaryText font-semibold">
-                {t("qrScanner:passed")}
-              </label>
-              <ButtonYesOrNo
-                passed={passed}
-                setPassed={setPassed}
-                disabled={disabled}
-              />
-            </div>
-            <Cycle cycle={cycle} setCycle={setCycle} disabled={true} />
-            <OrderNo
-              selectedOrderNo={selectedOrderNo}
-              setSelectedOrderNo={setSelectedOrderNo}
-              disabled={disabled}
-            />
-          </div>
-        );
-      default:
-        return <div>{t("qrScanner:selectValidProcessorStatus")}</div>;
-    }
+    const locationOptions = {
+      disassembly: disassembly?.data,
+      assembly: assembly?.data,
+      finishing: finishing?.data,
+      grooving: grooving?.data,
+      lmd: lmd?.data,
+    };
+
+    console.log("Selected Processor Status:", selectedProcessorStatus);
+    console.log("Location Options:", locationOptions);
+
+    // Check if selectedProcessorStatus exists in the options
+    const currentOptions = locationOptions[
+      selectedProcessorStatus?.toLowerCase()
+    ]?.filter(
+      (item) => item.status !== 2 // You can adjust this filter condition if necessary
+    );
+
+    console.log("Current Options:", currentOptions);
+
+    return currentOptions ? (
+      <div>
+        <CaseButton
+          selectedCase={selectedCase}
+          setSelectedCase={setSelectedCase}
+          disabled={disabled}
+        />
+        <label className="text-sm text-primaryText font-semibold mt-2">
+          {t("qrScanner:processor")}
+        </label>
+        <LocationDropdown
+          options={currentOptions}
+          processor={processor}
+          setProcessor={setProcessor}
+          disabled={disabled}
+        />
+        <div>
+          <label className="text-sm text-primaryText font-semibold">
+            {t("qrScanner:completionDate")}
+          </label>
+          <DateField date={date} setDate={setDate} disabled={disabled} />
+        </div>
+        <div>
+          <label className="text-sm text-primaryText font-semibold">
+            {t("qrScanner:passed")}
+          </label>
+          <ButtonYesOrNo
+            passed={passed}
+            setPassed={setPassed}
+            disabled={disabled}
+          />
+        </div>
+        <Cycle cycle={cycle} setCycle={setCycle} disabled={true} />
+        <OrderNo
+          selectedOrderNo={selectedOrderNo}
+          setSelectedOrderNo={setSelectedOrderNo}
+          disabled={disabled}
+        />
+      </div>
+    ) : (
+      <div>{t("qrScanner:selectValidProcessorStatus")}</div>
+    );
   };
 
   return (

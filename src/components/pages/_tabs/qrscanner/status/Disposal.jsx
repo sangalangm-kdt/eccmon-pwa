@@ -3,7 +3,7 @@ import DateField from "../../../../constants/DateField"; // Assuming DateField c
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-const Disposal = ({ setData, disabled }) => {
+const Disposal = ({ setData, disabled, setIsComplete }) => {
   // const [disposalDate, setDisposalDate] = useState(""); // Disposal date state
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -28,7 +28,13 @@ const Disposal = ({ setData, disabled }) => {
       dateDone: date,
       cycle: cylinderData?.cycle,
     });
-  }, [date]);
+
+    if (date) {
+      setIsComplete(true); // Mark as complete when date is set
+    } else {
+      setIsComplete(false); // Mark as incomplete when date is not set
+    }
+  }, [date, cylinderData, setData, setIsComplete]);
 
   return (
     <div className="flex flex-col bg-white rounded-lg pb-1">

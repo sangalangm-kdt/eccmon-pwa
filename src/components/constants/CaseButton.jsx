@@ -37,7 +37,12 @@ const CaseButton = ({ selectedCase, setSelectedCase, disabled }) => {
         ))}
       </div>
       {/* Hidden field to hold the selected case value */}
-      <input type="text" className="hidden" value={selectedCase} readOnly />
+      <input
+        type="text"
+        className="hidden"
+        value={selectedCase ?? ""}
+        readOnly
+      />
     </div>
   );
 };

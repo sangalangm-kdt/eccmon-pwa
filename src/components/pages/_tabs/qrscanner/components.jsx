@@ -49,74 +49,39 @@ export const QrHeader = ({ step, handleEdit, disabled }) => {
   );
 };
 
-export const CylinderInfo = ({ selectedStatus, setData, disabled }) => {
-  // Render content based on selectedStatus
-  const renderContent = () => {
-    console.log("Rendering content for status:", selectedStatus);
-
-    switch (selectedStatus) {
-      case "Disposal":
-        return (
-          <div className={containerClass}>
-            <Disposal setData={setData} disabled={disabled} />
-          </div>
-        );
-      case "Storage":
-        return (
-          <div className={containerClass}>
-            <Storage
-              selectedStatus={selectedStatus}
-              setData={setData}
-              disabled={disabled}
-            />
-          </div>
-        );
-      // Grouping Process-related statuses
-
-      case "Disassembly":
-      case "Grooving":
-      case "LMD":
-      case "Assembly":
-      case "Finishing":
-        return (
-          <div className={containerClass}>
-            <Process
-              selectedProcessorStatus={selectedStatus}
-              setData={setData}
-              disabled={disabled}
-            />
-          </div>
-        );
-      case "Mounted":
-        return (
-          <div className={containerClass}>
-            <Mounting
-              selectedStatus={selectedStatus}
-              setData={setData}
-              disabled={disabled}
-            />
-          </div>
-        );
-      case "Dismounted":
-        return (
-          <div className={containerClass}>
-            <Dismounting
-              selectedStatus={selectedStatus}
-              setData={setData}
-              disabled={disabled}
-            />
-          </div>
-        );
-      default:
-        return (
-          <div className={containerClass}>
-            <div className="border p-2">
-              {/* AddIcon or any default component here */}
-            </div>
-          </div>
-        );
-    }
+export const CylinderInfo = ({
+  selectedStatus,
+  setData,
+  disabled,
+  setIsComplete,
+}) => {
+  const components = {
+    disposal: Disposal,
+    storage: Storage,
+    mounted: Mounting,
+    dismounted: Dismounting,
+    disassembly: Process,
+    grooving: Process,
+    lmd: Process,
+    assembly: Process,
+    finishing: Process,
   };
 
-  return <div>{renderContent()}</div>; // Return the rendered content
+  const Component = components[selectedStatus?.toLowerCase()];
+
+  return (
+    <div className={containerClass}>
+      {Component ? (
+        <Component
+          selectedStatus={selectedStatus}
+          selectedProcessorStatus={selectedStatus}
+          setData={setData}
+          disabled={disabled}
+          setIsComplete={setIsComplete}
+        />
+      ) : (
+        <div className="border p-2">{/* Default placeholder */}</div>
+      )}
+    </div>
+  );
 };

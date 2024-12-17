@@ -1,17 +1,18 @@
 {
   "name": "ECCMon",
   "short_name": "ECCMon",
-  "background_color": "#ffff",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  
+
   "icons": [
     {
-      "src":"maskable_icon.png",
+      "src": "maskable_icon.png",
       "sizes": "196x196",
       "type": "image/png",
-      "purpose":"any maskable" 
+      "purpose": "any maskable"
     },
     {
       "src": "192x192.png",
@@ -33,5 +34,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-    ]
-  }
+  ]
+}

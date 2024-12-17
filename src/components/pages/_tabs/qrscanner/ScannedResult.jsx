@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
@@ -13,17 +12,33 @@ const ScannedResult = () => {
   const { addUpdate } = useCylinderUpdate();
   const [step, setStep] = useState("view");
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("success"); // To control the modal type
+  const [modalType, setModalType] = useState("success");
   const [currentCycle, setCurrentCycle] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const [showAlert, setShowAlert] = useState(false); // State to control the alert visibility
 
   const handleClick = (e) => {
     e.preventDefault();
     console.log(data, selectedStatus);
 
+    // Check if location is valid before proceeding
+    if (!data.location || data.location === "") {
+      setShowAlert(true); // Show the alert if location is empty or undefined
+      return; // Stop the further execution
+    } else {
+      setShowAlert(false); // Hide the alert if location is valid
+    }
+
     if (step === "view") {
-      setStep("review");
+      // Check if the input fields are complete before moving to review
+      if (isComplete) {
+        setStep("review");
+      }
     } else if (step === "review") {
       const updatedCycle = data.cycle;
+      // if (selectedStatus === "Storage" && data?.process === "Dismounted") {
+      //   // updatedCycle += 1;
+      // }
       setCurrentCycle(updatedCycle);
 
       addUpdate(data, selectedStatus);
@@ -47,9 +62,14 @@ const ScannedResult = () => {
 
   useEffect(() => {
     console.log(data, selectedStatus);
-  }, [data]);
-
-  const isDataValid = Object.keys(data).length > 0 && selectedStatus !== "None"; // Check if data is not empty
+    // Update isComplete state whenever data changes or the selected status changes
+    setIsComplete(
+      Object.keys(data).length > 0 &&
+        selectedStatus !== "None" &&
+        data.location && // Ensure location is not null or empty
+        data.location !== ""
+    );
+  }, [data, selectedStatus]);
 
   return (
     <div>
@@ -79,19 +99,28 @@ const ScannedResult = () => {
             setData={setData}
             disabled={step === "review"}
             step={step}
+            setIsComplete={setIsComplete}
           />
         </div>
+
+        {showAlert && (
+          <div className="bg-red-100 text-red-600 p-2 rounded-md mt-2">
+            <p className="text-sm">Location is required. Please fill it out.</p>
+          </div>
+        )}
+
         <SaveButton
           onClick={handleClick}
           text={step === "review" ? "Save" : "Continue"}
-          disabled={!isDataValid}
+          disabled={!isComplete} // Button should be disabled if isComplete is false
         />
       </div>
 
       {modalOpen &&
-        (isDataValid ? (
+        (isComplete ? (
           modalType === "Storage" ? (
             <CycleModal
+              selectedStatus={selectedStatus}
               cycle={currentCycle}
               data={data}
               onClose={() => setModalOpen(false)}

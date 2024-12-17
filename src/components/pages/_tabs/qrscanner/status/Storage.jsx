@@ -3,14 +3,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import DateField from "../../../../constants/DateField";
-
 import LocationDropdown from "../../../../constants/LocationDropdown";
-
 import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const Storage = ({ selectedStatus, setData, disabled }) => {
+const Storage = ({ selectedStatus, setData, disabled, setIsComplete }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
 
@@ -25,29 +23,14 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
     const minutes = String(today.getMinutes()).padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
   });
-  // const handleDateChange = (date) => {
-  //   setDate(date);
 
-  //   // Update completion state
-  //   if (setIsComplete) {
-  //     setIsComplete(date !== "");
-  //   }
-  // };
   const { t } = useTranslation();
-
-  const handleDateChange = (date) => {
-    setStartDate(date);
-    onDateChange(date);
-
-    // Update completion state
-    if (setIsComplete) {
-      setIsComplete(date !== "");
-    }
-  };
-
-  const { storage, storageMutate } = useLocationProcess();
+  const { storage } = useLocationProcess();
   const [processor, setProcessor] = useState(cylinderData?.updates?.location);
 
+  const [showAlert, setShowAlert] = useState(false); // State for showing alert
+
+  // Update processor and date when selectedStatus changes
   useEffect(() => {
     setProcessor(
       selectedStatus === cylinderData?.status
@@ -69,7 +52,6 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
     });
   }, [selectedStatus]);
 
-  console.log(cylinderData);
   useEffect(() => {
     setData({
       serialNumber: cylinderData?.serialNumber,
@@ -77,7 +59,33 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
       cycle: cylinderData?.cycle,
       dateDone: date,
     });
-  }, [processor, date]);
+
+    // Trigger setIsComplete only if both date and processor are set
+    if (setIsComplete) {
+      setIsComplete(date !== "" && processor !== "");
+    }
+  }, [processor, date, setData, setIsComplete]);
+
+  const handleDateChange = (newDate) => {
+    setDate(newDate);
+    // Update completion state based on both date and processor (location)
+    if (setIsComplete) {
+      setIsComplete(newDate !== "" && processor !== "");
+    }
+  };
+
+  const handleLocationChange = (newLocation) => {
+    setProcessor(newLocation);
+    // Update completion state based on both date and processor (location)
+    if (setIsComplete) {
+      setIsComplete(date !== "" && newLocation !== "");
+    }
+  };
+
+  useEffect(() => {
+    // Show alert if either date or processor is empty ("")
+    setShowAlert(date === "" || processor === "");
+  }, [date, processor]);
 
   return (
     <div className="flex flex-col rounded-lg bg-white">
@@ -88,13 +96,11 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
         <div>
           <label className="text-sm font-semibold text-primaryText">
             {t("qrScanner:locationSite")}
-          </label>{" "}
+          </label>
           <LocationDropdown
-            options={storage?.data.filter((item) => {
-              return item.status !== 2;
-            })}
+            options={storage?.data.filter((item) => item.status !== 2)}
             processor={processor}
-            setProcessor={setProcessor}
+            setProcessor={handleLocationChange} // Use the handler to update location
             disabled={disabled}
           />
         </div>
@@ -102,10 +108,23 @@ const Storage = ({ selectedStatus, setData, disabled }) => {
           <label className="text-sm font-semibold text-primaryText">
             {t("qrScanner:startDate")}
           </label>
-          <DateField date={date} setDate={setDate} disabled={disabled} />
+          <DateField
+            date={date}
+            setDate={handleDateChange} // Use the handler to update date
+            disabled={disabled}
+          />
         </div>
+
+        {showAlert && (
+          <div className="bg-red-100 text-red-600 p-2 rounded-md mt-2">
+            <p className="text-sm">
+              {"All the required fields should be filled"}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
 export default Storage;
