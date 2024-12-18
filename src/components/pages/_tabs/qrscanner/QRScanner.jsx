@@ -28,6 +28,8 @@ const QRScanner = () => {
   const { t } = useTranslation("qrScanner", "common");
   const { checkSerial, addCylinder } = useCylinderCover();
   const [willScan, setWillScan] = useState(true);
+  const [message, setMessage] = useState("");
+  const [addDisable, setAddDisable] = useState(false);
   const codeReader = new BrowserMultiFormatReader();
 
   useEffect(() => {
@@ -72,7 +74,12 @@ const QRScanner = () => {
 
                     if (!modalOpen) {
                       setWillScan(false);
-                      checkSerial({ setModalOpen, eccId });
+                      checkSerial({
+                        setAddDisable,
+                        setMessage,
+                        setModalOpen,
+                        eccId,
+                      });
                     }
 
                     const track =
@@ -211,6 +218,8 @@ const QRScanner = () => {
       </div>
 
       <ResultsModal
+        addDisable={addDisable}
+        message={message}
         isOpen={modalOpen}
         onClose={handleClose}
         onConfirm={handleConfirm}

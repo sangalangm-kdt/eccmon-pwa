@@ -19,10 +19,15 @@ export const useCylinderCover = () => {
       .then((res) => res.data)
       .catch((error) => {
         if (error.response.status !== 409) throw error;
-      }),
+      })
   );
 
-  const checkSerial = async ({ setModalOpen, ...props }) => {
+  const checkSerial = async ({
+    setAddDisable,
+    setMessage,
+    setModalOpen,
+    ...props
+  }) => {
     await csrf();
 
     axiosLib
@@ -30,14 +35,18 @@ export const useCylinderCover = () => {
       .then((res) => {
         console.log(res.data);
         if (res.data.data) {
-          const data = {
-            serialNumber: props.eccId,
-            status: 1,
-          };
-
-          addHistory(data);
-          navigate("/scanned-result", { replace: true, state: res.data });
+          if (+res.data.data.isDisposed === 1) {
+            setAddDisable(true);
+            setMessage("Cylinder is already disposed");
+            setModalOpen(true);
+          } else {
+            navigate("/scanned-result", { replace: true, state: res.data });
+          }
         } else {
+          setAddDisable(false);
+          setMessage(
+            "The cylinder cover does not exist. Do you want to add it?"
+          );
           setModalOpen(true);
         }
         mutate();

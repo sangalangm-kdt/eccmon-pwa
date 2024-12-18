@@ -1,8 +1,14 @@
 import React, { useEffect } from "react";
 
-const ResultsModal = ({ isOpen, onClose, onConfirm, eccId }) => {
-  const message = "The cylinder cover does not exist. Do you want to add it?";
-
+const ResultsModal = ({
+  addDisable,
+  message,
+  isOpen,
+  onClose,
+  onConfirm,
+  eccId,
+}) => {
+  // const message = "The cylinder cover does not exist. Do you want to add it?";
   // Handle Escape key to close modal
   useEffect(() => {
     const handleEscKey = (event) => {
@@ -37,21 +43,29 @@ const ResultsModal = ({ isOpen, onClose, onConfirm, eccId }) => {
         </div>
 
         <p className="text-center text-sm py-10">{message}</p>
-
-        <div className="flex flex-row justify-between mt-4">
+        {addDisable === false ? (
+          <div className="flex flex-row justify-between mt-4">
+            <button
+              className="mr-2 px-4 py-2 bg-gray-200 rounded-full w-full "
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-primary text-white rounded-full transition w-full"
+              onClick={onConfirm}
+            >
+              Yes
+            </button>
+          </div>
+        ) : (
           <button
             className="mr-2 px-4 py-2 bg-gray-200 rounded-full w-full "
             onClick={onClose}
           >
-            Cancel
+            Close
           </button>
-          <button
-            className="px-4 py-2 bg-primary text-white rounded-full transition w-full"
-            onClick={onConfirm}
-          >
-            Yes
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );
