@@ -3,7 +3,7 @@ import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
-import AddedOrUpdateSuccessfully from "../../../constants/addedOrUpdateSuccessfully";
+import AddedOrUpdateSuccessfully from "../../../constants/AddedOrUpdateSuccessfully";
 import CycleModal from "../../../constants/CycleModal";
 
 const ScannedResult = () => {
