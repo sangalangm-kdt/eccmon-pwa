@@ -9,42 +9,49 @@ const InstallationButton = () => {
   const [isSafari, setIsSafari] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [shouldShowButton, setShouldShowButton] = useState(true);
 
   useEffect(() => {
     const handleAppInstalled = () => {
       setIsInstalled(true);
+      setShouldShowButton(false);
       console.log("App has been installed");
     };
 
-    window.addEventListener("appinstalled", handleAppInstalled);
-
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
+      console.log("Beforeinstallprompt event captured:", e);
       setDeferredPrompt(e);
-      console.log("Beforeinstallprompt event fired");
     };
 
+    window.addEventListener("appinstalled", handleAppInstalled);
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    // Check if the app is running in standalone mode (iOS or Android PWA)
     if (
       window.matchMedia("(display-mode: standalone)").matches ||
       window.navigator.standalone
     ) {
       setIsStandalone(true);
+      setShouldShowButton(false);
       console.log("App is running in standalone mode");
+    } else {
+      setIsStandalone(false);
     }
 
-    // Detect Safari browser (both iOS and macOS)
     const userAgent = window.navigator.userAgent.toLowerCase();
     if (userAgent.includes("safari") && !userAgent.includes("chrome")) {
       setIsSafari(true);
       console.log("Safari browser detected");
+    } else {
+      setIsSafari(false);
     }
 
-    // Detect Android browser
-    const isAndroid = userAgent.includes("android");
-    console.log("isAndroid:", isAndroid);
+    console.log({
+      isInstalled,
+      isStandalone,
+      isSafari,
+      shouldShowButton,
+    });
 
     return () => {
       window.removeEventListener(
@@ -53,19 +60,18 @@ const InstallationButton = () => {
       );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, []);
+  }, [isInstalled, isStandalone, isSafari, shouldShowButton]);
 
-  const handleInstallClick = () => {
+  const handleInstallClick = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === "accepted") {
-          console.log("PWA installation accepted");
-        } else {
-          console.log("PWA installation dismissed");
-        }
-        setDeferredPrompt(null);
-      });
+      const choiceResult = await deferredPrompt.userChoice;
+      if (choiceResult.outcome === "accepted") {
+        console.log("User accepted the PWA installation");
+      } else {
+        console.log("User dismissed the PWA installation");
+      }
+      setDeferredPrompt(null);
     }
   };
 
@@ -85,10 +91,19 @@ const InstallationButton = () => {
     }
   };
 
-  if (isInstalled || isStandalone) return null;
+  console.log("Render state:", {
+    isInstalled,
+    isStandalone,
+    shouldShowButton,
+    isSafari,
+    deferredPrompt,
+  });
+
+  if (isInstalled || isStandalone || !shouldShowButton) return null;
 
   return (
     <div>
+      {/* Safari specific handling */}
       {isSafari && (
         <>
           <button
@@ -116,6 +131,8 @@ const InstallationButton = () => {
           )}
         </>
       )}
+
+      {/* For other browsers (non-Safari) */}
       {!isSafari && deferredPrompt && (
         <button
           onClick={handleInstallClick}

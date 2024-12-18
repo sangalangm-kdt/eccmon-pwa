@@ -8,17 +8,17 @@ import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
 import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
 // import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
-// import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
+import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
 // import AddedOrUpdateSuccessfully from "./components/constants/addedOrUpdateSuccessfully";
-import DismountedModal from "./components/constants/CycleModal";
+// import DismountedModal from "./components/constants/CycleModal";
 import { HistoryProvider } from "./components/utils/HistoryContext";
 
 const QRScanner = lazy(
-  () => import("./components/pages/_tabs/qrscanner/QRScanner"),
+  () => import("./components/pages/_tabs/qrscanner/QRScanner")
 );
 const Login = lazy(() => import("./components/pages/Login"));
 const ProfilePage = lazy(
-  () => import("./components/pages/_tabs/profile/ProfilePage"),
+  () => import("./components/pages/_tabs/profile/ProfilePage")
 );
 const Home = lazy(() => import("./components/pages/_tabs/home/Home"));
 const ForgotPass = lazy(() => import("./components/pages/ForgotPass"));
@@ -52,16 +52,17 @@ function App() {
             { path: "/qrscanner", element: <QRScanner /> },
             { path: "/scanned-result", element: <ScannedResult /> },
             { path: "/profile", element: <ProfilePage /> },
+            {
+              path: "/view-info",
+              element: <ViewInfo />,
+            },
           ],
         },
         {
           path: "/forgotpass",
           element: <ForgotPass />,
         },
-        {
-          path: "/view-info",
-          element: <DismountedModal />,
-        },
+
         {
           path: "*",
           element: <NotFoundPage />,

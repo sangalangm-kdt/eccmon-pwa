@@ -9,6 +9,7 @@ export default defineConfig({
       registerType: "prompt", // Automatically triggers the install prompt
       includeAssets: ["favicon.svg", "favicon.ico", "robots.txt"], // Include assets like favicon and robots.txt
       manifest: "./public/manifest.json", // Path to manifest file
+      swDest: "sw.js", // Specify the service worker filename
       workbox: {
         // Define caching strategies for different resources
         runtimeCaching: [

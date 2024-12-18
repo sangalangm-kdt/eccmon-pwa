@@ -5,6 +5,7 @@ export const transformStatusOptions = (options) => {
   return options.map((option) => ({
     value: option.status,
     label: option.status,
+    originalLabel: option.status,
   }));
 };
 
