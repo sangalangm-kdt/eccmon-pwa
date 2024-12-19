@@ -3,7 +3,7 @@ const commonContainerStyles =
 
 const languagess = {
   container: `${commonContainerStyles} m-0 p-1 flex items-center justify-center z-50 xs:bg-white lg:bg-languageSwitchBackground`, // Added z-index
-  languageSwitcher: `border-b-2 p-1  focus:outline-none text-gray-800 xs:border-b-0.5 xs:text-sm hover:underline lg:relative lg:top-0 lg:right-0 md:relative md:top-0 md:right-0 sm:relative sm:top-0 sm:left-1/2 sm:transform sm:-translate-x-1/2 xs:bottom-0 xs:justify-center xs:items-center`,
+  languageSwitcher: `border-b-2 sm:p-1 lg:p-1 xs:p-2 focus:outline-none text-gray-800 xs:border-b-0.5 xs:text-sm hover:underline lg:relative lg:top-0 lg:right-0 md:relative md:top-0 md:right-0 sm:relative sm:top-0 sm:left-1/2 sm:transform sm:-translate-x-1/2 xs:bottom-0 xs:justify-center xs:items-center`,
   installationButton: `lg:relative lg:mr-3 xs:fixed xs:top-2 xs:left-1/2 xs:transform xs:-translate-x-1/2`,
 };
 
