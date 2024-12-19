@@ -62,7 +62,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "PORT=3000 serve dist",
+    "serve": "serve -l 3000 dist",
     "preview": "vite preview"
   },
   "eslintConfig": {

@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react({ fastRefresh: true }),
     VitePWA({
-      registerType: "autoUpdate", // Automatically triggers the install prompt
+      registerType: "prompt", // Automatically triggers the install prompt
       includeAssets: [
         "favicon.svg",
         "favicon.ico",
