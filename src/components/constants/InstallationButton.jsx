@@ -132,7 +132,6 @@ const InstallationButton = () => {
         </>
       )}
 
-      {/* For other browsers (non-Safari) */}
       {!isSafari && deferredPrompt && (
         <button
           onClick={handleInstallClick}
