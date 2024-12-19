@@ -12,25 +12,18 @@ import { registerSW } from "virtual:pwa-register";
 
 const ServiceWorkerRegistration = () => {
   useEffect(() => {
-    // Register the service worker to enable PWA functionality
-    if ("serviceWorker" in navigator) {
-      registerSW({
-        onOfflineReady() {
-          console.log("The PWA is ready to work offline.");
-        },
-        onNeedRefresh() {
-          console.log("Content needs to be refreshed.");
-        },
-        onUpdated() {
-          console.log("The PWA has been updated.");
-        },
-      });
-    } else {
-      console.log("Service worker is not supported in this browser.");
-    }
-  }, []); // Empty dependency array ensures this runs once when the app mounts
+    // Register service worker with the Vite PWA plugin
+    registerSW({
+      onSuccess() {
+        console.log("Service worker registered successfully.");
+      },
+      onError(error) {
+        console.error("Service worker registration failed: ", error);
+      },
+    });
+  }, []);
 
-  return null; // This component doesn't need to render anything
+  return null;
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -39,6 +32,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
+        {/* Service worker registration */}
         <ServiceWorkerRegistration />
         <App />
       </I18nextProvider>

@@ -8,39 +8,35 @@ const InstallationButton = () => {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isSafari, setIsSafari] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [isIncognito, setIsIncognito] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    const checkStandaloneMode = () => {
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        setIsStandalone(true);
+      }
+    };
+
     const handleAppInstalled = () => {
       setIsInstalled(true);
+      console.log("App has been installed");
     };
-
-    window.addEventListener("appinstalled", handleAppInstalled);
 
     const handleBeforeInstallPrompt = (e) => {
-      // console.log("beforeinstallprompt event fired");
       e.preventDefault();
       setDeferredPrompt(e);
+      console.log("Beforeinstallprompt event fired", e);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    // Detect if the user is on Safari
     const userAgent = window.navigator.userAgent.toLowerCase();
     if (userAgent.includes("safari") && !userAgent.includes("chrome")) {
       setIsSafari(true);
+      console.log("Safari browser detected");
     }
 
-    // Detect if the user is in incognito mode
-    const fs = window.RequestFileSystem || window.webkitRequestFileSystem;
-    if (fs) {
-      fs(
-        window.TEMPORARY,
-        100,
-        () => setIsIncognito(false),
-        () => setIsIncognito(true)
-      );
-    }
+    checkStandaloneMode();
+    window.addEventListener("appinstalled", handleAppInstalled);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
       window.removeEventListener(
@@ -56,9 +52,9 @@ const InstallationButton = () => {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
-          console.log("User accepted the install prompt");
+          console.log("PWA installation accepted");
         } else {
-          console.log("User dismissed the install prompt");
+          console.log("PWA installation dismissed");
         }
         setDeferredPrompt(null);
       });
@@ -67,10 +63,12 @@ const InstallationButton = () => {
 
   const handleSafariInstallClick = () => {
     setShowModal(true);
+    console.log("Safari install button clicked");
   };
 
   const closeModal = () => {
     setShowModal(false);
+    console.log("Modal closed");
   };
 
   const handleModalClick = (e) => {
@@ -79,38 +77,56 @@ const InstallationButton = () => {
     }
   };
 
-  if (isInstalled) return null;
+  // Debugging outputs
+  console.log("Deferred Prompt:", deferredPrompt);
+  console.log("isInstalled:", isInstalled);
+  console.log("isStandalone:", isStandalone);
+  console.log("isSafari:", isSafari);
+
+  // Return nothing if the app is already installed or running in standalone mode
+  if (isInstalled || isStandalone) return null;
 
   return (
     <div>
+      {/* Safari-specific modal for installation instructions */}
       {isSafari && (
-        <button
-          onClick={handleSafariInstallClick}
-          className={`${modal.modalContent}`}
-        >
-          {t("installApp")}
-        </button>
+        <>
+          <button
+            onClick={handleSafariInstallClick}
+            className={`${modal.modalContent}`}
+            aria-label={t("installApp")}
+          >
+            {t("installApp")}
+          </button>
+          {showModal && (
+            <div
+              className={`${modal.modalBackground}`}
+              onClick={handleModalClick}
+            >
+              <div className={`${modal.modalContainer}`}>
+                <span className={`${modal.exitButton}`} onClick={closeModal}>
+                  ×
+                </span>
+                <p className="text-lg font-bold">{t("installAppSafari")}</p>
+                <p className="ml-2 whitespace-pre-line mt-5 text-sm">
+                  {t("installAppSafariInstructions")}
+                </p>
+              </div>
+            </div>
+          )}
+        </>
       )}
-      {isSafari && showModal && (
-        <div className={`${modal.modalBackground}`} onClick={handleModalClick}>
-          <div className={`${modal.modalContainer}`}>
-            <span className={`${modal.exitButton}`} onClick={closeModal}>
-              ×
-            </span>
-            <p className="text-lg font-bold ">{t("installAppSafari")}</p>
-            <p>{t("installAppSafariInstructions")}</p>
-          </div>
-        </div>
-      )}
-      {!isSafari && deferredPrompt && !isIncognito && (
+
+      {/* Non-Safari browsers (e.g., Chrome, Edge) */}
+      {!isSafari && deferredPrompt && (
         <button
           onClick={handleInstallClick}
           className={`${modal.modalContent}`}
+          aria-label={t("installApp")}
         >
           {t("installApp")}
         </button>
       )}
-      {isIncognito && <p>{t("incognitoModeNotSupported")}</p>}
     </div>
   );
 };

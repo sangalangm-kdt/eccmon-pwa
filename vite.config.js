@@ -4,11 +4,56 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   plugins: [
-    react({ fastRefresh: false }),
+    react({ fastRefresh: true }),
     VitePWA({
-      registerType: "prompt", // Automatically triggers the install prompt
-      includeAssets: ["favicon.svg", "favicon.ico", "robots.txt"], // Include assets like favicon and robots.txt
-      manifest: "./public/manifest.json", // Path to manifest file
+      registerType: "autoUpdate", // Automatically triggers the install prompt
+      includeAssets: [
+        "favicon.svg",
+        "favicon.ico",
+        // "robots.txt",
+        "maskable_icon.png",
+        "192x192.png",
+        "256x256.png",
+        "384x384.png",
+        "512x512.png",
+      ], // Include assets like favicon, robots.txt, and all icon files
+      manifest: {
+        name: "ECCMon",
+        short_name: "ECCMon",
+        background_color: "#ffffff",
+        theme_color: "#000000",
+        display: "standalone",
+        scope: "/",
+        start_url: "/",
+
+        icons: [
+          {
+            src: "maskable_icon.png",
+            sizes: "196x196",
+            type: "image/png",
+          },
+          {
+            src: "192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "256x256.png",
+            sizes: "256x256",
+            type: "image/png",
+          },
+          {
+            src: "384x384.png",
+            sizes: "384x384",
+            type: "image/png",
+          },
+          {
+            src: "512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ],
+      }, // Path to manifest file
       workbox: {
         // Define caching strategies for different resources
         runtimeCaching: [
