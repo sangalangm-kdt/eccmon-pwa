@@ -17,15 +17,15 @@ const InstallationButton = () => {
       }
     };
 
-    const handleAppInstalled = () => {
-      setIsInstalled(true);
-      console.log("App has been installed");
-    };
-
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
+      console.log("beforeinstallprompt event fired:", e);
       setDeferredPrompt(e);
-      console.log("Beforeinstallprompt event fired", e);
+    };
+
+    const handleAppInstalled = () => {
+      console.log("App installed");
+      setIsInstalled(true);
     };
 
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -34,9 +34,20 @@ const InstallationButton = () => {
       console.log("Safari browser detected");
     }
 
-    checkStandaloneMode();
-    window.addEventListener("appinstalled", handleAppInstalled);
+    // Add event listeners
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    // Check service worker status
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistration().then((registration) => {
+        console.log("Service Worker registration:", registration);
+      });
+    } else {
+      console.log("Service Worker not supported");
+    }
+
+    checkStandaloneMode();
 
     return () => {
       window.removeEventListener(
