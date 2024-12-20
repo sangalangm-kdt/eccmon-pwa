@@ -1,48 +1,142 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { modal } from "../styles/header";
 
 const InstallationButton = () => {
+  const { t } = useTranslation("common");
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstallable, setIsInstallable] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setIsInstallable(true);
-      console.log("beforeinstallprompt event captured");
+    const checkStandaloneMode = () => {
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        setIsStandalone(true);
+      }
     };
 
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      console.log("beforeinstallprompt event fired:", e);
+      setDeferredPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      console.log("App installed");
+      setIsInstalled(true);
+    };
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    if (userAgent.includes("safari") && !userAgent.includes("chrome")) {
+      setIsSafari(true);
+      console.log("Safari browser detected");
+    }
+
+    // Add event listeners
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    // Check service worker status
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistration().then((registration) => {
+        console.log("Service Worker registration:", registration);
+      });
+    } else {
+      console.log("Service Worker not supported");
+    }
+
+    checkStandaloneMode();
 
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
         handleBeforeInstallPrompt
       );
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
-  const handleInstallClick = async () => {
+  const handleInstallClick = () => {
     if (deferredPrompt) {
-      const promptEvent = deferredPrompt;
-      promptEvent.prompt();
-
-      const choiceResult = await promptEvent.userChoice;
-      if (choiceResult.outcome === "accepted") {
-        console.log("User accepted the install prompt");
-      } else {
-        console.log("User dismissed the install prompt");
-      }
-
-      setDeferredPrompt(null);
-      setIsInstallable(false);
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("PWA installation accepted");
+        } else {
+          console.log("PWA installation dismissed");
+        }
+        setDeferredPrompt(null);
+      });
     }
   };
 
+  const handleSafariInstallClick = () => {
+    setShowModal(true);
+    console.log("Safari install button clicked");
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    console.log("Modal closed");
+  };
+
+  const handleModalClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
+
+  // Debugging outputs
+  console.log("Deferred Prompt:", deferredPrompt);
+  console.log("isInstalled:", isInstalled);
+  console.log("isStandalone:", isStandalone);
+  console.log("isSafari:", isSafari);
+
+  // Return nothing if the app is already installed or running in standalone mode
+  if (isInstalled || isStandalone) return null;
+
   return (
     <div>
-      {isInstallable && (
-        <button onClick={handleInstallClick}>Install App</button>
+      {/* Safari-specific modal for installation instructions */}
+      {isSafari && (
+        <>
+          <button
+            onClick={handleSafariInstallClick}
+            className={`${modal.modalContent}`}
+            aria-label={t("installApp")}
+          >
+            {t("installApp")}
+          </button>
+          {showModal && (
+            <div
+              className={`${modal.modalBackground}`}
+              onClick={handleModalClick}
+            >
+              <div className={`${modal.modalContainer}`}>
+                <span className={`${modal.exitButton}`} onClick={closeModal}>
+                  ×
+                </span>
+                <p className="text-lg font-bold">{t("installAppSafari")}</p>
+                <p className="ml-2 whitespace-pre-line mt-5 text-sm">
+                  {t("installAppSafariInstructions")}
+                </p>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Non-Safari browsers (e.g., Chrome, Edge) */}
+      {!isSafari && deferredPrompt && (
+        <button
+          onClick={handleInstallClick}
+          className={`${modal.modalContent}`}
+          aria-label={t("installApp")}
+        >
+          {t("installApp")}
+        </button>
       )}
     </div>
   );
