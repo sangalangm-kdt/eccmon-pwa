@@ -21,7 +21,7 @@ export default defineConfig({
         name: "ECCMon",
         short_name: "ECCMon",
         background_color: "#ffffff",
-        theme_color: "#000000",
+        theme_color: "#ffffff",
         display: "standalone",
         scope: "/",
         start_url: "/",
