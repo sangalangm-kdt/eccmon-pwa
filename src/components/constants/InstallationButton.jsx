@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 const InstallationButton = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
-
-  const { t } = useTranslation("common");
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
 
   useEffect(() => {
+    // Check if the app is installed (running in standalone mode)
+    const isInstalled = window.matchMedia("(display-mode: standalone)").matches;
+    setIsAppInstalled(isInstalled);
+
+    // Restore deferred prompt from session storage, if available
+    const storedPrompt = sessionStorage.getItem("deferredPrompt");
+    if (storedPrompt) {
+      setDeferredPrompt(JSON.parse(storedPrompt));
+      setIsInstallable(true);
+    }
+
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setIsInstallable(true);
+      sessionStorage.setItem("deferredPrompt", JSON.stringify(e));
       console.log("beforeinstallprompt event captured");
     };
 
+    // Add listener for the beforeinstallprompt event
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
@@ -33,19 +44,25 @@ const InstallationButton = () => {
       const choiceResult = await promptEvent.userChoice;
       if (choiceResult.outcome === "accepted") {
         console.log("User accepted the install prompt");
+        setDeferredPrompt(null);
+        setIsInstallable(false);
+        sessionStorage.removeItem("deferredPrompt");
       } else {
         console.log("User dismissed the install prompt");
+        setIsInstallable(true); // Keep button visible for retry
       }
-
-      setDeferredPrompt(null);
-      setIsInstallable(false);
     }
   };
+
+  // Don't show the install button if the app is already installed
+  if (isAppInstalled) {
+    return null;
+  }
 
   return (
     <div>
       {isInstallable && (
-        <button onClick={handleInstallClick}>{t("installApp")}</button>
+        <button onClick={handleInstallClick}>Install App</button>
       )}
     </div>
   );
