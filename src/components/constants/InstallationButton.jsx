@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const InstallationButton = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
+
+  const { t } = useTranslation("common");
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
@@ -42,7 +45,7 @@ const InstallationButton = () => {
   return (
     <div>
       {isInstallable && (
-        <button onClick={handleInstallClick}>Install App</button>
+        <button onClick={handleInstallClick}>{t("installApp")}</button>
       )}
     </div>
   );
