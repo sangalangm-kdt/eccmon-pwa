@@ -26,14 +26,21 @@ const HistorySummary = () => {
   const { t } = useTranslation();
   const navigate = useNavigate(); // Hook for navigation
 
-  // Use utility functions to sort and filter history
-  const sortedHistory = sortHistoryByDate(history, sortOrder); // Ensure history is sorted
-  const filteredHistory = filterHistory(
-    sortedHistory,
-    filter,
-    startDate,
-    endDate
-  );
+  // Use effect to handle sorting & filtering logic when history changes
+  const [filteredHistory, setFilteredHistory] = useState([]);
+
+  useEffect(() => {
+    if (history) {
+      const sortedHistory = sortHistoryByDate(history, sortOrder); // Sort history by date (descending)
+      const filteredData = filterHistory(
+        sortedHistory,
+        filter,
+        startDate,
+        endDate
+      ); // Filter history
+      setFilteredHistory(filteredData); // Update filtered history
+    }
+  }, [history, sortOrder, filter, startDate, endDate]); // Re-run when any of these change
 
   // Handle filter change (like "This Month", "Last 7 Days", "Last 30 Days", etc.)
   const handleFilterChange = (e) => {
@@ -96,7 +103,7 @@ const HistorySummary = () => {
             <label className="px-1 py-2 font-semibold text-primaryText">
               {t("common:recentHistory")}
             </label>
-            {history?.length > 5 && !showAll && (
+            {!showAll && (
               <button
                 className="px-2 py-2 flex text-white"
                 onClick={() => setShowAll(true)}
@@ -151,73 +158,59 @@ const HistorySummary = () => {
             </div>
           )}
 
-          {history ? (
-            filteredHistory?.length === 0 ? (
-              <div className="text-center text-gray-500 p-4 h-72">
-                No recent history
-              </div>
-            ) : (
-              <ul
-                className={`transition-transform duration-500 ease-in-out ${
-                  showAll ? "max-h-screen" : "max-h-[390px] "
-                } ${showAll ? "overflow-y-auto" : ""}`}
-              >
-                {filteredHistory?.map((item, index) => {
-                  const { backgroundColor, textColor } = getStatusColors(
-                    item.status
-                  );
-
-                  const createdDate = new Date(item.createdAt);
-                  const updatedDate = item.updatedAt
-                    ? new Date(item.updatedAt)
-                    : null;
-
-                  // Determine if this item is the one that was clicked
-                  const isClicked =
-                    clickedItem?.serialNumber === item.serialNumber;
-
-                  return (
-                    <li
-                      className={`py-2 flex flex-col cursor-pointer ${
-                        isClicked ? "bg-blue-100" : "hover:bg-gray-100"
-                      }`} // Apply color change when clicked using Tailwind CSS
-                      key={index}
-                      onClick={() => handleCycleClick(item)} // Navigate to ViewInfo with data
-                    >
-                      <p className="p-2 font-normal flex items-center justify-between">
-                        <span>{item.serialNumber}</span>
-                        <span className="text-xs text-gray-500 ml-2 font-semibold">
-                          {`${createdDate.getHours()}:${String(
-                            createdDate.getMinutes()
-                          ).padStart(2, "0")}`}
-                        </span>
-                      </p>
-                      <div className="px-2 flex flex-row justify-between text-xs">
-                        <p
-                          className="rounded-full py-1 px-2 text-tiny"
-                          style={{
-                            backgroundColor,
-                            color: textColor,
-                          }}
-                        >
-                          {t(`qrScanner:${item.status.toLowerCase()}`)}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(createdDate, t)}
-                        </p>
-                        {updatedDate && (
-                          <p className="text-xs text-gray-500">
-                            {t("common:updated")} {formatDate(updatedDate, t)}
-                          </p>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )
+          {filteredHistory.length === 0 ? (
+            <div className="text-center text-gray-500 p-4 h-72">
+              No recent history
+            </div>
           ) : (
-            <HistorySummarySkeleton description={`Loading History`} />
+            <ul
+              className={`transition-transform duration-500 ease-in-out ${
+                showAll ? "max-h-screen" : "max-h-[390px]"
+              } ${showAll ? "overflow-y-auto" : ""}`}
+            >
+              {filteredHistory.map((item, index) => {
+                const { backgroundColor, textColor } = getStatusColors(
+                  item.status
+                );
+                const createdDate = new Date(item.createdAt);
+                const updatedDate = item.updatedAt
+                  ? new Date(item.updatedAt)
+                  : null;
+
+                return (
+                  <li
+                    key={index}
+                    className="py-2 flex flex-col cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleCycleClick(item)}
+                  >
+                    <p className="p-2 font-normal flex items-center justify-between">
+                      <span>{item.serialNumber}</span>
+                      <span className="text-xs text-gray-500 ml-2 font-semibold">
+                        {`${createdDate.getHours()}:${String(
+                          createdDate.getMinutes()
+                        ).padStart(2, "0")}`}
+                      </span>
+                    </p>
+                    <div className="px-2 flex flex-row justify-between text-xs">
+                      <p
+                        className="rounded-full py-1 px-2 text-tiny"
+                        style={{ backgroundColor, color: textColor }}
+                      >
+                        {t(`qrScanner:${item.status.toLowerCase()}`)}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatDate(createdDate, t)}
+                      </p>
+                      {updatedDate && (
+                        <p className="text-xs text-gray-500">
+                          {t("common:updated")} {formatDate(updatedDate, t)}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </div>
       </div>

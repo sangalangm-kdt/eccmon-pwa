@@ -45,7 +45,7 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
             />
           </div>
           <CylinderStatusSelect
-            selectedStatus={translatedStatus} // Use translated status here
+            selectedStatus={selectedStatus} // Use translated status here
             setSelectedStatus={setSelectedStatus}
             disabled={disabled}
           />

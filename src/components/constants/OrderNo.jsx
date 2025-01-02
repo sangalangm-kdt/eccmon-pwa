@@ -11,7 +11,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
 
   // Filter order numbers based on search term
   const filteredOrderNos = orderNumber?.data?.filter((orderNo) =>
-    orderNo.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    orderNo.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSelectOrderNo = (orderNo) => {
@@ -23,7 +23,9 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
   return (
     <div className="w-full flex flex-col mt-2 text-sm  text-primaryText">
       <div className="relative w-full">
-        <label className="font-semibold">{t("qrScanner:orderNo")}</label>
+        <label className="font-semibold">
+          {t("qrScanner:orderNo")} <strong className="text-red-500">*</strong>
+        </label>
         <input
           className="border w-full py-2 px-2 rounded"
           type="text"

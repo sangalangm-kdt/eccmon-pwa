@@ -1,49 +1,67 @@
-import React, { useState, useEffect } from "react";
-import { inputContainerClass } from "../styles/components";
+import React, { useState, useEffect, useRef } from "react";
+import DatePicker from "react-datepicker"; // Import DatePicker
+import "react-datepicker/dist/react-datepicker.css"; // Import default styles
+import { FaRegCalendar } from "react-icons/fa6"; // Import date icon from react-icons
 
 const DateField = ({ date, setDate, disabled }) => {
-  // Initialize with current date and time in "yyyy-mm-ddTHH:mm" format
-  const [dateTime, setDateTime] = useState(() => {
+  // Initialize with current date in "yyyy-mm-dd" format
+  const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    const hours = String(today.getHours()).padStart(2, "0");
-    const minutes = String(today.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
+    return today.toISOString().split("T")[0]; // Format as "yyyy-mm-dd"
   });
+
+  // Ref to the DatePicker component
+  const datePickerRef = useRef(null);
 
   useEffect(() => {
     if (date) {
-      setDateTime(date);
+      setSelectedDate(date.split("T")[0]); // Ensure only the date part is used
     }
   }, [date]);
 
-  // Handle date change and append current time to the selected date
-  const handleDateChange = (event) => {
-    const selectedDate = event.target.value;
+  // Handle date change
+  const handleDateChange = (date) => {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, "0");
     const minutes = String(now.getMinutes()).padStart(2, "0");
 
-    const newDateTime = `${selectedDate}T${hours}:${minutes}`;
+    const newDateTime = `${
+      date.toISOString().split("T")[0]
+    }T${hours}:${minutes}`;
     setDate(newDateTime);
-    setDateTime(newDateTime);
+    setSelectedDate(date.toISOString().split("T")[0]); // Update date display
+  };
+
+  // Handle icon click to open the date picker
+  const handleIconClick = () => {
+    if (datePickerRef.current) {
+      datePickerRef.current.setFocus();
+    }
   };
 
   return (
-    <div>
-      <div className="border rounded text-sm">
-        <input
-          className={inputContainerClass}
-          type="date"
-          value={dateTime.split("T")[0] || ""} // Extract the date part (yyyy-mm-dd) for display
+    <div className="relative w-full">
+      <div className="border rounded text-sm flex items-center w-full flex-row">
+        {/* DatePicker with responsive width */}
+        <DatePicker
+          ref={datePickerRef} // Attach the ref to the DatePicker
+          className="w-full sm:w-72 md:w-80 lg:w-96  px-2 py-2 text-gray-800 rounded focus:outline-none"
+          selected={new Date(selectedDate)} // Convert string back to Date object
           onChange={handleDateChange}
-          required
+          dateFormat="yyyy-MM-dd" // Keep the same date format
           disabled={disabled}
+          required
         />
+
+        {/* Calendar icon positioned at the right */}
+        <FaRegCalendar
+          className="absolute right-2 text-gray-500 cursor-pointer"
+          size={18}
+          onClick={handleIconClick} // Trigger the DatePicker focus on click
+        />
+
         {/* Hidden input for the full dateTime (date and time) */}
-        <input type="hidden" value={dateTime} required />
+        <input type="hidden" value={selectedDate} required />
       </div>
     </div>
   );

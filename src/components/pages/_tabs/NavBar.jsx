@@ -32,10 +32,10 @@ const NavBar = () => {
   return (
     <div className="flex flex-col fixed w-full top-0 z-50">
       {!user && (
-        <div
-          className={`${languagess.container} ${languagess.languageSwitcher}`}
-        >
-          <LanguageSwitcher />
+        <div className={`${languagess.container} `}>
+          <div className={`${languagess.languageSwitcher}`}>
+            <LanguageSwitcher />
+          </div>
         </div>
       )}
       {currentPage === "login" ? (

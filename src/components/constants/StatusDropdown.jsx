@@ -7,23 +7,28 @@ import {
 } from "../utils/selectUtils";
 
 const StatusDropdown = ({
-  options = [],
+  options = [], // Original options containing the actual values
   selectedStatus,
   setSelectedStatus,
   disabled,
 }) => {
-  const { t } = useTranslation("qrScanner");
+  const { t } = useTranslation();
 
   if (options.length === 0) {
     return (
       <select id="status-select" disabled>
-        <option value="sdfff">{t("qrScanner:noOptionsAvailable")}</option>
+        <option value="">{t("qrScanner:noOptionsAvailable")}</option>
       </select>
     );
   }
 
-  // Use utility function to transform options
-  const statusOptions = transformStatusOptions(options);
+  // Use the `t` function from `useTranslation` and pass it to the utility function
+  const statusOptions = transformStatusOptions(options, t); // Now passing `t`
+
+  // Get the translated label for display purposes and convert to lowercase
+  const translatedSelectedStatus = t(
+    `qrScanner:${selectedStatus}`
+  ).toLowerCase();
 
   // Function to highlight matching text in options
   const getOptionLabel = (option, inputValue) => {
@@ -51,13 +56,17 @@ const StatusDropdown = ({
   return (
     <div className="">
       <Select
-        options={statusOptions}
-        value={statusOptions.find((option) => option.value === selectedStatus)}
-        onChange={(selectedOption) => setSelectedStatus(selectedOption.value)}
+        options={statusOptions} // Using the transformed and translated options
+        value={statusOptions.find(
+          (option) => option.value === selectedStatus // Use raw value for comparison
+        )}
+        onChange={(selectedOption) => setSelectedStatus(selectedOption.value)} // Keep raw value for saving
         styles={customSelectStyles}
         placeholder={t("qrScanner:selectAStatus")}
-        isDisabled={disabled} // Disable if no options
-        getOptionLabel={(option) => getOptionLabel(option, selectedStatus)}
+        isDisabled={disabled}
+        getOptionLabel={(option) =>
+          getOptionLabel(option, translatedSelectedStatus)
+        }
       />
     </div>
   );

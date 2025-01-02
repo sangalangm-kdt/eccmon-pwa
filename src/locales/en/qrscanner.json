@@ -44,5 +44,12 @@
   "disposalStatus": "Disposal Status",
   "disposalDate": "Disposal date",
   "engineNumError": "It should not exceed more than two characters",
-  "opHoursError": "Operating hours cannot be less than 0"
+  "opHoursError": "Operating hours cannot be less than 0",
+  "validation": {
+    "caseRequired": "Case is required.",
+    "dateRequired": "Date is required.",
+    "orderNumberRequired": "Order number is required.",
+    "locationRequired": "Location is required.",
+    "processorRequired": "Processor is required."
+  }
 }

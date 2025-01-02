@@ -22,44 +22,50 @@ export const filterHistory = (history, filter, startDate, endDate) => {
     return d;
   };
 
+  console.log("Filtering history with filter:", filter);
+
   switch (filter) {
     case "last7":
       const last7Days = new Date();
       last7Days.setDate(currentDate.getDate() - 7);
+      console.log("Last 7 days:", last7Days);
       filteredData = filteredData?.filter((item) => {
-        // console.log(`Checking last7Days filter: ${item.createdAt}`);
-        return new Date(item.createdAt) >= last7Days;
+        const itemDate = new Date(item.createdAt);
+        console.log("Item Date:", itemDate);
+        return itemDate >= last7Days;
       });
       break;
+
     case "last30":
       const last30Days = new Date();
       last30Days.setDate(currentDate.getDate() - 30);
+      console.log("Last 30 days:", last30Days);
       filteredData = filteredData?.filter((item) => {
-        // console.log(`Checking last30Days filter: ${item.createdAt}`);
-        return new Date(item.createdAt) >= last30Days;
+        const itemDate = new Date(item.createdAt);
+        console.log("Item Date:", itemDate);
+        return itemDate >= last30Days;
       });
       break;
+
     case "custom":
       if (startDate && endDate) {
         const start = clearTime(startDate);
         const end = new Date(
           clearTime(endDate).getTime() + 24 * 60 * 60 * 1000 - 1,
-        ); // Include entire end date
-
-        // console.log(`Start: ${start}, End: ${end}`);
+        );
+        console.log("Custom date range:", start, end);
         filteredData = filteredData?.filter((item) => {
-          // console.log(
-          //   `Checking custom filter: ${item.createdAt}, Start: ${start}, End: ${end}`,
-          // );
-          return (
-            new Date(item.createdAt) >= start && new Date(item.createdAt) <= end
-          );
+          const itemDate = new Date(item.createdAt);
+          console.log("Item Date:", itemDate);
+          return itemDate >= start && itemDate <= end;
         });
       }
       break;
+
     default:
       const currentMonth = currentDate.getMonth();
       const currentYear = currentDate.getFullYear();
+      console.log("Current month/year:", currentMonth, currentYear);
       filteredData = filteredData?.filter((item) => {
         const itemDate = new Date(item.createdAt);
         return (
@@ -70,6 +76,7 @@ export const filterHistory = (history, filter, startDate, endDate) => {
       break;
   }
 
+  console.log("Filtered Data:", filteredData);
   return filteredData;
 };
 

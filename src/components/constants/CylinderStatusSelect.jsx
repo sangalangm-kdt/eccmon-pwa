@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 // import { useSelector, useDispatch } from "react-redux";
 // import { fetchCylinderStatus } from "../../features/status/statusSlice";
@@ -14,18 +13,17 @@ export const CylinderStatusSelect = ({
   // const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  // Get cylinder status options
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Get cylinder status options with labelKey for translation
   const cylinderStatusOptions = [
-    { id: 1, status: "Storage" }, // Translated
-    { id: 2, status: "Disassembly" }, // Translated
-    { id: 3, status: "Grooving" }, // Translated
-    { id: 4, status: "LMD" }, // Translated
-    { id: 5, status: "Finishing" }, // Translated
-    { id: 6, status: "Assembly" }, // Translated
-    { id: 7, status: "Mounted" }, // Translated
-    { id: 8, status: "Dismounted" }, // Translated
-    { id: 9, status: "Disposal" }, // Translated
+    { id: 1, status: "Storage", labelKey: "storage" },
+    { id: 2, status: "Disassembly", labelKey: "disassembly" },
+    { id: 3, status: "Grooving", labelKey: "grooving" },
+    { id: 4, status: "LMD", labelKey: "lmd" },
+    { id: 5, status: "Finishing", labelKey: "finishing" },
+    { id: 6, status: "Assembly", labelKey: "assembly" },
+    { id: 7, status: "Mounted", labelKey: "mounted" },
+    { id: 8, status: "Dismounted", labelKey: "dismounted" },
+    { id: 9, status: "Disposal", labelKey: "disposal" },
   ];
 
   const hasOptions = cylinderStatusOptions.length > 0;
@@ -43,6 +41,7 @@ export const CylinderStatusSelect = ({
         selectedStatus={selectedStatus} // Use local state for selected status
         setSelectedStatus={setSelectedStatus}
         disabled={disabled}
+        t={t}
       />
       {!hasOptions && (
         <p className="text-gray-500">No options available</p> // Optional message

@@ -5,7 +5,7 @@ const ButtonYesOrNo = ({ passed, setPassed, disabled }) => {
   const { t } = useTranslation();
 
   const handleButtonClick = (value) => {
-    setPassed(passed === value ? null : value);
+    setPassed(passed === value ? "0" : value);
   };
 
   return (

@@ -15,32 +15,33 @@ const ScannedResult = () => {
   const [modalType, setModalType] = useState("success");
   const [currentCycle, setCurrentCycle] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [showAlert, setShowAlert] = useState(false); // State to control the alert visibility
+  const [showAlert, setShowAlert] = useState(false); // Manage alert state
 
   const handleClick = (e) => {
     e.preventDefault();
-    console.log(data, selectedStatus);
+    console.log("Data on Click:", data); // Debugging the data
 
-    // Check if location is valid before proceeding
-    if (!data.location || data.location === "") {
+    // Only show alert when Save button is clicked and location is invalid
+    if (
+      !data.location ||
+      data.location === "" ||
+      !data.serialNumber ||
+      !data.cycle
+    ) {
+      console.log("Location is empty, show alert");
       setShowAlert(true); // Show the alert if location is empty or undefined
-      return; // Stop the further execution
+      return;
     } else {
       setShowAlert(false); // Hide the alert if location is valid
     }
 
     if (step === "view") {
-      // Check if the input fields are complete before moving to review
       if (isComplete) {
         setStep("review");
       }
     } else if (step === "review") {
       const updatedCycle = data.cycle;
-      // if (selectedStatus === "Storage" && data?.process === "Dismounted") {
-      //   // updatedCycle += 1;
-      // }
       setCurrentCycle(updatedCycle);
-
       addUpdate(data, selectedStatus);
 
       if (selectedStatus === "Storage") {
@@ -61,15 +62,18 @@ const ScannedResult = () => {
   };
 
   useEffect(() => {
-    console.log(data, selectedStatus);
-    // Update isComplete state whenever data changes or the selected status changes
+    console.log("Data in useEffect:", data); // Debugging the data in useEffect
+
+    // Check if the required fields are filled before updating `isComplete`
+    const isLocationValid = data.location && data.location !== "";
+    const isSerialNumberValid = data.serialNumber && data.serialNumber !== "";
+    const isDateDoneValid = data.dateDone && data.dateDone !== "";
+    const isCycleValid = data.cycle && data.cycle !== undefined;
+
     setIsComplete(
-      Object.keys(data).length > 0 &&
-        selectedStatus !== "None" &&
-        data.location && // Ensure location is not null or empty
-        data.location !== ""
+      isSerialNumberValid && isLocationValid && isDateDoneValid && isCycleValid
     );
-  }, [data, selectedStatus]);
+  }, [data, selectedStatus]); // Re-run whenever `data` or `selectedStatus` changes
 
   return (
     <div>
@@ -100,19 +104,15 @@ const ScannedResult = () => {
             disabled={step === "review"}
             step={step}
             setIsComplete={setIsComplete}
+            showAlert={showAlert}
+            setShowAlert={setShowAlert} // Pass the alert handler to CylinderInfo
           />
         </div>
-
-        {showAlert && (
-          <div className="bg-red-100 text-red-600 p-2 rounded-md mt-2">
-            <p className="text-sm">Location is required. Please fill it out.</p>
-          </div>
-        )}
 
         <SaveButton
           onClick={handleClick}
           text={step === "review" ? "Save" : "Continue"}
-          disabled={!isComplete} // Button should be disabled if isComplete is false
+          disabled={!isComplete}
         />
       </div>
 

@@ -17,9 +17,11 @@ const CaseButton = ({ selectedCase, setSelectedCase, disabled }) => {
   };
 
   return (
-    <div className="mt-4 text-xs text-primaryText">
-      <label className="font-semibold">{t("qrScanner:case")}</label>
-      <div className="rounded flex flex-row items-center justify-between">
+    <div className="mt-4 text-primaryText">
+      <label className="font-semibold text-sm">
+        {t("qrScanner:case")} <strong className="text-red-500">*</strong>
+      </label>
+      <div className="rounded flex flex-row items-center justify-between text-xs">
         {cases.map((caseItem) => (
           <button
             type="button"

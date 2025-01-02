@@ -20,8 +20,16 @@ const InstallationButton = () => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       console.log("beforeinstallprompt event fired:", e);
-      setDeferredPrompt(e);
-      sessionStorage.setItem("deferredPrompt", true); // Save state
+
+      // Ensure the event has a prompt function
+      if (e && typeof e.prompt === "function") {
+        setDeferredPrompt(e);
+        sessionStorage.setItem("deferredPrompt", true); // Save state
+      } else {
+        console.error(
+          "beforeinstallprompt event is invalid or missing prompt method"
+        );
+      }
     };
 
     const handleAppInstalled = () => {
@@ -36,24 +44,11 @@ const InstallationButton = () => {
       console.log("Safari browser detected");
     }
 
-    // Restore deferred prompt state from session storage
-    if (sessionStorage.getItem("deferredPrompt")) {
-      setDeferredPrompt({});
-    }
-
     // Add event listeners
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // Check service worker status
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker.getRegistration().then((registration) => {
-        console.log("Service Worker registration:", registration);
-      });
-    } else {
-      console.log("Service Worker not supported");
-    }
-
+    // Check standalone mode
     checkStandaloneMode();
 
     return () => {
@@ -66,7 +61,7 @@ const InstallationButton = () => {
   }, []);
 
   const handleInstallClick = () => {
-    if (deferredPrompt) {
+    if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
@@ -77,6 +72,8 @@ const InstallationButton = () => {
         }
         setDeferredPrompt(null);
       });
+    } else {
+      console.error("No valid deferredPrompt available");
     }
   };
 

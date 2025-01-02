@@ -1,7 +1,7 @@
 import Axios from "axios";
 
 const axiosLib = Axios.create({
-  baseURL: "https://api.eccmon.site",
+  baseURL: "http://localhost:8000",
   headers: {
     "X-Requested-With": "XMLHttpRequest",
   },

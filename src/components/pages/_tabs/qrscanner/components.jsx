@@ -54,6 +54,8 @@ export const CylinderInfo = ({
   setData,
   disabled,
   setIsComplete,
+  showAlert,
+  setShowAlert,
 }) => {
   const components = {
     disposal: Disposal,
@@ -78,6 +80,8 @@ export const CylinderInfo = ({
           setData={setData}
           disabled={disabled}
           setIsComplete={setIsComplete}
+          showAlert={showAlert}
+          setShowAlert={setShowAlert}
         />
       ) : (
         <div className="border p-2">{/* Default placeholder */}</div>

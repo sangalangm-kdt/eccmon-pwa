@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 import zIndex from "@mui/material/styles/zIndex";
+import { useTranslation } from "react-i18next";
 
-export const transformStatusOptions = (options) => {
+export const transformStatusOptions = (options, t) => {
   return options.map((option) => ({
     value: option.status,
-    label: option.status,
-    originalLabel: option.status,
+    label: t(`qrScanner:${option.labelKey}`),
   }));
 };
 
@@ -46,8 +46,8 @@ export const customSelectStyles = {
     width: "100%",
     borderRadius: "0.375rem",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    maxHeight: "unset", // Remove height restrictions
-    overflow: "visible", // Ensure no content is cut off
+    maxHeight: "300px", // Remove height restrictions
+    overflowY: "auto", // Ensure no content is cut off
     zIndex: 10,
   }),
   menuList: (base) => ({
