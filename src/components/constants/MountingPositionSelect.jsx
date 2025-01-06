@@ -1,39 +1,53 @@
-import React, { useState } from "react";
+import React from "react";
+import Select from "react-select";
+import { customSelectStyles } from "../utils/selectUtils"; // Import custom select styles
 
 const MountingPositionSelect = ({ mountPos, setMountPos, disabled }) => {
+  const mountingPositions = [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7",
+    "A8",
+    "A9",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B9",
+  ];
+
+  const options = mountingPositions.map((pos) => ({
+    value: pos,
+    label: pos,
+  }));
+
+  const handleChange = (selectedOption) => {
+    const newMountPos = selectedOption?.value || "";
+    console.log("Selected Mounting Position:", newMountPos); // Debug log
+    setMountPos(newMountPos); // Update state
+  };
+
   return (
     <div className="flex flex-col space-y-2">
-      <select
+      <Select
         id="mountingPosition"
-        value={mountPos}
-        onChange={(e) => {
-          console.log("Selected Mounting Position:", e.target.value); // Debug log
-          setMountPos(e.target.value); // Update state
-        }}
-        className="px-1 py-2 border border-gray-300 rounded-md text-gray-600 focus:outline-none "
-        disabled={disabled}
-        required
-      >
-        <option value="">Select an engine position</option>
-        <option value="A1">A1</option>
-        <option value="A2">A2</option>
-        <option value="A3">A3</option>
-        <option value="A4">A4</option>
-        <option value="A5">A5</option>
-        <option value="A6">A6</option>
-        <option value="A7">A7</option>
-        <option value="A8">A8</option>
-        <option value="A9">A9</option>
-        <option value="B1">B1</option>
-        <option value="B2">B2</option>
-        <option value="B3">B3</option>
-        <option value="B4">B4</option>
-        <option value="B5">B5</option>
-        <option value="B6">B6</option>
-        <option value="B7">B7</option>
-        <option value="B8">B8</option>
-        <option value="B9">B9</option>
-      </select>
+        value={options.find((opt) => opt.value === mountPos) || null}
+        onChange={handleChange}
+        options={options}
+        isDisabled={disabled}
+        styles={customSelectStyles}
+        placeholder="Select an engine position"
+        isClearable
+        noOptionsMessage={() => "No positions available"}
+      />
     </div>
   );
 };

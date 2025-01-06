@@ -11,13 +11,17 @@ import {
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import { fullscreenClass } from "../../../styles/home"; // Import fullscreenClass from styles
 import { getStatusColors } from "../../../utils/statusColors"; // Import status color utility
-import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary";
+import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary"; // Import the skeleton
 import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import Select from "react-select"; // Import react-select
+import DatePicker from "react-datepicker"; // Import react-datepicker
+import "react-datepicker/dist/react-datepicker.css"; // Import the styles for react-datepicker
+import { FaCalendarAlt } from "react-icons/fa"; // Import the calendar icon from react-icons
 
 const HistorySummary = () => {
   const history = useCylinderCover().cylinder?.data; // Get history data
   const [showAll, setShowAll] = useState(false); // Default value is false
-  const [filter, setFilter] = useState("thisMonth");
+  const [filter, setFilter] = useState("latest"); // Default is "latest"
   const [sortOrder, setSortOrder] = useState("desc"); // Start with descending order to show recent first
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -31,32 +35,33 @@ const HistorySummary = () => {
 
   useEffect(() => {
     if (history) {
-      const sortedHistory = sortHistoryByDate(history, sortOrder); // Sort history by date (descending)
+      // Sort history by date (descending) to show the latest first by default
+      const sortedHistory = sortHistoryByDate(history, sortOrder);
+
+      // If no filter is applied, it will just show the most recent history
       const filteredData = filterHistory(
         sortedHistory,
         filter,
         startDate,
         endDate
-      ); // Filter history
-      setFilteredHistory(filteredData); // Update filtered history
+      ); // Filter history based on filter criteria
+
+      // Set the filtered history to the state
+      setFilteredHistory(filteredData);
     }
   }, [history, sortOrder, filter, startDate, endDate]); // Re-run when any of these change
 
   // Handle filter change (like "This Month", "Last 7 Days", "Last 30 Days", etc.)
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
+  const handleFilterChange = (selectedOption) => {
+    setFilter(selectedOption.value);
   };
 
   // Handle start and end date changes for the custom filter
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    const selectedDate = new Date(value);
-    selectedDate.setHours(0, 0, 0, 0);
-
+  const handleDateChange = (date, name) => {
     if (name === "startDate") {
-      setStartDate(selectedDate);
+      setStartDate(date);
     } else if (name === "endDate") {
-      setEndDate(selectedDate);
+      setEndDate(date);
     }
   };
 
@@ -77,6 +82,28 @@ const HistorySummary = () => {
       state: { data: item }, // Pass the data to ViewInfo component via state
     });
   };
+
+  // Options for react-select filter dropdown
+  const filterOptions = [
+    { value: "latest", label: t("common:latest") },
+    { value: "thisMonth", label: t("common:thisMonth") },
+    { value: "last7", label: t("common:last7Days") },
+    { value: "last30", label: t("common:last30Days") },
+    { value: "custom", label: t("common:customDateRange") },
+  ];
+
+  // Custom input for react-datepicker with calendar icon
+  const CustomDateInput = ({ value, onClick }) => (
+    <div className="relative cursor-pointer" onClick={onClick}>
+      <input
+        type="text"
+        value={value}
+        readOnly
+        className="px-2 py-1 border w-full"
+      />
+      <FaCalendarAlt className="absolute right-2 top-2 text-gray-500" />
+    </div>
+  );
 
   return (
     <div
@@ -116,16 +143,14 @@ const HistorySummary = () => {
           {showAll && (
             <div className="mb-4 mt-2">
               <div className="flex justify-between mb-2 mr-2">
-                <select
-                  className="px-2 py-1 border ml-2 focus:outline focus:outline-primar"
-                  value={filter}
+                <Select
+                  className="w-48 sm:w-64"
+                  options={filterOptions}
+                  value={filterOptions.find(
+                    (option) => option.value === filter
+                  )}
                   onChange={handleFilterChange}
-                >
-                  <option value="thisMonth">{t("common:thisMonth")}</option>
-                  <option value="last7">{t("common:last7Days")}</option>
-                  <option value="last30">{t("common:last30Days")}</option>
-                  <option value="custom">{t("common:customDateRange")}</option>
-                </select>
+                />
                 <button className="py-2" onClick={toggleSortOrder}>
                   {sortOrder === "asc" ? (
                     <GoSortAsc size={24} color="#6e7271" />
@@ -136,31 +161,36 @@ const HistorySummary = () => {
               </div>
 
               {filter === "custom" && (
-                <div className="flex mt-2 px-2">
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={
-                      startDate ? startDate.toISOString().split("T")[0] : ""
-                    }
-                    onChange={handleDateChange}
-                    className="px-2 py-1 border mr-2"
-                  />
-                  <input
-                    type="date"
-                    name="endDate"
-                    value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                    onChange={handleDateChange}
-                    className="px-2 py-1 border"
-                  />
+                <div className="flex flex-wrap gap-2 mt-2 px-2">
+                  <div className="flex-1 xs:w-36 sm:w-48 md:w-56 lg:w-full">
+                    <DatePicker
+                      selected={startDate}
+                      onChange={(date) => handleDateChange(date, "startDate")}
+                      className="px-4 py-2 border w-full"
+                      dateFormat="MM/dd/yy"
+                      customInput={<CustomDateInput />}
+                      placeholderText="mm/dd/yy"
+                    />
+                  </div>
+                  <div className="flex-1 sm:w-48 md:w-56 lg:w-full">
+                    <DatePicker
+                      selected={endDate}
+                      onChange={(date) => handleDateChange(date, "endDate")}
+                      className="px-4 py-2 border w-full"
+                      dateFormat="MM/dd/yy"
+                      customInput={<CustomDateInput />}
+                      placeholderText="mm/dd/yy"
+                    />
+                  </div>
                 </div>
               )}
             </div>
           )}
 
           {filteredHistory.length === 0 ? (
-            <div className="text-center text-gray-500 p-4 h-72">
-              No recent history
+            <div className="p-4 h-72">
+              {/* Displaying the skeleton while data is loading */}
+              <HistorySummarySkeleton />
             </div>
           ) : (
             <ul

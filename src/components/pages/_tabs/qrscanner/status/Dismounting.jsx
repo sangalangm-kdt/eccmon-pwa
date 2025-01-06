@@ -4,7 +4,13 @@ import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
 
-const Dismounting = ({ selectedStatus, setData, disabled }) => {
+const Dismounting = ({
+  selectedStatus,
+  setData,
+  disabled,
+  showAlert,
+  setShowAlert,
+}) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
   console.log(cylinderData);
@@ -89,6 +95,8 @@ const Dismounting = ({ selectedStatus, setData, disabled }) => {
           opHours={opHours}
           setOpHours={setOpHours}
           disabled={disabled}
+          showAlert={showAlert}
+          setShowAlert={setShowAlert}
         />
       </div>
 
@@ -101,6 +109,8 @@ const Dismounting = ({ selectedStatus, setData, disabled }) => {
           cycle={cycle}
           setCycle={setCycle}
           disabled={disabled}
+          showAlert={showAlert}
+          setShowAlert={setShowAlert}
         />
       </div>
     </div>

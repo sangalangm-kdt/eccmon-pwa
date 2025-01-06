@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SiteNameOptions from "../../../../../constants/SiteNameOptions";
 import { useTranslation } from "react-i18next";
 
@@ -10,8 +10,10 @@ const EngineInfo = ({
   opHours,
   setOpHours,
   disabled,
+  showAlert,
+  setShowAlert,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("qrScanner");
 
   // State to manage error messages
   const [engineNumError, setEngineNumError] = useState("");
@@ -51,9 +53,15 @@ const EngineInfo = ({
         <SiteNameOptions site={site} setSite={setSite} disabled={disabled} />
       </div>
 
+      {showAlert && !site && (
+        <p className="text-red-600 text-xs">{t("validation.siteRequired")}</p>
+      )}
+
       {/* Engine Number */}
       <div>
-        <label>{t("qrScanner:engineNo")}</label>
+        <label>
+          {t("qrScanner:engineNo")} <strong className="text-red-500">*</strong>
+        </label>
         <input
           value={engineNum}
           className={`w-full p-2 rounded border ${
@@ -63,16 +71,23 @@ const EngineInfo = ({
           placeholder="Enter engine number (max 2 characters)"
           onChange={handleEngineNumChange}
           disabled={disabled}
-          required
         />
         {engineNumError && (
-          <p className="flex text-red-500 text-tiny">{engineNumError}</p>
+          <p className="text-red-500 text-tiny">{engineNumError}</p>
+        )}
+        {showAlert && !engineNum && (
+          <p className="text-red-600 text-xs">
+            {t("validation.engineNumberRequired")}
+          </p>
         )}
       </div>
 
       {/* Operating Hours */}
       <div>
-        <label>{t("qrScanner:operatingHours")}</label>
+        <label>
+          {t("qrScanner:operatingHours")}{" "}
+          <strong className="text-red-500">*</strong>
+        </label>
         <input
           className={`w-full p-2 rounded border ${
             opHoursError ? "border-red-500" : ""
@@ -84,8 +99,13 @@ const EngineInfo = ({
           disabled={disabled}
           required
         />
+        {showAlert && opHours === "" && (
+          <p className="text-red-600 text-xs">
+            {t("validation.opHoursRequired")}
+          </p>
+        )}
         {opHoursError && (
-          <p className="flex text-red-500 text-tiny">{opHoursError}</p>
+          <p className="text-red-500 text-tiny">{opHoursError}</p>
         )}
       </div>
     </div>

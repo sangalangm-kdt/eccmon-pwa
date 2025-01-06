@@ -1,4 +1,15 @@
 import dateFormat from "dateformat";
+import { useCylinderUpdate } from "../../hooks/cylinderUpdates";
+
+export const useHistoryWithUpdates = (history) => {
+  const { cylinder: updateData } = useCylinderUpdate(); // Hook used correctly here
+
+  if (updateData && updateData.data) {
+    return [...history, ...updateData.data]; // Combine data
+  }
+
+  return history;
+};
 
 // Sort function for history based on the date
 export const sortHistoryByDate = (history, sortOrder = "asc") => {

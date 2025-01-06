@@ -20,3 +20,32 @@ html, body {
 .active .fill-primary {
   @apply text-primary; /* Apply Tailwind color to fill in active state */
 }
+
+/* styles.css */
+
+.custom-datepicker-popper .react-datepicker__header {
+  @apply text-sm; /* Smaller text */
+   @apply text-primaryText;
+}
+
+.custom-datepicker-popper .react-datepicker__month {
+  @apply text-sm; /* Smaller month text */
+}
+
+.custom-datepicker-popper .react-datepicker__day {
+  @apply text-xs; /* Smaller day text */
+}
+
+.custom-datepicker-popper .react-datepicker {
+  @apply scale-90; /* Scale the calendar down */
+   @apply max-w-full; /* Ensure max-width is 100% */
+  @apply w-auto; /* Set width to auto, allowing it to shrink */
+  @apply sm:w-72; /* Set width for smaller screens */
+  @apply md:w-80; /* Set width for medium screens */
+  @apply lg:w-96; /* Set width for large screens */
+}
+
+.introjs-progress {
+  background-color: #cfeeff !important;  /* Tailwind colors or custom colors */
+  height: 6px !important;                /* Change the height */
+}

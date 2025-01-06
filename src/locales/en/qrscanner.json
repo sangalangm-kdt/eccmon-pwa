@@ -50,6 +50,11 @@
     "dateRequired": "Date is required.",
     "orderNumberRequired": "Order number is required.",
     "locationRequired": "Location is required.",
-    "processorRequired": "Processor is required."
+    "processorRequired": "Processor is required.",
+    "siteRequired": "Site location is required.",
+    "engineNumberRequired": "Engine number is required.",
+    "opHoursRequired": "Operating hours is required.",
+    "enginePosRequired": "Engine position is required.",
+    "completionDateRequired": "Completion date is required."
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import Select from "react-select";
 import { useTranslation } from "react-i18next";
-import { inputContainerClass } from "../styles/components";
+import { customSelectStyles } from "../utils/selectUtils";
 
 const LocationDropdown = ({
   onLocationChange,
@@ -13,39 +14,36 @@ const LocationDropdown = ({
 }) => {
   const { t } = useTranslation();
 
-  const handleChange = (e) => {
-    const newLocation = e.target.value;
+  const handleChange = (selectedOption) => {
+    const newLocation = selectedOption?.value || "";
     setProcessor(newLocation);
     if (onLocationChange) {
       onLocationChange(newLocation); // Call the passed function
     }
   };
 
+  const transformedOptions = options.map((option) => ({
+    value: option.name,
+    label: option.name,
+  }));
+
   return (
     <div className="mt-2 text-sm">
-      <div className="flex flex-col w-full border rounded">
-        {loading && <div>Loading options...</div>}
-        {error && <div>Error: {error}</div>}
-        <select
-          value={processor}
+      <div className="flex flex-col w-full">
+        {loading && <div>{t("qrScanner:loadingOptions")}</div>}
+        {error && <div>{t("qrScanner:error", { error })}</div>}
+        <Select
+          value={
+            transformedOptions.find((opt) => opt.value === processor) || null
+          }
           onChange={handleChange}
-          disabled={disabled}
-          className={inputContainerClass}
-          required
-        >
-          <option value="">{t("qrScanner:selectALocation")}</option>
-          {options.length > 0 ? (
-            options.map((option) => (
-              <option key={option.id} value={option.name}>
-                {option.name}
-              </option>
-            ))
-          ) : (
-            <option value="" disabled>
-              No options available
-            </option>
-          )}
-        </select>
+          options={transformedOptions}
+          isDisabled={disabled}
+          styles={customSelectStyles}
+          placeholder={t("qrScanner:selectALocation")}
+          isClearable
+          noOptionsMessage={() => t("qrScanner:noOptionsAvailable")}
+        />
       </div>
     </div>
   );

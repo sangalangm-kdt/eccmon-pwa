@@ -1,6 +1,6 @@
 {
-  "name": "mobile-app",
-  "version": "0.1.2",
+  "name": "eccmon-app",
+  "version": "1.0.3",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
@@ -26,6 +26,7 @@
     "i": "^0.3.7",
     "i18next": "^23.16.2",
     "i18next-browser-languagedetector": "^8.0.0",
+    "intro.js": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "prettier": "^3.1.0",

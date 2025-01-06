@@ -32,7 +32,7 @@ const ViewInfo = () => {
       const displayKey = labels[key] || key;
 
       // Format the dateDone field
-      if (key === "dateDone" && typeof value === "string") {
+      if (key === "createdAt" && typeof value === "string") {
         value = value.replace("T", ", "); // Replace T with a space
       }
 

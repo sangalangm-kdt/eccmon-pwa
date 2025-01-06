@@ -21,12 +21,34 @@ const ScannedResult = () => {
     e.preventDefault();
     console.log("Data on Click:", data); // Debugging the data
 
+    let otherDetails = {};
+    try {
+      if (
+        typeof data.otherDetails === "string" &&
+        data.otherDetails.trim() !== ""
+      ) {
+        otherDetails = JSON.parse(data.otherDetails);
+      } else {
+        console.log("otherDetails is invalid or empty.");
+        otherDetails = {};
+      }
+    } catch (error) {
+      console.log("Error parsing otherDetails:", error);
+      otherDetails = {};
+    }
+
     // Only show alert when Save button is clicked and location is invalid
     if (
       !data.location ||
       data.location === "" ||
       !data.serialNumber ||
-      !data.cycle
+      !data.cycle ||
+      otherDetails.case === null ||
+      otherDetails.isPassed === "" ||
+      otherDetails.orderNumber === "" ||
+      otherDetails.engineNumber === "" ||
+      otherDetails.operationHours === "" ||
+      otherDetails.mountingPosition === ""
     ) {
       console.log("Location is empty, show alert");
       setShowAlert(true); // Show the alert if location is empty or undefined
@@ -70,9 +92,38 @@ const ScannedResult = () => {
     const isDateDoneValid = data.dateDone && data.dateDone !== "";
     const isCycleValid = data.cycle && data.cycle !== undefined;
 
-    setIsComplete(
-      isSerialNumberValid && isLocationValid && isDateDoneValid && isCycleValid
-    );
+    // Check if the otherDetails fields are valid
+    let isOtherDetailsValid = false;
+    try {
+      if (
+        typeof data.otherDetails === "string" &&
+        data.otherDetails.trim() !== ""
+      ) {
+        const otherDetails = JSON.parse(data.otherDetails);
+        isOtherDetailsValid =
+          otherDetails &&
+          otherDetails.case !== null &&
+          otherDetails.isPassed !== "" &&
+          otherDetails.orderNumber !== "" &&
+          otherDetails.engineNumber !== "" &&
+          otherDetails.operationHours !== "" &&
+          otherDetails.mountingPosition !== "";
+      }
+    } catch (error) {
+      console.error("Error parsing otherDetails:", error);
+      isOtherDetailsValid = false;
+    }
+
+    const isValid =
+      isSerialNumberValid &&
+      isLocationValid &&
+      isDateDoneValid &&
+      isCycleValid &&
+      isOtherDetailsValid;
+
+    console.log("isComplete value:", isValid); // Debugging the isComplete value
+
+    setIsComplete(isValid);
   }, [data, selectedStatus]); // Re-run whenever `data` or `selectedStatus` changes
 
   return (

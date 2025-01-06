@@ -11,23 +11,40 @@ const AdditionalInfo = ({
   cycle,
   setCycle,
   disabled,
+  showAlert,
+  setShowAlert,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("qrScanner");
 
   return (
     <div className="flex flex-col w-full p-2">
       <label className="font-semibold">{t("qrScanner:additionalInfo")}</label>
       <div>
-        <label>Mounting position on engine</label>
+        <label>
+          Mounting position on engine{" "}
+          <strong className="text-red-500">*</strong>
+        </label>
         <MountingPositionSelect
           mountPos={mountPos}
           setMountPos={setMountPos}
           disabled={disabled}
         />
+        {showAlert && !mountPos && (
+          <p className="text-red-600 text-xs">
+            {t("validation.engineNumberRequired")}
+          </p>
+        )}
       </div>
       <div>
-        <label>Completion date</label>
+        <label>
+          Completion date <strong className="text-red-500">*</strong>
+        </label>
         <DateField date={date} setDate={setDate} disabled={disabled} />
+        {showAlert && !date && (
+          <p className="text-red-600 text-xs">
+            {t("validation.completionDateRequired")}
+          </p>
+        )}
       </div>
       <div>
         <label>Cycle</label>

@@ -10,8 +10,7 @@ import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuthentication } from "../../../hooks/auth";
 import { PiQrCodeBold } from "react-icons/pi";
-import { RiSettingsLine, RiHome6Line } from "react-icons/ri";
-
+import { RiUser6Line, RiHome6Line } from "react-icons/ri";
 const NavBar = () => {
   // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
@@ -32,9 +31,11 @@ const NavBar = () => {
   return (
     <div className="flex flex-col fixed w-full top-0 z-50">
       {!user && (
-        <div className={`${languagess.container} `}>
-          <div className={`${languagess.languageSwitcher}`}>
-            <LanguageSwitcher />
+        <div>
+          <div className={`${languagess.container} `}>
+            <div className={`${languagess.languageSwitcher}`}>
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       )}
@@ -68,6 +69,7 @@ const NavBar = () => {
                       <ul className="flex space-x-4">
                         <li className={navbarStyles.navbarLink}>
                           <NavLink
+                            id="home-link"
                             to="/"
                             aria-label="Home"
                             className={({ isActive }) =>
@@ -79,6 +81,7 @@ const NavBar = () => {
                         </li>
                         <li className={navbarStyles.navbarLink}>
                           <NavLink
+                            id="qrscanner-link"
                             to="/qrscanner"
                             aria-label="QR Scanner"
                             className={({ isActive }) =>
@@ -90,6 +93,7 @@ const NavBar = () => {
                         </li>
                         <li className={navbarStyles.navbarLink}>
                           <NavLink
+                            id="profile-link"
                             to="/profile"
                             aria-label="Profile"
                             className={({ isActive }) =>
@@ -118,6 +122,7 @@ const NavBar = () => {
                   <ul className="flex justify-center">
                     <li className={navbarStyles.bottomNavbarButton}>
                       <NavLink
+                        id="home-link"
                         to="/"
                         aria-label="Home"
                         className={({ isActive }) =>
@@ -140,6 +145,7 @@ const NavBar = () => {
                     </li>
                     <li className={navbarStyles.bottomNavbarButton}>
                       <NavLink
+                        id="qrscanner-link"
                         to="/qrscanner"
                         aria-label="QR Scanner"
                         className={({ isActive }) =>
@@ -163,6 +169,7 @@ const NavBar = () => {
                     </li>
                     <li className={navbarStyles.bottomNavbarButton}>
                       <NavLink
+                        id="profile-link"
                         to="/profile"
                         aria-label="Profile"
                         className={({ isActive }) =>
@@ -172,7 +179,7 @@ const NavBar = () => {
                         {({ isActive }) => (
                           <div className="flex flex-col items-center font-medium text-tiny">
                             <button className="flex flex-col items-center p-1">
-                              <RiSettingsLine
+                              <RiUser6Line
                                 className={`${navbarStyles.iconContainer} ${
                                   isActive ? "fill-primary" : "text-gray-500"
                                 }`}
