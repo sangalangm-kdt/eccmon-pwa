@@ -56,10 +56,16 @@ const Onboarding = () => {
         }
       });
 
-      intro.start();
       intro.oncomplete(() => {
         localStorage.setItem("homeTutorialCompleted", "true");
       });
+
+      // When user clicks "X" button or closes the tutorial
+      intro.onexit(() => {
+        localStorage.setItem("homeTutorialCompleted", "true");
+      });
+
+      intro.start();
     }
   }, [t]); // Add translation function as dependency
 
