@@ -7,11 +7,12 @@ import {
 } from "react-icons/io5";
 import { getStatusColors } from "../utils/statusColors";
 import { useHistory } from "../utils/HistoryContext";
+import { useTranslation } from "react-i18next";
 
 const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
   const navigate = useNavigate();
   const { updateHistory } = useHistory(); // Access updateHistory function from context
-
+  const { t } = useTranslation();
   const handleBackToQR = () => {
     navigate("/qrscanner");
   };
@@ -29,17 +30,17 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
 
     // Define a mapping of keys to labels
     const labels = {
-      serialNumber: "Serial No.",
-      location: "Location",
-      dateDone: "Completion Date",
-      cycle: "Cycle",
-      case: "Case",
-      isPassed: "Status",
-      orderNumber: "Order No.",
-      otherDetails: "Additional Details",
-      engineNumber: "Engine Number",
-      operationHours: "Operation Hours",
-      mountingPosition: "Mounting Position",
+      serialNumber: t("qrScanner:label.serialNo"),
+      location: t("qrScanner:label.location"),
+      dateDone: t("qrScanner:label.completionDate"),
+      cycle: t("qrScanner:label.cycle"),
+      case: t("qrScanner:label.case"),
+      isPassed: t("qrScanner:label.status"),
+      orderNumber: t("qrScanner:label.orderNo"),
+      otherDetails: t("qrScanner:label.additionalInfo"),
+      engineNumber: t("qrScanner:label.engineNo"),
+      operationHours: t("qrScanner:label.operatingHours"),
+      mountingPosition: t("qrScanner:label.mountingPosition"),
     };
 
     return Object.entries(data).map(([key, value]) => {

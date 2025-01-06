@@ -18,16 +18,19 @@ const AdditionalInfo = ({
 
   return (
     <div className="flex flex-col w-full p-2">
-      <label className="font-semibold">{t("qrScanner:additionalInfo")}</label>
-      <div>
+      <label className="font-semibold mb-2">
+        {t("qrScanner:additionalInfo")}
+      </label>
+      <div className="mb-2">
         <label>
-          Mounting position on engine{" "}
+          {t("mountingPosition")}
           <strong className="text-red-500">*</strong>
         </label>
         <MountingPositionSelect
           mountPos={mountPos}
           setMountPos={setMountPos}
           disabled={disabled}
+          t={t}
         />
         {showAlert && !mountPos && (
           <p className="text-red-600 text-xs">
@@ -35,9 +38,10 @@ const AdditionalInfo = ({
           </p>
         )}
       </div>
-      <div>
+      <div className="mb-1">
         <label>
-          Completion date <strong className="text-red-500">*</strong>
+          {t("completionDate")}
+          <strong className="text-red-500">*</strong>
         </label>
         <DateField date={date} setDate={setDate} disabled={disabled} />
         {showAlert && !date && (
@@ -46,8 +50,8 @@ const AdditionalInfo = ({
           </p>
         )}
       </div>
-      <div>
-        <label>Cycle</label>
+      <div className="mb-1">
+        <label>{t("cycle")}</label>
         <input
           className="w-full rounded p-2 border"
           type="number"

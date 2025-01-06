@@ -1,18 +1,21 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { IoClose } from "react-icons/io5"; // Close icon
-import { IoReturnUpBackOutline, IoHome } from "react-icons/io5"; // Icons for navigation buttons
+import { IoClose } from "react-icons/io5";
+import { IoReturnUpBackOutline, IoHome } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
 
 const DisposalErrorModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  if (!isOpen) return null; // Don't render if not open
+  const { t } = useTranslation();
+
+  if (!isOpen) return null;
 
   const handleGoBack = () => {
-    navigate("/qrscanner"); // Redirect back to QR scanner
+    navigate("/qrscanner");
   };
 
   const handleGoHome = () => {
-    navigate("/"); // Redirect to home
+    navigate("/");
   };
 
   return (
@@ -32,10 +35,10 @@ const DisposalErrorModal = ({ isOpen, onClose }) => {
         {/* Modal Content */}
         <div className="flex flex-col items-center justify-center">
           <h2 className="text-xl font-semibold text-center text-red-500">
-            Error
+            {t("errorNetwork")}
           </h2>
           <p className="text-gray-600 mt-4 text-center">
-            This cylinder has already been disposed of. It cannot be updated.
+            {t("disposalStatus")} - {t("noCylinderDataScanned")}
           </p>
 
           {/* Buttons */}
@@ -45,14 +48,14 @@ const DisposalErrorModal = ({ isOpen, onClose }) => {
               className="flex w-full bg-gray-100 p-3 rounded-lg mr-2 items-center justify-center text-gray-600 hover:bg-gray-200 transition"
             >
               <IoReturnUpBackOutline size={16} />
-              <p className="ml-2 font-medium">Go Back to QR</p>
+              <p className="ml-2 font-medium">{t("backToScan")}</p>
             </button>
             <button
               onClick={handleGoHome}
               className="flex w-full bg-blue-500 p-3 rounded-lg text-white justify-center hover:bg-blue-600 transition"
             >
               <IoHome size={16} />
-              <p className="ml-2 font-medium">Go to Home</p>
+              <p className="ml-2 font-medium">{t("home")}</p>
             </button>
           </div>
         </div>

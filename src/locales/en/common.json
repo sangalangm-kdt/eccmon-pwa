@@ -20,5 +20,13 @@
   "thisMonth": "This month",
   "last7Days": "Last 7 days",
   "last30Days": "Last 30 days",
-  "customDateRange": "Custom Date Range"
+  "customDateRange": "Custom Date Range",
+
+  "welcomeToECCMon": "Welcome to ECCMon!",
+  "getStarted": "Let's get started.",
+  "inventoryOverview": "This section gives you an overview of your current inventory status.",
+  "historySummary": "Here you can view a summary of your activity history.",
+
+  "back": "Back",
+  "done": "Done"
 }

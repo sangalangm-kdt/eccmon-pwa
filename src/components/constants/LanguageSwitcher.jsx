@@ -94,7 +94,6 @@ const LanguageSwitcher = () => {
           getOptionValue={(e) => e.id}
           styles={customSelectStyles}
           className={languagess.languageSwitcher}
-          placeholder="Select Language"
         />
       </div>
 

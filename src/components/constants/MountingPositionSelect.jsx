@@ -2,7 +2,7 @@ import React from "react";
 import Select from "react-select";
 import { customSelectStyles } from "../utils/selectUtils"; // Import custom select styles
 
-const MountingPositionSelect = ({ mountPos, setMountPos, disabled }) => {
+const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
   const mountingPositions = [
     "A1",
     "A2",
@@ -44,7 +44,7 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled }) => {
         options={options}
         isDisabled={disabled}
         styles={customSelectStyles}
-        placeholder="Select an engine position"
+        placeholder={t("selectEnginePos")}
         isClearable
         noOptionsMessage={() => "No positions available"}
       />

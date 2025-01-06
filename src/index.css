@@ -45,6 +45,37 @@ html, body {
   @apply lg:w-96; /* Set width for large screens */
 }
 
+/* Reset shadow and text-shadow to ensure clean rendering */
+.introjs-button {
+  background-color: #4CAF50 !important;  /* Green background for both buttons */
+  color: white !important;               /* White text color */
+  padding: 10px 20px !important;         /* Custom padding */
+  border-radius: 5px !important;         /* Rounded corners */
+  font-size: 14px !important;            /* Font size */
+  border: none !important;               /* Remove default border */
+  text-shadow: none !important;          /* Remove any text-shadow */
+  box-shadow: none !important;           /* Remove any box-shadow */
+}
+
+.introjs-prevbutton {
+  background-color: #fefefe !important;  /* Light gray background for Back button */
+  color: #333 !important;               /* Dark gray text */
+  border: 2px solid #d3d3d3 !important; /* Light gray border */
+  text-shadow: none !important;          /* Remove text shadow */
+  box-shadow: none !important;           /* Remove box shadow */
+  padding: 10px 20px !important;         /* Padding for the button */
+  font-size: 14px !important;            /* Font size */
+  border-radius: 5px !important;         /* Rounded corners */
+}
+
+.introjs-nextbutton {
+  background-color: #00bfff !important;  /* Blue background for Next button */
+  color: white !important;               /* White text color */
+  text-shadow: none !important;          /* Remove text shadow */
+  box-shadow: none !important;           /* Remove box shadow */
+}
+
+/* Additional customization for the progress bar */
 .introjs-progress {
   background-color: #cfeeff !important;  /* Tailwind colors or custom colors */
   height: 6px !important;                /* Change the height */

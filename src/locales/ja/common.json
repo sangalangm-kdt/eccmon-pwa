@@ -4,9 +4,9 @@
   "invalidUserOrPass": "無効なメールアドレスまたはパスワードです。もう一度お試しください。",
   "errorNetwork": "予期しないエラーが発生しました。もう一度お試しください。",
   "errorFetchingUserData": "ユーザーデータの取得エラー",
-  "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認して、もう一度お試しください。",
+  "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認し、もう一度お試しください。",
   "installAppSafari": "ホーム画面にインストール",
-  "installAppSafariInstructions": "1. Safariを開き、このページにアクセスします。\n2. 共有ボタン（上向きの矢印がある四角）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面にアイコンが表示されるので、タップして開きます。",
+  "installAppSafariInstructions": "1. Safariを開き、このページにアクセスします。\n2. 共有ボタン（上向きの矢印付きの四角）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面にアイコンが表示されるので、それをタップして開きます。",
   "home": "ホーム",
   "profile": "プロフィール",
   "scanner": "スキャナー",
@@ -20,5 +20,13 @@
   "thisMonth": "今月",
   "last7Days": "過去7日間",
   "last30Days": "過去30日間",
-  "customDateRange": "カスタム日付範囲"
+  "customDateRange": "カスタム日付範囲",
+
+  "welcomeToECCMon": "ECCMonへようこそ！",
+  "getStarted": "始めましょう。",
+  "inventoryOverview": "このセクションでは、現在の在庫状況の概要を確認できます。",
+  "historySummary": "ここでは、アクティビティ履歴の概要を表示できます。",
+
+  "back": "戻る",
+  "done": "完了"
 }

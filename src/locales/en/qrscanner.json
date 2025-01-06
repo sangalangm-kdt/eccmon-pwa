@@ -39,6 +39,7 @@
   "additionalInfo": "Additional Information",
   "mountingPosition": "Mounting position on engine",
   "selectaSite": "Select a site",
+  "selectEnginePos": "Select an engine position",
   "enterNumber": "Enter number",
   "siteName": "Site name",
   "disposalStatus": "Disposal Status",
@@ -56,5 +57,27 @@
     "opHoursRequired": "Operating hours is required.",
     "enginePosRequired": "Engine position is required.",
     "completionDateRequired": "Completion date is required."
+  },
+  "label": {
+    "serialNo": "Serial No.",
+    "location": "Location",
+    "completionDate": "Completion Date",
+    "cycle": "Cycle",
+    "case": "Case",
+    "status": "Status",
+    "orderNo": "Order No.",
+    "additionalInfo": "Additional Information",
+    "engineNo": "Engine Number",
+    "operatingHours": "Operating Hours",
+    "mountingPosition": "Mounting Position",
+    "updatedSuccessfully": "Updated Successfully",
+    "details": "Details",
+    "noDataAvailable": "No Data Available",
+    "backToQR": "Back to QR",
+    "goToHome": "Go to Home",
+    "invalidDataFormat": "Invalid data format",
+    "passed": "Passed",
+    "failed": "Failed",
+    "ongoing": "Ongoing"
   }
 }

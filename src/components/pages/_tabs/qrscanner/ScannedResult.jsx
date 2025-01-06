@@ -37,7 +37,28 @@ const ScannedResult = () => {
       otherDetails = {};
     }
 
-    // Only show alert when Save button is clicked and location is invalid
+    // Validate for 'Disposal' status (check if dateDone exists)
+    if (
+      selectedStatus === "Disposal" &&
+      (!data.serialNumber ||
+        data.location === "" ||
+        !data.cycle ||
+        !data.dateDone)
+    ) {
+      setShowAlert(true); // Show alert if dateDone is missing for Disposal
+      return;
+    }
+
+    // Show alert when required fields for Storage are missing
+    if (
+      selectedStatus === "Storage" &&
+      (!data.location || !data.serialNumber || !data.cycle || !data.dateDone)
+    ) {
+      setShowAlert(true); // Show alert if required fields for Storage are missing
+      return;
+    }
+
+    // Validate fields for other statuses (Disposal and general fields)
     if (
       !data.location ||
       data.location === "" ||
@@ -50,13 +71,14 @@ const ScannedResult = () => {
       otherDetails.operationHours === "" ||
       otherDetails.mountingPosition === ""
     ) {
-      console.log("Location is empty, show alert");
-      setShowAlert(true); // Show the alert if location is empty or undefined
+      console.log("Location or other fields are empty, show alert");
+      setShowAlert(true); // Show the alert if any required field is missing
       return;
     } else {
-      setShowAlert(false); // Hide the alert if location is valid
+      setShowAlert(false); // Hide the alert if all required fields are filled
     }
 
+    // Proceed with further logic based on step and status
     if (step === "view") {
       if (isComplete) {
         setStep("review");
@@ -84,46 +106,27 @@ const ScannedResult = () => {
   };
 
   useEffect(() => {
-    console.log("Data in useEffect:", data); // Debugging the data in useEffect
+    console.log("Data in useEffect:", data); // Debugging the data
 
-    // Check if the required fields are filled before updating `isComplete`
+    // For "Storage" status, validate location, serialNumber, cycle, and dateDone
     const isLocationValid = data.location && data.location !== "";
     const isSerialNumberValid = data.serialNumber && data.serialNumber !== "";
     const isDateDoneValid = data.dateDone && data.dateDone !== "";
     const isCycleValid = data.cycle && data.cycle !== undefined;
 
-    // Check if the otherDetails fields are valid
-    let isOtherDetailsValid = false;
-    try {
-      if (
-        typeof data.otherDetails === "string" &&
-        data.otherDetails.trim() !== ""
-      ) {
-        const otherDetails = JSON.parse(data.otherDetails);
-        isOtherDetailsValid =
-          otherDetails &&
-          otherDetails.case !== null &&
-          otherDetails.isPassed !== "" &&
-          otherDetails.orderNumber !== "" &&
-          otherDetails.engineNumber !== "" &&
-          otherDetails.operationHours !== "" &&
-          otherDetails.mountingPosition !== "";
-      }
-    } catch (error) {
-      console.error("Error parsing otherDetails:", error);
-      isOtherDetailsValid = false;
-    }
+    // For "Storage" status, validate required fields only for Storage
+    const isStorageValid =
+      isLocationValid && isSerialNumberValid && isCycleValid && isDateDoneValid;
 
-    const isValid =
-      isSerialNumberValid &&
-      isLocationValid &&
-      isDateDoneValid &&
-      isCycleValid &&
-      isOtherDetailsValid;
+    // For "Disposal" status, validate that dateDone exists
+    const isDisposalValid = selectedStatus === "Disposal" && data.dateDone;
 
-    console.log("isComplete value:", isValid); // Debugging the isComplete value
+    // Combine validation logic: the form is complete if either Storage or Disposal is valid
+    const isValid = isStorageValid || isDisposalValid;
 
-    setIsComplete(isValid);
+    console.log("isComplete value:", isValid); // Debugging the isComplete value for validation
+
+    setIsComplete(isValid); // Set `isComplete` based on the combined validation logic
   }, [data, selectedStatus]); // Re-run whenever `data` or `selectedStatus` changes
 
   return (
