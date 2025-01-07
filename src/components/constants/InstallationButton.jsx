@@ -21,10 +21,10 @@ const InstallationButton = () => {
       e.preventDefault();
       console.log("beforeinstallprompt event fired:", e);
 
-      if (e) {
+      // Ensure the event has a prompt function
+      if (e && typeof e.prompt === "function") {
         setDeferredPrompt(e);
         sessionStorage.setItem("deferredPrompt", true); // Save state
-        console.log("Deferred prompt set");
       } else {
         console.error(
           "beforeinstallprompt event is invalid or missing prompt method"
@@ -61,7 +61,7 @@ const InstallationButton = () => {
   }, []);
 
   const handleInstallClick = () => {
-    if (deferredPrompt) {
+    if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
