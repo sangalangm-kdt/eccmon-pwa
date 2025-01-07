@@ -33,7 +33,7 @@ const NavBar = () => {
       {!user && (
         <div>
           <div className={`${languagess.container} `}>
-            <div className={`${languagess.languageSwitcher}`}>
+            <div className={`${languagess.languageSwitcher} xs:mb-2`}>
               <LanguageSwitcher />
             </div>
           </div>

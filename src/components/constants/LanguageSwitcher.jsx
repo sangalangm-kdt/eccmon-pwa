@@ -120,7 +120,7 @@ const LanguageSwitcher = () => {
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
             <div className="bg-white w-full rounded-t-lg p-4">
-              <h2 className="text-sm font-semibold text-center mb-4">
+              <h2 className="text-sm font-semibold text-center ">
                 Select Language
               </h2>
               <ul className="space-y-2">
