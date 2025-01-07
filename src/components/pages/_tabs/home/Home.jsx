@@ -6,14 +6,11 @@ import Onboarding from "../Onboarding";
 
 const Home = () => {
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gray-100">
       <Onboarding />
       <div className="w-full p-2">
-        <div
-          id="inventory-summary"
-          className="flex items-center justify-center w-full"
-        >
-          <InventorySummary />
+        <div className="flex items-center justify-center w-full">
+          <InventorySummary Onboarding={Onboarding} />
         </div>
         <div
           id="history-summary"

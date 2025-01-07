@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded } from "@mui/icons-material";
@@ -9,14 +10,14 @@ import {
   formatDate,
 } from "../../../utils/utils";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
-import { fullscreenClass } from "../../../styles/home"; // Import fullscreenClass from styles
-import { getStatusColors } from "../../../utils/statusColors"; // Import status color utility
+import { fullscreenClass } from "../../../styles/home";
+import { getStatusColors } from "../../../utils/statusColors";
 import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary"; // Import the skeleton
-import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
-import Select from "react-select"; // Import react-select
-import DatePicker from "react-datepicker"; // Import react-datepicker
-import "react-datepicker/dist/react-datepicker.css"; // Import the styles for react-datepicker
-import { FaCalendarAlt } from "react-icons/fa"; // Import the calendar icon from react-icons
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const HistorySummary = () => {
   const history = useCylinderCover().cylinder?.data; // Get history data
@@ -70,14 +71,13 @@ const HistorySummary = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  // Ensure fullscreen behavior starts in the collapsed state (showAll=false)
   useEffect(() => {
     setShowAll(false); // Set to false initially to avoid fullscreen on page reload
   }, []);
 
   // Navigate to the ViewInfo component when a cycle number is clicked
   const handleCycleClick = (item) => {
-    setClickedItem(item); // Set the clicked item
+    setClickedItem(item);
     navigate("/view-info", {
       state: { data: item }, // Pass the data to ViewInfo component via state
     });
@@ -93,8 +93,8 @@ const HistorySummary = () => {
   ];
 
   // Custom input for react-datepicker with calendar icon
-  const CustomDateInput = ({ value, onClick }) => (
-    <div className="relative cursor-pointer" onClick={onClick}>
+  const CustomDateInput = React.forwardRef(({ value, onClick }, ref) => (
+    <div className="relative cursor-pointer" onClick={onClick} ref={ref}>
       <input
         type="text"
         value={value}
@@ -103,12 +103,14 @@ const HistorySummary = () => {
       />
       <FaCalendarAlt className="absolute right-2 top-2 text-gray-500" />
     </div>
-  );
+  ));
+
+  CustomDateInput.displayName = "CustomDateInput";
 
   return (
     <div
       className={`w-full p-2 overflow-hidden ${
-        history?.length > 5 && showAll ? fullscreenClass : ""
+        history?.length > 3 && showAll ? fullscreenClass : ""
       }`}
     >
       {showAll && (
@@ -135,6 +137,7 @@ const HistorySummary = () => {
                 className="px-2 py-2 flex text-white"
                 onClick={() => setShowAll(true)}
               >
+                <p>See all</p>
                 <ChevronIcon />
               </button>
             )}

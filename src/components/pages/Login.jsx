@@ -72,7 +72,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full min-h-screen lg:bg-secondary xs:bg-none">
+    <div className="flex items-center justify-center w-full min-h-screen lg:bg-secondary sm:bg-secondary xs:bg-none">
       <div className="flex w-full max-w-md items-center sm:p-6 md:p-2 ">
         <div className={container.containerDiv}>
           <div className="flex justify-center items-center w-52 xs:mb-8 lg:mt-4">
@@ -118,7 +118,7 @@ const Login = () => {
               />
               {/* Display alert message for missing email */}
               {alert && !email && (
-                <p className="text-red-500 text-xs">{alert}</p>
+                <p className="text-red-500 text-xs">Email is required.</p>
               )}
             </div>
 
@@ -136,7 +136,7 @@ const Login = () => {
               />
               {/* Display alert message for missing password */}
               {alert && !password && (
-                <p className="text-red-500 text-xs">{alert}</p>
+                <p className="text-red-500 text-xs">Password is required.</p>
               )}
             </div>
 

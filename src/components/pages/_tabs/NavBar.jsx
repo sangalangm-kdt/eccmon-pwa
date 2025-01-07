@@ -33,7 +33,9 @@ const NavBar = () => {
       {!user && (
         <div>
           <div className={`${languagess.container} `}>
-            <div className={`${languagess.languageSwitcher} xs:mb-2`}>
+            <div
+              className={`${languagess.languageSwitcher} xs:mb-2 lg:mb-0 lg:text-xs`}
+            >
               <LanguageSwitcher />
             </div>
           </div>
@@ -131,7 +133,10 @@ const NavBar = () => {
                       >
                         {({ isActive }) => (
                           <div className="flex flex-col items-center font-medium text-tiny">
-                            <button className="flex flex-col items-center p-1">
+                            <button
+                              className="flex flex-col items-center p-1"
+                              aria-label="Home"
+                            >
                               <RiHome6Line
                                 className={`${navbarStyles.iconContainer} ${
                                   isActive ? "fill-primary" : "text-gray-500"
@@ -156,7 +161,10 @@ const NavBar = () => {
                           <div
                             className={`flex flex-col items-center ${navbarStyles.qrContainer}`}
                           >
-                            <button className="flex flex-col items-center p-1 focus:bg-gray-100">
+                            <button
+                              className="flex flex-col items-center p-1 focus:bg-gray-100"
+                              aria-label="QR Scanner"
+                            >
                               <PiQrCodeBold
                                 className={` rounded-full size-6 text-white ${
                                   isActive ? "fill-primary" : ""
@@ -178,7 +186,10 @@ const NavBar = () => {
                       >
                         {({ isActive }) => (
                           <div className="flex flex-col items-center font-medium text-tiny">
-                            <button className="flex flex-col items-center p-1">
+                            <button
+                              className="flex flex-col items-center p-1"
+                              aria-label="Profile"
+                            >
                               <RiUser6Line
                                 className={`${navbarStyles.iconContainer} ${
                                   isActive ? "fill-primary" : "text-gray-500"

@@ -33,7 +33,7 @@ const InstallationButton = () => {
     };
 
     const handleAppInstalled = () => {
-      console.log("App installed");
+      // console.log("App installed");
       setIsInstalled(true);
       sessionStorage.removeItem("deferredPrompt"); // Clear state
     };
@@ -41,7 +41,7 @@ const InstallationButton = () => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     if (userAgent.includes("safari") && !userAgent.includes("chrome")) {
       setIsSafari(true);
-      console.log("Safari browser detected");
+      // console.log("Safari browser detected");
     }
 
     // Add event listeners
@@ -65,10 +65,10 @@ const InstallationButton = () => {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
-          console.log("PWA installation accepted");
+          // console.log("PWA installation accepted");
           sessionStorage.removeItem("deferredPrompt");
         } else {
-          console.log("PWA installation dismissed");
+          // console.log("PWA installation dismissed");
         }
         setDeferredPrompt(null);
       });
@@ -79,12 +79,12 @@ const InstallationButton = () => {
 
   const handleSafariInstallClick = () => {
     setShowModal(true);
-    console.log("Safari install button clicked");
+    // console.log("Safari install button clicked");
   };
 
   const closeModal = () => {
     setShowModal(false);
-    console.log("Modal closed");
+    // console.log("Modal closed");
   };
 
   const handleModalClick = (e) => {
@@ -93,11 +93,11 @@ const InstallationButton = () => {
     }
   };
 
-  // Debugging outputs
-  console.log("Deferred Prompt:", deferredPrompt);
-  console.log("isInstalled:", isInstalled);
-  console.log("isStandalone:", isStandalone);
-  console.log("isSafari:", isSafari);
+  // // Debugging outputs
+  // console.log("Deferred Prompt:", deferredPrompt);
+  // console.log("isInstalled:", isInstalled);
+  // console.log("isStandalone:", isStandalone);
+  // console.log("isSafari:", isSafari);
 
   // Return nothing if the app is already installed or running in standalone mode
   if (isInstalled || isStandalone) return null;
