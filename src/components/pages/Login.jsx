@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -23,22 +22,53 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Clear any previous error
     setStatus(null);
+    setAlert(""); // Reset alert
+
+    // Check if email or password is empty
+    if (!email || !password) {
+      setAlert(t("login:emailPasswordRequired")); // Show alert if either field is empty
+      return;
+    }
 
     // Call the login function
+    setLoading(true); // Start loading
     login({
       setStatus,
-      setErrors: () => {}, // No need for setErrors since we're using errorMessage
-      setLoading,
+      setErrors: () => {},
+      setLoading: (loadingState) => setLoading(loadingState),
       email,
       password,
       remember: false,
+    }).catch(() => {
+      setLoading(false); // Reset loading if login fails
     });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "email") {
+      setEmail(value);
+    } else if (name === "password") {
+      setPassword(value);
+    }
+
+    // Hide error message when user starts typing
+    if (errorMessage) {
+      // Only reset the errorMessage if the user starts typing
+      setStatus(null);
+    }
+
+    // Hide alert message when user starts typing
+    if (alert) {
+      setAlert("");
+    }
   };
 
   return (
@@ -57,12 +87,12 @@ const Login = () => {
           </div>
 
           <form className={width.responsive} onSubmit={handleSubmit}>
-            {/* <div className={width.responsive}> */}
             <div
               className={`text-center text-base text-primaryText xs:text-sm xs:p-3 lg:text-md lg:mb-0`}
             >
               <label>{t("login:loginDetails")}</label>
             </div>
+
             <div>
               {/* Display the errorMessage from useAuthentication */}
               {errorMessage && (
@@ -73,38 +103,51 @@ const Login = () => {
                 </p>
               )}
             </div>
+
+            {/* Email Input */}
             <div className={inputStyles.inputContainer}>
               <label className={inputStyles.label}>{t("login:email")}</label>
               <input
-                type="email"
+                type="text"
                 name="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleInputChange}
                 className={inputStyles.input}
                 placeholder={t("login:enterEmail")}
                 autoComplete="off"
               />
+              {/* Display alert message for missing email */}
+              {alert && !email && (
+                <p className="text-red-500 text-xs">{alert}</p>
+              )}
             </div>
+
+            {/* Password Input */}
             <div className={inputStyles.inputContainer}>
               <label className={inputStyles.label}>{t("login:password")}</label>
               <input
                 type="password"
                 name="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleInputChange}
                 className={inputStyles.input}
                 placeholder={t("login:enterPassword")}
                 autoComplete="off"
               />
+              {/* Display alert message for missing password */}
+              {alert && !password && (
+                <p className="text-red-500 text-xs">{alert}</p>
+              )}
             </div>
+
             <div className={`${inputStyles.container} ${link.color}`}>
               <a href="/forgotpass" className="hover:underline">
                 {t("login:forgotPassword")}
               </a>
             </div>
+
             <div className={inputStyles.inputContainer}>
               <button
-                // type="submit"
                 className={`${
                   loading
                     ? `${buttonStyles.disabled}`
@@ -130,7 +173,7 @@ const Login = () => {
                         fill="currentFill"
                       />
                     </svg>
-                    <span className="ms-2">Signing in</span>
+                    <span className="ms-2 text-sm">Signing in</span>
                   </div>
                 ) : (
                   <span>{t("login:signIn")}</span>

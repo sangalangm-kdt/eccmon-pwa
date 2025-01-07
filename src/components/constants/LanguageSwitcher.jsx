@@ -94,6 +94,7 @@ const LanguageSwitcher = () => {
           getOptionValue={(e) => e.id}
           styles={customSelectStyles}
           className={languagess.languageSwitcher}
+          placeholder="English (US)"
         />
       </div>
 
@@ -109,7 +110,7 @@ const LanguageSwitcher = () => {
           >
             <span>
               {languages.find((lang) => lang.id === language)?.label ||
-                "Select Language"}
+                "English (US)"}
             </span>
             {/* Chevron Icon */}
             <FaChevronDown className="textsecondaryText ml-2" />

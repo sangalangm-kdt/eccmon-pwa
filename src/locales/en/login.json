@@ -10,5 +10,11 @@
   "forgotPassword": "Having trouble signing in?",
   "noAccount": "Don't have an account? ",
   "requestNow": "Request Now",
-  "loginDetails": "Enter your details to get sign in to your account"
+  "loginDetails": "Enter your details to get sign in to your account",
+  "emailPasswordRequired": "This field is required.",
+  "error": {
+    "requiredFields": "Email and Password are required.",
+    "userNotFound": "User does not exist.",
+    "incorrectPassword": "The password is incorrect."
+  }
 }
