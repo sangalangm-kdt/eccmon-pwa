@@ -108,7 +108,7 @@ const Login = () => {
             <div className={inputStyles.inputContainer}>
               <label className={inputStyles.label}>{t("login:email")}</label>
               <input
-                type="text"
+                type="email"
                 name="email"
                 value={email}
                 onChange={handleInputChange}
