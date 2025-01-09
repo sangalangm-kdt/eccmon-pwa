@@ -29,7 +29,7 @@ const ResultsModal = ({
   if (!isOpen) return null; // Early return for rendering
 
   return (
-    <div className="fixed inset-0 flex items-end justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex  items-end justify-center bg-black bg-opacity-50 z-60">
       <div
         className={`bg-white w-full rounded-t-lg shadow-lg p-6 transform transition-transform ${
           isOpen ? "animate-slideUp" : "animate-slideDown"

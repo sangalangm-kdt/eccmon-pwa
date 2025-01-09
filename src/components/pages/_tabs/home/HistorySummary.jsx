@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded } from "@mui/icons-material";
@@ -18,8 +17,11 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
+import { FaRegCalendar } from "react-icons/fa6";
 
 const HistorySummary = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate(); // Hook for navigation
   const history = useCylinderCover().cylinder?.data; // Get history data
   const [showAll, setShowAll] = useState(false); // Default value is false
   const [filter, setFilter] = useState("latest"); // Default is "latest"
@@ -27,37 +29,33 @@ const HistorySummary = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [clickedItem, setClickedItem] = useState(null); // State to track clicked item
-
-  const { t } = useTranslation();
-  const navigate = useNavigate(); // Hook for navigation
+  const [filteredHistory, setFilteredHistory] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state for skeleton loader
+  const [perPage, setPerPage] = useState(10);
 
   // Use effect to handle sorting & filtering logic when history changes
-  const [filteredHistory, setFilteredHistory] = useState([]);
-
   useEffect(() => {
     if (history) {
-      // Sort history by date (descending) to show the latest first by default
+      setLoading(false); // Data is loaded, stop showing skeleton
       const sortedHistory = sortHistoryByDate(history, sortOrder);
-
-      // If no filter is applied, it will just show the most recent history
       const filteredData = filterHistory(
         sortedHistory,
         filter,
         startDate,
         endDate
       ); // Filter history based on filter criteria
-
-      // Set the filtered history to the state
       setFilteredHistory(filteredData);
     }
   }, [history, sortOrder, filter, startDate, endDate]); // Re-run when any of these change
 
-  // Handle filter change (like "This Month", "Last 7 Days", "Last 30 Days", etc.)
+  useEffect(() => {
+    setShowAll(false); // Set to false initially to avoid fullscreen on page reload
+  }, []);
+
   const handleFilterChange = (selectedOption) => {
     setFilter(selectedOption.value);
   };
 
-  // Handle start and end date changes for the custom filter
   const handleDateChange = (date, name) => {
     if (name === "startDate") {
       setStartDate(date);
@@ -66,14 +64,9 @@ const HistorySummary = () => {
     }
   };
 
-  // Toggle sorting order between ascending and descending
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
-
-  useEffect(() => {
-    setShowAll(false); // Set to false initially to avoid fullscreen on page reload
-  }, []);
 
   // Navigate to the ViewInfo component when a cycle number is clicked
   const handleCycleClick = (item) => {
@@ -92,16 +85,24 @@ const HistorySummary = () => {
     { value: "custom", label: t("common:customDateRange") },
   ];
 
+  // Options for selecting the number of items to show
+  const perPageOptions = [
+    { value: 10, label: "10" },
+    { value: 20, label: "20" },
+    { value: 50, label: "50" },
+  ];
+
   // Custom input for react-datepicker with calendar icon
   const CustomDateInput = React.forwardRef(({ value, onClick }, ref) => (
-    <div className="relative cursor-pointer" onClick={onClick} ref={ref}>
+    <div className="relative cursor-pointer w-full" onClick={onClick} ref={ref}>
       <input
         type="text"
         value={value}
         readOnly
-        className="px-2 py-1 border w-full"
+        className=" border p-2 w-full text-sm"
+        placeholder="mm/dd/yy"
       />
-      <FaCalendarAlt className="absolute right-2 top-2 text-gray-500" />
+      <FaRegCalendar className="absolute right-2 top-2 text-gray-500" />
     </div>
   ));
 
@@ -109,9 +110,7 @@ const HistorySummary = () => {
 
   return (
     <div
-      className={`w-full p-2 overflow-hidden ${
-        history?.length > 3 && showAll ? fullscreenClass : ""
-      }`}
+      className={`w-full p-2 overflow-hidden ${showAll ? fullscreenClass : ""}`}
     >
       {showAll && (
         <button
@@ -169,20 +168,20 @@ const HistorySummary = () => {
                     <DatePicker
                       selected={startDate}
                       onChange={(date) => handleDateChange(date, "startDate")}
-                      className="px-4 py-2 border w-full"
+                      className="px-4 py-2 border w-full custom-datepicker"
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
-                      placeholderText="mm/dd/yy"
+                      popperClassName="custom-datepicker-popper"
                     />
                   </div>
                   <div className="flex-1 sm:w-48 md:w-56 lg:w-full">
                     <DatePicker
                       selected={endDate}
                       onChange={(date) => handleDateChange(date, "endDate")}
-                      className="px-4 py-2 border w-full"
+                      className="px-4 py-2 border w-full custom-datepicker"
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
-                      placeholderText="mm/dd/yy"
+                      popperClassName="custom-datepicker-popper"
                     />
                   </div>
                 </div>
@@ -190,65 +189,69 @@ const HistorySummary = () => {
             </div>
           )}
 
-          {filteredHistory.length === 0 ? (
+          {loading ? (
             <div className="p-4 h-72">
-              {/* Displaying the skeleton while data is loading */}
               <HistorySummarySkeleton />
             </div>
+          ) : filteredHistory.length === 0 ? (
+            <div className="p-4 ">
+              <p>No recent history</p>
+            </div>
           ) : (
-            <ul
-              className={`transition-transform duration-500 ease-in-out ${
-                showAll ? "max-h-screen" : "max-h-[390px]"
-              } ${showAll ? "overflow-y-auto" : ""}`}
-            >
-              {filteredHistory.map((item, index) => {
-                const { backgroundColor, textColor } = getStatusColors(
-                  item.status
-                );
-                const createdDate = new Date(item.createdAt);
-                const updatedDate = item.updatedAt
-                  ? new Date(item.updatedAt)
-                  : null;
+            <div>
+              <ul
+                className={`transition-transform duration-500 ease-in-out h-screen ${
+                  showAll ? `max-h-fit overflow-y-auto` : "max-h-[380px]"
+                }`}
+              >
+                {filteredHistory.slice(0, perPage).map((item, index) => {
+                  const { backgroundColor, textColor } = getStatusColors(
+                    item.status
+                  );
+                  const createdDate = new Date(item.createdAt);
+                  const updatedDate = item.updatedAt
+                    ? new Date(item.updatedAt)
+                    : null;
 
-                return (
-                  <li
-                    key={index}
-                    className="py-2 flex flex-col cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleCycleClick(item)}
-                  >
-                    <p className="p-2 font-normal flex items-center justify-between">
-                      <span>{item.serialNumber}</span>
-                      <span className="text-xs text-gray-500 ml-2 font-semibold">
-                        {`${createdDate.getHours()}:${String(
-                          createdDate.getMinutes()
-                        ).padStart(2, "0")}`}
-                      </span>
-                    </p>
-                    <div className="px-2 flex flex-row justify-between text-xs">
-                      <p
-                        className="rounded-full py-1 px-2 text-tiny"
-                        style={{ backgroundColor, color: textColor }}
-                      >
-                        {t(`qrScanner:${item.status.toLowerCase()}`)}
+                  return (
+                    <li
+                      key={index}
+                      className="py-2 flex flex-col cursor-pointer hover:bg-gray-100 w-full h-70"
+                      onClick={() => handleCycleClick(item)}
+                    >
+                      <p className="p-2 font-normal flex items-center justify-between">
+                        <span>{item.serialNumber}</span>
+                        <span className="text-xs text-gray-500 ml-2 font-semibold">
+                          {`${createdDate.getHours()}:${String(
+                            createdDate.getMinutes()
+                          ).padStart(2, "0")}`}
+                        </span>
                       </p>
-                      <p className="text-xs text-gray-500">
-                        {formatDate(createdDate, t)}
-                      </p>
-                      {updatedDate && (
-                        <p className="text-xs text-gray-500">
-                          {t("common:updated")} {formatDate(updatedDate, t)}
+                      <div className="px-2 flex flex-row justify-between text-xs">
+                        <p
+                          className="rounded-full py-1 px-2 text-tiny"
+                          style={{ backgroundColor, color: textColor }}
+                        >
+                          {t(`qrScanner:${item.status.toLowerCase()}`)}
                         </p>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+                        <p className="text-xs text-gray-500">
+                          {formatDate(createdDate, t)}
+                        </p>
+                        {updatedDate && (
+                          <p className="text-xs text-gray-500">
+                            {t("common:updated")} {formatDate(updatedDate, t)}
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 };
-
 export default HistorySummary;

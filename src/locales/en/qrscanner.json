@@ -1,5 +1,7 @@
 {
   "barcodePlaceCode": "Place the code inside the frame",
+  "addData": "Add data",
+  "cannotScanCode": "Cannot scan the serial code? Add it here manually.",
   "storage": "Storage",
   "materialAndMachining": "Material and Machining",
   "disassembly": "Disassembly",

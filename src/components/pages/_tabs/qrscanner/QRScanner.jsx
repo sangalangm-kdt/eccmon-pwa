@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import ResultsModal from "./ResultsModal"; // Your modal component
 import {
@@ -15,26 +13,71 @@ import { useTranslation } from "react-i18next";
 import { ArrowBackIcon } from "../../../assets/icons";
 import Storage from "./status/Storage";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
+import ManuallyAddModal from "../../../constants/ManuallyAddModal";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
   const [torchOn, setTorchOn] = useState(false);
   const [scannedData, setScannedData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [actionType, setActionType] = useState(null);
+  const [manualModalOpen, setManualModalOpen] = useState(false);
+  const [willScan, setWillScan] = useState(true);
+  const [message, setMessage] = useState("");
+  const [addDisable, setAddDisable] = useState(false);
+  const [isCentered, setIsCentered] = useState(false); // State to track if area is centered
+
   const videoRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation("qrScanner", "common");
   const { checkSerial, addCylinder } = useCylinderCover();
-  const [willScan, setWillScan] = useState(true);
-  const [message, setMessage] = useState("");
-  const [addDisable, setAddDisable] = useState(false);
+
   const codeReader = new BrowserMultiFormatReader();
+
+  const handleScanResult = (result, err) => {
+    if (result) {
+      try {
+        const jsonData = JSON.parse(result.text);
+        const eccId = jsonData.eccId;
+
+        if (!eccId) {
+          setError("The scanned code does not contain a valid code.");
+          return;
+        }
+
+        if (!modalOpen) {
+          setWillScan(false);
+          checkSerial({ setAddDisable, setMessage, setModalOpen, eccId });
+        }
+
+        const track = videoRef.current?.srcObject?.getVideoTracks()[0];
+        if (track) {
+          setScannedData(eccId);
+          codeReader.reset();
+        }
+      } catch (e) {
+        setError("Invalid JSON data. Please check the QR code.");
+      }
+    } else if (err && !(err instanceof NotFoundException)) {
+      console.error(err);
+      setError("Error scanning QR code. Please try again.");
+    }
+  };
+
+  const isAreaInCenter = (area) => {
+    const { x, y, width, height } = area;
+    const tolerance = 0.05;
+
+    const isCenteredHorizontally = x >= 0.5 - tolerance && x <= 0.5 + tolerance;
+    const isCenteredVertically = y >= 0.5 - tolerance && y <= 0.5 + tolerance;
+    const isReasonablySized =
+      width >= 0.1 && width <= 0.8 && height >= 0.1 && height <= 0.8;
+
+    return isCenteredHorizontally && isCenteredVertically && isReasonablySized;
+  };
 
   useEffect(() => {
     let selectedDeviceId;
-
     if (willScan) {
       codeReader
         .listVideoInputDevices()
@@ -49,54 +92,7 @@ const QRScanner = () => {
             codeReader.decodeFromVideoDevice(
               selectedDeviceId,
               videoRef.current,
-              (result, err) => {
-                if (videoRef.current) {
-                  const videoWidth = videoRef.current.videoWidth;
-                  const videoHeight = videoRef.current.videoHeight;
-                  if (videoWidth === 0 || videoHeight === 0) {
-                    // setError(
-                    //   "The video feed is not properly initialized. Please check your camera."
-                    // );
-                    return;
-                  }
-                }
-                if (result) {
-                  try {
-                    const jsonData = JSON.parse(result.text);
-                    const eccId = jsonData.eccId;
-
-                    if (!eccId) {
-                      setError(
-                        "The scanned code does not contain a valid code."
-                      );
-                      return;
-                    }
-
-                    if (!modalOpen) {
-                      setWillScan(false);
-                      checkSerial({
-                        setAddDisable,
-                        setMessage,
-                        setModalOpen,
-                        eccId,
-                      });
-                    }
-
-                    const track =
-                      videoRef.current?.srcObject?.getVideoTracks()[0];
-                    if (track) {
-                      setScannedData(eccId);
-                      codeReader.reset();
-                    }
-                  } catch (e) {
-                    setError("Invalid JSON data. Please check the QR code.");
-                  }
-                }
-                if (err && !(err instanceof NotFoundException)) {
-                  console.error(err);
-                  setError("Error scanning QR code. Please try again.");
-                }
-              },
+              handleScanResult,
               {
                 area: {
                   x: 0.25,
@@ -106,6 +102,10 @@ const QRScanner = () => {
                 },
                 formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
               }
+            );
+            // Check if area is in the center
+            setIsCentered(
+              isAreaInCenter({ x: 0.25, y: 0.25, width: 0.5, height: 0.5 })
             );
           }
         })
@@ -128,7 +128,7 @@ const QRScanner = () => {
 
   const handleBack = () => {
     codeReader.reset();
-    setWillScan(false); // Stop scanning on navigation
+    setWillScan(false);
     navigate("/");
   };
 
@@ -157,6 +157,30 @@ const QRScanner = () => {
     setModalOpen(false);
   };
 
+  const handleManualAdd = (manualData) => {
+    setScannedData(manualData);
+    setWillScan(false);
+    // Check if the manually entered data already exists
+    const isExisting = checkSerial({
+      setAddDisable,
+      setMessage,
+      setModalOpen,
+      eccId: manualData,
+    }); // Implement this function to check for existing data
+    if (isExisting) {
+      setMessage("This ECC ID already exists.");
+      setModalOpen(false); // Close the modal to prevent it from popping up
+      setAddDisable(true); // Disable adding further
+    } else {
+      checkSerial({
+        setAddDisable,
+        setMessage,
+        setModalOpen,
+        eccId: manualData,
+      });
+    }
+  };
+
   return (
     <div
       className={`${qrScannerStyles.containerClass} w-full h-full sm:h-screen sm:w-screen`}
@@ -179,7 +203,12 @@ const QRScanner = () => {
             <div className={qrScannerStyles.overlayBottomClass}></div>
             <div className={qrScannerStyles.overlayLeftClass}></div>
             <div className={qrScannerStyles.overlayRightClass}></div>
-            <div className={qrScannerStyles.scannerAreaClass}>
+            <div
+              className={qrScannerStyles.scannerAreaClass}
+              style={{
+                borderColor: isCentered ? "green" : "red", // Change border color based on centering check
+              }}
+            >
               <div className={qrScannerStyles.scannerFrameClass}>
                 <div className="absolute inset-0 bg-transparent"></div>
                 <div
@@ -201,6 +230,7 @@ const QRScanner = () => {
         <div className="absolute xs:top-60 xs:text-sm text-white z-60">
           {t("qrScanner:barcodePlaceCode")}
         </div>
+
         <button
           className="absolute bottom-4 left-4 bg-white p-2 text-blue-500 rounded-full shadow-md"
           onClick={toggleTorch}
@@ -215,6 +245,17 @@ const QRScanner = () => {
             </svg>
           )}
         </button>
+        <div className="absolute z-60 bottom-18 flex flex-col justify-center w-80">
+          <label className="text-white text-xs mb-2 text-center">
+            {t("qrScanner:cannotScanCode")}
+          </label>
+          <button
+            className="text-white text-sm p-3 border font-semibold border-white rounded-md"
+            onClick={() => setManualModalOpen(true)} // Open the manual modal
+          >
+            {t("qrScanner:addData")}
+          </button>
+        </div>
       </div>
 
       <ResultsModal
@@ -224,6 +265,12 @@ const QRScanner = () => {
         onClose={handleClose}
         onConfirm={handleConfirm}
         eccId={scannedData}
+      />
+
+      <ManuallyAddModal
+        isOpen={manualModalOpen}
+        onClose={() => setManualModalOpen(false)}
+        onConfirm={handleManualAdd}
       />
     </div>
   );

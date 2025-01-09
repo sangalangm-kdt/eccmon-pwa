@@ -24,26 +24,25 @@ html, body {
 /* styles.css */
 
 .custom-datepicker-popper .react-datepicker__header {
-  @apply text-sm; /* Smaller text */
+  @apply text-xs; /* Smaller text */
    @apply text-primaryText;
 }
 
 .custom-datepicker-popper .react-datepicker__month {
-  @apply text-sm; /* Smaller month text */
+  @apply text-xs; /* Smaller month text */
 }
 
 .custom-datepicker-popper .react-datepicker__day {
-  @apply text-xs; /* Smaller day text */
+  @apply text-sm; /* Smaller day text */
 }
 
 .custom-datepicker-popper .react-datepicker {
-  @apply scale-90; /* Scale the calendar down */
-   @apply max-w-full; /* Ensure max-width is 100% */
+  @apply scale-100; 
+  @apply max-w-full; /* Ensure max-width is 100% */
   @apply w-auto; /* Set width to auto, allowing it to shrink */
-  @apply sm:w-72; /* Set width for smaller screens */
-  @apply md:w-80; /* Set width for medium screens */
-  @apply lg:w-96; /* Set width for large screens */
+  @apply w-[15rem];
 }
+
 
 /* Reset shadow and text-shadow to ensure clean rendering */
 .introjs-button {
