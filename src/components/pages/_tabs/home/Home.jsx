@@ -8,6 +8,9 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Onboarding />
+      <div className="w-full p-4">
+        <h1>Home</h1>
+      </div>
       <div className="w-full p-2">
         <div className="flex items-center justify-center w-full">
           <InventorySummary Onboarding={Onboarding} />
