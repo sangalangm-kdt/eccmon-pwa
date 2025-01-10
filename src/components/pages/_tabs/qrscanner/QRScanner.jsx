@@ -158,10 +158,6 @@ const QRScanner = () => {
   };
 
   const handleManualAdd = (manualData) => {
-    stopCamera();
-    codeReader.reset();
-    setWillScan(false); // Stop the camera before opening the manual modal
-    setManualModalOpen(true);
     setScannedData(manualData);
 
     // Check if the manually entered data already exists
@@ -185,20 +181,6 @@ const QRScanner = () => {
     }
   };
 
-  const stopCamera = () => {
-    const tracks = videoRef.current?.srcObject?.getVideoTracks();
-    if (tracks) {
-      tracks.forEach((track) => {
-        if (track.readyState === "live") {
-          track.stop(); // Properly stop the track
-        }
-      });
-    }
-
-    if (videoRef.current) {
-      videoRef.current.srcObject = null; // Clear the video stream
-    }
-  };
   return (
     <div
       className={`${qrScannerStyles.containerClass} w-full h-full sm:h-screen sm:w-screen`}
@@ -289,6 +271,7 @@ const QRScanner = () => {
         isOpen={manualModalOpen}
         onClose={() => setManualModalOpen(false)}
         onConfirm={handleManualAdd}
+        setWillScan={setWillScan}
       />
     </div>
   );

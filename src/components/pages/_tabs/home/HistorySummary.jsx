@@ -16,8 +16,7 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCalendarAlt } from "react-icons/fa";
-import { FaRegCalendar } from "react-icons/fa6";
+import { FaRegCalendar } from "react-icons/fa";
 
 const HistorySummary = () => {
   const { t } = useTranslation();
@@ -32,6 +31,7 @@ const HistorySummary = () => {
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state for skeleton loader
   const [perPage, setPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Use effect to handle sorting & filtering logic when history changes
   useEffect(() => {
@@ -54,14 +54,21 @@ const HistorySummary = () => {
 
   const handleFilterChange = (selectedOption) => {
     setFilter(selectedOption.value);
+    setCurrentPage(1);
   };
 
   const handleDateChange = (date, name) => {
     if (name === "startDate") {
       setStartDate(date);
-    } else if (name === "endDate") {
+    } else {
       setEndDate(date);
     }
+    setCurrentPage(1);
+  };
+
+  const handlePerPageChange = (selectedOption) => {
+    setPerPage(selectedOption.value);
+    setCurrentPage(1);
   };
 
   const toggleSortOrder = () => {
@@ -99,7 +106,7 @@ const HistorySummary = () => {
         type="text"
         value={value}
         readOnly
-        className=" border p-2 w-full text-sm"
+        className="border p-2 w-full text-sm"
         placeholder="mm/dd/yy"
       />
       <FaRegCalendar className="absolute right-2 top-2 text-gray-500" />
@@ -108,6 +115,18 @@ const HistorySummary = () => {
 
   CustomDateInput.displayName = "CustomDateInput";
 
+  const totalPages = Math.ceil(filteredHistory.length / perPage);
+  const startIndex = (currentPage - 1) * perPage;
+  const endIndex = startIndex + perPage;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
     <div
       className={`w-full p-2 overflow-hidden ${showAll ? fullscreenClass : ""}`}
@@ -115,36 +134,42 @@ const HistorySummary = () => {
       {showAll && (
         <button
           onClick={() => setShowAll(false)}
-          className="absolute top-4 right-2 p-2 text-gray rounded-full"
+          className="fixed top-2 right-2 p-2 text-gray rounded-full z-60"
         >
           <CloseRounded />
         </button>
       )}
 
       <div
-        className={`transition-transform duration-500 ease-in-out ${
+        className={`transition-transform duration-500 ease-in-out bg-white${
           showAll ? "animate-slideUp" : "animate-slideDown"
         }`}
       >
         <div className="py-4 px-0">
-          <div className="flex flex-row justify-between px-1 pb-2 border-b border-gray-300">
+          <div
+            className={`flex flex-row justify-between px-1 pb-2 border-b border-gray-300 ${
+              showAll ? "fixed top-0 left-0 w-full bg-white  z-10" : ""
+            }`}
+          >
             <label className="px-1 py-2 font-semibold text-primaryText">
               {t("common:recentHistory")}
             </label>
             {!showAll && (
               <button
-                className="px-2 py-2 flex text-white"
+                className="px-2 py-2 flex text-primaryText"
                 onClick={() => setShowAll(true)}
               >
-                <p>See all</p>
+                <p className="flex items-center justify-center pt-1 text-xs">
+                  See all
+                </p>
                 <ChevronIcon />
               </button>
             )}
           </div>
 
           {showAll && (
-            <div className="mb-4 mt-2">
-              <div className="flex justify-between mb-2 mr-2">
+            <div className=" mb-4 mt-2 text-sm pt-8 ">
+              <div className="fixed flex justify-between mb-2 mr-2">
                 <Select
                   className="w-48 sm:w-64"
                   options={filterOptions}
@@ -163,12 +188,12 @@ const HistorySummary = () => {
               </div>
 
               {filter === "custom" && (
-                <div className="flex flex-wrap gap-2 mt-2 px-2">
-                  <div className="flex-1 xs:w-36 sm:w-48 md:w-56 lg:w-full">
+                <div className="fixed flex flex-wrap gap-2 mt-2 px-2">
+                  <div className="relative flex-1 xs:w-36 sm:w-48 md:w-56 lg:w-full">
                     <DatePicker
                       selected={startDate}
                       onChange={(date) => handleDateChange(date, "startDate")}
-                      className="px-4 py-2 border w-full custom-datepicker"
+                      className="px-4 py-2 border w-full custom-datepicker fixed"
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
                       popperClassName="custom-datepicker-popper"
@@ -178,7 +203,7 @@ const HistorySummary = () => {
                     <DatePicker
                       selected={endDate}
                       onChange={(date) => handleDateChange(date, "endDate")}
-                      className="px-4 py-2 border w-full custom-datepicker"
+                      className="px-4 py-2 border w-full custom-datepicker fixed"
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
                       popperClassName="custom-datepicker-popper"
@@ -189,63 +214,92 @@ const HistorySummary = () => {
             </div>
           )}
 
+          {showAll && (
+            <div className="flex justify-between mb-4 mt-32">
+              <Select
+                className="w-48 sm:w-64"
+                options={perPageOptions}
+                value={perPageOptions.find(
+                  (option) => option.value === perPage
+                )}
+                onChange={handlePerPageChange}
+              />
+              <p>
+                {t("common:page")} {currentPage} {t("common:of")} {totalPages}
+              </p>
+              <div>
+                <button onClick={handlePrevPage} disabled={currentPage === 1}>
+                  {t("common:prev")}
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  {t("common:next")}
+                </button>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div className="p-4 h-72">
               <HistorySummarySkeleton />
             </div>
           ) : filteredHistory.length === 0 ? (
-            <div className="p-4 ">
+            <div className="p-4 text-center text-gray-500 ">
               <p>No recent history</p>
             </div>
           ) : (
             <div>
               <ul
-                className={`transition-transform duration-500 ease-in-out h-screen ${
+                className={`transition-transform duration-500 ease-in-out h-screen border-box ${
                   showAll ? `max-h-fit overflow-y-auto` : "max-h-[380px]"
                 }`}
               >
-                {filteredHistory.slice(0, perPage).map((item, index) => {
-                  const { backgroundColor, textColor } = getStatusColors(
-                    item.status
-                  );
-                  const createdDate = new Date(item.createdAt);
-                  const updatedDate = item.updatedAt
-                    ? new Date(item.updatedAt)
-                    : null;
+                {filteredHistory
+                  .slice(startIndex, endIndex)
+                  .map((item, index) => {
+                    const { backgroundColor, textColor } = getStatusColors(
+                      item.status
+                    );
+                    const createdDate = new Date(item.createdAt);
+                    const updatedDate = item.updatedAt
+                      ? new Date(item.updatedAt)
+                      : null;
 
-                  return (
-                    <li
-                      key={index}
-                      className="py-2 flex flex-col cursor-pointer hover:bg-gray-100 w-full h-70"
-                      onClick={() => handleCycleClick(item)}
-                    >
-                      <p className="p-2 font-normal flex items-center justify-between">
-                        <span>{item.serialNumber}</span>
-                        <span className="text-xs text-gray-500 ml-2 font-semibold">
-                          {`${createdDate.getHours()}:${String(
-                            createdDate.getMinutes()
-                          ).padStart(2, "0")}`}
-                        </span>
-                      </p>
-                      <div className="px-2 flex flex-row justify-between text-xs">
-                        <p
-                          className="rounded-full py-1 px-2 text-tiny"
-                          style={{ backgroundColor, color: textColor }}
-                        >
-                          {t(`qrScanner:${item.status.toLowerCase()}`)}
+                    return (
+                      <li
+                        key={index}
+                        className="py-2 flex flex-col cursor-pointer hover:bg-gray-100 w-full h-70"
+                        onClick={() => handleCycleClick(item)}
+                      >
+                        <p className="p-2 font-normal flex items-center justify-between">
+                          <span>{item.serialNumber}</span>
+                          <span className="text-xs text-gray-500 ml-2 font-semibold">
+                            {`${createdDate.getHours()}:${String(
+                              createdDate.getMinutes()
+                            ).padStart(2, "0")}`}
+                          </span>
                         </p>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(createdDate, t)}
-                        </p>
-                        {updatedDate && (
-                          <p className="text-xs text-gray-500">
-                            {t("common:updated")} {formatDate(updatedDate, t)}
+                        <div className="px-2 flex flex-row justify-between text-xs">
+                          <p
+                            className="rounded-full py-1 px-2 text-tiny"
+                            style={{ backgroundColor, color: textColor }}
+                          >
+                            {t(`qrScanner:${item.status.toLowerCase()}`)}
                           </p>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
+                          <p className="text-xs text-gray-500">
+                            {formatDate(createdDate, t)}
+                          </p>
+                          {updatedDate && (
+                            <p className="text-xs text-gray-500">
+                              {t("common:updated")} {formatDate(updatedDate, t)}
+                            </p>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
               </ul>
             </div>
           )}
@@ -254,4 +308,5 @@ const HistorySummary = () => {
     </div>
   );
 };
+
 export default HistorySummary;

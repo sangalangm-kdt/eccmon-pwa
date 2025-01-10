@@ -11,6 +11,28 @@ export const useHistoryWithUpdates = (history) => {
   return history;
 };
 
+// Sort function for history based on the date or alphabetically
+export const sortHistory = (history, sortOrder = "asc", sortBy = "date") => {
+  if (sortBy === "date") {
+    return history?.sort((a, b) => {
+      if (sortOrder === "asc") {
+        return new Date(a.createdAt) - new Date(b.createdAt); // Ascending
+      } else {
+        return new Date(b.createdAt) - new Date(a.createdAt); // Descending
+      }
+    });
+  } else if (sortBy === "alphabetical") {
+    return history?.sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a.serialNumber.localeCompare(b.serialNumber); // Ascending Alphabetically
+      } else {
+        return b.serialNumber.localeCompare(a.serialNumber); // Descending Alphabetically
+      }
+    });
+  }
+  return history;
+};
+
 // Sort function for history based on the date
 export const sortHistoryByDate = (history, sortOrder = "asc") => {
   return history?.sort((a, b) => {
