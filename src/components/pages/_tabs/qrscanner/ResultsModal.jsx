@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const ResultsModal = ({
   addDisable,
@@ -10,6 +11,14 @@ const ResultsModal = ({
 }) => {
   // const message = "The cylinder cover does not exist. Do you want to add it?";
   // Handle Escape key to close modal
+  const { t } = useTranslation("qrScanner");
+  const translatedMessage =
+    message === "cylinderDoesNotExist"
+      ? t("cylinderDoesNotExist")
+      : message === "cylinderDisposed"
+        ? t("cylinderDisposed")
+        : message;
+
   useEffect(() => {
     const handleEscKey = (event) => {
       if (event.key === "Escape") {
@@ -36,13 +45,13 @@ const ResultsModal = ({
         }`}
       >
         <div className="flex flex-col items-center ">
-          <p className="text-sm p-1">Serial number found</p>
+          <p className="text-sm p-1">{t("serialNumberFound")}</p>
           <p className="text-lg font-semibold w-full text-cyan-500 rounded-full p-2 bg-cyan-100 text-center">
             {eccId}
           </p>
         </div>
 
-        <p className="text-center text-sm py-10">{message}</p>
+        <p className="text-center text-sm py-10">{translatedMessage}</p>
         {addDisable === false ? (
           <div className="flex flex-row justify-between mt-4">
             <button

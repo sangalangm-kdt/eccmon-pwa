@@ -28,7 +28,7 @@ const LanguageSwitcher = ({ closeFullscreen }) => {
           <button
             key={lang.id}
             onClick={() => changeLanguage(lang.id)}
-            className={`p-3 rounded text-s, font-medium ${
+            className={`p-3 rounded text-sm font-medium ${
               language === lang.id
                 ? "bg-primary text-white"
                 : "bg-gray-200 text-black hover:bg-gray-300"
@@ -44,7 +44,7 @@ const LanguageSwitcher = ({ closeFullscreen }) => {
 
 const ProfilePage = () => {
   const { t } = useTranslation("common");
-  const { logout, isLoading } = useAuthentication({ middleware: "auth" });
+  const { logout, isLoading, user } = useAuthentication({ middleware: "auth" });
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleLogout = () => {
@@ -63,7 +63,7 @@ const ProfilePage = () => {
     <div className="flex flex-col h-full">
       {/* Header Section */}
       <div className="bg-cyan-to-blue w-full h-52 relative">
-        <div className="flex-col text-white font-semibold w-full p-4 text-lg">
+        <div className="flex-col text-white font-semibold w-full p-4 text-lg rounded-t-md">
           Profile
         </div>
       </div>

@@ -3,6 +3,7 @@
   "addData": "Add data",
   "cannotScanCode": "Cannot scan the serial code? Add it here manually.",
   "storage": "Storage",
+  "process": "Process",
   "materialAndMachining": "Material and Machining",
   "disassembly": "Disassembly",
   "grooving": "Grooving",
@@ -81,5 +82,24 @@
     "passed": "Passed",
     "failed": "Failed",
     "ongoing": "Ongoing"
-  }
+  },
+
+  "eccIdInstructions": {
+    "label": "Enter ECC ID",
+    "eccIdPlaceholder": "Enter a valid serial code",
+    "confirm": "Confirm",
+    "description": "Please enter a valid serial code matching one of the following patterns:",
+    "patterns": [
+      "T- followed by 3 or 4 digits, optionally ending with Y and a letter C-Z (e.g., T-1234YC)",
+      "H- optionally followed by K, L, M, N, followed by 3 digits (e.g., HK-123)",
+      "2 digits followed by a letter C-Z, followed by 3 digits (e.g., 23C123)"
+    ]
+  },
+  "errors": {
+    "invalidSerialCode": "Please enter a valid serial code.",
+    "enterSerialCode": "Please enter a serial code."
+  },
+  "serialNumberFound": "Serial number found",
+  "cylinderDoesNotExist": "The cylinder cover does not exist. Do you want to add it?",
+  "cylinderDisposed": "Cylinder is already disposed"
 }

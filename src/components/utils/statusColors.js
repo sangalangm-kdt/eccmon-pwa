@@ -2,11 +2,11 @@
 
 // Lighter pastel colors for statuses
 export const statusColors = {
-  storage: "#b3e0ff", // Lighter Pastel Blue
-  process: "#8fd5a7", // Lighter Pastel Green
-  mounted: "#f9e28c", // Lighter Pastel Yellow
-  dismounted: "#f5b39f", // Lighter Pastel Orange
-  disposal: "#ff99b3", // Lighter Pastel Red
+  storage: "bg-blue-100", // Lighter Pastel Blue
+  process: "bg-green-100", // Lighter Pastel Green
+  mounted: "bg-yellow-100", // Lighter Pastel Yellow
+  dismounted: "bg-orange-100", // Lighter Pastel Orange
+  disposal: "bg-red-100", // Lighter Pastel Red
 };
 
 // Function to darken the text color based on the background color
@@ -57,12 +57,22 @@ export const getStatusColors = (status) => {
     "finishing",
     "assembly",
   ];
+
+  // Default pastel gray for unmatched statuses
   const baseColor = processStages.includes(status.toLowerCase())
     ? statusColors.process
-    : statusColors[status.toLowerCase()] || "#E0E0E0"; // Default pastel gray
+    : statusColors[status.toLowerCase()] || "bg-gray-100"; // Default pastel gray
 
-  // Darken the text color by 50% for better readability
-  const textColor = darkenColor(baseColor, 0.5); // Darken by 50%
+  // Tailwind classes for text color based on background
+  let textColor = "text-gray-700"; // Default text color
 
-  return { backgroundColor: baseColor, textColor };
+  // Determine text color based on background (lightness/darkness)
+  if (baseColor === "bg-blue-100") textColor = "text-blue-500";
+  if (baseColor === "bg-green-100") textColor = "text-green-500";
+  if (baseColor === "bg-yellow-100") textColor = "text-yellow-500";
+  if (baseColor === "bg-orange-100") textColor = "text-orange-500";
+  if (baseColor === "bg-red-100") textColor = "text-red-500";
+  if (baseColor === "bg-gray-100") textColor = "text-gray-700"; // Default text color for gray
+
+  return { textColor, bgColor: baseColor };
 };

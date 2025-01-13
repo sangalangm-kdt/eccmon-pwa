@@ -56,7 +56,7 @@ const CycleModal = ({ selectedStatus, data, onClose }) => {
             </button>
             <button
               onClick={handleGoToHome}
-              className="flex w-full bg-blue-500 p-3 rounded-lg text-white justify-center hover:bg-blue-600 transition"
+              className="flex w-full bg-primary p-3 rounded-lg text-white justify-center hover:bg-cyan-500 transition"
             >
               <IoHome size={16} />
               <p className="ml-2 font-medium">Go to home</p>

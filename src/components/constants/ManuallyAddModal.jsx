@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
-// Updated regex pattern for valid serial codes
 const serialCodePattern =
-  /^(T-\d{3,4}(Y[C-Z])?|T-\d{4}YC|T-\d{4}YD|H-\d{3}|H[KLMN]?-\d{3}|HK-\d{3}|HL-\d{3}|HM-\d{3}|HN-\d{3}|23C\d{3}|23D\d{3}|24C\d{3}|24D\d{3}|\d{2}[C-Z]\d{3}|\d{2}[C-Z]\d{3})$/;
+  /^(T-\d{3,4}?[YC]?[C-Z]?|T-\d{4}YC|T-\d{4}YD|H-\d{3}|H[KLMN]?-\d{3}|HK-\d{3}|HL-\d{3}|HM-\d{3}|HN-\d{3}|23C\d{3}|23D\d{3}|24C\d{3}|24D\d{3}|\d{2}[C-Z]\d{3}|T-\d{3,4}[C-Z])$/;
 
 const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
   const [manualData, setManualData] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
+  const { t } = useTranslation("qrScanner");
+  const patterns = t("eccIdInstructions.patterns", { returnObjects: true });
 
   if (!isOpen) return null;
 
@@ -19,10 +21,10 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
         setAlertMessage("");
         onClose();
       } else {
-        setAlertMessage("Please enter a valid serial code.");
+        setAlertMessage(t("errors.invalidSerialCode"));
       }
     } else {
-      setAlertMessage("Please enter a serial code.");
+      setAlertMessage(t("errors.enterSerialCode"));
     }
   };
 
@@ -49,32 +51,22 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
           x
         </button>
         <label className="block mb-2 text-center w-full font-semibold text-base">
-          Enter ECC ID
+          {t("eccIdInstructions.label")}
         </label>
         <p className="text-xs mb-1 text-gray-600 text-center">
-          Please enter a valid serial code matching one of the following
-          patterns:
+          {t("eccIdInstructions.description")}
         </p>
         <ul className="list-disc pl-6 mt-2 text-xs text-gray-500 pb-2">
-          <li>
-            T- followed by 3 or 4 digits, optionally ending with Y and a letter
-            C-Z (e.g., T-1234YC)
-          </li>
-          <li>
-            H- optionally followed by K, L, M, N, followed by 3 digits (e.g.,
-            HK-123)
-          </li>
-          <li>
-            2 digits followed by a letter C-Z, followed by 3 digits (e.g.,
-            23C123)
-          </li>
+          {patterns.map((pattern, index) => (
+            <li key={index}>{pattern}</li>
+          ))}
         </ul>
         <input
           type="text"
           value={manualData.toUpperCase()}
           onChange={handleInputChange}
           className="border p-2 w-full rounded focus:outline-primary text-sm text-center"
-          placeholder="Enter a valid serial code"
+          placeholder={t("eccIdInstructions.eccIdPlaceholder")}
         />
         {alertMessage && (
           <p className="text-red-500 mt-2 text-xs text-center">
@@ -82,10 +74,10 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
           </p>
         )}
         <button
-          className="mt-4 bg-primary text-white p-2 rounded flex items-center justify-center mx-auto"
+          className="mt-4 bg-primary text-white px-6 py-2  rounded flex items-center justify-center mx-auto"
           onClick={handleSubmit}
         >
-          Confirm
+          {t("eccIdInstructions.confirm")}
         </button>
       </div>
     </div>

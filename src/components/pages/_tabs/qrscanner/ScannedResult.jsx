@@ -5,6 +5,7 @@ import { CylinderInfo, QrHeader } from "./components";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import AddedOrUpdateSuccessfully from "../../../constants/AddedOrUpdateSuccessfully";
 import CycleModal from "../../../constants/CycleModal";
+import { t } from "i18next";
 
 const ScannedResult = () => {
   const [selectedStatus, setSelectedStatus] = useState("None");
@@ -137,10 +138,10 @@ const ScannedResult = () => {
           <div className="flex flex-col w-full mt-20 rounded-lg">
             <div className="bg-white py-6 px-3">
               <p className="flex font-semibold text-base px-2">
-                Review information
+                {t("common:reviewInfo")}
               </p>
               <p className="flex text-xs text-gray-500 px-2">
-                Is the information you submitted correct?
+                {t("common:reviewDetails")}
               </p>
             </div>
           </div>
@@ -165,7 +166,11 @@ const ScannedResult = () => {
 
         <SaveButton
           onClick={handleClick}
-          text={step === "review" ? "Save" : "Continue"}
+          text={
+            step === "review"
+              ? t("common:saveButton")
+              : t("common:continueButton")
+          }
           disabled={!isComplete}
         />
       </div>

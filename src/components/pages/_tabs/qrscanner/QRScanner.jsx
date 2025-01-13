@@ -15,6 +15,9 @@ import Storage from "./status/Storage";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import ManuallyAddModal from "../../../constants/ManuallyAddModal";
 
+const serialCodePattern =
+  /^(T-\d{3,4}?[YC]?[C-Z]?|T-\d{4}YC|T-\d{4}YD|H-\d{3}|H[KLMN]?\d{3}|HK-\d{3}|HL-\d{3}|HM-\d{3}|HN-\d{3}|23C\d{3}|23D\d{3}|24C\d{3}|24D\d{3}|\d{2}[C-Z]\d{3}|T-\d{3,4}[C-Z])$/;
+
 const QRScanner = () => {
   const [error, setError] = useState(null);
   const [torchOn, setTorchOn] = useState(false);
@@ -29,7 +32,7 @@ const QRScanner = () => {
   const videoRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation("qrScanner", "common");
+  const { t } = useTranslation();
   const { checkSerial, addCylinder } = useCylinderCover();
 
   const codeReader = new BrowserMultiFormatReader();
@@ -40,14 +43,24 @@ const QRScanner = () => {
         const jsonData = JSON.parse(result.text);
         const eccId = jsonData.eccId;
 
-        if (!eccId) {
-          setError("The scanned code does not contain a valid code.");
+        // if (!eccId) {
+        //   setError("The scanned code does not contain a valid code.");
+        //   return;
+        // }
+
+        if (!serialCodePattern.test(eccId)) {
+          setError("The scanned code does not match the required pattern.");
           return;
         }
 
         if (!modalOpen) {
           setWillScan(false);
-          checkSerial({ setAddDisable, setMessage, setModalOpen, eccId });
+          checkSerial({
+            setAddDisable,
+            setMessage,
+            setModalOpen,
+            eccId,
+          });
         }
 
         const track = videoRef.current?.srcObject?.getVideoTracks()[0];
@@ -77,6 +90,10 @@ const QRScanner = () => {
   };
 
   useEffect(() => {
+    if (!willScan) {
+      stopCamera();
+    }
+
     let selectedDeviceId;
     if (willScan) {
       codeReader
@@ -86,7 +103,6 @@ const QRScanner = () => {
             videoInputDevices.find((device) =>
               device.label.toLowerCase().includes("back")
             ) || videoInputDevices[0];
-
           if (backCamera) {
             selectedDeviceId = backCamera.deviceId;
             codeReader.decodeFromVideoDevice(
@@ -105,7 +121,12 @@ const QRScanner = () => {
             );
             // Check if area is in the center
             setIsCentered(
-              isAreaInCenter({ x: 0.25, y: 0.25, width: 0.5, height: 0.5 })
+              isAreaInCenter({
+                x: 0.25,
+                y: 0.25,
+                width: 0.5,
+                height: 0.5,
+              })
             );
           }
         })
@@ -120,11 +141,36 @@ const QRScanner = () => {
     return () => {
       codeReader.reset();
     };
-  }, [checkSerial, modalOpen, willScan]);
+  }, [willScan]);
 
   useEffect(() => {
     dispatch(setPage("qrscanner"));
   }, [dispatch]);
+
+  useEffect(() => {
+    const state = {
+      error,
+      torchOn,
+      scannedData,
+      modalOpen,
+      manualModalOpen,
+      willScan,
+      message,
+      addDisable,
+      isCentered,
+    };
+    console.log("State:", state);
+  }, [
+    error,
+    torchOn,
+    scannedData,
+    modalOpen,
+    manualModalOpen,
+    willScan,
+    message,
+    addDisable,
+    isCentered,
+  ]);
 
   const handleBack = () => {
     codeReader.reset();
@@ -158,6 +204,9 @@ const QRScanner = () => {
   };
 
   const handleManualAdd = (manualData) => {
+    setWillScan(false); // Stop scanning
+    // stopCamera(); // Stop the camera and reset the video stream
+    setManualModalOpen(true); // Open the manual modal
     setScannedData(manualData);
 
     // Check if the manually entered data already exists
@@ -179,6 +228,23 @@ const QRScanner = () => {
         eccId: manualData,
       });
     }
+  };
+
+  const stopCamera = () => {
+    const tracks = videoRef.current?.srcObject?.getVideoTracks();
+    if (tracks) {
+      tracks.forEach((track) => {
+        if (track.readyState === "live") {
+          track.stop(); // Stop the camera track
+        }
+      });
+    }
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null; // Clear the video stream
+    }
+
+    console.log("Camera stopped");
   };
 
   return (
@@ -271,7 +337,6 @@ const QRScanner = () => {
         isOpen={manualModalOpen}
         onClose={() => setManualModalOpen(false)}
         onConfirm={handleManualAdd}
-        setWillScan={setWillScan}
       />
     </div>
   );

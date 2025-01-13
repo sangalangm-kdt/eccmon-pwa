@@ -28,5 +28,11 @@
   "historySummary": "Here you can view a summary of your activity history.",
 
   "back": "Back",
-  "done": "Done"
+  "done": "Done",
+
+  "continueButton": "Continue",
+  "saveButton": "Save",
+  "editButton": "Edit",
+  "reviewInfo": "Review information",
+  "reviewDetails": "Is the information you submitted correct?"
 }

@@ -70,6 +70,7 @@ export const useAuthentication = ({
     window.location.pathname = "login";
   };
 
+  const userId = user ? user.user_id : null;
   useEffect(() => {
     if (middleware === "guest" && redirectIfAuthenticated && user)
       if (middleware === "auth" && error)
@@ -86,6 +87,7 @@ export const useAuthentication = ({
 
   return {
     user,
+    userId,
     login,
     logout,
     isLoading,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronIcon } from "../../../assets/icons";
-import { CloseRounded } from "@mui/icons-material";
+import { CloseRounded, IosShare } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { GoSortDesc, GoSortAsc } from "react-icons/go";
 import {
@@ -17,39 +17,40 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendar } from "react-icons/fa";
+import { IoArrowBackOutline, IoArrowForwardOutline } from "react-icons/io5";
 
 const HistorySummary = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate(); // Hook for navigation
-  const history = useCylinderCover().cylinder?.data; // Get history data
-  const [showAll, setShowAll] = useState(false); // Default value is false
-  const [filter, setFilter] = useState("latest"); // Default is "latest"
-  const [sortOrder, setSortOrder] = useState("desc"); // Start with descending order to show recent first
+  const navigate = useNavigate();
+  const history = useCylinderCover().cylinder?.data;
+  const [showAll, setShowAll] = useState(false);
+  const [filter, setFilter] = useState("latest");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [clickedItem, setClickedItem] = useState(null); // State to track clicked item
   const [filteredHistory, setFilteredHistory] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state for skeleton loader
+  const [loading, setLoading] = useState(true);
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Use effect to handle sorting & filtering logic when history changes
+  // Effect for handling sorting and filtering updates
   useEffect(() => {
     if (history) {
-      setLoading(false); // Data is loaded, stop showing skeleton
+      setLoading(false);
       const sortedHistory = sortHistoryByDate(history, sortOrder);
       const filteredData = filterHistory(
         sortedHistory,
         filter,
         startDate,
         endDate
-      ); // Filter history based on filter criteria
+      );
       setFilteredHistory(filteredData);
     }
-  }, [history, sortOrder, filter, startDate, endDate]); // Re-run when any of these change
+  }, [history, sortOrder, filter, startDate, endDate]);
 
+  // Effect to reset fullscreen view on page load
   useEffect(() => {
-    setShowAll(false); // Set to false initially to avoid fullscreen on page reload
+    setShowAll(false);
   }, []);
 
   const handleFilterChange = (selectedOption) => {
@@ -58,11 +59,7 @@ const HistorySummary = () => {
   };
 
   const handleDateChange = (date, name) => {
-    if (name === "startDate") {
-      setStartDate(date);
-    } else {
-      setEndDate(date);
-    }
+    name === "startDate" ? setStartDate(date) : setEndDate(date);
     setCurrentPage(1);
   };
 
@@ -75,15 +72,10 @@ const HistorySummary = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  // Navigate to the ViewInfo component when a cycle number is clicked
   const handleCycleClick = (item) => {
-    setClickedItem(item);
-    navigate("/view-info", {
-      state: { data: item }, // Pass the data to ViewInfo component via state
-    });
+    navigate("/view-info", { state: { data: item } });
   };
 
-  // Options for react-select filter dropdown
   const filterOptions = [
     { value: "latest", label: t("common:latest") },
     { value: "thisMonth", label: t("common:thisMonth") },
@@ -92,14 +84,12 @@ const HistorySummary = () => {
     { value: "custom", label: t("common:customDateRange") },
   ];
 
-  // Options for selecting the number of items to show
   const perPageOptions = [
     { value: 10, label: "10" },
     { value: 20, label: "20" },
     { value: 50, label: "50" },
   ];
 
-  // Custom input for react-datepicker with calendar icon
   const CustomDateInput = React.forwardRef(({ value, onClick }, ref) => (
     <div className="relative cursor-pointer w-full" onClick={onClick} ref={ref}>
       <input
@@ -129,47 +119,55 @@ const HistorySummary = () => {
 
   return (
     <div
-      className={`w-full p-2 overflow-hidden ${showAll ? fullscreenClass : ""}`}
+      className={`flex flex-col w-full p-2 overflow-hidden ${
+        showAll ? fullscreenClass : ""
+      }`}
     >
       {showAll && (
         <button
           onClick={() => setShowAll(false)}
-          className="fixed top-2 right-2 p-2 text-gray rounded-full z-60"
+          className="fixed top-6 right-2 p-2 text-gray rounded-full z-60"
         >
           <CloseRounded />
         </button>
       )}
 
       <div
-        className={`transition-transform duration-500 ease-in-out bg-white${
+        className={`transition-transform duration-500 ease-in-out bg-white ${
           showAll ? "animate-slideUp" : "animate-slideDown"
         }`}
       >
-        <div className="py-4 px-0">
+        <div className="flex flex-col py-4 px-0">
           <div
-            className={`flex flex-row justify-between px-1 pb-2 border-b border-gray-300 ${
-              showAll ? "fixed top-0 left-0 w-full bg-white  z-10" : ""
+            className={`flex justify-between px-1  border-b border-gray-300 ${
+              showAll ? "fixed top-0 left-0 w-full bg-white z-10 shadow " : ""
             }`}
           >
-            <label className="px-1 py-2 font-semibold text-primaryText">
+            <label
+              className={`${
+                showAll
+                  ? "px-1 py-8 font-semibold text-primaryText"
+                  : "px-1 py-2 font-semibold text-primaryText"
+              }`}
+            >
               {t("common:recentHistory")}
             </label>
             {!showAll && (
-              <button
-                className="px-2 py-2 flex text-primaryText"
-                onClick={() => setShowAll(true)}
-              >
-                <p className="flex items-center justify-center pt-1 text-xs">
-                  See all
-                </p>
-                <ChevronIcon />
-              </button>
+              <div className="flex flex-row items-center justify-center pt-1 text-xs">
+                <button
+                  className="flex-row text-primaryText"
+                  onClick={() => setShowAll(true)}
+                >
+                  <ChevronIcon />
+                </button>
+              </div>
             )}
           </div>
 
           {showAll && (
-            <div className=" mb-4 mt-2 text-sm pt-8 ">
-              <div className="fixed flex justify-between mb-2 mr-2">
+            <div className="mb-4 text-sm pt-12 bg-white  w-full  -ml-0">
+              {/* Filter and Sort Section */}
+              <div className="flex justify-between mb-2 mr-3 mt-7 ">
                 <Select
                   className="w-48 sm:w-64"
                   options={filterOptions}
@@ -187,23 +185,24 @@ const HistorySummary = () => {
                 </button>
               </div>
 
+              {/* Custom Date Range Section */}
               {filter === "custom" && (
-                <div className="fixed flex flex-wrap gap-2 mt-2 px-2">
-                  <div className="relative flex-1 xs:w-36 sm:w-48 md:w-56 lg:w-full">
+                <div className="flex justify-between mb-2  ">
+                  <div className="flex-1  lg:w-full">
                     <DatePicker
                       selected={startDate}
                       onChange={(date) => handleDateChange(date, "startDate")}
-                      className="px-4 py-2 border w-full custom-datepicker fixed"
+                      className="px-4 py-2 border w-full custom-datepicker "
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
                       popperClassName="custom-datepicker-popper"
                     />
                   </div>
-                  <div className="flex-1 sm:w-48 md:w-56 lg:w-full">
+                  <div className="flex-1 xs:w-32 sm:w-48 md:w-56 lg:w-full">
                     <DatePicker
                       selected={endDate}
                       onChange={(date) => handleDateChange(date, "endDate")}
-                      className="px-4 py-2 border w-full custom-datepicker fixed"
+                      className="px-4 py-2 border w-full custom-datepicker "
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
                       popperClassName="custom-datepicker-popper"
@@ -211,32 +210,42 @@ const HistorySummary = () => {
                   </div>
                 </div>
               )}
-            </div>
-          )}
 
-          {showAll && (
-            <div className="flex justify-between mb-4 mt-32">
-              <Select
-                className="w-48 sm:w-64"
-                options={perPageOptions}
-                value={perPageOptions.find(
-                  (option) => option.value === perPage
-                )}
-                onChange={handlePerPageChange}
-              />
-              <p>
-                {t("common:page")} {currentPage} {t("common:of")} {totalPages}
-              </p>
-              <div>
-                <button onClick={handlePrevPage} disabled={currentPage === 1}>
-                  {t("common:prev")}
-                </button>
-                <button
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  {t("common:next")}
-                </button>
+              {/* Pagination Controls */}
+              <div className="flex justify-between mb-2  mt-2">
+                <div className="flex flex-row items-center justify-center gap-1">
+                  <label>Show</label>
+                  <Select
+                    className="w-20  text-xs text-center"
+                    options={perPageOptions}
+                    value={perPageOptions.find(
+                      (option) => option.value === perPage
+                    )}
+                    onChange={handlePerPageChange}
+                  />
+                  <label>entries</label>
+                </div>
+
+                <div className="flex items-center justify-center gap-1">
+                  <button
+                    className="border p-2 rounded "
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                  >
+                    <IoArrowBackOutline />
+                  </button>{" "}
+                  <p className="flex items-center justify-center ">
+                    {t("common:page")} {currentPage} {t("common:of")}{" "}
+                    {totalPages}
+                  </p>
+                  <button
+                    className="border p-2 rounded "
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    <IoArrowForwardOutline />
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -246,22 +255,23 @@ const HistorySummary = () => {
               <HistorySummarySkeleton />
             </div>
           ) : filteredHistory.length === 0 ? (
-            <div className="p-4 text-center text-gray-500 ">
+            <div className="p-4 text-center text-gray-500">
               <p>No recent history</p>
             </div>
           ) : (
             <div>
               <ul
                 className={`transition-transform duration-500 ease-in-out h-screen border-box ${
-                  showAll ? `max-h-fit overflow-y-auto` : "max-h-[380px]"
+                  showAll ? "max-h-fit overflow-y-auto " : "max-h-[380px]"
                 }`}
               >
                 {filteredHistory
                   .slice(startIndex, endIndex)
                   .map((item, index) => {
-                    const { backgroundColor, textColor } = getStatusColors(
-                      item.status
-                    );
+                    // Get the status colors dynamically
+                    const { bgColor, textColor } = getStatusColors(item.status);
+
+                    // Format created and updated dates
                     const createdDate = new Date(item.createdAt);
                     const updatedDate = item.updatedAt
                       ? new Date(item.updatedAt)
@@ -273,6 +283,7 @@ const HistorySummary = () => {
                         className="py-2 flex flex-col cursor-pointer hover:bg-gray-100 w-full h-70"
                         onClick={() => handleCycleClick(item)}
                       >
+                        {/* Serial number and created date */}
                         <p className="p-2 font-normal flex items-center justify-between">
                           <span>{item.serialNumber}</span>
                           <span className="text-xs text-gray-500 ml-2 font-semibold">
@@ -281,13 +292,16 @@ const HistorySummary = () => {
                             ).padStart(2, "0")}`}
                           </span>
                         </p>
+
+                        {/* Status label with dynamic colors */}
                         <div className="px-2 flex flex-row justify-between text-xs">
                           <p
-                            className="rounded-full py-1 px-2 text-tiny"
-                            style={{ backgroundColor, color: textColor }}
+                            className={`rounded-full py-1 px-2 text-tiny ${bgColor} ${textColor}`}
                           >
                             {t(`qrScanner:${item.status.toLowerCase()}`)}
                           </p>
+
+                          {/* Created and updated dates */}
                           <p className="text-xs text-gray-500">
                             {formatDate(createdDate, t)}
                           </p>
