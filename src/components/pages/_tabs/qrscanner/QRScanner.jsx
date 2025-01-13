@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import ResultsModal from "./ResultsModal"; // Your modal component
+import ResultsModal from "./ResultsModal";
 import {
   BrowserMultiFormatReader,
   BarcodeFormat,
@@ -24,8 +24,8 @@ const QRScanner = () => {
   const [willScan, setWillScan] = useState(true);
   const [message, setMessage] = useState("");
   const [addDisable, setAddDisable] = useState(false);
-  const [isCentered, setIsCentered] = useState(false); // State to track if area is centered
-
+  const [isCentered, setIsCentered] = useState(false);
+  const [currentCamera, setCurrentCamera] = useState("back"); // Track current camera
   const videoRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -95,32 +95,45 @@ const QRScanner = () => {
             videoInputDevices.find((device) =>
               device.label.toLowerCase().includes("back"),
             ) || videoInputDevices[0];
-          if (backCamera) {
+
+          const frontCamera =
+            videoInputDevices.find((device) =>
+              device.label.toLowerCase().includes("front"),
+            ) || videoInputDevices[0];
+
+          console.log("FRONT CAMERA: ", frontCamera);
+          console.log("BACK CAMERA: ", backCamera);
+
+          if (currentCamera === "back" && backCamera) {
             selectedDeviceId = backCamera.deviceId;
-            codeReader.decodeFromVideoDevice(
-              selectedDeviceId,
-              videoRef.current,
-              handleScanResult,
-              {
-                area: {
-                  x: 0.25,
-                  y: 0.25,
-                  width: 0.5,
-                  height: 0.5,
-                },
-                formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
-              },
-            );
-            // Check if area is in the center
-            setIsCentered(
-              isAreaInCenter({
+          } else if (currentCamera === "front" && frontCamera) {
+            selectedDeviceId = frontCamera.deviceId;
+          }
+
+          codeReader.decodeFromVideoDevice(
+            selectedDeviceId,
+            videoRef.current,
+            handleScanResult,
+            {
+              area: {
                 x: 0.25,
                 y: 0.25,
                 width: 0.5,
                 height: 0.5,
-              }),
-            );
-          }
+              },
+              formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
+            },
+          );
+
+          // Check if area is in the center
+          setIsCentered(
+            isAreaInCenter({
+              x: 0.25,
+              y: 0.25,
+              width: 0.5,
+              height: 0.5,
+            }),
+          );
         })
         .catch((err) => {
           console.error("Error accessing video devices: ", err);
@@ -133,36 +146,11 @@ const QRScanner = () => {
     return () => {
       codeReader.reset();
     };
-  }, [willScan]);
+  }, [willScan, currentCamera]);
 
   useEffect(() => {
     dispatch(setPage("qrscanner"));
   }, [dispatch]);
-
-  useEffect(() => {
-    const state = {
-      error,
-      torchOn,
-      scannedData,
-      modalOpen,
-      manualModalOpen,
-      willScan,
-      message,
-      addDisable,
-      isCentered,
-    };
-    console.log("State:", state);
-  }, [
-    error,
-    torchOn,
-    scannedData,
-    modalOpen,
-    manualModalOpen,
-    willScan,
-    message,
-    addDisable,
-    isCentered,
-  ]);
 
   const handleBack = () => {
     codeReader.reset();
@@ -185,6 +173,12 @@ const QRScanner = () => {
     }
   };
 
+  const handleSwitchCamera = () => {
+    setCurrentCamera((prevCamera) =>
+      prevCamera === "back" ? "front" : "back",
+    );
+  };
+
   const handleConfirm = () => {
     setModalOpen(false);
     addCylinder(scannedData);
@@ -196,22 +190,20 @@ const QRScanner = () => {
   };
 
   const handleManualAdd = (manualData) => {
-    setWillScan(false); // Stop scanning
-    // stopCamera(); // Stop the camera and reset the video stream
-    setManualModalOpen(true); // Open the manual modal
+    setWillScan(false);
+    setManualModalOpen(true);
     setScannedData(manualData);
 
-    // Check if the manually entered data already exists
     const isExisting = checkSerial({
       setAddDisable,
       setMessage,
       setModalOpen,
       eccId: manualData,
-    }); // Implement this function to check for existing data
+    });
     if (isExisting) {
       setMessage("This ECC ID already exists.");
-      setModalOpen(false); // Close the modal to prevent it from popping up
-      setAddDisable(true); // Disable adding further
+      setModalOpen(false);
+      setAddDisable(true);
     } else {
       checkSerial({
         setAddDisable,
@@ -227,13 +219,13 @@ const QRScanner = () => {
     if (tracks) {
       tracks.forEach((track) => {
         if (track.readyState === "live") {
-          track.stop(); // Stop the camera track
+          track.stop();
         }
       });
     }
 
     if (videoRef.current) {
-      videoRef.current.srcObject = null; // Clear the video stream
+      videoRef.current.srcObject = null;
     }
 
     console.log("Camera stopped");
@@ -250,6 +242,7 @@ const QRScanner = () => {
         <ArrowBackIcon />
         <label className="text-white">{t("common:backButton")}</label>
       </div>
+
       <div
         className={`${qrScannerStyles.scannerContainerClass} h-full w-full sm:h-screen sm:w-screen`}
       >
@@ -264,7 +257,7 @@ const QRScanner = () => {
             <div
               className={qrScannerStyles.scannerAreaClass}
               style={{
-                borderColor: isCentered ? "green" : "red", // Change border color based on centering check
+                borderColor: isCentered ? "green" : "red",
               }}
             >
               <div className={qrScannerStyles.scannerFrameClass}>
@@ -285,6 +278,7 @@ const QRScanner = () => {
             </div>
           </div>
         </div>
+
         <div className="absolute z-60 text-white xs:top-60 xs:text-sm">
           {t("qrScanner:barcodePlaceCode")}
         </div>
@@ -303,13 +297,29 @@ const QRScanner = () => {
             </svg>
           )}
         </button>
+
+        {/* Switch Camera Button */}
+        <button
+          className="absolute right-4 top-4 z-60 text-white"
+          onClick={handleSwitchCamera}
+        >
+          {currentCamera === "back" ? "Switch to Front" : "Switch to Back"}
+        </button>
+
+        {/* Camera Indicator */}
+        <div className="absolute left-4 top-4 z-60 text-white">
+          {currentCamera === "back"
+            ? "Using Back Camera"
+            : "Using Front Camera"}
+        </div>
+
         <div className="absolute bottom-18 z-60 flex w-80 flex-col justify-center">
           <label className="mb-2 text-center text-xs text-white">
             {t("qrScanner:cannotScanCode")}
           </label>
           <button
             className="rounded-md border border-white p-3 text-sm font-semibold text-white"
-            onClick={() => setManualModalOpen(true)} // Open the manual modal
+            onClick={() => setManualModalOpen(true)}
           >
             {t("qrScanner:addData")}
           </button>
