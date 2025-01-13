@@ -10,7 +10,7 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
   const [alertMessage, setAlertMessage] = useState("");
 
   if (!isOpen) return null;
-
+  setWillScan(false);
   const handleSubmit = () => {
     if (manualData.trim() !== "") {
       if (serialCodePattern.test(manualData)) {
@@ -39,23 +39,26 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 rounded-lg relative w-96"
+        className="relative w-96 rounded-lg bg-white p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-2 right-2 p-1 rounded-full"
-          onClick={onClose}
+          className="absolute right-2 top-2 rounded-full p-1"
+          onClick={() => {
+            setWillScan(true);
+            onClose();
+          }}
         >
           x
         </button>
-        <label className="block mb-2 text-center w-full font-semibold text-base">
+        <label className="mb-2 block w-full text-center text-base font-semibold">
           Enter ECC ID
         </label>
-        <p className="text-xs mb-1 text-gray-600 text-center">
+        <p className="mb-1 text-center text-xs text-gray-600">
           Please enter a valid serial code matching one of the following
           patterns:
         </p>
-        <ul className="list-disc pl-6 mt-2 text-xs text-gray-500 pb-2">
+        <ul className="mt-2 list-disc pb-2 pl-6 text-xs text-gray-500">
           <li>
             T- followed by 3 or 4 digits, optionally ending with Y and a letter
             C-Z (e.g., T-1234YC)
@@ -73,16 +76,16 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
           type="text"
           value={manualData.toUpperCase()}
           onChange={handleInputChange}
-          className="border p-2 w-full rounded focus:outline-primary text-sm text-center"
+          className="w-full rounded border p-2 text-center text-sm focus:outline-primary"
           placeholder="Enter a valid serial code"
         />
         {alertMessage && (
-          <p className="text-red-500 mt-2 text-xs text-center">
+          <p className="mt-2 text-center text-xs text-red-500">
             {alertMessage}
           </p>
         )}
         <button
-          className="mt-4 bg-primary text-white p-2 rounded flex items-center justify-center mx-auto"
+          className="mx-auto mt-4 flex items-center justify-center rounded bg-primary p-2 text-white"
           onClick={handleSubmit}
         >
           Confirm
