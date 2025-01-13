@@ -21,7 +21,8 @@ const ProfilePage = lazy(
   () => import("./components/pages/_tabs/profile/ProfilePage")
 );
 const Home = lazy(() => import("./components/pages/_tabs/home/Home"));
-const ForgotPass = lazy(() => import("./components/pages/ForgotPass"));
+const ForgotPass = lazy(() => import("./components/pages/forgotPass/ForgotPass"));
+const ResetPassword = lazy(()=> import ("./components/pages/forgotPass/ResetPassword"))
 
 const Layout = () => {
   return (
@@ -62,7 +63,10 @@ function App() {
           path: "/forgotpass",
           element: <ForgotPass />,
         },
-
+         {
+          path: "/reset-password",
+          element: <ResetPassword />,
+        },
         {
           path: "*",
           element: <NotFoundPage />,

@@ -15,17 +15,8 @@ export const overlayLeftClass =
   "absolute top-[calc(50%-8rem)] left-0 w-[calc(50%-6rem)] h-[12rem] bg-black opacity-50";
 export const overlayRightClass =
   "absolute top-[calc(50%-8rem)] right-0 w-[calc(50%-6rem)] h-[12rem] bg-black opacity-50";
-export const scannerAreaClass = `
-  absolute 
-  top-[25%] 
-  left-[25%] 
-  w-[50%] 
-  h-[50%] 
-
-  flex 
-  justify-center 
-  items-center
-`;
+export const scannerAreaClass =
+  "absolute flex justify-center items-center top-[25%] left-[25%] w-[50%] h-[50%]";
 export const scannerFrameClass = "relative w-48 h-48 top-[-2rem]"; // Smaller frame and positioned higher
 export const scannerCornerClass = "absolute w-6 h-6 border-white"; // Smaller corners
 export const topLeftCornerClass = "top-0 left-0 border-t-4 border-l-4";

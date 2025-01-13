@@ -12,7 +12,7 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
   const patterns = t("eccIdInstructions.patterns", { returnObjects: true });
 
   if (!isOpen) return null;
-
+  setWillScan(false);
   const handleSubmit = () => {
     if (manualData.trim() !== "") {
       if (serialCodePattern.test(manualData)) {
@@ -41,12 +41,15 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 rounded-lg relative w-96"
+        className="relative w-96 rounded-lg bg-white p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-2 right-2 p-1 rounded-full"
-          onClick={onClose}
+          className="absolute right-2 top-2 rounded-full p-1"
+          onClick={() => {
+            setWillScan(true);
+            onClose();
+          }}
         >
           x
         </button>
@@ -69,7 +72,7 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
           placeholder={t("eccIdInstructions.eccIdPlaceholder")}
         />
         {alertMessage && (
-          <p className="text-red-500 mt-2 text-xs text-center">
+          <p className="mt-2 text-center text-xs text-red-500">
             {alertMessage}
           </p>
         )}

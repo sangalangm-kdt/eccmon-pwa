@@ -37,7 +37,7 @@ export const QrHeader = ({ step, handleEdit, disabled }) => {
         {step === "review" && (
           <button
             type="button"
-            className="absolute bg-primary top-2 right-2 px-4 py-2 text-white rounded"
+            className="absolute bg-primary top-6 right-4 px-4 py-2 text-white rounded"
             onClick={handleEdit}
             disabled={disabled}
           >

@@ -15,8 +15,6 @@ import Storage from "./status/Storage";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import ManuallyAddModal from "../../../constants/ManuallyAddModal";
 
-const serialCodePattern =
-  /^(T-\d{3,4}?[YC]?[C-Z]?|T-\d{4}YC|T-\d{4}YD|H-\d{3}|H[KLMN]?\d{3}|HK-\d{3}|HL-\d{3}|HM-\d{3}|HN-\d{3}|23C\d{3}|23D\d{3}|24C\d{3}|24D\d{3}|\d{2}[C-Z]\d{3}|T-\d{3,4}[C-Z])$/;
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -32,7 +30,7 @@ const QRScanner = () => {
   const videoRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation("qrScanner", "common");
   const { checkSerial, addCylinder } = useCylinderCover();
 
   const codeReader = new BrowserMultiFormatReader();
@@ -43,13 +41,8 @@ const QRScanner = () => {
         const jsonData = JSON.parse(result.text);
         const eccId = jsonData.eccId;
 
-        // if (!eccId) {
-        //   setError("The scanned code does not contain a valid code.");
-        //   return;
-        // }
-
-        if (!serialCodePattern.test(eccId)) {
-          setError("The scanned code does not match the required pattern.");
+        if (!eccId) {
+          setError("The scanned code does not contain a valid code.");
           return;
         }
 
@@ -101,7 +94,7 @@ const QRScanner = () => {
         .then((videoInputDevices) => {
           const backCamera =
             videoInputDevices.find((device) =>
-              device.label.toLowerCase().includes("back")
+              device.label.toLowerCase().includes("back"),
             ) || videoInputDevices[0];
           if (backCamera) {
             selectedDeviceId = backCamera.deviceId;
@@ -117,7 +110,7 @@ const QRScanner = () => {
                   height: 0.5,
                 },
                 formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
-              }
+              },
             );
             // Check if area is in the center
             setIsCentered(
@@ -126,14 +119,14 @@ const QRScanner = () => {
                 y: 0.25,
                 width: 0.5,
                 height: 0.5,
-              })
+              }),
             );
           }
         })
         .catch((err) => {
           console.error("Error accessing video devices: ", err);
           setError(
-            "Error accessing video devices. Please check your camera permissions."
+            "Error accessing video devices. Please check your camera permissions.",
           );
         });
     }
@@ -249,17 +242,17 @@ const QRScanner = () => {
 
   return (
     <div
-      className={`${qrScannerStyles.containerClass} w-full h-full sm:h-screen sm:w-screen`}
+      className={`${qrScannerStyles.containerClass} h-full w-full sm:h-screen sm:w-screen`}
     >
       <div
-        className="absolute left-2 top-8 z-50 flex flex-row cursor-pointer p-2"
+        className="absolute left-2 top-8 z-50 flex cursor-pointer flex-row p-2"
         onClick={handleBack}
       >
         <ArrowBackIcon />
         <label className="text-white">{t("common:backButton")}</label>
       </div>
       <div
-        className={`${qrScannerStyles.scannerContainerClass} w-full h-full sm:h-screen sm:w-screen`}
+        className={`${qrScannerStyles.scannerContainerClass} h-full w-full sm:h-screen sm:w-screen`}
       >
         {error && <div className={qrScannerStyles.errorClass}>{error}</div>}
         <video ref={videoRef} className={qrScannerStyles.videoClass} />
@@ -293,12 +286,12 @@ const QRScanner = () => {
             </div>
           </div>
         </div>
-        <div className="absolute xs:top-60 xs:text-sm text-white z-60">
+        <div className="absolute z-60 text-white xs:top-60 xs:text-sm">
           {t("qrScanner:barcodePlaceCode")}
         </div>
 
         <button
-          className="absolute bottom-4 left-4 bg-white p-2 text-blue-500 rounded-full shadow-md"
+          className="absolute bottom-4 left-4 rounded-full bg-white p-2 text-blue-500 shadow-md"
           onClick={toggleTorch}
         >
           {torchOn ? (
@@ -311,12 +304,12 @@ const QRScanner = () => {
             </svg>
           )}
         </button>
-        <div className="absolute z-60 bottom-18 flex flex-col justify-center w-80">
-          <label className="text-white text-xs mb-2 text-center">
+        <div className="absolute bottom-18 z-60 flex w-80 flex-col justify-center">
+          <label className="mb-2 text-center text-xs text-white">
             {t("qrScanner:cannotScanCode")}
           </label>
           <button
-            className="text-white text-sm p-3 border font-semibold border-white rounded-md"
+            className="rounded-md border border-white p-3 text-sm font-semibold text-white"
             onClick={() => setManualModalOpen(true)} // Open the manual modal
           >
             {t("qrScanner:addData")}
@@ -337,6 +330,7 @@ const QRScanner = () => {
         isOpen={manualModalOpen}
         onClose={() => setManualModalOpen(false)}
         onConfirm={handleManualAdd}
+        setWillScan={setWillScan}
       />
     </div>
   );
