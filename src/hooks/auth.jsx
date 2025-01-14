@@ -122,7 +122,7 @@ export const useAuthentication = ({
       });
   };
 
-  const userId = user ? user.user_id : null;
+  const userId = user ? user.id : null;
   useEffect(() => {
     if (middleware === "guest" && redirectIfAuthenticated && user)
       if (middleware === "auth" && error)
