@@ -32,7 +32,8 @@ const QRScanner = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation("qrScanner", "common");
-  const { checkSerial, addCylinder } = useCylinderCover();
+  const { checkSerial, addCylinder, cylinder } = useCylinderCover();
+  console.log(cylinder ? cylinder.data[0].user : null); // Check the user in cylinder data
 
   const codeReader = new BrowserMultiFormatReader();
 
