@@ -3,11 +3,13 @@ import axiosLib from "../lib/axios";
 import { useNavigate } from "react-router-dom";
 import { useScanHistory } from "./scanHistory";
 import useSWR from "swr";
+import { useAuthentication } from "./auth";
 
 export const useCylinderCover = () => {
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
   const navigate = useNavigate();
   const { addHistory } = useScanHistory();
+  const { userId } = useAuthentication();
 
   const {
     data: cylinder,
@@ -19,7 +21,7 @@ export const useCylinderCover = () => {
       .then((res) => res.data)
       .catch((error) => {
         if (error.response.status !== 409) throw error;
-      })
+      }),
   );
 
   const checkSerial = async ({
@@ -45,7 +47,7 @@ export const useCylinderCover = () => {
         } else {
           setAddDisable(false);
           setMessage(
-            "The cylinder cover does not exist. Do you want to add it?"
+            "The cylinder cover does not exist. Do you want to add it?",
           );
           setModalOpen(true);
         }
@@ -63,6 +65,7 @@ export const useCylinderCover = () => {
       isDisposed: 2,
       status: "Storage",
       location: "None",
+      user_id: userId,
     };
     await csrf();
 
