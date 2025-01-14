@@ -13,21 +13,22 @@ const Home = () => {
       console.error("Authentication Error:", errorMessage);
     }
   }, [errorMessage]);
-
+  
   // Safely extract employee ID or fallback to a default value
-  const employeeId = user?.first_name || "Unknown User";
-  console.log("Employee ID:", employeeId);
+  const employeeFirstname = user?.first_name || "Unknown User";
+  const userId = user?.user_id || "Unknown Id"
+  console.log("Employee ID:", employeeFirstname);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Onboarding />
-      <div className="w-full p-4">
-        <h1>Welcome, {employeeId}</h1>
+      <div className="w-full ">
+        <h1>Welcome, {employeeFirstname}</h1>
       </div>
-      <div className="w-full p-2">
-        <div className="flex items-center justify-center w-full">
-          <InventorySummary />
-        </div>
+      <div className="w-full h-full">
+    
+          <InventorySummary userId={userId} />
+       
         <div
           id="history-summary"
           className="flex w-full xs:w-full lg:w-full xs:px-1 bg-white rounded-lg"

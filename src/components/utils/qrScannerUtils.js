@@ -1,58 +1,37 @@
-export const initializeScanner = (
-  codeReader,
-  videoRef,
-  handleScanResult,
-  setIsCentered,
-) => {
-  let selectedDeviceId;
-  return new Promise((resolve, reject) => {
-    codeReader
-      .listVideoInputDevices()
-      .then((videoInputDevices) => {
-        const backCamera =
-          videoInputDevices.find((device) =>
-            device.label.toLowerCase().includes("back"),
-          ) || videoInputDevices[0];
+import { useEffect } from "react";
+import { BrowserMultiFormatReader, BarcodeFormat, NotFoundException } from "@zxing/library";
 
-        if (backCamera) {
-          selectedDeviceId = backCamera.deviceId;
-          codeReader.decodeFromVideoDevice(
-            selectedDeviceId,
-            videoRef.current,
-            handleScanResult,
-            {
-              area: {
-                x: 0.25,
-                y: 0.25,
-                width: 0.5,
-                height: 0.5,
-              },
-              formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
-            },
-          );
-          setIsCentered(
-            isAreaInCenter({ x: 0.25, y: 0.25, width: 0.5, height: 0.5 }),
-          );
-          resolve();
-        } else {
-          reject(new Error("No back camera found"));
-        }
-      })
-      .catch((err) => reject(err));
-  });
+// Initialize code reader globally to avoid multiple initializations
+const codeReader = new BrowserMultiFormatReader();
+
+export const isAreaInCenter = (area) => {
+  // Example logic for checking if the scan area is centered
+  const { x, y, width, height } = area;
+  const areaCenterX = x + width / 2;
+  const areaCenterY = y + height / 2;
+
+  // Assuming the video feed's center is at (0.5, 0.5)
+  const videoFeedCenterX = 0.5;
+  const videoFeedCenterY = 0.5;
+
+  // Check if the scan area center is close to the video feed center
+  return (
+    Math.abs(areaCenterX - videoFeedCenterX) < 0.05 &&
+    Math.abs(areaCenterY - videoFeedCenterY) < 0.05
+  );
 };
-
+// Utility function for handling scan result
 export const handleScanResult = (
   result,
   err,
   setError,
   setScannedData,
-  codeReader,
   setWillScan,
-  modalOpen,
+  setModalOpen,
   checkSerial,
-  setAddDisable,
-  setMessage,
+  videoRef,
+   setAddDisable,  // Add this parameter
+  setMessage 
 ) => {
   if (result) {
     try {
@@ -64,9 +43,14 @@ export const handleScanResult = (
         return;
       }
 
-      if (!modalOpen) {
+      if (!setModalOpen) {
         setWillScan(false);
-        checkSerial({ setAddDisable, setMessage, setModalOpen, eccId });
+        checkSerial({
+          setAddDisable,
+          setMessage,
+          setModalOpen,
+          eccId,
+        });
       }
 
       const track = videoRef.current?.srcObject?.getVideoTracks()[0];
@@ -82,58 +66,108 @@ export const handleScanResult = (
     setError("Error scanning QR code. Please try again.");
   }
 };
+// Utility function for handling camera switching
+export const handleSwitchCamera = (currentCamera, setCameraSwitched, setCurrentCamera) => {
+  setCurrentCamera((prevCamera) => {
+    const newCamera = prevCamera === "back" ? "front" : "back";
+    setCameraSwitched(true);
 
-export const isAreaInCenter = (area) => {
-  const { x, y, width, height } = area;
-  const tolerance = 0.05;
+    setTimeout(() => {
+      setCameraSwitched(false);
+    }, 2000);
 
-  const isCenteredHorizontally = x >= 0.5 - tolerance && x <= 0.5 + tolerance;
-  const isCenteredVertically = y >= 0.5 - tolerance && y <= 0.5 + tolerance;
-  const isReasonablySized =
-    width >= 0.1 && width <= 0.8 && height >= 0.1 && height <= 0.8;
-
-  return isCenteredHorizontally && isCenteredVertically && isReasonablySized;
-};
-
-export const toggleTorch = (videoRef, torchOn, setTorchOn) => {
-  const track = videoRef.current?.srcObject?.getVideoTracks()[0];
-  if (track) {
-    const capabilities = track.getCapabilities();
-    if (capabilities.torch) {
-      track.applyConstraints({
-        advanced: [{ torch: !torchOn }],
-      });
-      setTorchOn(!torchOn);
-    } else {
-      console.error("Torch is not supported on this device.");
-    }
-  }
-};
-
-export const handleManualAdd = (
-  manualData,
-  checkSerial,
-  setAddDisable,
-  setMessage,
-  setModalOpen,
-) => {
-  const isExisting = checkSerial({
-    setAddDisable,
-    setMessage,
-    setModalOpen,
-    eccId: manualData,
+    return newCamera;
   });
+};
 
-  if (isExisting) {
-    setMessage("This ECC ID already exists.");
-    setModalOpen(false); // Close the modal to prevent it from popping up
-    setAddDisable(true); // Disable adding further
-  } else {
-    checkSerial({
-      setAddDisable,
-      setMessage,
-      setModalOpen,
-      eccId: manualData,
+// Function to stop the camera
+export const stopCamera = (videoRef) => {
+  const tracks = videoRef.current?.srcObject?.getVideoTracks();
+  if (tracks) {
+    tracks.forEach((track) => {
+      if (track.readyState === "live") {
+        track.stop();
+      }
     });
   }
+
+  if (videoRef.current) {
+    videoRef.current.srcObject = null;
+  }
+
+  console.log("Camera stopped");
 };
+
+
+
+// Function to start scanning
+export const startScan = (
+  willScan,
+  videoRef,
+  currentCamera,
+  setWillScan,
+  setError,
+  setIsCentered,
+  checkSerial,
+  setScannedData,
+  setModalOpen
+) => {
+  if (!willScan) {
+    stopCamera(videoRef);
+  }
+
+  let selectedDeviceId;
+  if (willScan) {
+    codeReader
+      .listVideoInputDevices()
+      .then((videoInputDevices) => {
+        const backCamera =
+          videoInputDevices.find((device) =>
+            device.label.toLowerCase().includes("back"),
+          ) || videoInputDevices[0];
+
+        const frontCamera =
+          videoInputDevices.find((device) =>
+            device.label.toLowerCase().includes("front"),
+          ) || videoInputDevices[0];
+
+        if (currentCamera === "back" && backCamera) {
+          selectedDeviceId = backCamera.deviceId;
+        } else if (currentCamera === "front" && frontCamera) {
+          selectedDeviceId = frontCamera.deviceId;
+        }
+
+        codeReader.decodeFromVideoDevice(
+          selectedDeviceId,
+          videoRef.current,
+          (result, err) =>
+            handleScanResult(result, err, setError, setScannedData, setWillScan, setModalOpen, checkSerial, videoRef),
+          {
+            area: {
+              x: 0.25,
+              y: 0.25,
+              width: 0.5,
+              height: 0.5,
+            },
+            formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
+          },
+        );
+
+        setIsCentered(
+          isAreaInCenter({
+            x: 0.25,
+            y: 0.25,
+            width: 0.5,
+            height: 0.5,
+          }),
+        );
+      })
+      .catch((err) => {
+        console.error("Error accessing video devices: ", err);
+        setError(
+          "Error accessing video devices. Please check your camera permissions.",
+        );
+      });
+  }
+};
+

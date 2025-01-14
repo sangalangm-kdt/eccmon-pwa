@@ -20,7 +20,7 @@ export const useCylinderUpdate = () => {
       .then((res) => res.data)
       .catch((error) => {
         if (error.response.status !== 409) throw error;
-      })
+      }),
   );
 
   const addUpdate = async (input, status) => {

@@ -42,7 +42,7 @@ const HistorySummary = () => {
         sortedHistory,
         filter,
         startDate,
-        endDate
+        endDate,
       );
       setFilteredHistory(filteredData);
     }
@@ -91,12 +91,12 @@ const HistorySummary = () => {
   ];
 
   const CustomDateInput = React.forwardRef(({ value, onClick }, ref) => (
-    <div className="relative cursor-pointer w-full" onClick={onClick} ref={ref}>
+    <div className="relative w-full cursor-pointer" onClick={onClick} ref={ref}>
       <input
         type="text"
         value={value}
         readOnly
-        className="border p-2 w-full text-sm"
+        className="w-full border p-2 text-sm"
         placeholder="mm/dd/yy"
       />
       <FaRegCalendar className="absolute right-2 top-2 text-gray-500" />
@@ -119,28 +119,28 @@ const HistorySummary = () => {
 
   return (
     <div
-      className={`flex flex-col w-full p-2 overflow-hidden ${
+      className={`flex w-full flex-col overflow-hidden p-2 ${
         showAll ? fullscreenClass : ""
       }`}
     >
       {showAll && (
         <button
           onClick={() => setShowAll(false)}
-          className="fixed top-6 right-2 p-2 text-gray rounded-full z-60"
+          className="text-gray fixed right-2 top-6 z-60 rounded-full p-2"
         >
           <CloseRounded />
         </button>
       )}
 
       <div
-        className={`transition-transform duration-500 ease-in-out bg-white ${
+        className={`bg-white transition-transform duration-500 ease-in-out ${
           showAll ? "animate-slideUp" : "animate-slideDown"
         }`}
       >
-        <div className="flex flex-col py-4 px-0">
+        <div className="flex flex-col px-0 py-4">
           <div
-            className={`flex justify-between px-1  border-b border-gray-300 ${
-              showAll ? "fixed top-0 left-0 w-full bg-white z-10 shadow " : ""
+            className={`flex justify-between border-b border-gray-300 px-1 ${
+              showAll ? "fixed left-0 top-0 z-10 w-full bg-white shadow" : ""
             }`}
           >
             <label
@@ -165,14 +165,14 @@ const HistorySummary = () => {
           </div>
 
           {showAll && (
-            <div className="mb-4 text-sm pt-12 bg-white  w-full  -ml-0">
+            <div className="-ml-0 mb-4 w-full bg-white pt-12 text-sm">
               {/* Filter and Sort Section */}
-              <div className="flex justify-between mb-2 mr-3 mt-7 ">
+              <div className="mb-2 mr-3 mt-7 flex justify-between">
                 <Select
                   className="w-48 sm:w-64"
                   options={filterOptions}
                   value={filterOptions.find(
-                    (option) => option.value === filter
+                    (option) => option.value === filter,
                   )}
                   onChange={handleFilterChange}
                 />
@@ -187,12 +187,12 @@ const HistorySummary = () => {
 
               {/* Custom Date Range Section */}
               {filter === "custom" && (
-                <div className="flex justify-between mb-2  ">
-                  <div className="flex-1  lg:w-full">
+                <div className="mb-2 flex justify-between">
+                  <div className="flex-1 lg:w-full">
                     <DatePicker
                       selected={startDate}
                       onChange={(date) => handleDateChange(date, "startDate")}
-                      className="px-4 py-2 border w-full custom-datepicker "
+                      className="custom-datepicker w-full border px-4 py-2"
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
                       popperClassName="custom-datepicker-popper"
@@ -202,7 +202,7 @@ const HistorySummary = () => {
                     <DatePicker
                       selected={endDate}
                       onChange={(date) => handleDateChange(date, "endDate")}
-                      className="px-4 py-2 border w-full custom-datepicker "
+                      className="custom-datepicker w-full border px-4 py-2"
                       dateFormat="MM/dd/yy"
                       customInput={<CustomDateInput />}
                       popperClassName="custom-datepicker-popper"
@@ -212,14 +212,14 @@ const HistorySummary = () => {
               )}
 
               {/* Pagination Controls */}
-              <div className="flex justify-between mb-2  mt-2">
+              <div className="mb-2 mt-2 flex justify-between">
                 <div className="flex flex-row items-center justify-center gap-1">
                   <label>Show</label>
                   <Select
-                    className="w-20  text-xs text-center"
+                    className="w-20 text-center text-xs"
                     options={perPageOptions}
                     value={perPageOptions.find(
-                      (option) => option.value === perPage
+                      (option) => option.value === perPage,
                     )}
                     onChange={handlePerPageChange}
                   />
@@ -228,18 +228,18 @@ const HistorySummary = () => {
 
                 <div className="flex items-center justify-center gap-1">
                   <button
-                    className="border p-2 rounded "
+                    className="rounded border p-2"
                     onClick={handlePrevPage}
                     disabled={currentPage === 1}
                   >
                     <IoArrowBackOutline />
                   </button>{" "}
-                  <p className="flex items-center justify-center ">
+                  <p className="flex items-center justify-center">
                     {t("common:page")} {currentPage} {t("common:of")}{" "}
                     {totalPages}
                   </p>
                   <button
-                    className="border p-2 rounded "
+                    className="rounded border p-2"
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
                   >
@@ -251,7 +251,7 @@ const HistorySummary = () => {
           )}
 
           {loading ? (
-            <div className="p-4 h-72">
+            <div className="h-72 p-4">
               <HistorySummarySkeleton />
             </div>
           ) : filteredHistory.length === 0 ? (
@@ -261,8 +261,8 @@ const HistorySummary = () => {
           ) : (
             <div>
               <ul
-                className={`transition-transform duration-500 ease-in-out h-screen border-box ${
-                  showAll ? "max-h-fit overflow-y-auto " : "max-h-[380px]"
+                className={`border-box h-screen transition-transform duration-500 ease-in-out ${
+                  showAll ? "max-h-fit overflow-y-auto" : "max-h-[380px]"
                 }`}
               >
                 {filteredHistory
@@ -280,23 +280,23 @@ const HistorySummary = () => {
                     return (
                       <li
                         key={index}
-                        className="py-2 flex flex-col cursor-pointer hover:bg-gray-100 w-full h-70"
+                        className="h-70 flex w-full cursor-pointer flex-col py-2 hover:bg-gray-100"
                         onClick={() => handleCycleClick(item)}
                       >
                         {/* Serial number and created date */}
-                        <p className="p-2 font-normal flex items-center justify-between">
+                        <p className="flex items-center justify-between p-2 font-normal">
                           <span>{item.serialNumber}</span>
-                          <span className="text-xs text-gray-500 ml-2 font-semibold">
+                          <span className="ml-2 text-xs font-semibold text-gray-500">
                             {`${createdDate.getHours()}:${String(
-                              createdDate.getMinutes()
+                              createdDate.getMinutes(),
                             ).padStart(2, "0")}`}
                           </span>
                         </p>
 
                         {/* Status label with dynamic colors */}
-                        <div className="px-2 flex flex-row justify-between text-xs">
+                        <div className="flex flex-row justify-between px-2 text-xs">
                           <p
-                            className={`rounded-full py-1 px-2 text-tiny ${bgColor} ${textColor}`}
+                            className={`rounded-full px-2 py-1 text-tiny ${bgColor} ${textColor}`}
                           >
                             {t(`qrScanner:${item.status.toLowerCase()}`)}
                           </p>

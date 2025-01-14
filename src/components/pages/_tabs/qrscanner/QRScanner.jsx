@@ -11,10 +11,10 @@ import { useNavigate } from "react-router-dom";
 import qrScannerStyles from "../../../styles/main";
 import { useTranslation } from "react-i18next";
 import { ArrowBackIcon } from "../../../assets/icons";
-import Storage from "./status/Storage";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import ManuallyAddModal from "../../../constants/ManuallyAddModal";
-
+import { PiCameraRotateThin } from "react-icons/pi";
+import CameraSwitchModal from "../../../constants/CameraSwitchModal";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -27,6 +27,7 @@ const QRScanner = () => {
   const [addDisable, setAddDisable] = useState(false);
   const [isCentered, setIsCentered] = useState(false);
   const [currentCamera, setCurrentCamera] = useState("back"); // Track current camera
+  const [cameraSwitched, setCameraSwitched] = useState(false); // Track camera switch state
   const videoRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -175,9 +176,17 @@ const QRScanner = () => {
   };
 
   const handleSwitchCamera = () => {
-    setCurrentCamera((prevCamera) =>
-      prevCamera === "back" ? "front" : "back",
-    );
+    setCurrentCamera((prevCamera) => {
+      const newCamera = prevCamera === "back" ? "front" : "back";
+      setCameraSwitched(true);
+
+      // Hide the camera switch message after 2 seconds
+      setTimeout(() => {
+        setCameraSwitched(false);
+      }, 2000);
+
+      return newCamera;
+    });
   };
 
   const handleConfirm = () => {
@@ -301,18 +310,11 @@ const QRScanner = () => {
 
         {/* Switch Camera Button */}
         <button
-          className="absolute right-4 top-4 z-60 text-white"
+          className="absolute right-5 top-8 z-60 text-white"
           onClick={handleSwitchCamera}
         >
-          {currentCamera === "back" ? "Switch to Front" : "Switch to Back"}
+          <PiCameraRotateThin className="h-8 w-8" />
         </button>
-
-        {/* Camera Indicator */}
-        <div className="absolute left-4 top-4 z-60 text-white">
-          {currentCamera === "back"
-            ? "Using Back Camera"
-            : "Using Front Camera"}
-        </div>
 
         <div className="absolute bottom-18 z-60 flex w-80 flex-col justify-center">
           <label className="mb-2 text-center text-xs text-white">
@@ -341,6 +343,12 @@ const QRScanner = () => {
         onClose={() => setManualModalOpen(false)}
         onConfirm={handleManualAdd}
         setWillScan={setWillScan}
+      />
+
+      {/* Camera Switch Modal */}
+      <CameraSwitchModal
+        isOpen={cameraSwitched}
+        onClose={() => setCameraSwitched(false)}
       />
     </div>
   );
