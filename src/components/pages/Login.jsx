@@ -72,15 +72,15 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full min-h-screen lg:bg-secondary sm:bg-secondary xs:bg-none">
-      <div className="flex w-full max-w-md items-center sm:p-6 md:p-2 ">
+    <div className="flex min-h-screen w-full items-center justify-center xs:bg-none sm:bg-secondary lg:bg-secondary">
+      <div className="flex w-full max-w-md items-center sm:p-6 md:p-2">
         <div className={container.containerDiv}>
-          <div className="flex justify-center items-center w-52 xs:mb-8 lg:mt-4">
+          <div className="flex w-52 items-center justify-center xs:mb-8 lg:mt-4">
             <LogoText />
           </div>
           <div className={inputStyles.container}>
             <h2
-              className={`text-3xl text-primaryText font-bold mb-8 xs:text-2xl`}
+              className={`mb-8 text-3xl font-bold text-primaryText xs:text-2xl`}
             >
               {t("login:login")}
             </h2>
@@ -88,7 +88,7 @@ const Login = () => {
 
           <form className={width.responsive} onSubmit={handleSubmit}>
             <div
-              className={`text-center text-base text-primaryText xs:text-sm xs:p-3 lg:text-md lg:mb-0`}
+              className={`text-center text-base text-primaryText xs:p-3 xs:text-sm lg:mb-0 lg:text-md`}
             >
               <label>{t("login:loginDetails")}</label>
             </div>
@@ -97,7 +97,7 @@ const Login = () => {
               {/* Display the errorMessage from useAuthentication */}
               {errorMessage && (
                 <p
-                  className={`${inputStyles.inputContainer} bg-red-200 text-red-500 w-full text-sm text-center`}
+                  className={`${inputStyles.inputContainer} w-full bg-red-200 text-center text-sm text-red-500`}
                 >
                   {errorMessage}
                 </p>
@@ -118,7 +118,7 @@ const Login = () => {
               />
               {/* Display alert message for missing email */}
               {alert && !email && (
-                <p className="text-red-500 text-xs">Email is required.</p>
+                <p className="text-xs text-red-500">Email is required.</p>
               )}
             </div>
 
@@ -136,12 +136,12 @@ const Login = () => {
               />
               {/* Display alert message for missing password */}
               {alert && !password && (
-                <p className="text-red-500 text-xs">Password is required.</p>
+                <p className="text-xs text-red-500">Password is required.</p>
               )}
             </div>
 
             <div className={`${inputStyles.container} ${link.color}`}>
-              <a href="/forgotpass" className="hover:underline">
+              <a href="/password-reset" className="hover:underline">
                 {t("login:forgotPassword")}
               </a>
             </div>
@@ -159,7 +159,7 @@ const Login = () => {
                   <div className="flex items-center justify-center">
                     <svg
                       aria-hidden="true"
-                      className="w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                      className="h-4 w-4 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
                       viewBox="0 0 100 101"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -180,7 +180,7 @@ const Login = () => {
                 )}
               </button>
               <div className={`${inputStyles.container}`}>
-                <label className="text-sm py-2 text-center">
+                <label className="py-2 text-center text-sm">
                   {t("login:noAccount")}
                   <a href="blank" className="font-semibold hover:underline">
                     {t("login:requestNow")}

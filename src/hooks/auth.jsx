@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import { useEffect, useState } from "react";
 import axiosLib from "../lib/axios";
+import { useNavigate } from "react-router-dom";
 
 export const useAuthentication = ({
   middleware,
@@ -10,7 +11,6 @@ export const useAuthentication = ({
 } = {}) => {
   // const navigation = useNavigate();
   const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const {
     data: user,
@@ -34,7 +34,7 @@ export const useAuthentication = ({
       revalidateOnFocus: false, // Prevent unnecessary revalidation
       revalidateOnReconnect: false,
       shouldRetryOnError: false, // Prevent retries on errors
-    }
+    },
   );
 
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
@@ -62,12 +62,64 @@ export const useAuthentication = ({
       }
     }
   };
+
   const logout = async () => {
     if (!error) {
       await axiosLib.post("/logout").then(() => mutate());
     }
 
     window.location.pathname = "login";
+  };
+
+  const forgotPassword = async ({ email, setLoading }) => {
+    setLoading(true);
+    await csrf();
+    console.log("clicked");
+    console.log(email);
+    return axiosLib
+      .post(`/forgot-password?email=${email}`)
+      .then((response) => {
+        // toast.success("Password reset link sent to your email!", {
+        //   position: "top-center",
+        // });
+        console.log("Password reset link sent to your email!");
+        console.log(response);
+
+        setLoading(false);
+      })
+      .catch((error) => {
+        if (error.response?.status === 422) {
+          // toast.error(error.response.data.message, {
+          //   position: "top-center",
+          // });
+
+          console.log("Wrong Password");
+        } else {
+          console.log("An unexpected error occurred.");
+          // toast.error("An unexpected error occurred.", {
+          //   position: "top-center",
+          // });
+        }
+        setLoading(false);
+      });
+  };
+
+  const resetPassword = async ({ ...props }) => {
+    await csrf();
+    console.log("clicked", props);
+    return axiosLib
+      .post("/reset-password", props)
+      .then((response) => {
+        console.log("Reset password successfully!");
+        console.log(response);
+      })
+      .catch((error) => {
+        if (error.response?.status === 422) {
+          console.log(error.response.data.message);
+        } else {
+          console.log(error.response.data.message);
+        }
+      });
   };
 
   const userId = user ? user.user_id : null;
@@ -92,7 +144,7 @@ export const useAuthentication = ({
     logout,
     isLoading,
     errorMessage,
-    loading,
-    setLoading,
+    forgotPassword,
+    resetPassword,
   };
 };

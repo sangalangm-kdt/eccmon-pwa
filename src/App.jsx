@@ -14,15 +14,19 @@ import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
 import { HistoryProvider } from "./components/utils/HistoryContext";
 
 const QRScanner = lazy(
-  () => import("./components/pages/_tabs/qrscanner/QRScanner")
+  () => import("./components/pages/_tabs/qrscanner/QRScanner"),
 );
 const Login = lazy(() => import("./components/pages/Login"));
 const ProfilePage = lazy(
-  () => import("./components/pages/_tabs/profile/ProfilePage")
+  () => import("./components/pages/_tabs/profile/ProfilePage"),
 );
 const Home = lazy(() => import("./components/pages/_tabs/home/Home"));
-const ForgotPass = lazy(() => import("./components/pages/forgotPass/ForgotPass"));
-const ResetPassword = lazy(()=> import ("./components/pages/forgotPass/ResetPassword"))
+const ForgotPass = lazy(
+  () => import("./components/pages/forgotPass/PasswordReset"),
+);
+const ResetPassword = lazy(
+  () => import("./components/pages/forgotPass/ResetPassword"),
+);
 
 const Layout = () => {
   return (
@@ -60,11 +64,11 @@ function App() {
           ],
         },
         {
-          path: "/forgotpass",
+          path: "/password-reset",
           element: <ForgotPass />,
         },
-         {
-          path: "/reset-password",
+        {
+          path: `/password-reset/:token`,
           element: <ResetPassword />,
         },
         {
