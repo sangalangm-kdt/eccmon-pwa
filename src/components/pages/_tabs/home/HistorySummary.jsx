@@ -18,8 +18,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendar } from "react-icons/fa";
 import { IoArrowBackOutline, IoArrowForwardOutline } from "react-icons/io5";
+import { useAuthentication } from "../../../../hooks/auth";
 
 const HistorySummary = () => {
+  const { userId, user } = useAuthentication();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const history = useCylinderCover().cylinder?.data;
@@ -37,7 +39,8 @@ const HistorySummary = () => {
   useEffect(() => {
     if (history) {
       setLoading(false);
-      const sortedHistory = sortHistoryByDate(history, sortOrder);
+      const userHistory = history.filter((item) => item.user_id === userId);
+      const sortedHistory = sortHistoryByDate(userHistory, sortOrder);
       const filteredData = filterHistory(
         sortedHistory,
         filter,

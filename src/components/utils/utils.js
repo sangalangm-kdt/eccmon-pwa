@@ -12,9 +12,9 @@ export const useHistoryWithUpdates = (history) => {
 };
 
 // Sort function for history based on the date or alphabetically
-export const sortHistory = (history, sortOrder = "asc", sortBy = "date") => {
+export const sortHistory = (userHistory, sortOrder = "asc", sortBy = "date") => {
   if (sortBy === "date") {
-    return history?.sort((a, b) => {
+    return userHistory?.sort((a, b) => {
       if (sortOrder === "asc") {
         return new Date(a.createdAt) - new Date(b.createdAt); // Ascending
       } else {
@@ -22,7 +22,7 @@ export const sortHistory = (history, sortOrder = "asc", sortBy = "date") => {
       }
     });
   } else if (sortBy === "alphabetical") {
-    return history?.sort((a, b) => {
+    return userHistory?.sort((a, b) => {
       if (sortOrder === "asc") {
         return a.serialNumber.localeCompare(b.serialNumber); // Ascending Alphabetically
       } else {
@@ -30,12 +30,12 @@ export const sortHistory = (history, sortOrder = "asc", sortBy = "date") => {
       }
     });
   }
-  return history;
+  return userHistory;
 };
 
 // Sort function for history based on the date
-export const sortHistoryByDate = (history, sortOrder = "asc") => {
-  return history?.sort((a, b) => {
+export const sortHistoryByDate = (userHistory, sortOrder = "asc") => {
+  return userHistory?.sort((a, b) => {
     if (sortOrder === "asc") {
       return new Date(a.createdAt) - new Date(b.createdAt); // Ascending
     } else {
@@ -45,9 +45,9 @@ export const sortHistoryByDate = (history, sortOrder = "asc") => {
 };
 
 // Filter function for history
-export const filterHistory = (history, filter, startDate, endDate) => {
+export const filterHistory = (userHistory, filter, startDate, endDate) => {
   const currentDate = new Date();
-  let filteredData = history;
+  let filteredData = userHistory;
 
   const clearTime = (date) => {
     const d = new Date(date);

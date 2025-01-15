@@ -6,34 +6,34 @@ import { useAuthentication } from "../../../../hooks/auth";
 
 const Home = () => {
   // Use the authentication hook to get user data
-  const { user, errorMessage } = useAuthentication();
+  const { userId, user, errorMessage } = useAuthentication();
 
   useEffect(() => {
     if (errorMessage) {
       console.error("Authentication Error:", errorMessage);
     }
   }, [errorMessage]);
-  
+
   // Safely extract employee ID or fallback to a default value
   const employeeFirstname = user?.first_name || "Unknown User";
-  const userId = user?.user_id || "Unknown Id"
-  console.log("Employee ID:", employeeFirstname);
+  console.log("Employee ID:", userId);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex min-h-screen flex-col bg-gray-100">
       <Onboarding />
-      <div className="w-full ">
+      <div className="w-full pt-8">
         <h1>Welcome, {employeeFirstname}</h1>
       </div>
-      <div className="w-full h-full">
-    
-          <InventorySummary userId={userId} />
-       
-        <div
-          id="history-summary"
-          className="flex w-full xs:w-full lg:w-full xs:px-1 bg-white rounded-lg"
-        >
-          <HistorySummary />
+      <div className="h-full w-full">
+        <InventorySummary userId={userId} />
+
+        <div className="p-2">
+          <div
+            id="history-summary"
+            className="flex w-full rounded-lg bg-white xs:w-full xs:px-1 lg:w-full"
+          >
+            <HistorySummary />
+          </div>
         </div>
       </div>
     </div>

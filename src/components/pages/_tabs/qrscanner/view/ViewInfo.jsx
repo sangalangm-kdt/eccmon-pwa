@@ -2,104 +2,110 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 
 const ViewInfo = () => {
-    const location = useLocation();
-    const data = location.state?.data;
+  const location = useLocation();
+  const data = location.state?.data;
+  const updates = data?.updates; // Updates is an object
 
-    // Function to render the data
-    const renderData = (data) => {
-        const seenKeys = new Set();
+  // Log data and updates to inspect the structure
+  console.log("Data:", data);
+  console.log("Updates:", updates);
 
-        // Define a mapping of keys to labels
-        const labels = {
-            serialNumber: "Serial No.",
-            location: "Location",
-            dateDone: "Completion Date",
-            cycle: "Cycle",
-            case: "Case",
-            isPassed: "Status",
-            orderNumber: "Order No.",
-            otherDetails: "Additional Details",
-            engineNumber: "Engine Number",
-            operationHours: "Operation Hours",
-            mountingPosition: "Mounting Position",
-        };
+  // Define a mapping of keys to labels
+  const labels = {
+    serialNumber: "Serial No.",
+    location: "Location",
+    dateDone: "Completion Date",
+    cycle: "Cycle",
+    case: "Case",
+    isPassed: "Status",
+    orderNumber: "Order No.",
+    otherDetails: "Additional Details",
+    engineNumber: "Engine Number",
+    operationHours: "Operation Hours",
+    mountingPosition: "Mounting Position",
+    user_id: "Modified by",
+  };
 
-        return Object.entries(data).map(([key, value]) => {
-            if (seenKeys.has(key)) return null;
-            seenKeys.add(key);
-
-            // Get the label for the key, default to the key if no label is defined
-            const displayKey = labels[key] || key;
-
-            // Format the dateDone field
-            if (key === "createdAt" && typeof value === "string") {
-                value = value.replace("T", ", "); // Replace T with a space
-            }
-
-            if (key === "otherDetails") {
-                try {
-                    // const parsedDetails = JSON.parse(value);
-
-                    // Check and update isPassed value based on its initial value
-                    // if (parsedDetails.isPassed !== "") {
-                    //   if (+parsedDetails.isPassed === 1) {
-                    //     parsedDetails.isPassed = "Yes";
-                    //   } else if (+parsedDetails.isPassed === 2) {
-                    //     parsedDetails.isPassed = "No";
-                    //   } else if (+parsedDetails.isPassed === 0) {
-                    //     parsedDetails.isPassed = "Ongoing";
-                    //   }
-                    // }
-
-                    return Object.entries(data.otherDetails).map(
-                        ([subKey, subValue]) => (
-                            <li key={subKey}>
-                                <span>{labels[subKey] || subKey}:</span>
-                                <span>{String(subValue)}</span>
-                            </li>
-                        )
-                    );
-                } catch (error) {
-                    return <p>Invalid data format</p>;
-                }
-            }
-
-            return (
-                <li key={key}>
-                    <span>{displayKey}:</span>
-                    <span>{String(value)}</span>
-                </li>
-            );
-        });
-    };
-
-    // If there's no data or it's empty, show a placeholder
-    if (!data) {
-        return (
-            <div>
-                <div>
-                    <p>No data available</p>
-                </div>
-            </div>
-        );
-    }
-
+  // If there's no data or updates, show a placeholder
+  if (!data || !updates) {
     return (
-        <div>
-            <div>
-                <p>Data Details</p>
-
-                <div>
-                    <p>Details</p>
-                    {data ? (
-                        <ul>{renderData(data)}</ul>
-                    ) : (
-                        <p>No data available</p>
-                    )}
-                </div>
-            </div>
-        </div>
+      <div>
+        <p>No updates available</p>
+      </div>
     );
+  }
+
+  // Function to render updates in a human-readable format with labels
+  const renderUpdateDetails = (update) => {
+    return (
+      <div>
+        {Object.entries(update).map(([key, value]) => {
+          // Get the display label from the mapping or default to the key
+          const label = labels[key] || key;
+
+          // Format the 'createdAt' field to be more readable
+          if (key === "createdAt" && typeof value === "string") {
+            value = value.replace("T", ", "); // Replace T with a comma
+          }
+
+          // Check if value is an object and handle it (e.g., Additional Details)
+          if (typeof value === "object" && value !== null) {
+            // If it's the 'otherDetails' field, render it in a more structured way
+            if (key === "otherDetails") {
+              return (
+                <div key={key}>
+                  <strong>{labels[key]}:</strong>
+                  <ul>
+                    {Object.entries(value).map(([detailKey, detailValue]) => (
+                      <li key={detailKey}>
+                        <strong>{labels[detailKey] || detailKey}:</strong>{" "}
+                        {String(detailValue)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+
+            // For any other nested object, render a generic list of its properties
+            return (
+              <div key={key}>
+                <strong>{label}:</strong>
+                <ul>
+                  {Object.entries(value).map(([nestedKey, nestedValue]) => (
+                    <li key={nestedKey}>
+                      <strong>{nestedKey}:</strong> {String(nestedValue)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          }
+
+          return (
+            <div key={key}>
+              <strong>{label}:</strong> <span>{String(value)}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <h3>Update Details</h3>
+      {/* Check if updates is an object and render its details */}
+      {updates && Object.keys(updates).length > 0 ? (
+        <div>
+          <h4>Update Details</h4>
+          {renderUpdateDetails(updates)}
+        </div>
+      ) : (
+        <p>No updates to display</p>
+      )}
+    </div>
+  );
 };
 
 export default ViewInfo;

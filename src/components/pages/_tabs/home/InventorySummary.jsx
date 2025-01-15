@@ -1,57 +1,33 @@
 import React from "react";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-
-// Carousel Settings
-const sliderSettings = {
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1, // Show 3 categories per slide
-  slidesToScroll: 1,
-  autoplay: true, // Enable autoplay
-  autoplaySpeed: 3000,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 2, // Show 2 categories on medium screens
-      },
-    },
-    {
-      breakpoint: 768,
-      settings: {
-        slidesToShow: 1, // Show 1 category on small screens
-      },
-    },
-  ],
-};
+import {
+  FaWarehouse,
+  FaTools,
+  FaTruckLoading,
+  FaTruckMoving,
+  FaTrash,
+} from "react-icons/fa";
 
 const InventorySummary = ({ userId }) => {
   const { cylinder } = useCylinderCover();
   const data = cylinder?.data;
 
-  // Filter the data based on the current user's user_id
   const filteredData = data?.filter((item) => item.user_id === userId) || [];
 
-  // Define the categories and their corresponding statuses
   const categories = [
-    { name: "Storage", status: "storage" },
+    { name: "Storage", status: "storage", icon: <FaWarehouse /> },
     {
       name: "Process",
       status: ["disassembly", "grooving", "lmd", "assembly", "finishing"],
+      icon: <FaTools />,
     },
-    { name: "Mounted", status: "mounted" },
-    { name: "Dismounted", status: "dismounted" },
-    { name: "Disposal", status: "disposal" },
+    { name: "Mounted", status: "mounted", icon: <FaTruckLoading /> },
+    { name: "Dismounted", status: "dismounted", icon: <FaTruckMoving /> },
+    { name: "Disposal", status: "disposal", icon: <FaTrash /> },
   ];
 
-  // Count the items for each category
   const categoryCounts = categories.map((category) => {
     const { name, status } = category;
-
-    // If status is an array (for Process category), check if the item status matches any of them
     const count =
       filteredData?.filter((item) =>
         Array.isArray(status)
@@ -94,36 +70,45 @@ const InventorySummary = ({ userId }) => {
   return (
     <div className="lg:pt-30 z-10 flex flex-col px-4 xs:pb-6 xs:pt-6">
       <div
-        className="h-full rounded-xl border border-gray-200 bg-white p-4 shadow-lg"
+        className="h-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
         id="inventory-summary"
       >
-        <div>
-          <h2 className="text-lg font-medium text-gray-700">
+        <p className="text-left text-lg font-semibold text-gray-700">
+          Overview
+        </p>
+        <div className="mb-5 border-b-0.5">
+          <h2 className="text-md text-gray-500">
             Total cylinder cover scanned
           </h2>
-          <p className="py-5 text-lg font-semibold text-gray-500">
-            {totalCount}
-          </p>
+          <p className="py-2 text-lg text-gray-500">{totalCount}</p>
         </div>
-        {/* Carousel */}
-        <Slider {...sliderSettings}>
-          {categoryCounts.map(({ name, count }) => {
+        {/* Category Summary */}
+        <div className="flex flex-wrap justify-center gap-4 xs:flex-nowrap xs:gap-4 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
+          {categoryCounts.map(({ name, count }, index) => {
             const { textColor, bgColor } = getCategoryColor(name);
+            const icon = categories[index]?.icon;
             return (
               <div
                 key={name}
-                className={`flex flex-grow flex-col items-center justify-center gap-4 text-sm ${bgColor} ${textColor} rounded-lg p-18`}
+                className={`flex flex-col items-center justify-center gap-2 text-sm ${textColor} relative w-full max-w-[150px] rounded-lg p-2 xs:w-auto sm:w-auto md:w-1/5 lg:w-1/5`}
               >
-                <div className="flex flex-col">
-                  <span className="text-center font-semibold capitalize">
+                {/* Notification bubble above the icon */}
+                <div
+                  className={`absolute left-2/3 top-0 flex h-4 w-4 -translate-x-1/2 transform items-center justify-center rounded-full text-xs ${textColor} ${bgColor}`}
+                >
+                  {count}
+                </div>
+                {/* Icon and Text Adjustments for sm screens */}
+                <div className="text-lg sm:text-sm">{icon}</div>
+                <div className="flex flex-row justify-between">
+                  <span className="text-center capitalize xs:text-tiny sm:text-tiny">
                     {name}
                   </span>
-                  <span className="text-center font-medium">{count}</span>
                 </div>
               </div>
             );
           })}
-        </Slider>
+        </div>
       </div>
     </div>
   );

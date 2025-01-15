@@ -82,6 +82,7 @@ export const useAuthentication = ({
         // toast.success("Password reset link sent to your email!", {
         //   position: "top-center",
         // });
+        setErrorMessage("Password reset link has been sent to your email.");
         console.log("Password reset link sent to your email!");
         console.log(response);
 
