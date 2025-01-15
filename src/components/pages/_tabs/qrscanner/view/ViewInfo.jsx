@@ -1,16 +1,15 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ViewInfo = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // For navigation
   const data = location.state?.data;
-  const updates = data?.updates; // Updates is an object
+  const updates = data?.updates;
 
-  // Log data and updates to inspect the structure
   console.log("Data:", data);
   console.log("Updates:", updates);
 
-  // Define a mapping of keys to labels
   const labels = {
     serialNumber: "Serial No.",
     location: "Location",
@@ -26,36 +25,30 @@ const ViewInfo = () => {
     user_id: "Modified by",
   };
 
-  // If there's no data or updates, show a placeholder
   if (!data || !updates) {
     return (
-      <div>
-        <p>No updates available</p>
+      <div className="rounded-md bg-red-100 p-4">
+        <p className="text-lg text-red-600">No updates available</p>
       </div>
     );
   }
 
-  // Function to render updates in a human-readable format with labels
   const renderUpdateDetails = (update) => {
     return (
-      <div>
+      <div className="space-y-4">
         {Object.entries(update).map(([key, value]) => {
-          // Get the display label from the mapping or default to the key
           const label = labels[key] || key;
 
-          // Format the 'createdAt' field to be more readable
           if (key === "createdAt" && typeof value === "string") {
-            value = value.replace("T", ", "); // Replace T with a comma
+            value = value.replace("T", ", ");
           }
 
-          // Check if value is an object and handle it (e.g., Additional Details)
           if (typeof value === "object" && value !== null) {
-            // If it's the 'otherDetails' field, render it in a more structured way
             if (key === "otherDetails") {
               return (
-                <div key={key}>
-                  <strong>{labels[key]}:</strong>
-                  <ul>
+                <div key={key} className="space-y-2">
+                  <strong className="text-lg">{labels[key]}:</strong>
+                  <ul className="ml-5 list-disc space-y-1">
                     {Object.entries(value).map(([detailKey, detailValue]) => (
                       <li key={detailKey}>
                         <strong>{labels[detailKey] || detailKey}:</strong>{" "}
@@ -67,11 +60,10 @@ const ViewInfo = () => {
               );
             }
 
-            // For any other nested object, render a generic list of its properties
             return (
-              <div key={key}>
-                <strong>{label}:</strong>
-                <ul>
+              <div key={key} className="space-y-2">
+                <strong className="text-lg">{label}:</strong>
+                <ul className="ml-5 list-disc space-y-1">
                   {Object.entries(value).map(([nestedKey, nestedValue]) => (
                     <li key={nestedKey}>
                       <strong>{nestedKey}:</strong> {String(nestedValue)}
@@ -83,7 +75,7 @@ const ViewInfo = () => {
           }
 
           return (
-            <div key={key}>
+            <div key={key} className="text-lg">
               <strong>{label}:</strong> <span>{String(value)}</span>
             </div>
           );
@@ -93,17 +85,22 @@ const ViewInfo = () => {
   };
 
   return (
-    <div>
-      <h3>Update Details</h3>
-      {/* Check if updates is an object and render its details */}
-      {updates && Object.keys(updates).length > 0 ? (
-        <div>
-          <h4>Update Details</h4>
-          {renderUpdateDetails(updates)}
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      <div className="flex h-18 w-full flex-row items-center justify-between rounded-b-md bg-white p-4 shadow-sm">
+        <button
+          onClick={() => navigate("/")} // Navigate to home page
+          className="text-cyan-500 hover:text-blue-700"
+        >
+          &larr; Back
+        </button>
+        <div className="left-3 mr-12 flex flex-1 justify-center">
+          <p className="text-lg font-medium text-primaryText">Details</p>
         </div>
-      ) : (
-        <p>No updates to display</p>
-      )}
+      </div>
+
+      <div className="flex w-full flex-col items-center justify-center p-6 text-xl">
+        <p>{updates.serialNumber}</p>
+      </div>
     </div>
   );
 };
