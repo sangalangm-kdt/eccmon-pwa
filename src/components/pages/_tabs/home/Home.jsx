@@ -21,19 +21,14 @@ const Home = () => {
   return (
     <div className="flex min-h-screen flex-col bg-gray-100">
       <Onboarding />
-      <div className="w-full pt-8">
+      <div className="w-full p-2">
         <h1>Welcome, {employeeFirstname}</h1>
       </div>
       <div className="h-full w-full">
         <InventorySummary userId={userId} />
 
-        <div className="p-2">
-          <div
-            id="history-summary"
-            className="flex w-full rounded-lg bg-white xs:w-full xs:px-1 lg:w-full"
-          >
-            <HistorySummary />
-          </div>
+        <div id="history-summary" className="w-full p-2">
+          <HistorySummary />
         </div>
       </div>
     </div>

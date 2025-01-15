@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded, IosShare } from "@mui/icons-material";
@@ -122,7 +123,7 @@ const HistorySummary = () => {
 
   return (
     <div
-      className={`flex w-full flex-col overflow-hidden p-2 ${
+      className={`xs:min-[300px] flex w-full flex-col overflow-hidden rounded-lg bg-white p-3 xs:px-1 lg:w-full ${
         showAll ? fullscreenClass : ""
       }`}
     >

@@ -7,6 +7,13 @@ import {
   FaTruckMoving,
   FaTrash,
 } from "react-icons/fa";
+import {
+  LiaWarehouseSolid,
+  LiaToolsSolid,
+  LiaTruckLoadingSolid,
+  LiaTruckMovingSolid,
+  LiaTrashSolid,
+} from "react-icons/lia";
 
 const InventorySummary = ({ userId }) => {
   const { cylinder } = useCylinderCover();
@@ -15,15 +22,15 @@ const InventorySummary = ({ userId }) => {
   const filteredData = data?.filter((item) => item.user_id === userId) || [];
 
   const categories = [
-    { name: "Storage", status: "storage", icon: <FaWarehouse /> },
+    { name: "Storage", status: "storage", icon: <LiaWarehouseSolid /> },
     {
       name: "Process",
       status: ["disassembly", "grooving", "lmd", "assembly", "finishing"],
-      icon: <FaTools />,
+      icon: <LiaToolsSolid />,
     },
-    { name: "Mounted", status: "mounted", icon: <FaTruckLoading /> },
-    { name: "Dismounted", status: "dismounted", icon: <FaTruckMoving /> },
-    { name: "Disposal", status: "disposal", icon: <FaTrash /> },
+    { name: "Mounted", status: "mounted", icon: <LiaTruckLoadingSolid /> },
+    { name: "Dismounted", status: "dismounted", icon: <LiaTruckMovingSolid /> },
+    { name: "Disposal", status: "disposal", icon: <LiaTrashSolid /> },
   ];
 
   const categoryCounts = categories.map((category) => {
@@ -68,7 +75,7 @@ const InventorySummary = ({ userId }) => {
   };
 
   return (
-    <div className="lg:pt-30 z-10 flex flex-col px-4 xs:pb-6 xs:pt-6">
+    <div className="lg:pt-30 z-10 flex flex-col px-4 xs:pb-6 xs:pt-4">
       <div
         className="h-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
         id="inventory-summary"
@@ -76,39 +83,43 @@ const InventorySummary = ({ userId }) => {
         <p className="text-left text-lg font-semibold text-gray-700">
           Overview
         </p>
-        <div className="mb-5 border-b-0.5">
+        <div className="">
           <h2 className="text-md text-gray-500">
             Total cylinder cover scanned
           </h2>
-          <p className="py-2 text-lg text-gray-500">{totalCount}</p>
+          <p className="mb-5 border-b-0.5 py-2 text-lg text-gray-500">
+            {totalCount}
+          </p>{" "}
+          <div className="flex flex-wrap justify-center gap-4 xs:flex-nowrap xs:gap-4 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
+            {categoryCounts.map(({ name, count }, index) => {
+              const { textColor, bgColor } = getCategoryColor(name);
+              const icon = categories[index]?.icon;
+              return (
+                <div
+                  key={name}
+                  className={`flex flex-col items-center justify-center gap-2 text-sm ${textColor} relative w-full max-w-[150px] rounded-lg p-2 xs:w-1/6 sm:w-auto md:w-1/5 lg:w-1/5`}
+                >
+                  {/* Only show the notification bubble if count > 0 */}
+                  {count > 0 && (
+                    <div
+                      className={`absolute left-2/3 top-0 flex h-4 w-4 -translate-x-1/2 transform items-center justify-center rounded-full text-xs ${textColor} ${bgColor}`}
+                    >
+                      {count}
+                    </div>
+                  )}
+                  {/* Icon and Text Adjustments for sm screens */}
+                  <div className="text-lg sm:text-md">{icon}</div>
+                  <div className="flex flex-row justify-between">
+                    <span className="text-center capitalize xs:text-tiny sm:text-tiny">
+                      {name}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
         {/* Category Summary */}
-        <div className="flex flex-wrap justify-center gap-4 xs:flex-nowrap xs:gap-4 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
-          {categoryCounts.map(({ name, count }, index) => {
-            const { textColor, bgColor } = getCategoryColor(name);
-            const icon = categories[index]?.icon;
-            return (
-              <div
-                key={name}
-                className={`flex flex-col items-center justify-center gap-2 text-sm ${textColor} relative w-full max-w-[150px] rounded-lg p-2 xs:w-auto sm:w-auto md:w-1/5 lg:w-1/5`}
-              >
-                {/* Notification bubble above the icon */}
-                <div
-                  className={`absolute left-2/3 top-0 flex h-4 w-4 -translate-x-1/2 transform items-center justify-center rounded-full text-xs ${textColor} ${bgColor}`}
-                >
-                  {count}
-                </div>
-                {/* Icon and Text Adjustments for sm screens */}
-                <div className="text-lg sm:text-sm">{icon}</div>
-                <div className="flex flex-row justify-between">
-                  <span className="text-center capitalize xs:text-tiny sm:text-tiny">
-                    {name}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );
