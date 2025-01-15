@@ -32,10 +32,12 @@ const ViewInfo = () => {
   useEffect(() => {
     // Compare the user_id in updates with the userId prop or the authenticated user
     if (updates && updates.user_id) {
-      if (updates.user_id === user.id) {
+      if (updates.user_id === data?.user.id) {
         // If the user_id matches, display the first name
         console.log(user?.first_name);
-        setModifiedBy(user?.first_name || "Unknown User");
+        setModifiedBy(
+          `${data?.user.firstName} ${data?.user.lastName}` || "Unknown User",
+        );
       } else {
         setModifiedBy("Unknown User");
       }
