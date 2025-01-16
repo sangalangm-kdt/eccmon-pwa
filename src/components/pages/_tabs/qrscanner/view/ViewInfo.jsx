@@ -25,15 +25,15 @@ const ViewInfo = () => {
     engineNumber: "Engine Number",
     operationHours: "Operation Hours",
     mountingPosition: "Mounting Position",
-    user_id: "Modified by",
+    userId: "Modified by",
     process: "Process",
   };
 
   useEffect(() => {
-    // Compare the user_id in updates with the userId prop or the authenticated user
-    if (updates && updates.user_id) {
-      if (updates.user_id === data?.user.id) {
-        // If the user_id matches, display the first name
+    // Compare the userId in updates with the userId prop or the authenticated user
+    if (updates && updates.userId) {
+      if (updates.userId === data?.user.id) {
+        // If the userId matches, display the first name
         console.log(user?.first_name);
         setModifiedBy(
           `${data?.user.firstName} ${data?.user.lastName}` || "Unknown User",
@@ -71,7 +71,7 @@ const ViewInfo = () => {
             "location",
             "dateDone",
             "createdAt",
-            "user_id",
+            "userId",
             "cycle",
           ];
           if (excludedKeys.includes(key)) {

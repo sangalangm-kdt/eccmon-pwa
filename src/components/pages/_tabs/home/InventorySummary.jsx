@@ -14,12 +14,29 @@ import {
   LiaTruckMovingSolid,
   LiaTrashSolid,
 } from "react-icons/lia";
+import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 
 const InventorySummary = ({ userId }) => {
-  const { cylinder } = useCylinderCover();
-  const data = cylinder?.data;
+  const cylinders = useCylinderCover().cylinder?.data;
+  const cylinderUpdates = useCylinderUpdate().cylinder?.data;
 
-  const filteredData = data?.filter((item) => item.user_id === userId) || [];
+  // Filter by User ID with same serialNumber for CylinderUpdates
+  const filteredCylinderUpdates =
+    cylinderUpdates
+      ?.filter((cyl) => cyl.userId === userId)
+      .filter(
+        (cyl, index, self) =>
+          index ===
+          self.findIndex((item) => item.serialNumber === cyl.serialNumber),
+      ) ?? [];
+
+  // // Filter by serialNumber
+  const filteredData =
+    cylinders?.filter((item) =>
+      filteredCylinderUpdates.some(
+        (update) => update.serialNumber === item.serialNumber,
+      ),
+    ) ?? [];
 
   const categories = [
     { name: "Storage", status: "storage", icon: <LiaWarehouseSolid /> },
