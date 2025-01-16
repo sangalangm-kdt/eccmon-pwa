@@ -123,7 +123,7 @@ const HistorySummary = () => {
 
   return (
     <div
-      className={`xs:min-[300px] flex w-full flex-col overflow-hidden rounded-lg bg-white p-3 xs:px-1 lg:w-full ${
+      className={`xs:min-[300px] flex w-full flex-col overflow-hidden rounded-lg bg-white p-3 shadow-md xs:px-1 lg:w-full ${
         showAll ? fullscreenClass : ""
       }`}
     >

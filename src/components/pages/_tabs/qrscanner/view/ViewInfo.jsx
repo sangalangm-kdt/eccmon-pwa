@@ -159,7 +159,7 @@ const ViewInfo = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-secondary">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-cyan-100 to-slate-50">
       <div className="flex h-18 w-full flex-row items-center justify-between rounded-b-lg bg-white p-4 shadow-sm">
         <button
           onClick={() => navigate("/")} // Navigate to home page
@@ -183,7 +183,7 @@ const ViewInfo = () => {
         <div className="mt-2 flex w-full flex-col justify-between rounded-lg bg-white p-4 text-base">
           <div className="flex flex-row items-center justify-between border-b-0.5 px-2 py-2">
             <label className="text-md font-medium text-primaryText">
-              Modified by
+              Last modified by
             </label>
             <p className="text-sm text-gray-600">{modifiedBy || "--"}</p>
           </div>
