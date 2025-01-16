@@ -75,14 +75,13 @@ const InventorySummary = ({ userId }) => {
     }
   };
 
-  // State to manage the visibility of the serial numbers and category buttons
-  const [activeCategory, setActiveCategory] = useState("All"); // State for active category
-  const [activeSubcategory, setActiveSubcategory] = useState(null); // State for active subcategory within Process
-  const [isMenuVisible, setIsMenuVisible] = useState(false); // State to toggle the visibility of the category buttons
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const handleCategoryClick = (category, subcategory = null) => {
     setActiveCategory(category);
-    setActiveSubcategory(subcategory); // Update subcategory if applicable
+    setActiveSubcategory(subcategory);
   };
 
   const filteredByCategory = (category) => {
@@ -151,12 +150,11 @@ const InventorySummary = ({ userId }) => {
           </div>
         </div>
 
-        {/* Show serial numbers per operation when toggled */}
         <div className="mt-4 text-tiny">
           {/* Menu Button to Toggle Categories */}
           <div>
             {isMenuVisible && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 overflow-x-auto whitespace-nowrap">
                 <button
                   onClick={() => handleCategoryClick("All")}
                   className={`${
@@ -171,7 +169,6 @@ const InventorySummary = ({ userId }) => {
                 {categories.map(({ name, status, subcategories }) => {
                   const categoryButtonText =
                     name === "Process" ? "Process" : name;
-
                   return (
                     <div key={name}>
                       <button
@@ -184,25 +181,6 @@ const InventorySummary = ({ userId }) => {
                       >
                         {categoryButtonText}
                       </button>
-
-                      {/* Render subcategories for the "Process" category */}
-                      {activeCategory === "Process" && subcategories && (
-                        <div className="ml-4">
-                          {subcategories.map((sub) => (
-                            <button
-                              key={sub.name}
-                              onClick={() => handleCategoryClick(name, sub)}
-                              className={`${
-                                activeSubcategory?.name === sub.name
-                                  ? "bg-gray-200 text-gray-700"
-                                  : "bg-gray-100 text-gray-600"
-                              } mt-2 rounded-md px-4 py-2`}
-                            >
-                              {sub.name}
-                            </button>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   );
                 })}
@@ -220,7 +198,7 @@ const InventorySummary = ({ userId }) => {
                 </div>
               );
             })}
-            {/* Display serial numbers for the selected subcategory */}
+
             {activeSubcategory &&
               filteredBySubcategory(activeSubcategory).map((item, index) => {
                 return (
