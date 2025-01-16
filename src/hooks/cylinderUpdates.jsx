@@ -33,7 +33,7 @@ export const useCylinderUpdate = () => {
       cycle: input.cycle,
       dateDone: input.dateDone ? input.dateDone : null,
       otherDetails: input.otherDetails ? input.otherDetails : null,
-      user_id: userId,
+      userId: userId,
     };
 
     await csrf();

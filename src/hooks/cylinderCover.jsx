@@ -65,7 +65,7 @@ export const useCylinderCover = () => {
       isDisposed: 2,
       status: "Storage",
       location: "None",
-      user_id: userId,
+      userId: userId,
     };
     await csrf();
 

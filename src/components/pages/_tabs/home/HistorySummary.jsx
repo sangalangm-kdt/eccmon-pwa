@@ -20,12 +20,30 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendar } from "react-icons/fa";
 import { IoArrowBackOutline, IoArrowForwardOutline } from "react-icons/io5";
 import { useAuthentication } from "../../../../hooks/auth";
+import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 
 const HistorySummary = () => {
   const { userId, user } = useAuthentication();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const history = useCylinderCover().cylinder?.data;
+  const cylinders = useCylinderCover().cylinder?.data ?? [];
+  const cylinderUpdates = useCylinderUpdate().cylinder?.data ?? [];
+  const filteredCylinderUpdates = cylinderUpdates
+    ?.filter((cyl) => cyl.userId === userId) // Filter by userId
+    .filter(
+      (cyl, index, self) =>
+        index ===
+        self.findIndex((item) => item.serialNumber === cyl.serialNumber),
+    );
+  console.log(filteredCylinderUpdates); // Ensure unique serialNumber);
+  console.log(
+    cylinders?.filter((item) =>
+      filteredCylinderUpdates.some(
+        (update) => update.serialNumber === item.serialNumber,
+      ),
+    ),
+  ); // Ensure unique serialNumber);
+
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("latest");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -38,9 +56,13 @@ const HistorySummary = () => {
 
   // Effect for handling sorting and filtering updates
   useEffect(() => {
-    if (history) {
+    if (cylinders) {
       setLoading(false);
-      const userHistory = history.filter((item) => item.user_id === userId);
+      const userHistory = cylinders?.filter((item) =>
+        filteredCylinderUpdates.some(
+          (update) => update.serialNumber === item.serialNumber,
+        ),
+      );
       const sortedHistory = sortHistoryByDate(userHistory, sortOrder);
       const filteredData = filterHistory(
         sortedHistory,
@@ -50,7 +72,7 @@ const HistorySummary = () => {
       );
       setFilteredHistory(filteredData);
     }
-  }, [history, sortOrder, filter, startDate, endDate]);
+  }, [cylinders, sortOrder, filter, startDate, endDate]);
 
   // Effect to reset fullscreen view on page load
   useEffect(() => {
