@@ -12,6 +12,7 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
   const cylinderData = location.state?.data;
   const eccId = cylinderData.serialNumber;
 
+  console.log("dattaa", location);
   useEffect(() => {
     setSelectedStatus(cylinderData.status);
   }, [cylinderData.status]);
@@ -23,24 +24,24 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
   const marginTop = step === "review" ? "mt-2" : "mt-28";
 
   return (
-    <div className={`flex flex-col py-0 px-4 ${marginTop}`}>
-      <div className=" px-2 py-8 w-full rounded-lg bg-white">
-        <h1 className="font-semibold leading-loose color-primary">
+    <div className={`flex flex-col px-4 py-0 ${marginTop}`}>
+      <div className="w-full rounded-lg bg-white px-2 py-8">
+        <h1 className="color-primary font-semibold leading-loose">
           {t("qrScanner:cylinderInformation")}
         </h1>
         <label className="text-xs text-secondaryText">
           {t("qrScanner:cylinderDetailsInfo")}
         </label>
-        <div className="mt-4 text-lg w-full">
-          <div className="mt-2 w-full mb-2">
-            <label className="block text-sm text-primaryText font-semibold mb-1">
+        <div className="mt-4 w-full text-lg">
+          <div className="mb-2 mt-2 w-full">
+            <label className="mb-1 block text-sm font-semibold text-primaryText">
               {t("qrScanner:serialNumber")}
             </label>
             <input
               type="text"
               value={eccId}
               readOnly
-              className="p-2 border rounded w-full bg-gray-100 text-sm "
+              className="w-full rounded border bg-gray-100 p-2 text-sm"
               disabled
             />
           </div>
