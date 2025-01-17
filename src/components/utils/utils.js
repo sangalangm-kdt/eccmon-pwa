@@ -35,13 +35,11 @@ export const sortHistory = (userHistory, sortOrder = "asc", sortBy = "date") => 
 
 // Sort function for history based on the date
 export const sortHistoryByDate = (userHistory, sortOrder = "asc") => {
-  return userHistory?.sort((a, b) => {
-    if (sortOrder === "asc") {
-      return new Date(a.createdAt) - new Date(b.createdAt); // Ascending
-    } else {
-      return new Date(b.createdAt) - new Date(a.createdAt); // Descending
-    }
-  });
+    return [...userHistory].sort((a, b) => {
+        return sortOrder === "asc"
+            ? new Date(a.createdAt) - new Date(b.createdAt)
+            : new Date(b.createdAt) - new Date(a.createdAt);
+    });
 };
 
 // Filter function for history
@@ -115,8 +113,14 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
 
 export const formatDate = (date, t) => {
   const month = new Date(date).getMonth() + 1;
-  const monthName = t(`date:months.${month}`);
+  const day = new Date(date).getDate();
+  const year = new Date(date).getFullYear();
 
-  const formattedDate = dateFormat(date, "dS, yyyy");
-  return `${monthName} ${formattedDate}`;
+  const monthName = t(`date:months.${month}`);
+  const daySuffix = t(`date:days.${day % 10 === 1 && day !== 11 ? 'st' : day % 10 === 2 && day !== 12 ? 'nd' : day % 10 === 3 && day !== 13 ? 'rd' : 'th'}`);
+
+  // const formattedDate = dateFormat(date, "dS, yyyy"); // Format like: 16th, 2025
+  
+  // You can customize the format as per language, for example:
+  return `${monthName} ${day}${daySuffix}, ${year}`;
 };

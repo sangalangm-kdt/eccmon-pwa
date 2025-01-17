@@ -81,3 +81,13 @@ html, body {
   background-color: #cfeeff !important;  /* Tailwind colors or custom colors */
   height: 6px !important;                /* Change the height */
 }
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari */
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
+}

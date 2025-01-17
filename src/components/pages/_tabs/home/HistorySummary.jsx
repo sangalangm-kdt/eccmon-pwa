@@ -35,14 +35,6 @@ const HistorySummary = () => {
         index ===
         self.findIndex((item) => item.serialNumber === cyl.serialNumber),
     );
-  console.log(filteredCylinderUpdates); // Ensure unique serialNumber);
-  console.log(
-    cylinders?.filter((item) =>
-      filteredCylinderUpdates.some(
-        (update) => update.serialNumber === item.serialNumber,
-      ),
-    ),
-  ); // Ensure unique serialNumber);
 
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("latest");
@@ -56,13 +48,17 @@ const HistorySummary = () => {
 
   // Effect for handling sorting and filtering updates
   useEffect(() => {
-    if (cylinders) {
+    if (cylinders && cylinderUpdates) {
       setLoading(false);
-      const userHistory = cylinders?.filter((item) =>
+
+      // Filter the cylinder updates for the current user
+      const userHistory = cylinders.filter((item) =>
         filteredCylinderUpdates.some(
           (update) => update.serialNumber === item.serialNumber,
         ),
       );
+
+      // Apply sorting and filtering
       const sortedHistory = sortHistoryByDate(userHistory, sortOrder);
       const filteredData = filterHistory(
         sortedHistory,
@@ -70,9 +66,21 @@ const HistorySummary = () => {
         startDate,
         endDate,
       );
-      setFilteredHistory(filteredData);
+
+      // Only set filtered history if there's an actual change
+      if (JSON.stringify(filteredData) !== JSON.stringify(filteredHistory)) {
+        setFilteredHistory(filteredData);
+      }
     }
-  }, [cylinders, sortOrder, filter, startDate, endDate]);
+  }, [
+    cylinders,
+    cylinderUpdates,
+    sortOrder,
+    filter,
+    startDate,
+    endDate,
+    filteredHistory,
+  ]);
 
   // Effect to reset fullscreen view on page load
   useEffect(() => {
@@ -172,8 +180,8 @@ const HistorySummary = () => {
             <label
               className={`${
                 showAll
-                  ? "px-1 py-8 font-semibold text-primaryText"
-                  : "px-1 py-2 font-semibold text-primaryText"
+                  ? "px-1 py-8 font-semibold text-gray-600"
+                  : "px-1 pb-2 font-semibold text-gray-600"
               }`}
             >
               {t("common:recentHistory")}
@@ -181,7 +189,7 @@ const HistorySummary = () => {
             {!showAll && (
               <div className="flex flex-row items-center justify-center pt-1 text-xs">
                 <button
-                  className="flex-row text-primaryText"
+                  className="flex-row pb-2 text-primaryText"
                   onClick={() => setShowAll(true)}
                 >
                   <ChevronIcon />
@@ -309,13 +317,11 @@ const HistorySummary = () => {
                         className="h-70 flex w-full cursor-pointer flex-col py-2 hover:bg-gray-100"
                         onClick={() => handleCycleClick(item)}
                       >
-                        {/* Serial number and created date */}
+                        {/* Serial number and date_done */}
                         <p className="flex items-center justify-between p-2 font-normal">
                           <span>{item.serialNumber}</span>
                           <span className="ml-2 text-xs font-semibold text-gray-500">
-                            {`${createdDate.getHours()}:${String(
-                              createdDate.getMinutes(),
-                            ).padStart(2, "0")}`}
+                            {`${createdDate.getHours()}:${String(createdDate.getMinutes()).padStart(2, "0")}`}
                           </span>
                         </p>
 
@@ -327,13 +333,18 @@ const HistorySummary = () => {
                             {t(`qrScanner:${item.status.toLowerCase()}`)}
                           </p>
 
-                          {/* Created and updated dates */}
+                          {/* date_done */}
                           <p className="text-xs text-gray-500">
-                            {formatDate(createdDate, t)}
+                            {isNaN(createdDate.getTime())
+                              ? "Invalid Date"
+                              : formatDate(createdDate, t)}
                           </p>
                           {updatedDate && (
                             <p className="text-xs text-gray-500">
-                              {t("common:updated")} {formatDate(updatedDate, t)}
+                              {t("common:updated")}{" "}
+                              {isNaN(updatedDate.getTime())
+                                ? "Invalid Date"
+                                : formatDate(updatedDate, t)}
                             </p>
                           )}
                         </div>

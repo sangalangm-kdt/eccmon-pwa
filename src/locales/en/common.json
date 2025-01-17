@@ -34,5 +34,29 @@
   "saveButton": "Save",
   "editButton": "Edit",
   "reviewInfo": "Review information",
-  "reviewDetails": "Is the information you submitted correct?"
+  "reviewDetails": "Is the information you submitted correct?",
+
+  "greetings": {
+    "goodAMorning": "Good morning,",
+    "goodAfternoon": "Good afternoon,",
+    "goodEvening": "Good evening,"
+  },
+
+  "inventorySummary": {
+    "overview": "Overview",
+    "totalCylinderScanned": "Total cylinder scanned",
+    "storage": "Storage",
+    "process": {
+      "all": "All",
+      "process": "Process",
+      "disassembly": "Disassembly",
+      "grooving": "Grooving",
+      "lmd": "LMD",
+      "assembly": "Assembly",
+      "finishing": "Finishing"
+    },
+    "mounted": "Mounted",
+    "dismounted": "Dismounted",
+    "disposal": "Disposal"
+  }
 }
