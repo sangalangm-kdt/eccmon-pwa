@@ -10,9 +10,6 @@ const ViewInfo = () => {
   const data = location.state?.data;
   const updates = data?.updates;
 
-  console.log("Data:", data);
-  console.log("Updates:", updates);
-
   const labels = {
     serialNumber: "Serial No.",
     location: "Location",
@@ -42,7 +39,7 @@ const ViewInfo = () => {
         setModifiedBy("Unknown User");
       }
     }
-  }, [updates, user]);
+  }, [data?.user.firstName, data?.user.id, data?.user.lastName, updates, user]);
 
   if (!data || !updates) {
     return (

@@ -36,11 +36,11 @@ const Process = ({
     return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
   });
   const [passed, setPassed] = useState(
-    cylinderData?.updates?.otherDetails?.isPassed
+    cylinderData?.updates?.otherDetails?.isPassed,
   );
   const [cycle, setCycle] = useState(cylinderData?.cycle);
   const [selectedOrderNo, setSelectedOrderNo] = useState(
-    cylinderData?.updates?.otherDetails?.orderNumber
+    cylinderData?.updates?.otherDetails?.orderNumber,
   );
 
   const {
@@ -67,12 +67,14 @@ const Process = ({
 
   useEffect(() => {
     setSelectedCase(
-      selectedProcessorStatus === cylinderData.status ? cylinderData.case : null
+      selectedProcessorStatus === cylinderData.status
+        ? cylinderData.case
+        : null,
     );
     setProcessor(
       selectedProcessorStatus === cylinderData.status
         ? cylinderData.location
-        : ""
+        : "",
     );
     setDate(() => {
       const today =
@@ -90,12 +92,12 @@ const Process = ({
     setPassed(
       selectedProcessorStatus === cylinderData.status
         ? cylinderData?.updates?.otherDetails?.isPassed
-        : 0
+        : 0,
     );
     setSelectedOrderNo(
       selectedProcessorStatus === cylinderData.status
         ? cylinderData?.updates?.otherDetails.orderNumber
-        : ""
+        : "",
     );
   }, [selectedProcessorStatus]);
 
@@ -129,7 +131,7 @@ const Process = ({
     const currentOptions = locationOptions[
       selectedProcessorStatus?.toLowerCase()
     ]?.filter(
-      (item) => item.status !== 2 // You can adjust this filter condition if necessary
+      (item) => item.status !== 2, // You can adjust this filter condition if necessary
     );
 
     console.log("Current Options:", currentOptions);
@@ -144,11 +146,11 @@ const Process = ({
           disabled={disabled}
         />
         {showAlert && selectedCase === null && (
-          <div className=" text-red-600 p-1 ">
+          <div className="p-1 text-red-600">
             <p className="text-xs">{t("validation.caseRequired")}</p>
           </div>
         )}
-        <label className="text-sm text-primaryText font-semibold mt-2">
+        <label className="mt-2 text-sm font-semibold text-primaryText">
           {t("qrScanner:processor")} <strong className="text-red-500">*</strong>
         </label>
         <LocationDropdown
@@ -158,24 +160,24 @@ const Process = ({
           disabled={disabled}
         />
         {showAlert && !processor && (
-          <div className=" text-red-600 p-1 ">
+          <div className="p-1 text-red-600">
             <p className="text-xs">{t("validation.processorRequired")}</p>
           </div>
         )}
         <div>
-          <label className="text-sm text-primaryText font-semibold">
+          <label className="text-sm font-semibold text-primaryText">
             {t("qrScanner:completionDate")}{" "}
             <strong className="text-red-500">*</strong>
           </label>
           <DateField date={date} setDate={setDate} disabled={disabled} />
           {showAlert && !date && (
-            <div className=" text-red-600 p-1 ">
+            <div className="p-1 text-red-600">
               <p className="text-xs">{t("validation.dateRequired")}</p>
             </div>
           )}
         </div>
         <div>
-          <label className="text-sm text-primaryText font-semibold">
+          <label className="text-sm font-semibold text-primaryText">
             {t("qrScanner:passed")}
           </label>
           <ButtonYesOrNo
@@ -192,7 +194,7 @@ const Process = ({
             disabled={disabled}
           />
           {showAlert && !selectedOrderNo && (
-            <div className=" text-red-600 p-1 ">
+            <div className="p-1 text-red-600">
               <p className="text-xs">{t("validation.orderNumberRequired")}</p>
             </div>
           )}
@@ -204,8 +206,8 @@ const Process = ({
   };
 
   return (
-    <div className="flex flex-col w-full p-2 bg-white rounded-lg">
-      <h2 className="font-semibold text-md leading-loose text-primaryText mt-2">
+    <div className="flex w-full flex-col rounded-lg bg-white p-2">
+      <h2 className="mt-2 text-md font-semibold leading-loose text-primaryText">
         {t("qrScanner:processStatus")}
       </h2>
       {renderLocations()}

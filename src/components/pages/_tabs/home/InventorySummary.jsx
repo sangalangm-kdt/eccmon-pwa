@@ -24,7 +24,7 @@ const InventorySummary = ({ userId }) => {
           self.findIndex((item) => item.serialNumber === cyl.serialNumber),
       ) ?? [];
 
-  // // Filter by serialNumber
+  // Filter by serialNumber
   const filteredData =
     cylinders?.filter((item) =>
       filteredCylinderUpdates.some(
@@ -64,7 +64,7 @@ const InventorySummary = ({ userId }) => {
   });
 
   const totalSerialNumbers = filteredData
-    ?.map((item) => item.serial_number)
+    ?.map((item) => item.serialNumber)
     .reduce((acc, serial) => {
       acc[serial] = (acc[serial] || 0) + 1;
       return acc;
@@ -92,13 +92,14 @@ const InventorySummary = ({ userId }) => {
     }
   };
 
+  // State to manage the visibility of the serial numbers and category buttons
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const handleCategoryClick = (category, subcategory = null) => {
     setActiveCategory(category);
-    setActiveSubcategory(subcategory);
+    setActiveSubcategory(subcategory); // Update subcategory if applicable
   };
 
   const filteredByCategory = (category) => {
@@ -167,67 +168,92 @@ const InventorySummary = ({ userId }) => {
           </div>
         </div>
 
-        <div className="mt-4 text-tiny">
-          {/* Menu Button to Toggle Categories */}
-          <div>
-            {isMenuVisible && (
-              <div className="flex gap-2 overflow-x-auto whitespace-nowrap">
-                <button
-                  onClick={() => handleCategoryClick("All")}
-                  className={`${
-                    activeCategory === "All"
-                      ? "bg-gray-200 text-gray-700"
-                      : "bg-gray-100 text-gray-600"
-                  } rounded-full px-4 py-1`}
-                >
-                  All
-                </button>
+        {/* Show serial numbers per operation when toggled */}
+        {isMenuVisible && (
+          <div className="mt-4 text-tiny">
+            {/* Menu Button to Toggle Categories */}
+            {/* Menu Button to Toggle Categories */}
+            <div className="scrollbar-hide flex gap-2 overflow-x-auto">
+              <button
+                onClick={() => handleCategoryClick("All")}
+                className={`${
+                  activeCategory === "All"
+                    ? "bg-gray-200 text-gray-700"
+                    : "bg-gray-100 text-gray-600"
+                } flex items-center justify-center rounded-full px-4 py-2`}
+              >
+                All
+              </button>
 
-                {categories.map(({ name, status, subcategories }) => {
-                  const categoryButtonText =
-                    name === "Process" ? "Process" : name;
-                  return (
-                    <div key={name}>
-                      <button
-                        onClick={() => handleCategoryClick(name)}
-                        className={`${
-                          activeCategory === name
-                            ? "bg-gray-200 text-gray-700"
-                            : "bg-gray-100 text-gray-600"
-                        } rounded-full px-4 py-2`}
-                      >
-                        {categoryButtonText}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+              {categories.map(({ name, status, subcategories }) => {
+                const categoryButtonText =
+                  name === "Process" ? "Process" : name;
+
+                return (
+                  <div key={name}>
+                    {/* Main category button */}
+                    <button
+                      onClick={() => handleCategoryClick(name)}
+                      className={`${
+                        activeCategory === name
+                          ? "bg-gray-200 text-gray-700"
+                          : "bg-gray-100 text-gray-600"
+                      } rounded-full px-4 py-2`}
+                    >
+                      {categoryButtonText}
+                    </button>
+
+                    {/* Render subcategories next to "Process" button */}
+                    {activeCategory === "Process" && name === "Process" && (
+                      <div className="-mt-8 ml-18 flex gap-2 rounded-full bg-gray-400">
+                        {subcategories?.map((subcategory) => (
+                          <button
+                            key={subcategory.name}
+                            onClick={() =>
+                              handleCategoryClick(name, subcategory)
+                            }
+                            className={`${
+                              activeSubcategory?.name === subcategory.name
+                                ? "bg-gray-200 text-gray-700"
+                                : "bg-gray-100 text-gray-600"
+                            } rounded-full px-4 py-2`}
+                          >
+                            {subcategory.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
             {/* Display serial numbers for the selected category or subcategory */}
             {filteredByCategory(activeCategory).map((item, index) => {
-              const serials = item.serial_number;
+              const serials = item.serialNumber;
+
               return (
                 <div key={index} className="mt-3">
-                  <h5 className="text-sm font-semibold text-gray-600">
+                  <h5 className="p-2 text-sm font-medium text-gray-600">
                     {serials}
                   </h5>
                 </div>
               );
             })}
 
+            {/* Display serial numbers for the selected subcategory */}
             {activeSubcategory &&
               filteredBySubcategory(activeSubcategory).map((item, index) => {
                 return (
                   <div key={index} className="mt-3">
                     <h5 className="text-sm font-semibold text-gray-600">
-                      {item.serial_number}
+                      {item.serialNumber}
                     </h5>
                   </div>
                 );
               })}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
