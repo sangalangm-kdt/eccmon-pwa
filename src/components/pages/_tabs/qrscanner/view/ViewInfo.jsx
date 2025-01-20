@@ -107,6 +107,9 @@ const ViewInfo = () => {
                           </label>{" "}
                           <p className="text-sm text-gray-600">
                             {String(detailValue || "--")}
+                            {labels[detailKey] === "Case"
+                              ? "Ongoing"
+                              : "Failed"}
                           </p>
                         </li>
                       );

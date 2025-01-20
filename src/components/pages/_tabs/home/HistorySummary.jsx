@@ -35,15 +35,8 @@ const HistorySummary = () => {
         index ===
         self.findIndex((item) => item.serialNumber === cyl.serialNumber),
     );
-  console.log(filteredCylinderUpdates); // Ensure unique serialNumber);
-  console.log(
-    cylinders?.filter((item) =>
-      filteredCylinderUpdates.some(
-        (update) => update.serialNumber === item.serialNumber,
-      ),
-    ),
-  ); // Ensure unique serialNumber);
 
+  console.log(cylinders);
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("latest");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -64,6 +57,7 @@ const HistorySummary = () => {
         ),
       );
       const sortedHistory = sortHistoryByDate(userHistory, sortOrder);
+      console.log(sortedHistory);
       const filteredData = filterHistory(
         sortedHistory,
         filter,
@@ -72,7 +66,7 @@ const HistorySummary = () => {
       );
       setFilteredHistory(filteredData);
     }
-  }, [cylinders, sortOrder, filter, startDate, endDate]);
+  }, [cylinderUpdates, filter, startDate, endDate]);
 
   // Effect to reset fullscreen view on page load
   useEffect(() => {
