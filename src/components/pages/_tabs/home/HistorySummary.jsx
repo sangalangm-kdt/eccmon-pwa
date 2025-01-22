@@ -67,6 +67,7 @@ const HistorySummary = () => {
 
       // Apply sorting and filtering
       const sortedHistory = sortHistoryByDate(userHistory, sortOrder);
+      console.log(sortedHistory);
       const filteredData = filterHistory(
         sortedHistory,
         filter,
@@ -79,15 +80,7 @@ const HistorySummary = () => {
         setFilteredHistory(filteredData);
       }
     }
-  }, [
-    cylinders,
-    cylinderUpdates,
-    sortOrder,
-    filter,
-    startDate,
-    endDate,
-    filteredHistory,
-  ]);
+  }, [cylinders, sortOrder, filter, startDate, endDate]);
 
   // Effect to reset fullscreen view on page load
   useEffect(() => {

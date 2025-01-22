@@ -59,7 +59,6 @@ export const useCylinderCover = () => {
   };
 
   const addCylinder = async (input) => {
-    console.log(input);
     const data = {
       serialNumber: input,
       isDisposed: 2,
@@ -68,7 +67,7 @@ export const useCylinderCover = () => {
       userId: userId,
     };
     await csrf();
-
+    console.log(data);
     axiosLib
       .post("/api/cylinder", data)
       .then((res) => {

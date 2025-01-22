@@ -52,8 +52,8 @@ export const useAuthentication = ({
       setLoading(false); // Reset loading on error
 
       if (error.response) {
-        if (error.response.status === 422) {
-          setErrorMessage("Invalid credentials.");
+        if (error.response.status === 422 || error.response.status === 403) {
+          setErrorMessage(error.response.data.error);
         } else if (error.response.status === 409) {
           setErrorMessage("User already logged in.");
         } else {
