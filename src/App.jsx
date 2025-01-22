@@ -1,16 +1,18 @@
 import React, { Suspense, lazy } from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import NavBar from "./components/pages/_tabs/NavBar";
 import { AuthProvider } from "./components/auth/AuthContext";
 import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
-import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
+// import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
-// import Dismounting from "./components/pages/_tabs/qrscanner/status/Dismounting";
 import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
-// import AddedOrUpdateSuccessfully from "./components/constants/addedOrUpdateSuccessfully";
-// import DismountedModal from "./components/constants/CycleModal";
 import { HistoryProvider } from "./components/utils/HistoryContext";
 
 const QRScanner = lazy(
@@ -21,17 +23,29 @@ const ProfilePage = lazy(
   () => import("./components/pages/_tabs/profile/ProfilePage"),
 );
 const Home = lazy(() => import("./components/pages/_tabs/home/Home"));
+const ScannedResult = lazy(
+  () => import("./components/pages/_tabs/qrscanner/ScannedResult"),
+);
 const ForgotPass = lazy(
   () => import("./components/pages/forgotPass/PasswordReset"),
 );
 const ResetPassword = lazy(
   () => import("./components/pages/forgotPass/ResetPassword"),
 );
+const UpdateInfo = lazy(
+  () => import("./components/pages/_tabs/profile/UpdateInfo"),
+);
+const ChangePass = lazy(
+  () => import("./components/pages/_tabs/profile/ChangePass"),
+);
 
 const Layout = () => {
+  const location = useLocation();
+  const hideNavBarPaths = ["/update-info", "/change-password", "/view-info"];
+  const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
   return (
     <>
-      <NavBar />
+      {!shouldHideNavBar && <NavBar />}
       <Outlet />
     </>
   );
@@ -61,6 +75,8 @@ function App() {
               path: "/view-info",
               element: <ViewInfo />,
             },
+            { path: "/update-info", element: <UpdateInfo /> },
+            { path: "/change-password", element: <ChangePass /> },
           ],
         },
         {

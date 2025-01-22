@@ -9,6 +9,9 @@ import qrScannerEN from "./locales/en/qrscanner";
 import qrScannerJA from "./locales/ja/qrscanner.json";
 import dateEN from "./locales/en/date.json";
 import dateJA from "./locales/ja/date.json";
+import profileEN from "./locales/en/profile.json"
+import profileJA from "./locales/ja/profile.json"
+
 
 const resources = {
   en: {
@@ -16,12 +19,14 @@ const resources = {
     login: loginEN,
     qrScanner: qrScannerEN,
     date: dateEN,
+    profile:profileEN
   },
   ja: {
     common: commonJA,
     login: loginJA,
     qrScanner: qrScannerJA,
     date: dateJA,
+    profile:profileJA
   },
 };
 

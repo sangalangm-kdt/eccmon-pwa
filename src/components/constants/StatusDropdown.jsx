@@ -21,13 +21,14 @@ const StatusDropdown = ({
       </select>
     );
   }
+  const isDarkMode = document.documentElement.classList.contains("dark");
 
   // Use the `t` function from `useTranslation` and pass it to the utility function
   const statusOptions = transformStatusOptions(options, t); // Now passing `t`
 
   // Get the translated label for display purposes and convert to lowercase
   const translatedSelectedStatus = t(
-    `qrScanner:${selectedStatus}`
+    `qrScanner:${selectedStatus}`,
   ).toLowerCase();
 
   // Function to highlight matching text in options
@@ -58,10 +59,10 @@ const StatusDropdown = ({
       <Select
         options={statusOptions} // Using the transformed and translated options
         value={statusOptions.find(
-          (option) => option.value === selectedStatus // Use raw value for comparison
+          (option) => option.value === selectedStatus, // Use raw value for comparison
         )}
         onChange={(selectedOption) => setSelectedStatus(selectedOption.value)} // Keep raw value for saving
-        styles={customSelectStyles}
+        styles={customSelectStyles(isDarkMode)}
         placeholder={t("qrScanner:selectAStatus")}
         isDisabled={disabled}
         getOptionLabel={(option) =>

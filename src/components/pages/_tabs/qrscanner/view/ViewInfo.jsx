@@ -156,11 +156,11 @@ const ViewInfo = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-cyan-100 to-slate-50">
+    <div className="flex min-h-screen flex-col bg-gray-100">
       <div className="flex h-18 w-full flex-row items-center justify-between rounded-b-lg bg-white p-4 shadow-sm">
         <button
           onClick={() => navigate("/")} // Navigate to home page
-          className="text-cyan-500 hover:text-blue-700"
+          className="text-cyan-400 hover:text-blue-700"
         >
           &larr; Back
         </button>

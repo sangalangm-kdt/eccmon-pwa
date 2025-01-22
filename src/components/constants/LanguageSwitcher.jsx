@@ -1,70 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select"; // Import react-select
-import { FaLanguage, FaChevronDown } from "react-icons/fa"; // Import language and chevron icons
-import { languagess } from "../styles/header";
-
-const customSelectStyles = {
-  control: (base, state) => ({
-    ...base,
-    borderColor: state.isFocused ? "#00bfff" : "#ddd",
-    borderRadius: "0.375rem",
-    fontSize: "0.875rem",
-    position: "relative",
-    minHeight: "38px",
-    padding: "1px",
-    boxShadow: state.isFocused ? "0 0 5px rgba(0, 191, 255, 0.87)" : "none",
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isSelected
-      ? "#00bfff"
-      : state.isFocused
-        ? "#f0f8ff"
-        : "",
-    color: state.isSelected ? "#fff" : "#333",
-    fontSize: "14px",
-    padding: "8px 10px",
-    cursor: "pointer",
-    "&:active": {
-      backgroundColor: "#00bfff",
-    },
-  }),
-  placeholder: (provided) => ({
-    ...provided,
-    color: "#888",
-    fontSize: "14px",
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    color: "#333",
-  }),
-  dropdownIndicator: (base) => ({
-    ...base,
-    color: "#4A5568",
-    "&:hover": {
-      color: "#00bfff",
-    },
-  }),
-  menu: (base) => ({
-    ...base,
-    position: "absolute",
-    top: "100%",
-    left: 0,
-    width: "100%",
-    borderRadius: "0.375rem",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    maxHeight: "250px",
-    overflowY: "auto",
-    zIndex: 10,
-  }),
-  menuList: (base) => ({
-    ...base,
-    padding: 0,
-    maxHeight: "250px",
-    overflowY: "auto",
-  }),
-};
+import { FaChevronDown } from "react-icons/fa"; // Import chevron icons
 
 const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
@@ -82,10 +19,73 @@ const LanguageSwitcher = () => {
     setModalOpen(false); // Close modal after selection
   };
 
+  // Get current theme (dark or light)
+  const isDarkMode = document.documentElement.classList.contains("dark");
+
+  const customSelectStyles = {
+    control: (base, state) => ({
+      ...base,
+      backgroundColor: isDarkMode
+        ? "rgb(31, 41, 55)" // Tailwind `gray-800` for dark mode
+        : "rgb(255, 255, 255)", // Tailwind `white` for light mode
+      borderColor: state.isFocused
+        ? "rgb(14, 165, 233)" // Tailwind `cyan-500` when focused
+        : "rgb(209, 213, 219)", // Tailwind `gray-300`
+      color: isDarkMode ? "rgb(229, 231, 235)" : "rgb(75, 85, 99)", // Text color
+      borderRadius: "0.375rem",
+      padding: "4px",
+      boxShadow: state.isFocused
+        ? "0 0 0 2px rgba(14, 165, 233, 0.5)" // Cyan ring
+        : "none",
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: isDarkMode
+        ? "rgb(31, 41, 55)" // Tailwind `gray-800`
+        : "rgb(255, 255, 255)", // Tailwind `white`
+      borderRadius: "0.375rem",
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "rgb(14, 165, 233)" // Tailwind `cyan-500`
+        : state.isFocused
+          ? isDarkMode
+            ? "rgb(55, 65, 81)" // Tailwind `gray-700` for dark mode
+            : "rgb(243, 244, 246)" // Tailwind `gray-100` for light mode
+          : "transparent",
+      color: state.isSelected
+        ? "#ffffff" // White text when selected
+        : isDarkMode
+          ? "rgb(229, 231, 235)" // Tailwind `gray-200` for dark mode
+          : "rgb(31, 41, 55)", // Tailwind `gray-800` for light mode
+      cursor: "pointer",
+      padding: "10px",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: isDarkMode
+        ? "rgb(229, 231, 235)" // Tailwind `gray-200`
+        : "rgb(31, 41, 55)", // Tailwind `gray-800`
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "rgb(156, 163, 175)", // Tailwind `gray-400`
+    }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      color: "rgb(156, 163, 175)", // Tailwind `gray-400`
+      "&:hover": {
+        color: "rgb(14, 165, 233)", // Tailwind `cyan-500`
+      },
+    }),
+  };
+
   return (
     <>
       {/* Inline dropdown for larger screens */}
-      <div className="hidden sm:block ">
+      <div className="hidden sm:block">
         <Select
           value={languages.find((lang) => lang.id === language)}
           onChange={changeLanguage}
@@ -93,44 +93,41 @@ const LanguageSwitcher = () => {
           getOptionLabel={(e) => e.label}
           getOptionValue={(e) => e.id}
           styles={customSelectStyles}
-          className={languagess.languageSwitcher}
-          placeholder="English (US)"
+          placeholder="Select Language"
         />
       </div>
 
       {/* Modal for xs screens */}
       <div className="block sm:hidden">
-        {/* Flex container for label and button */}
         <div className="flex items-center space-x-1">
-          <label className="text-xs font-medium ">Select language</label>
-          <label className="px-4">|</label>
+          <label className="text-xs font-medium">Select language</label>
+          <span className="px-2">|</span>
           <button
-            className="bg-white text-secondaryText font-medium px-4 py-2 rounded-md flex-grow flex items-center justify-between"
+            className="dark:bg-black-10 flex flex-grow items-center justify-between rounded-md bg-white px-4 py-2 font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-50"
             onClick={() => setModalOpen(true)}
           >
             <span>
               {languages.find((lang) => lang.id === language)?.label ||
                 "English (US)"}
             </span>
-            {/* Chevron Icon */}
-            <FaChevronDown className="textsecondaryText ml-2" />
+            <FaChevronDown className="ml-2 text-gray-600 dark:text-gray-50" />
           </button>
         </div>
 
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
-            <div className="bg-white w-full rounded-t-lg p-4">
-              <h2 className="text-sm font-semibold text-center ">
+          <div className="fixed inset-0 z-50 flex items-end bg-black bg-opacity-50">
+            <div className="w-full rounded-t-lg bg-white p-4 dark:bg-black">
+              <h2 className="text-center text-sm font-semibold text-gray-600 dark:text-gray-50">
                 Select Language
               </h2>
-              <ul className="space-y-2">
+              <ul className="mt-4 space-y-2">
                 {languages.map((lang) => (
                   <li
                     key={lang.id}
-                    className={`p-3 rounded-md text-center text-sm cursor-pointer ${
+                    className={`cursor-pointer rounded-md p-3 text-center text-sm ${
                       lang.id === language
                         ? "bg-primary text-white"
-                        : "hover:bg-gray-100"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => changeLanguage(lang)}
                   >
@@ -139,7 +136,7 @@ const LanguageSwitcher = () => {
                 ))}
               </ul>
               <button
-                className="mt-4 w-full bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400"
+                className="mt-4 w-full rounded-md bg-gray-300 py-2 text-gray-700 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 onClick={() => setModalOpen(false)}
               >
                 Close

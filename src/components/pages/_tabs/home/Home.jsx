@@ -9,9 +9,12 @@ import logoText from "../../../assets/svg/logotext_revised3.svg";
 import morningIcon from "../../../assets/morning.png";
 import afternoonIcon from "../../../assets/afternoon.png";
 import eveningIcon from "../../../assets/evening.png";
+import { useTranslation } from "react-i18next";
+import kawasakiLogo from "../../../assets/kawasaki-png-kawasaki-logo-1612.png";
 
 const Home = () => {
   const { userId, user, errorMessage } = useAuthentication();
+  const { t } = useTranslation("common");
 
   useEffect(() => {
     if (errorMessage) {
@@ -25,7 +28,7 @@ const Home = () => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
       return {
-        message: "Good morning",
+        message: t("greetings.goodAMorning"),
         icon: (
           <motion.img
             src={morningIcon}
@@ -39,7 +42,7 @@ const Home = () => {
       };
     } else if (currentHour < 18) {
       return {
-        message: "Good afternoon",
+        message: t("greetings.goodAfternoon"),
         icon: (
           <motion.img
             src={afternoonIcon}
@@ -53,7 +56,7 @@ const Home = () => {
       };
     } else {
       return {
-        message: "Good evening",
+        message: t("greetings.goodEvening"),
         icon: (
           <motion.img
             src={eveningIcon}
@@ -71,7 +74,7 @@ const Home = () => {
   const { message, icon } = getGreeting();
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-cyan-100 to-slate-50">
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-800">
       <Onboarding />
 
       {/* Slide-in animation for logo */}
@@ -82,6 +85,9 @@ const Home = () => {
         transition={{ type: "spring", stiffness: 100 }}
       >
         <div className="flex flex-row items-center gap-1 rounded p-4">
+          <img src={kawasakiLogo} alt="kawasaki-icon" className="h-5" />
+
+          <hr className="mx-2 flex-grow border border-t border-gray-400" />
           <img src={logoIcon} alt="icon" className="h-5 w-5" />
           <img src={logoText} alt="logo-text" className="h-6" />
         </div>
@@ -95,8 +101,10 @@ const Home = () => {
         transition={{ type: "spring", stiffness: 100 }}
       >
         <div className="flex flex-col">
-          <p className="text-xl font-medium text-gray-700">{`${message},`}</p>
-          <p className="text-2xl font-semibold text-gray-700">
+          <p className="text-xl font-medium text-gray-700 dark:text-gray-50">
+            {message}
+          </p>
+          <p className="text-2xl font-semibold text-gray-700 dark:text-gray-50">
             {employeeFirstname}
           </p>
         </div>

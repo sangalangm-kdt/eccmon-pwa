@@ -29,12 +29,12 @@ const NavBar = () => {
     return null;
   }
   return (
-    <div className="flex flex-col fixed w-full top-0 z-50">
+    <div className="fixed top-0 z-50 flex w-full flex-col">
       {!user && (
         <div>
-          <div className={`${languagess.container} `}>
+          <div className={`${languagess.container} dark:bg-gray-800`}>
             <div
-              className={`${languagess.languageSwitcher} xs:mb-2 lg:mb-0 lg:text-xs`}
+              className={`${languagess.languageSwitcher} dark:text-gray-200 xs:mb-2 lg:mb-0 lg:text-xs`}
             >
               <LanguageSwitcher />
             </div>
@@ -43,9 +43,9 @@ const NavBar = () => {
       )}
       {currentPage === "login" ? (
         <div>
-          <nav className={`${navbarStyles.topNavbar}`}>
+          <nav className={`${navbarStyles.topNavbar} dark:bg-gray-800`}>
             <div className={navbarStyles.navbarContainer}>
-              <div className="flex flex-row justify-between m-2">
+              <div className="m-2 flex flex-row justify-between">
                 <img src={logo} alt="Logo" className={navbarStyles.logo} />
                 <div>
                   <InstallationButton />
@@ -58,10 +58,10 @@ const NavBar = () => {
         <>
           <div>
             <nav
-              className={`${navbarStyles.topNavbar} sm:flex lg:flex md:flex xs:hidden`}
+              className={`${navbarStyles.topNavbar} dark:bg-gray-900 xs:hidden sm:flex md:flex lg:flex`}
             >
               <div className={navbarStyles.navbarContainer}>
-                <div className="flex flex-row justify-between m-2">
+                <div className="m-2 flex flex-row justify-between">
                   <NavLink to="/">
                     <img src={logo} alt="Logo" className={navbarStyles.logo} />
                   </NavLink>
@@ -118,7 +118,7 @@ const NavBar = () => {
           {user ? (
             <div>
               <nav
-                className={`${navbarStyles.bottomNavbar} xs:flex sm:hidden lg:hidden md:hidden `}
+                className={`${navbarStyles.bottomNavbar} dark:border-none dark:bg-gray-900 xs:flex sm:hidden md:hidden lg:hidden`}
               >
                 <div className={navbarStyles.navbarContainer}>
                   <ul className="flex justify-center">
@@ -132,14 +132,16 @@ const NavBar = () => {
                         }
                       >
                         {({ isActive }) => (
-                          <div className="flex flex-col items-center font-medium text-tiny">
+                          <div className="flex flex-col items-center text-tiny font-medium">
                             <button
                               className="flex flex-col items-center p-1"
                               aria-label="Home"
                             >
                               <RiHome6Line
                                 className={`${navbarStyles.iconContainer} ${
-                                  isActive ? "fill-primary" : "text-gray-500"
+                                  isActive
+                                    ? "fill-primary"
+                                    : "text-gray-500 dark:text-gray-50"
                                 }`}
                               />
                               {/* {t("common:home")} */}
@@ -166,7 +168,7 @@ const NavBar = () => {
                               aria-label="QR Scanner"
                             >
                               <PiQrCodeBold
-                                className={` rounded-full size-6 text-white ${
+                                className={`size-6 rounded-full text-white ${
                                   isActive ? "fill-primary" : ""
                                 }`}
                               />
@@ -185,14 +187,16 @@ const NavBar = () => {
                         }
                       >
                         {({ isActive }) => (
-                          <div className="flex flex-col items-center font-medium text-tiny">
+                          <div className="flex flex-col items-center text-tiny font-medium">
                             <button
                               className="flex flex-col items-center p-1"
                               aria-label="Profile"
                             >
                               <RiUser6Line
                                 className={`${navbarStyles.iconContainer} ${
-                                  isActive ? "fill-primary" : "text-gray-500"
+                                  isActive
+                                    ? "fill-primary"
+                                    : "text-gray-500 dark:text-gray-100"
                                 }`}
                               />
                               {/* {t("common:profile")} */}
@@ -211,7 +215,7 @@ const NavBar = () => {
                 className={`${navbarStyles.topNavbar} sm:flex md:hidden lg:hidden`}
               >
                 <div className={navbarStyles.navbarContainer}>
-                  <div className="flex flex-row justify-between m-2">
+                  <div className="m-2 flex flex-row justify-between">
                     <img src={logo} alt="Logo" className={navbarStyles.logo} />
                     <div>
                       <InstallationButton />

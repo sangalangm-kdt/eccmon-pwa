@@ -24,20 +24,20 @@ export const QrHeader = ({ step, handleEdit, disabled }) => {
 
   return (
     <div>
-      <div className="flex flex-row w-full py-8 px-4 bg-white fixed rounded-b-3xl mb-3 z-20 shadow-sm">
+      <div className="fixed z-20 mb-3 flex w-full flex-row rounded-b-3xl bg-white px-4 py-8 shadow-sm">
         {/* Back arrow */}
-        <div className="flex-shrink-0 " onClick={handleBack}>
+        <div className="flex-shrink-0" onClick={handleBack}>
           <TiArrowBack size={24} className="fill-primaryText" />
         </div>
         {/* Centered text */}
-        <p className="flex-grow text-center text-base text-primaryText font-semibold">
+        <p className="flex-grow text-center text-base font-semibold text-primaryText">
           {t("qrScanner:scannedResult")}
         </p>
 
         {step === "review" && (
           <button
             type="button"
-            className="absolute bg-primary top-6 right-4 px-4 py-2 text-white rounded"
+            className="absolute right-4 top-6 rounded bg-primary px-4 py-2 text-white"
             onClick={handleEdit}
             disabled={disabled}
           >

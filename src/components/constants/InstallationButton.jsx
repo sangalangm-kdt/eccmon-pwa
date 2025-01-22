@@ -27,7 +27,7 @@ const InstallationButton = () => {
         sessionStorage.setItem("deferredPrompt", true); // Save state
       } else {
         console.error(
-          "beforeinstallprompt event is invalid or missing prompt method"
+          "beforeinstallprompt event is invalid or missing prompt method",
         );
       }
     };
@@ -54,7 +54,7 @@ const InstallationButton = () => {
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
-        handleBeforeInstallPrompt
+        handleBeforeInstallPrompt,
       );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
@@ -119,12 +119,15 @@ const InstallationButton = () => {
               className={`${modal.modalBackground}`}
               onClick={handleModalClick}
             >
-              <div className={`${modal.modalContainer}`}>
-                <span className={`${modal.exitButton}`} onClick={closeModal}>
+              <div className={`${modal.modalContainer} dark:bg-gray-500`}>
+                <span
+                  className={`${modal.exitButton} dark:text-gray-50`}
+                  onClick={closeModal}
+                >
                   ×
                 </span>
                 <p className="text-lg font-bold">{t("installAppSafari")}</p>
-                <p className="ml-2 whitespace-pre-line mt-5 text-sm">
+                <p className="ml-2 mt-5 whitespace-pre-line text-sm">
                   {t("installAppSafariInstructions")}
                 </p>
               </div>

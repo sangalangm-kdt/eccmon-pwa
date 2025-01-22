@@ -1,0 +1,20 @@
+{
+  "profileSection": {
+    "employeeId": "Employee ID:"
+  },
+  "menuSection": {
+    "accountSettings": {
+      "account": "Account Settings",
+      "updateInfo": "Update information",
+      "changePass": "Change Password"
+    },
+    "language": "Language:",
+    "theme": {
+      "light": "Switch to Light Mode",
+      "dark": "Switch to Dark Mode"
+    },
+    "faq": "FAQ",
+    "reportBugs": "Report Bugs",
+    "logout": "Logout"
+  }
+}

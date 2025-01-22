@@ -9,6 +9,7 @@ import {
 } from "../styles/main";
 
 import { Logo, LogoText } from "../assets/Logo";
+import kawasakiLogo from "../assets/kawasaki-png-kawasaki-logo-1612.png";
 import { useAuthentication } from "../../hooks/auth";
 
 const Login = () => {
@@ -72,15 +73,17 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center xs:bg-none sm:bg-secondary lg:bg-secondary">
+    <div className="flex min-h-screen w-full items-center justify-center dark:bg-gray-700 xs:bg-none sm:bg-secondary lg:bg-secondary dark:lg:bg-gray-700">
       <div className="flex w-full max-w-md items-center sm:p-6 md:p-2">
         <div className={container.containerDiv}>
-          <div className="flex w-52 items-center justify-center xs:mb-8 lg:mt-4">
+          <div className="flex w-52 items-center justify-center gap-1 xs:mb-8 lg:mt-4">
+            <img src={kawasakiLogo} alt="kawasaki-icon" className="h-9" />
+            <hr className="mx-2 flex-grow border border-t border-gray-400" />
             <LogoText />
           </div>
           <div className={inputStyles.container}>
             <h2
-              className={`mb-8 text-3xl font-bold text-primaryText xs:text-2xl`}
+              className={`mb-8 text-3xl font-bold text-primaryText dark:text-gray-200 xs:text-2xl`}
             >
               {t("login:login")}
             </h2>
@@ -88,7 +91,7 @@ const Login = () => {
 
           <form className={width.responsive} onSubmit={handleSubmit}>
             <div
-              className={`text-center text-base text-primaryText xs:p-3 xs:text-sm lg:mb-0 lg:text-md`}
+              className={`text-center text-base text-primaryText dark:text-gray-50 xs:p-3 xs:text-sm lg:mb-0 lg:text-md`}
             >
               <label>{t("login:loginDetails")}</label>
             </div>

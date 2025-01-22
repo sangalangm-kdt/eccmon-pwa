@@ -1,0 +1,20 @@
+{
+  "profileSection": {
+    "employeeId": "社員ID:"
+  },
+  "menuSection": {
+    "accountSettings": {
+      "account": "アカウント設定",
+      "updateInfo": "情報を更新",
+      "changePass": "パスワードを変更"
+    },
+    "language": "言語:",
+    "theme": {
+      "light": "ライトモードに切り替え",
+      "dark": "ダークモードに切り替え"
+    },
+    "faq": "よくある質問",
+    "reportBugs": "バグを報告",
+    "logout": "ログアウト"
+  }
+}

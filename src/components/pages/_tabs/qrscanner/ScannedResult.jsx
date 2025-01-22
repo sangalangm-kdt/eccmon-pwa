@@ -132,15 +132,15 @@ const ScannedResult = () => {
 
   return (
     <div>
-      <div className="flex flex-col w-full bg-gray-100">
+      <div className="flex w-full flex-col bg-gray-100 dark:bg-gray-700">
         <QrHeader step={step} handleEdit={handleEdit} />
         {step === "review" && (
-          <div className="flex flex-col w-full mt-20 rounded-lg">
-            <div className="bg-white py-6 px-3">
-              <p className="flex font-semibold text-base px-2">
+          <div className="mt-20 flex w-full flex-col rounded-lg">
+            <div className="bg-white px-3 py-6">
+              <p className="flex px-2 text-base font-semibold">
                 {t("common:reviewInfo")}
               </p>
-              <p className="flex text-xs text-gray-500 px-2">
+              <p className="flex px-2 text-xs text-gray-500">
                 {t("common:reviewDetails")}
               </p>
             </div>

@@ -6,6 +6,7 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
 import store from "./state/store";
 import { Provider } from "react-redux";
+import { ThemeProvider } from "./context/theme-context";
 
 // Import the PWA registration utility from vite-plugin-pwa
 import { registerSW } from "virtual:pwa-register";
@@ -38,10 +39,12 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <I18nextProvider i18n={i18n}>
-        <ServiceWorkerRegistration />
-        <App />
-      </I18nextProvider>
+      <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
+          <ServiceWorkerRegistration />
+          <App />
+        </I18nextProvider>
+      </ThemeProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

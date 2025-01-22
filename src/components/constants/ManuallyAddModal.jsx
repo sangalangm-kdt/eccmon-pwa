@@ -41,7 +41,7 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
       onClick={onClose}
     >
       <div
-        className="relative w-96 rounded-lg bg-white p-6"
+        className="relative w-96 rounded-lg bg-white p-6 dark:bg-gray-600"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -53,22 +53,22 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
         >
           x
         </button>
-        <label className="block mb-2 text-center w-full font-semibold text-base">
+        <label className="mb-2 block w-full text-center text-base font-semibold">
           {t("eccIdInstructions.label")}
         </label>
-        <p className="text-xs mb-1 text-gray-600 text-center">
+        <p className="mb-1 text-center text-xs text-gray-600 dark:text-gray-50">
           {t("eccIdInstructions.description")}
         </p>
-        <ul className="list-disc pl-6 mt-2 text-xs text-gray-500 pb-2">
+        <ul className="mt-2 list-disc pb-2 pl-6 text-xs text-gray-500 dark:text-gray-300">
           {patterns.map((pattern, index) => (
             <li key={index}>{pattern}</li>
           ))}
         </ul>
         <input
           type="text"
-          value={manualData.toUpperCase()}
+          value={manualData}
           onChange={handleInputChange}
-          className="border p-2 w-full rounded focus:outline-primary text-sm text-center"
+          className="w-full rounded border bg-transparent p-2 text-center text-sm focus:outline-primary"
           placeholder={t("eccIdInstructions.eccIdPlaceholder")}
         />
         {alertMessage && (
@@ -77,7 +77,7 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
           </p>
         )}
         <button
-          className="mt-4 bg-primary text-white px-6 py-2  rounded flex items-center justify-center mx-auto"
+          className="mx-auto mt-4 flex items-center justify-center rounded bg-primary px-6 py-2 text-white"
           onClick={handleSubmit}
         >
           {t("eccIdInstructions.confirm")}

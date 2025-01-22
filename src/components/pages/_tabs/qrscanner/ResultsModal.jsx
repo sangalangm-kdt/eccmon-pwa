@@ -38,30 +38,30 @@ const ResultsModal = ({
   if (!isOpen) return null; // Early return for rendering
 
   return (
-    <div className="fixed inset-0 flex  items-end justify-center bg-black bg-opacity-50 z-60">
+    <div className="fixed inset-0 z-60 flex items-end justify-center bg-black bg-opacity-50">
       <div
-        className={`bg-white w-full rounded-t-lg shadow-lg p-6 transform transition-transform ${
+        className={`w-full transform rounded-t-lg bg-white p-6 shadow-lg transition-transform dark:bg-gray-600 dark:text-gray-50 ${
           isOpen ? "animate-slideUp" : "animate-slideDown"
         }`}
       >
-        <div className="flex flex-col items-center ">
-          <p className="text-sm p-1">{t("serialNumberFound")}</p>
-          <p className="text-lg font-semibold w-full text-cyan-500 rounded-full p-2 bg-cyan-100 text-center">
+        <div className="flex flex-col items-center">
+          <p className="p-1 text-sm">{t("serialNumberFound")}</p>
+          <p className="w-full rounded-full bg-cyan-100 p-2 text-center text-lg font-semibold text-cyan-500 dark:bg-cyan-200">
             {eccId}
           </p>
         </div>
 
-        <p className="text-center text-sm py-10">{translatedMessage}</p>
+        <p className="py-10 text-center text-sm">{translatedMessage}</p>
         {addDisable === false ? (
-          <div className="flex flex-row justify-between mt-4">
+          <div className="mt-4 flex flex-row justify-between">
             <button
-              className="mr-2 px-4 py-2 bg-gray-200 rounded-full w-full "
+              className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-300 dark:text-gray-600"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
-              className="px-4 py-2 bg-primary text-white rounded-full transition w-full"
+              className="w-full rounded-full bg-primary px-4 py-2 text-white transition"
               onClick={onConfirm}
             >
               Yes
@@ -69,7 +69,7 @@ const ResultsModal = ({
           </div>
         ) : (
           <button
-            className="mr-2 px-4 py-2 bg-gray-200 rounded-full w-full "
+            className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2"
             onClick={onClose}
           >
             Close

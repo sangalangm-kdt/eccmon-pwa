@@ -11,6 +11,12 @@ html, body {
   @apply overflow-y-visible;
 }
 
+.dark body {
+  background-color: #1F2937;
+  color: #edf2f7;
+}
+
+
 .fill-primary {
   @apply text-primary; /* Use a text color utility or set custom fill color */
 }

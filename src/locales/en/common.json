@@ -43,6 +43,7 @@
   },
 
   "inventorySummary": {
+    "searchPlaceholder": "Search serial number",
     "overview": "Overview",
     "totalCylinderScanned": "Total cylinder scanned",
     "storage": "Storage",

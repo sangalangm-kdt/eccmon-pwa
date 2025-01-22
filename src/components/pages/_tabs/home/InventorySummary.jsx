@@ -9,8 +9,10 @@ import {
 } from "react-icons/lia";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import { GoKebabHorizontal } from "react-icons/go";
+import { useTranslation } from "react-i18next";
 
 const InventorySummary = ({ userId }) => {
+  const { t } = useTranslation("common");
   const cylinders = useCylinderCover().cylinder?.data;
   const cylinderUpdates = useCylinderUpdate().cylinder?.data;
 
@@ -33,22 +35,44 @@ const InventorySummary = ({ userId }) => {
     ) ?? [];
 
   const categories = [
-    { name: "Storage", status: "storage", icon: <LiaWarehouseSolid /> },
     {
-      name: "Process",
+      name: t("inventorySummary.storage"),
+      status: "storage",
+      icon: <LiaWarehouseSolid />,
+    },
+    {
+      name: t("inventorySummary.process.process"),
       status: ["disassembly", "grooving", "lmd", "assembly", "finishing"],
       icon: <LiaToolsSolid />,
       subcategories: [
-        { name: "Disassembly", status: "disassembly" },
-        { name: "Grooving", status: "grooving" },
-        { name: "LMD", status: "lmd" },
-        { name: "Assembly", status: "assembly" },
-        { name: "Finishing", status: "finishing" },
+        {
+          name: t("inventorySummary.process.disassembly"),
+          status: "disassembly",
+        },
+        { name: t("inventorySummary.process.grooving"), status: "grooving" },
+        { name: t("inventorySummary.process.lmd"), status: "lmd" },
+        { name: t("inventorySummary.process.assembly"), status: "assembly" },
+        {
+          name: t("inventorySummary.process.finishing"),
+          status: "finishing",
+        },
       ],
     },
-    { name: "Mounted", status: "mounted", icon: <LiaTruckLoadingSolid /> },
-    { name: "Dismounted", status: "dismounted", icon: <LiaTruckMovingSolid /> },
-    { name: "Disposal", status: "disposal", icon: <LiaTrashSolid /> },
+    {
+      name: t("inventorySummary.mounted"),
+      status: "mounted",
+      icon: <LiaTruckLoadingSolid />,
+    },
+    {
+      name: t("inventorySummary.dismounted"),
+      status: "dismounted",
+      icon: <LiaTruckMovingSolid />,
+    },
+    {
+      name: t("inventorySummary.disposal"),
+      status: "disposal",
+      icon: <LiaTrashSolid />,
+    },
   ];
 
   const categoryCounts = categories.map((category) => {
@@ -77,15 +101,15 @@ const InventorySummary = ({ userId }) => {
 
   const getCategoryColor = (category) => {
     switch (category) {
-      case "Storage":
+      case t("inventorySummary.storage"):
         return { textColor: "text-blue-500", bgColor: "bg-blue-100" };
-      case "Process":
+      case t("inventorySummary.process.process"):
         return { textColor: "text-green-500", bgColor: "bg-green-100" };
-      case "Mounted":
+      case t("inventorySummary.mounted"):
         return { textColor: "text-yellow-500", bgColor: "bg-yellow-100" };
-      case "Dismounted":
+      case t("inventorySummary.dismounted"):
         return { textColor: "text-orange-500", bgColor: "bg-orange-100" };
-      case "Disposal":
+      case t("inventorySummary.disposal"):
         return { textColor: "text-red-500", bgColor: "bg-red-100" };
       default:
         return { textColor: "text-gray-700", bgColor: "bg-gray-100" };
@@ -93,23 +117,59 @@ const InventorySummary = ({ userId }) => {
   };
 
   // State to manage the visibility of the serial numbers and category buttons
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState(
+    t("inventorySummary.process.all"),
+  );
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredBySearch = (data) => {
+    if (!searchQuery) return data;
+    return data.filter((item) =>
+      item.serialNumber.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  };
   const handleCategoryClick = (category, subcategory = null) => {
-    setActiveCategory(category);
-    setActiveSubcategory(subcategory); // Update subcategory if applicable
+    if (category === t("inventorySummary.process.process")) {
+      // Set "Disassembly" as the default subcategory for "Process"
+      const defaultSubcategory = categories
+        .find((c) => c.name === t("inventorySummary.process.process"))
+        ?.subcategories?.find((sub) => sub.status === "disassembly");
+
+      setActiveCategory(category);
+      setActiveSubcategory(defaultSubcategory || subcategory);
+    } else {
+      // Toggle the category if clicked again
+      setActiveCategory((prev) =>
+        prev === category ? t("inventorySummary.process.all") : category,
+      );
+      setActiveSubcategory(subcategory);
+    }
+  };
+
+  const handleSubcategoryClick = (subcategory) => {
+    setActiveSubcategory(
+      subcategory === activeSubcategory ? null : subcategory,
+    );
   };
 
   const filteredByCategory = (category) => {
-    if (category === "All") {
-      return filteredData;
+    if (category === t("inventorySummary.process.all")) return filteredData;
+
+    const categoryData = categories.find((c) => c.name === category);
+    const categoryStatus = categoryData?.status || [];
+    const itemStatus = (item) => item.status?.trim().toLowerCase();
+
+    if (Array.isArray(categoryStatus)) {
+      return filteredData.filter((item) =>
+        categoryStatus.includes(itemStatus(item)),
+      );
     }
-    return filteredData.filter((item) =>
-      Array.isArray(category.status)
-        ? category.status.includes(item.status.toLowerCase())
-        : item.status.toLowerCase() === category.status,
+
+    return filteredData.filter(
+      (item) => itemStatus(item) === categoryStatus.toLowerCase(),
     );
   };
 
@@ -122,22 +182,22 @@ const InventorySummary = ({ userId }) => {
   return (
     <div className="lg:pt-30 z-10 flex flex-col px-4 xs:pb-1 xs:pt-1">
       <div className="flex flex-row justify-between p-1">
-        <p className="text-left text-lg font-semibold text-gray-700">
-          Overview
+        <p className="text-left text-lg font-semibold text-gray-700 dark:text-gray-50">
+          {t("inventorySummary.overview")}
         </p>
         <button onClick={() => setIsMenuVisible(!isMenuVisible)}>
-          <GoKebabHorizontal className="text-xl text-gray-600" />
+          <GoKebabHorizontal className="text-xl text-gray-600 dark:text-gray-50" />
         </button>
       </div>
       <div
-        className="h-full rounded-xl bg-white p-4 shadow"
+        className="h-full rounded-xl bg-white p-4 shadow dark:bg-gray-700"
         id="inventory-summary"
       >
         <div>
-          <h2 className="text-md text-gray-500">
-            Total cylinder cover scanned
+          <h2 className="text-md text-gray-500 dark:text-gray-50">
+            {t("inventorySummary.totalCylinderScanned")}
           </h2>
-          <p className="mb-5 border-b-0.5 py-2 text-lg text-gray-500">
+          <p className="mb-5 border-b-0.5 py-2 text-lg text-gray-500 dark:text-gray-50">
             {totalCount}
           </p>
           <div className="flex flex-wrap justify-center gap-4 xs:flex-nowrap xs:gap-4 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
@@ -147,7 +207,7 @@ const InventorySummary = ({ userId }) => {
               return (
                 <div
                   key={name}
-                  className={`flex flex-col items-center justify-center gap-2 text-sm ${textColor} relative w-full max-w-[150px] rounded-lg p-2 xs:w-1/6 sm:w-auto md:w-1/5 lg:w-1/5`}
+                  className={`flex flex-col items-center justify-center gap-2 text-tiny ${textColor} relative w-full max-w-[150px] rounded-lg p-2 xs:w-1/6 sm:w-auto md:w-1/5 lg:w-1/5`}
                 >
                   {count > 0 && (
                     <div
@@ -171,23 +231,35 @@ const InventorySummary = ({ userId }) => {
         {/* Show serial numbers per operation when toggled */}
         {isMenuVisible && (
           <div className="mt-4 text-tiny">
-            {/* Menu Button to Toggle Categories */}
+            <div className="mb-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t("inventorySummary.searchPlaceholder")}
+                className="w-full rounded-lg border bg-transparent px-4 py-2 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:text-gray-50"
+              />
+            </div>
             {/* Menu Button to Toggle Categories */}
             <div className="scrollbar-hide flex gap-2 overflow-x-auto">
               <button
-                onClick={() => handleCategoryClick("All")}
+                onClick={() =>
+                  handleCategoryClick(t("inventorySummary.process.all"))
+                }
                 className={`${
-                  activeCategory === "All"
+                  activeCategory === t("inventorySummary.process.all")
                     ? "bg-gray-200 text-gray-700"
                     : "bg-gray-100 text-gray-600"
                 } flex items-center justify-center rounded-full px-4 py-2`}
               >
-                All
+                {t("inventorySummary.process.all")}
               </button>
 
               {categories.map(({ name, status, subcategories }) => {
                 const categoryButtonText =
-                  name === "Process" ? "Process" : name;
+                  name === t("inventorySummary.process.process")
+                    ? t("inventorySummary.process.process")
+                    : name;
 
                 return (
                   <div key={name}>
@@ -203,55 +275,62 @@ const InventorySummary = ({ userId }) => {
                       {categoryButtonText}
                     </button>
 
-                    {/* Render subcategories next to "Process" button */}
-                    {activeCategory === "Process" && name === "Process" && (
-                      <div className="-mt-8 ml-18 flex gap-2 rounded-full bg-gray-400">
-                        {subcategories?.map((subcategory) => (
-                          <button
-                            key={subcategory.name}
-                            onClick={() =>
-                              handleCategoryClick(name, subcategory)
-                            }
-                            className={`${
-                              activeSubcategory?.name === subcategory.name
-                                ? "bg-gray-200 text-gray-700"
-                                : "bg-gray-100 text-gray-600"
-                            } rounded-full px-4 py-2`}
-                          >
-                            {subcategory.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    {/* Render subcategories for "Process" */}
+                    {activeCategory === t("inventorySummary.process.process") &&
+                      name === t("inventorySummary.process.process") && (
+                        <div className="-mt-8 ml-18 flex gap-2 rounded-full bg-gray-50">
+                          {subcategories?.map((subcategory) => (
+                            <button
+                              key={subcategory.name}
+                              onClick={() =>
+                                handleSubcategoryClick(subcategory)
+                              }
+                              className={`${
+                                activeSubcategory?.name === subcategory.name
+                                  ? "bg-gray-200 text-gray-700"
+                                  : "bg-gray-100 text-gray-600"
+                              } rounded-full px-4 py-2`}
+                            >
+                              {subcategory.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                   </div>
                 );
               })}
             </div>
 
-            {/* Display serial numbers for the selected category or subcategory */}
-            {filteredByCategory(activeCategory).map((item, index) => {
-              const serials = item.serialNumber;
+            {/* Display serial numbers for the selected category */}
+            {activeCategory &&
+              activeCategory !== t("inventorySummary.process.process") &&
+              filteredBySearch(filteredByCategory(activeCategory)).map(
+                (item, index) => {
+                  const serials = item.serialNumber;
 
-              return (
-                <div key={index} className="mt-3">
-                  <h5 className="p-2 text-sm font-medium text-gray-600">
-                    {serials}
-                  </h5>
-                </div>
-              );
-            })}
+                  return (
+                    <div key={index} className="mt-2 flex-row">
+                      <h5 className="border-b-0.5 p-2 text-sm font-medium text-gray-600 dark:text-gray-50">
+                        {serials}
+                      </h5>
+                    </div>
+                  );
+                },
+              )}
 
             {/* Display serial numbers for the selected subcategory */}
             {activeSubcategory &&
-              filteredBySubcategory(activeSubcategory).map((item, index) => {
-                return (
-                  <div key={index} className="mt-3">
-                    <h5 className="text-sm font-semibold text-gray-600">
-                      {item.serialNumber}
-                    </h5>
-                  </div>
-                );
-              })}
+              filteredBySearch(filteredBySubcategory(activeSubcategory)).map(
+                (item, index) => {
+                  return (
+                    <div key={index} className="mt-3">
+                      <h5 className="border-b-0.5 p-2 text-sm font-medium text-gray-600 dark:text-gray-50">
+                        {item.serialNumber}
+                      </h5>
+                    </div>
+                  );
+                },
+              )}
           </div>
         )}
       </div>

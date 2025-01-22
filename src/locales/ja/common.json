@@ -1,18 +1,18 @@
 {
   "installApp": "PWA",
   "userDoesNotExist": "ユーザーが存在しません",
-  "invalidUserOrPass": "無効なメールアドレスまたはパスワードです。もう一度お試しください。",
-  "errorNetwork": "予期しないエラーが発生しました。もう一度お試しください。",
+  "invalidUserOrPass": "メールアドレスまたはパスワードが無効です。再度お試しください。",
+  "errorNetwork": "予期しないエラーが発生しました。再度お試しください。",
   "errorFetchingUserData": "ユーザーデータの取得エラー",
-  "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認し、再試行してください。",
+  "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認して再試行してください。",
   "installAppSafari": "ホーム画面に追加",
-  "installAppSafariInstructions": "1. Safariでこのページを開きます。\n2. 共有ボタン（四角に上向き矢印）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面に追加されたアイコンをタップしてアプリを開きます。",
+  "installAppSafariInstructions": "1. Safariを開いてこのページにアクセスします。\n2. 共有ボタン（上向き矢印が付いた四角）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面にアプリアイコンが表示されるので、それをタップして開きます。",
   "home": "ホーム",
   "profile": "プロフィール",
   "scanner": "スキャナー",
   "logout": "ログアウト",
   "backButton": "戻る",
-  "backToScan": "スキャン画面に戻る",
+  "backToScan": "スキャンに戻る",
   "recentHistory": "最近の履歴",
   "yes": "はい",
   "no": "いいえ",
@@ -23,16 +23,41 @@
   "customDateRange": "カスタム日付範囲",
 
   "welcomeToECCMon": "ECCMonへようこそ！",
-  "getStarted": "さあ、始めましょう。",
+  "getStarted": "さあ始めましょう。",
   "inventoryOverview": "このセクションでは、現在の在庫状況の概要を確認できます。",
-  "historySummary": "ここでは、過去の活動履歴の概要を確認できます。",
+  "historySummary": "ここでは、アクティビティ履歴の概要を表示できます。",
 
   "back": "戻る",
   "done": "完了",
 
-  "continueButton": "続ける",
+  "continueButton": "続行",
   "saveButton": "保存",
   "editButton": "編集",
-  "reviewInfo": "情報の確認",
-  "reviewDetails": "入力した情報は正しいですか？"
+  "reviewInfo": "情報を確認",
+  "reviewDetails": "送信した情報は正しいですか？",
+
+  "greetings": {
+    "goodAMorning": "おはようございます、",
+    "goodAfternoon": "こんにちは、",
+    "goodEvening": "こんばんは、"
+  },
+
+  "inventorySummary": {
+    "searchPlaceholder": "シリアル番号を検索",
+    "overview": "概要",
+    "totalCylinderScanned": "スキャンされたシリンダーの総数",
+    "storage": "保管",
+    "process": {
+      "all": "すべて",
+      "process": "処理",
+      "disassembly": "分解",
+      "grooving": "溝加工",
+      "lmd": "LMD",
+      "assembly": "組立",
+      "finishing": "仕上げ"
+    },
+    "mounted": "取り付け済み",
+    "dismounted": "取り外し済み",
+    "disposal": "廃棄"
+  }
 }

@@ -18,9 +18,14 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendar } from "react-icons/fa";
-import { IoArrowBackOutline, IoArrowForwardOutline } from "react-icons/io5";
+import {
+  IoArrowBackOutline,
+  IoArrowForwardOutline,
+  IoChevronForwardOutline,
+} from "react-icons/io5";
 import { useAuthentication } from "../../../../hooks/auth";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
+import { customSelectStyle } from "../../../utils/selectUtils";
 
 const HistorySummary = () => {
   const { userId, user } = useAuthentication();
@@ -35,6 +40,8 @@ const HistorySummary = () => {
         index ===
         self.findIndex((item) => item.serialNumber === cyl.serialNumber),
     );
+
+  console.log(filteredCylinderUpdates);
 
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("latest");
@@ -133,7 +140,7 @@ const HistorySummary = () => {
         className="w-full border p-2 text-sm"
         placeholder="mm/dd/yy"
       />
-      <FaRegCalendar className="absolute right-2 top-2 text-gray-500" />
+      <FaRegCalendar className="absolute right-2 top-3 text-gray-500" />
     </div>
   ));
 
@@ -151,30 +158,36 @@ const HistorySummary = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
+  const isDarkMode = document.documentElement.classList.contains("dark");
+
   return (
     <div
-      className={`xs:min-[300px] flex w-full flex-col overflow-hidden rounded-lg bg-white p-3 shadow-md xs:px-1 lg:w-full ${
+      className={`xs:min-[300px] flex w-full flex-col overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-700 xs:px-1 lg:w-full ${
         showAll ? fullscreenClass : ""
       }`}
     >
       {showAll && (
         <button
           onClick={() => setShowAll(false)}
-          className="text-gray fixed right-2 top-6 z-60 rounded-full p-2"
+          className="text-gray fixed right-2 top-6 z-60 rounded-full p-2 dark:text-gray-50"
         >
           <CloseRounded />
         </button>
       )}
 
       <div
-        className={`bg-white transition-transform duration-500 ease-in-out ${
+        className={`bg-white transition-transform duration-500 ease-in-out dark:bg-gray-700 ${
           showAll ? "animate-slideUp" : "animate-slideDown"
         }`}
       >
-        <div className="flex flex-col px-0 py-4">
+        <div
+          className={`flex flex-col px-0 py-4 ${showAll ? "dark:bg-gray-800" : ""}`}
+        >
           <div
-            className={`flex justify-between border-b border-gray-300 px-1 ${
-              showAll ? "fixed left-0 top-0 z-10 w-full bg-white shadow" : ""
+            className={`flex justify-between border-b border-gray-300 ${
+              showAll
+                ? "fixed left-0 top-0 z-10 w-full bg-white shadow dark:bg-gray-700"
+                : "px-1 py-3"
             }`}
           >
             <label
@@ -182,26 +195,31 @@ const HistorySummary = () => {
                 showAll
                   ? "px-1 py-8 font-semibold text-gray-600"
                   : "px-1 pb-2 font-semibold text-gray-600"
-              }`}
+              } dark:text-gray-50`}
             >
               {t("common:recentHistory")}
             </label>
             {!showAll && (
               <div className="flex flex-row items-center justify-center pt-1 text-xs">
                 <button
-                  className="flex-row pb-2 text-primaryText"
+                  className="flex pb-2 text-primaryText dark:text-gray-50"
                   onClick={() => setShowAll(true)}
                 >
-                  <ChevronIcon />
+                  <label className="flex-row items-center justify-center">
+                    See all
+                  </label>
+                  <div className="flex-row items-center justify-center">
+                    <IoChevronForwardOutline />
+                  </div>
                 </button>
               </div>
             )}
           </div>
 
           {showAll && (
-            <div className="-ml-0 mb-4 w-full bg-white pt-12 text-sm">
+            <div className="mb-4 mt-20 flex w-full flex-col bg-white text-sm dark:bg-gray-800">
               {/* Filter and Sort Section */}
-              <div className="mb-2 mr-3 mt-7 flex justify-between">
+              <div className="flex justify-between">
                 <Select
                   className="w-48 sm:w-64"
                   options={filterOptions}
@@ -209,19 +227,26 @@ const HistorySummary = () => {
                     (option) => option.value === filter,
                   )}
                   onChange={handleFilterChange}
+                  styles={customSelectStyle(isDarkMode)}
                 />
                 <button className="py-2" onClick={toggleSortOrder}>
                   {sortOrder === "asc" ? (
-                    <GoSortAsc size={24} color="#6e7271" />
+                    <GoSortAsc
+                      size={24}
+                      className="text-gray-600 dark:text-gray-100"
+                    />
                   ) : (
-                    <GoSortDesc size={24} color="#6e7271" />
+                    <GoSortDesc
+                      size={24}
+                      className="text-gray-600 dark:text-gray-100"
+                    />
                   )}
                 </button>
               </div>
 
               {/* Custom Date Range Section */}
               {filter === "custom" && (
-                <div className="mb-2 flex justify-between">
+                <div className="item-center mb-2 flex justify-between gap-1 p-2">
                   <div className="flex-1 lg:w-full">
                     <DatePicker
                       selected={startDate}
@@ -256,6 +281,7 @@ const HistorySummary = () => {
                       (option) => option.value === perPage,
                     )}
                     onChange={handlePerPageChange}
+                    styles={customSelectStyle(isDarkMode)}
                   />
                   <label>entries</label>
                 </div>
@@ -311,16 +337,18 @@ const HistorySummary = () => {
                       ? new Date(item.updatedAt)
                       : null;
 
+                    console.log(item.date_done);
+
                     return (
                       <li
                         key={index}
-                        className="h-70 flex w-full cursor-pointer flex-col py-2 hover:bg-gray-100"
+                        className={`h-70 flex w-full cursor-pointer flex-col border-b-0.5 border-gray-200 py-2 hover:bg-gray-100 dark:border-gray-500 dark:bg-transparent dark:hover:bg-gray-400`}
                         onClick={() => handleCycleClick(item)}
                       >
                         {/* Serial number and date_done */}
                         <p className="flex items-center justify-between p-2 font-normal">
                           <span>{item.serialNumber}</span>
-                          <span className="ml-2 text-xs font-semibold text-gray-500">
+                          <span className="ml-2 text-xs font-semibold text-gray-500 dark:text-gray-300">
                             {`${createdDate.getHours()}:${String(createdDate.getMinutes()).padStart(2, "0")}`}
                           </span>
                         </p>
@@ -334,13 +362,13 @@ const HistorySummary = () => {
                           </p>
 
                           {/* date_done */}
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-300">
                             {isNaN(createdDate.getTime())
                               ? "Invalid Date"
                               : formatDate(createdDate, t)}
                           </p>
                           {updatedDate && (
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-300">
                               {t("common:updated")}{" "}
                               {isNaN(updatedDate.getTime())
                                 ? "Invalid Date"

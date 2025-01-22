@@ -29,10 +29,10 @@ export const CylinderStatusSelect = ({
   const hasOptions = cylinderStatusOptions.length > 0;
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       <label
         htmlFor="status-select"
-        className="text-sm text-primaryText mt-2 mb-1 font-semibold"
+        className="mb-1 mt-2 text-sm font-semibold text-primaryText dark:text-gray-100"
       >
         {t("qrScanner:status")}
       </label>
