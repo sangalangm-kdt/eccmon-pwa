@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthentication } from "../../../../hooks/auth";
@@ -167,7 +168,7 @@ const ProfilePage = () => {
         <hr className="border-gray-200 dark:border-gray-600" />
 
         <div
-          className="flex cursor-pointer items-center gap-3 p-4 text-red-500 transition-all duration-300 hover:bg-red-100 dark:hover:bg-red-800"
+          className="flex cursor-pointer items-center gap-3 p-4 text-red-500 transition-all duration-300 hover:bg-red-100 dark:hover:bg-red-400"
           onClick={handleLogout}
           disabled={isLoading}
         >

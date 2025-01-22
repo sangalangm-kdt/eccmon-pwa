@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import ResultsModal from "./ResultsModal";
 import {
@@ -10,11 +11,11 @@ import { setPage } from "../../../../features/page/pageSlice";
 import { useNavigate } from "react-router-dom";
 import qrScannerStyles from "../../../styles/main";
 import { useTranslation } from "react-i18next";
-import { ArrowBackIcon } from "../../../assets/icons";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import ManuallyAddModal from "../../../constants/ManuallyAddModal";
 import { PiCameraRotateThin } from "react-icons/pi";
 import CameraSwitchModal from "../../../constants/CameraSwitchModal";
+import { IoArrowBack } from "react-icons/io5";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -32,7 +33,7 @@ const QRScanner = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation("qrScanner", "common");
-  const { checkSerial, addCylinder, cylinder } = useCylinderCover();
+  const { checkSerial, addCylinder } = useCylinderCover();
 
   const codeReader = new BrowserMultiFormatReader();
 
@@ -246,10 +247,10 @@ const QRScanner = () => {
       className={`${qrScannerStyles.containerClass} h-full w-full sm:h-screen sm:w-screen`}
     >
       <div
-        className="absolute left-2 top-8 z-50 flex cursor-pointer flex-row p-2"
+        className="absolute left-2 top-8 z-50 flex cursor-pointer flex-row items-center gap-1 p-2"
         onClick={handleBack}
       >
-        <ArrowBackIcon />
+        <IoArrowBack className="text-white" />
         <label className="text-white">{t("common:backButton")}</label>
       </div>
 

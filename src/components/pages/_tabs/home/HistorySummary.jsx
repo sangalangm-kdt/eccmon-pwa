@@ -12,7 +12,7 @@ import {
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import { fullscreenClass } from "../../../styles/home";
 import { getStatusColors } from "../../../utils/statusColors";
-import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary"; // Import the skeleton
+import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -28,20 +28,19 @@ import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import { customSelectStyle } from "../../../utils/selectUtils";
 
 const HistorySummary = () => {
-  const { userId, user } = useAuthentication();
+  const { userId } = useAuthentication();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const cylinders = useCylinderCover().cylinder?.data ?? [];
   const cylinderUpdates = useCylinderUpdate().cylinder?.data ?? [];
+
   const filteredCylinderUpdates = cylinderUpdates
-    ?.filter((cyl) => cyl.userId === userId) // Filter by userId
+    ?.filter((cyl) => cyl.userId === userId)
     .filter(
       (cyl, index, self) =>
         index ===
         self.findIndex((item) => item.serialNumber === cyl.serialNumber),
     );
-
-  console.log(filteredCylinderUpdates);
 
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("latest");
@@ -55,19 +54,16 @@ const HistorySummary = () => {
 
   // Effect for handling sorting and filtering updates
   useEffect(() => {
-    if (cylinders && cylinderUpdates) {
+    if (cylinders.length && cylinderUpdates.length) {
       setLoading(false);
 
-      // Filter the cylinder updates for the current user
       const userHistory = cylinders.filter((item) =>
         filteredCylinderUpdates.some(
           (update) => update.serialNumber === item.serialNumber,
         ),
       );
 
-      // Apply sorting and filtering
       const sortedHistory = sortHistoryByDate(userHistory, sortOrder);
-      console.log(sortedHistory);
       const filteredData = filterHistory(
         sortedHistory,
         filter,
@@ -75,14 +71,20 @@ const HistorySummary = () => {
         endDate,
       );
 
-      // Only set filtered history if there's an actual change
       if (JSON.stringify(filteredData) !== JSON.stringify(filteredHistory)) {
         setFilteredHistory(filteredData);
       }
     }
-  }, [cylinders, sortOrder, filter, startDate, endDate]);
+  }, [
+    cylinders,
+    cylinderUpdates,
+    filteredCylinderUpdates,
+    sortOrder,
+    filter,
+    startDate,
+    endDate,
+  ]);
 
-  // Effect to reset fullscreen view on page load
   useEffect(() => {
     setShowAll(false);
   }, []);
@@ -152,7 +154,6 @@ const HistorySummary = () => {
   };
 
   const isDarkMode = document.documentElement.classList.contains("dark");
-
   return (
     <div
       className={`xs:min-[300px] flex w-full flex-col overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-700 xs:px-1 lg:w-full ${
