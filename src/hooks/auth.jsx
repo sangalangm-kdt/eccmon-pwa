@@ -123,6 +123,24 @@ export const useAuthentication = ({
       });
   };
 
+  const changePassword = async ({ ...props }) => {
+    await csrf();
+    console.log("clicked", { id: user.id, ...props });
+    return axiosLib
+      .post("/change-password", { id: user.id, ...props })
+      .then((response) => {
+        console.log("Reset password successfully!");
+        console.log(response.data.message);
+      })
+      .catch((error) => {
+        if (error.response?.status === 422) {
+          console.log(error.response.data.message);
+        } else {
+          console.log(error.response.data.message);
+        }
+      });
+  };
+
   const userId = user ? user.id : null;
 
   useEffect(() => {
@@ -148,5 +166,6 @@ export const useAuthentication = ({
     errorMessage,
     forgotPassword,
     resetPassword,
+    changePassword,
   };
 };
