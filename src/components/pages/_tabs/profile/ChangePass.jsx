@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { IoArrowBack, IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { useAuthentication } from "../../../../hooks/auth";
 
 const ChangePass = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const ChangePass = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const { changePassword } = useAuthentication();
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -52,7 +54,13 @@ const ChangePass = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
+      changePassword({
+        current_password: formData.currentPassword,
+        password: formData.newPassword,
+        password_confirmation: formData.confirmPassword,
+      });
       // Simulate a password update (e.g., API call)
+
       setSuccessMessage("Your password has been updated successfully!");
       setFormData({
         currentPassword: "",
