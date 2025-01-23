@@ -12,12 +12,7 @@ const ResultsModal = ({
   // const message = "The cylinder cover does not exist. Do you want to add it?";
   // Handle Escape key to close modal
   const { t } = useTranslation("qrScanner");
-  const translatedMessage =
-    message === "cylinderDoesNotExist"
-      ? t("cylinderDoesNotExist")
-      : message === "cylinderDisposed"
-        ? t("cylinderDisposed")
-        : message;
+  const translatedMessage = message;
 
   useEffect(() => {
     const handleEscKey = (event) => {
@@ -55,7 +50,7 @@ const ResultsModal = ({
         {addDisable === false ? (
           <div className="mt-4 flex flex-row justify-between">
             <button
-              className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-300 dark:text-gray-600"
+              className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-400 dark:text-gray-100"
               onClick={onClose}
             >
               Cancel

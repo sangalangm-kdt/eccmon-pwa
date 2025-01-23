@@ -11,6 +11,7 @@ import {
 import { Logo, LogoText } from "../assets/Logo";
 import kawasakiLogo from "../assets/kawasaki-png-kawasaki-logo-1612.png";
 import { useAuthentication } from "../../hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { t } = useTranslation(["login", "common"]);
@@ -24,6 +25,7 @@ const Login = () => {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,7 +104,7 @@ const Login = () => {
                 <p
                   className={`${inputStyles.inputContainer} w-full bg-red-200 text-center text-sm text-red-500`}
                 >
-                  {errorMessage}
+                  {t("login:error:emailAndPassIncorrect")}
                 </p>
               )}
             </div>
@@ -185,9 +187,13 @@ const Login = () => {
               <div className={`${inputStyles.container}`}>
                 <label className="py-2 text-center text-sm">
                   {t("login:noAccount")}
-                  <a href="blank" className="font-semibold hover:underline">
+                  <button
+                    className="ml-1 font-semibold hover:underline"
+                    type="button"
+                    onClick={() => navigate("/request-account")} // Use navigate here
+                  >
                     {t("login:requestNow")}
-                  </a>
+                  </button>
                 </label>
               </div>
             </div>

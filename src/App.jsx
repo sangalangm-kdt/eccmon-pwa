@@ -19,6 +19,7 @@ const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
 );
 const Login = lazy(() => import("./components/pages/Login"));
+const Register = lazy(() => import("./components/pages/register/Register"));
 const ProfilePage = lazy(
   () => import("./components/pages/_tabs/profile/ProfilePage"),
 );
@@ -78,6 +79,10 @@ function App() {
             { path: "/update-info", element: <UpdateInfo /> },
             { path: "/change-password", element: <ChangePass /> },
           ],
+        },
+        {
+          path: "/request-account",
+          element: <Register />,
         },
         {
           path: "/password-reset",

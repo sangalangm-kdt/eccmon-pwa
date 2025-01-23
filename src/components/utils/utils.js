@@ -1,6 +1,7 @@
 import dateFormat from "dateformat";
 import { useCylinderUpdate } from "../../hooks/cylinderUpdates";
 
+// Custom hook to combine history and updates
 export const useHistoryWithUpdates = (history) => {
   const { cylinder: updateData } = useCylinderUpdate(); // Hook used correctly here
 
@@ -15,11 +16,9 @@ export const useHistoryWithUpdates = (history) => {
 export const sortHistory = (userHistory, sortOrder = "asc", sortBy = "date") => {
   if (sortBy === "date") {
     return userHistory?.sort((a, b) => {
-      if (sortOrder === "asc") {
-        return new Date(a.createdAt) - new Date(b.createdAt); // Ascending
-      } else {
-        return new Date(b.createdAt) - new Date(a.createdAt); // Descending
-      }
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
   } else if (sortBy === "alphabetical") {
     return userHistory?.sort((a, b) => {
@@ -34,13 +33,18 @@ export const sortHistory = (userHistory, sortOrder = "asc", sortBy = "date") => 
 };
 
 // Sort function for history based on the date
+// Sort function for history based on the date and time
 export const sortHistoryByDate = (userHistory, sortOrder = "asc") => {
-    return [...userHistory].sort((a, b) => {
-        return sortOrder === "asc"
-            ? new Date(a.createdAt) - new Date(b.createdAt)
-            : new Date(b.createdAt) - new Date(a.createdAt);
-    });
+  return [...userHistory].sort((a, b) => {
+    // Ensure the correct field is used for sorting
+    const dateA = new Date(a?.updates?.dateDone); // Access the correct field for date
+    const dateB = new Date(b?.updates?.dateDone); // Access the correct field for date
+
+    // Compare the timestamps directly
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
 };
+
 
 // Filter function for history
 export const filterHistory = (userHistory, filter, startDate, endDate) => {
@@ -53,16 +57,19 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
     return d;
   };
 
-  // console.log("Filtering history with filter:", filter);
-
   switch (filter) {
+    case "latest":
+      filteredData = filteredData?.sort((a, b) => {
+        // Ensure we are using `dateDone` instead of `createdAt`
+        return new Date(b?.updates?.dateDone) - new Date(a?.updates?.dateDone);
+      });
+      break;
+
     case "last7":
       const last7Days = new Date();
       last7Days.setDate(currentDate.getDate() - 7);
-      // console.log("Last 7 days:", last7Days);
       filteredData = filteredData?.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        // console.log("Item Date:", itemDate);
+        const itemDate = new Date(item?.updates?.dateDone);
         return itemDate >= last7Days;
       });
       break;
@@ -70,10 +77,8 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
     case "last30":
       const last30Days = new Date();
       last30Days.setDate(currentDate.getDate() - 30);
-      // console.log("Last 30 days:", last30Days);
       filteredData = filteredData?.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        // console.log("Item Date:", itemDate);
+        const itemDate = new Date(item?.updates?.dateDone);
         return itemDate >= last30Days;
       });
       break;
@@ -81,13 +86,9 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
     case "custom":
       if (startDate && endDate) {
         const start = clearTime(startDate);
-        const end = new Date(
-          clearTime(endDate).getTime() + 24 * 60 * 60 * 1000 - 1,
-        );
-        // console.log("Custom date range:", start, end);
+        const end = new Date(clearTime(endDate).getTime() + 24 * 60 * 60 * 1000 - 1);
         filteredData = filteredData?.filter((item) => {
-          const itemDate = new Date(item.createdAt);
-          // console.log("Item Date:", itemDate);
+          const itemDate = new Date(item?.updates?.dateDone);
           return itemDate >= start && itemDate <= end;
         });
       }
@@ -96,31 +97,41 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
     default:
       const currentMonth = currentDate.getMonth();
       const currentYear = currentDate.getFullYear();
-      // console.log("Current month/year:", currentMonth, currentYear);
       filteredData = filteredData?.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return (
-          itemDate.getMonth() === currentMonth &&
-          itemDate.getFullYear() === currentYear
-        );
+        const itemDate = new Date(item?.updates?.dateDone);
+        return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
       });
       break;
   }
 
-  // console.log("Filtered Data:", filteredData);
+  // Ensure the filtered data is always sorted in descending order by dateDone
+  filteredData = filteredData?.sort((a, b) => {
+    return new Date(b?.updates?.dateDone) - new Date(a?.updates?.dateDone);
+  });
+
   return filteredData;
 };
 
+
+// Format the date for display
 export const formatDate = (date, t) => {
   const month = new Date(date).getMonth() + 1;
   const day = new Date(date).getDate();
   const year = new Date(date).getFullYear();
 
   const monthName = t(`date:months.${month}`);
-  const daySuffix = t(`date:days.${day % 10 === 1 && day !== 11 ? 'st' : day % 10 === 2 && day !== 12 ? 'nd' : day % 10 === 3 && day !== 13 ? 'rd' : 'th'}`);
+  const daySuffix = t(
+    `date:days.${
+      day % 10 === 1 && day !== 11
+        ? "st"
+        : day % 10 === 2 && day !== 12
+        ? "nd"
+        : day % 10 === 3 && day !== 13
+        ? "rd"
+        : "th"
+    }`
+  );
 
-  // const formattedDate = dateFormat(date, "dS, yyyy"); // Format like: 16th, 2025
-  
   // You can customize the format as per language, for example:
   return `${monthName} ${day}${daySuffix}, ${year}`;
 };

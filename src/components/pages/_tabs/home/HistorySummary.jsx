@@ -52,18 +52,23 @@ const HistorySummary = () => {
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
+  console.log(cylinders);
   // Effect for handling sorting and filtering updates
   useEffect(() => {
     if (cylinders.length && cylinderUpdates.length) {
       setLoading(false);
 
+      // Filter the cylinders that have matching updates for the user
       const userHistory = cylinders.filter((item) =>
         filteredCylinderUpdates.some(
           (update) => update.serialNumber === item.serialNumber,
         ),
       );
 
-      const sortedHistory = sortHistoryByDate(userHistory, sortOrder);
+      // Apply the filter and sort logic
+      const sortedHistory = sortHistoryByDate(userHistory, sortOrder); // First sort by date
+
+      // Then apply the custom filtering based on selected filter and date range
       const filteredData = filterHistory(
         sortedHistory,
         filter,
@@ -71,6 +76,7 @@ const HistorySummary = () => {
         endDate,
       );
 
+      // Update the filtered history if it has changed
       if (JSON.stringify(filteredData) !== JSON.stringify(filteredHistory)) {
         setFilteredHistory(filteredData);
       }
@@ -326,12 +332,10 @@ const HistorySummary = () => {
                     const { bgColor, textColor } = getStatusColors(item.status);
 
                     // Format created and updated dates
-                    const createdDate = new Date(item.createdAt);
+                    const createdDate = new Date(item?.updates?.dateDone);
                     const updatedDate = item.updatedAt
                       ? new Date(item.updatedAt)
                       : null;
-
-                    console.log(item.date_done);
 
                     return (
                       <li
@@ -341,7 +345,10 @@ const HistorySummary = () => {
                       >
                         {/* Serial number and date_done */}
                         <p className="flex items-center justify-between p-2 font-normal">
-                          <span>{item.serialNumber}</span>
+                          <span>
+                            {item?.serialNumber ?? "No serial number"}
+                          </span>
+
                           <span className="ml-2 text-xs font-semibold text-gray-500 dark:text-gray-300">
                             {`${createdDate.getHours()}:${String(createdDate.getMinutes()).padStart(2, "0")}`}
                           </span>

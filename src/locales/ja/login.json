@@ -1,14 +1,21 @@
 {
   "login": "ログイン",
-  "email": "メール",
-  "enterEmail": "メールアドレスを入力",
+  "email": "メールアドレス",
+  "enterEmail": "メールアドレスを入力してください",
   "username": "ユーザー名",
-  "enterUsername": "ユーザー名を入力",
+  "enterUsername": "ユーザー名を入力してください",
   "password": "パスワード",
-  "enterPassword": "パスワードを入力",
+  "enterPassword": "パスワードを入力してください",
   "signIn": "サインイン",
-  "forgotPassword": "サインインに問題がありますか？",
-  "noAccount": "アカウントをお持ちではありませんか？",
+  "forgotPassword": "サインインでお困りですか？",
+  "noAccount": "アカウントをお持ちでないですか？ ",
   "requestNow": "今すぐリクエスト",
-  "loginDetails": "アカウントにサインインするための詳細を入力してください"
+  "loginDetails": "アカウントにサインインするための詳細を入力してください",
+  "emailPasswordRequired": "このフィールドは必須です。",
+  "error": {
+    "requiredFields": "メールアドレスとパスワードは必須です。",
+    "userNotFound": "ユーザーが存在しません。",
+    "incorrectPassword": "パスワードが正しくありません。",
+    "emailAndPassIncorrect": "入力されたメールアドレスまたはパスワードが正しくありません。"
+  }
 }

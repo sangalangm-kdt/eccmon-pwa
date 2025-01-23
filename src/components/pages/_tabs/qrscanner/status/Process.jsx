@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProcessSkeleton from "../../../../constants/skeleton/Process";
 import { IoInformationCircleOutline } from "react-icons/io5";
+import { formatDate } from "../../../../utils/formatdate";
 
 const Process = ({
   selectedProcessorStatus,
@@ -33,12 +34,7 @@ const Process = ({
     const today = initialData?.updates?.dateDone
       ? new Date(initialData?.updates?.dateDone)
       : new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    const hours = String(today.getHours()).padStart(2, "0");
-    const minutes = String(today.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return formatDate(today);
   });
   const [passed, setPassed] = useState(
     initialData?.updates?.otherDetails?.isPassed,
@@ -77,24 +73,27 @@ const Process = ({
       setSelectedCase(initialData?.case);
       setProcessor(initialData?.location);
 
-      // Update the date to the current time
+      // Use formatDate for the new date
       const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const day = String(today.getDate()).padStart(2, "0");
-      const hours = String(today.getHours()).padStart(2, "0");
-      const minutes = String(today.getMinutes()).padStart(2, "0");
-      setDate(`${year}-${month}-${day}T${hours}:${minutes}`);
+      setDate(formatDate(today));
 
       setPassed(initialData?.updates?.otherDetails?.isPassed);
       setSelectedOrderNo(initialData?.updates?.otherDetails?.orderNumber);
     } else {
       // Reset states if selectedProcessorStatus changes to a different operation
-      setPassed(null); // Reset passed
-      setDate(initialData?.updates?.dateDone); // Reset date
+      const today = new Date();
+      setDate(formatDate(today));
+
+      setPassed("0"); // Reset passed
       setProcessor(null); // Reset location
     }
   }, [selectedProcessorStatus]);
+
+  useEffect(() => {
+    // Whenever 'passed' changes, update the date to the current time
+    const today = new Date();
+    setDate(formatDate(today)); // Use formatDate function to set the new date
+  }, [passed]); // This will run when 'passed' changes
 
   useEffect(() => {
     setData({

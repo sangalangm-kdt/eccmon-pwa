@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../../../hooks/auth";
+import { IoArrowBack } from "react-icons/io5";
 
 const ViewInfo = () => {
   const location = useLocation();
@@ -27,19 +28,14 @@ const ViewInfo = () => {
   };
 
   useEffect(() => {
-    // Compare the userId in updates with the userId prop or the authenticated user
-    if (updates && updates.userId) {
-      if (updates.userId === data?.user.id) {
-        // If the userId matches, display the first name
-        console.log(user?.first_name);
-        setModifiedBy(
-          `${data?.user.firstName} ${data?.user.lastName}` || "Unknown User",
-        );
-      } else {
-        setModifiedBy("Unknown User");
-      }
+    if (updates?.userId === data?.user.id) {
+      setModifiedBy(
+        `${data?.user.firstName} ${data?.user.lastName}` || "Unknown User",
+      );
+    } else {
+      setModifiedBy("Unknown User");
     }
-  }, [data?.user.firstName, data?.user.id, data?.user.lastName, updates, user]);
+  }, [data?.user, updates]);
 
   if (!data || !updates) {
     return (
@@ -53,67 +49,67 @@ const ViewInfo = () => {
     return (
       <div className="space-y-4">
         {Object.entries(update).map(([key, value]) => {
+          if (
+            [
+              "id",
+              "serialNumber",
+              "process",
+              "location",
+              "dateDone",
+              "createdAt",
+              "userId",
+              "cycle",
+            ].includes(key)
+          )
+            return null;
+
           const label = labels[key] || key;
 
-          // Skip excluded keys
-          const excludedKeys = [
-            "id",
-            "serialNumber",
-            "process",
-            "location",
-            "dateDone",
-            "createdAt",
-            "userId",
-            "cycle",
-          ];
-          if (excludedKeys.includes(key)) {
-            return null;
-          }
-
-          // Handle `isPassed` specifically inside `otherDetails`
+          // Special handling for 'otherDetails' and 'isPassed'
           if (
             key === "otherDetails" &&
+            value &&
             typeof value === "object" &&
-            value !== null
+            Object.keys(value).length
           ) {
-            if (!value || Object.keys(value).length === 0) {
-              return null; // Skip if `otherDetails` is empty
-            }
             const details = Object.entries(value);
             return (
               <div key={key} className="space-y-2">
-                <label className="text-md font-semibold text-gray-700">
+                <label className="text-md font-semibold text-gray-700 dark:text-gray-100">
                   {labels[key]}
                 </label>
                 <ul className="space-y-1">
                   {details.map(([detailKey, detailValue], index) => {
-                    if (excludedKeys.includes(detailKey)) return null;
+                    if (
+                      [
+                        "id",
+                        "serialNumber",
+                        "process",
+                        "location",
+                        "dateDone",
+                        "createdAt",
+                        "userId",
+                        "cycle",
+                      ].includes(detailKey)
+                    )
+                      return null;
 
-                    // Special handling for `isPassed`
+                    // Handle 'isPassed' key
                     if (detailKey === "isPassed") {
-                      const intValue = parseInt(detailValue, 10);
                       detailValue =
-                        intValue === 1
-                          ? "Yes"
-                          : intValue === 2
-                            ? "No"
-                            : intValue === 0
-                              ? "Ongoing"
-                              : "--";
+                        ["Ongoing", "Yes", "No"][parseInt(detailValue, 10)] ||
+                        "--";
                     }
 
-                    const isLastItem = index === details.length - 1;
                     return (
                       <li
                         key={detailKey}
-                        className={`flex flex-row items-center justify-between px-2 py-2 ${
-                          !isLastItem ? "border-b-0.5" : ""
-                        }`}
+                        className={`flex justify-between px-2 py-2 ${index !== details.length - 1 ? "border-b-0.5" : ""}`}
                       >
-                        <label className="text-md font-medium text-gray-700">
+                        <label className="text-md font-medium text-gray-700 dark:text-gray-100">
                           {labels[detailKey] || detailKey}
                         </label>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-200">
                           {String(detailValue || "--")}
                         </p>
                       </li>
@@ -124,10 +120,9 @@ const ViewInfo = () => {
             );
           }
 
-          // For other values, display in a paragraph format
           return (
             <div key={key}>
-              <label className="text-md font-medium">{label}</label>{" "}
+              <label className="text-md font-medium">{label}</label>
               <p className="text-center text-gray-500">
                 {String(value || "No data to display")}
               </p>
@@ -139,74 +134,56 @@ const ViewInfo = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-100">
-      <div className="flex h-18 w-full flex-row items-center justify-between rounded-b-lg bg-white p-4 shadow-sm">
+    <div className="dark:bg- flex min-h-screen flex-col bg-gray-100 dark:bg-gray-800">
+      <div className="flex h-18 w-full items-center justify-between rounded-b-lg bg-white p-4 shadow-sm dark:bg-gray-900">
         <button
-          onClick={() => navigate("/")} // Navigate to home page
-          className="text-cyan-400 hover:text-blue-700"
+          onClick={() => navigate("/")}
+          className="flex flex-row items-center gap-0.5 text-cyan-400 hover:text-blue-700"
         >
-          &larr; Back
+          <IoArrowBack size={20} /> <p>Back</p>
         </button>
-        <div className="left-3 mr-12 flex flex-1 justify-center">
-          <p className="text-lg font-medium text-primaryText">Details</p>
+        <div className="flex-1 text-center">
+          <p className="mr-14 text-lg font-medium text-primaryText dark:text-gray-200">
+            Details
+          </p>
         </div>
       </div>
 
       <div className="flex w-full flex-col p-6">
-        <div className="flex w-full flex-col items-center justify-center rounded-lg bg-white p-4">
-          <p className="text-2xl font-medium text-gray-700">
+        <div className="flex w-full flex-col items-center justify-center rounded-lg bg-white p-4 dark:bg-gray-600">
+          <p className="text-2xl font-medium text-gray-700 dark:text-gray-100">
             {updates.serialNumber}
           </p>
-          <label className="pt-2 text-xs text-gray-500">Serial number</label>
+          <label className="pt-2 text-xs text-gray-500 dark:text-gray-200">
+            Serial number
+          </label>
         </div>
 
-        <div className="mt-2 flex w-full flex-col justify-between rounded-lg bg-white p-4 text-base">
-          <div className="flex flex-row items-center justify-between border-b-0.5 px-2 py-2">
-            <label className="text-md font-medium text-primaryText">
-              Last modified by
-            </label>
-            <p className="text-sm text-gray-600">{modifiedBy || "--"}</p>
-          </div>
-          <div className="flex flex-row items-center justify-between border-b-0.5 px-2 py-2">
-            <label className="text-md font-medium text-primaryText">
-              Process
-            </label>
-            <p className="text-sm text-gray-600">{updates.process || "--"}</p>
-          </div>
-          <div className="flex flex-row items-center justify-between border-b-0.5 px-2 py-2">
-            <label className="text-md font-medium text-primaryText">
-              Completion date
-            </label>
-            <p className="text-sm text-gray-600">{updates.dateDone || "--"}</p>
-          </div>
-          <div className="flex flex-row items-center justify-between border-b-0.5 px-2 py-2">
-            <label className="text-md font-medium text-primaryText">
-              Location
-            </label>
-            <p className="text-sm text-gray-600">{updates.location || "--"}</p>
-          </div>
-          <div className="flex flex-row items-center justify-between border-b-0.5 px-2 py-2">
-            <label className="text-md font-medium text-primaryText">
-              Cycle
-            </label>
-            <p className="text-sm text-gray-600">{updates.cycle || "--"}</p>
-          </div>
-          <div className="flex flex-row items-center justify-between border-b-0.5 px-2 py-2">
-            <label className="text-md font-medium text-primaryText">
-              Disposal
-            </label>
-            <p className="text-sm text-gray-600">{data.disposal || "--"}</p>
-          </div>
-          <div className="flex flex-row items-center justify-between px-2 py-2">
-            <label className="text-md font-medium text-primaryText">
-              Disposal Date
-            </label>
-            <p className="text-sm text-gray-600">{data.disposalDate || "--"}</p>
-          </div>
+        <div className="mt-2 flex w-full flex-col rounded-lg bg-white p-4 dark:bg-gray-600">
+          {[
+            { label: "Last modified by", value: modifiedBy },
+            { label: "Process", value: updates.process },
+            { label: "Completion date", value: updates.dateDone },
+            { label: "Location", value: updates.location },
+            { label: "Cycle", value: updates.cycle },
+            { label: "Disposal", value: data.disposal },
+            { label: "Disposal Date", value: data.disposalDate },
+          ].map(({ label, value }) => (
+            <div
+              key={label}
+              className="flex items-center justify-between border-b-0.5 px-2 py-2"
+            >
+              <label className="text-md font-medium text-primaryText dark:text-gray-50">
+                {label}
+              </label>
+              <p className="text-sm text-gray-600 dark:text-gray-100">
+                {value || "--"}
+              </p>
+            </div>
+          ))}
         </div>
 
-        {/* Render additional details section */}
-        <div className="mt-2 flex w-full flex-col justify-between rounded-lg bg-white p-4">
+        <div className="mt-2 flex w-full flex-col rounded-lg bg-white p-4 dark:bg-gray-600">
           {renderUpdateDetails(updates)}
         </div>
       </div>

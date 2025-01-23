@@ -15,6 +15,7 @@
   "error": {
     "requiredFields": "Email and Password are required.",
     "userNotFound": "User does not exist.",
-    "incorrectPassword": "The password is incorrect."
+    "incorrectPassword": "The password is incorrect.",
+    "emailAndPassIncorrect": "The provided email or password is incorrect."
   }
 }
