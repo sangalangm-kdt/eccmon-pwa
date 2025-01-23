@@ -22,12 +22,12 @@ const CycleModal = ({ selectedStatus, data, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300">
-      <div className="relative bg-white w-80 max-w-md rounded-lg shadow-lg p-6 transform transition-all duration-500">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
+      <div className="relative w-80 max-w-md transform rounded-lg bg-white p-6 shadow-lg transition-all duration-500">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition"
+          className="absolute right-2 top-2 text-gray-400 transition hover:text-gray-600"
         >
           <IoClose size={20} />
         </button>
@@ -38,25 +38,25 @@ const CycleModal = ({ selectedStatus, data, onClose }) => {
           <div className="p-2">
             <GrPowerCycle size={32} color="#41c88b" />
           </div>
-          <p className="font-medium text-green-500 text-lg">Current Cycle</p>
+          <p className="text-lg font-medium text-green-500">Current Cycle</p>
 
           {/* Cycle Display */}
-          <div className="w-full mt-4 py-3 bg-gray-100 rounded-lg text-center shadow-inner">
+          <div className="mt-4 w-full rounded-lg bg-gray-100 py-3 text-center shadow-inner">
             <p className="text-lg font-bold text-gray-700">{cycle}</p>
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-row w-full justify-between items-center text-sm pt-6">
+          <div className="flex w-full flex-row items-center justify-between pt-6 text-sm">
             <button
               onClick={handleBackToQR}
-              className="flex w-full bg-gray-100 p-3 rounded-lg mr-2 items-center justify-center text-gray-600 hover:bg-gray-200 transition"
+              className="mr-2 flex w-full items-center justify-center rounded-lg bg-gray-100 p-3 text-gray-600 transition hover:bg-gray-200"
             >
               <IoReturnUpBackOutline size={16} />
               <p className="ml-2 font-medium">Back to QR</p>
             </button>
             <button
               onClick={handleGoToHome}
-              className="flex w-full bg-primary p-3 rounded-lg text-white justify-center hover:bg-cyan-500 transition"
+              className="flex w-full justify-center rounded-lg bg-primary p-3 text-white transition hover:bg-cyan-500"
             >
               <IoHome size={16} />
               <p className="ml-2 font-medium">Go to home</p>

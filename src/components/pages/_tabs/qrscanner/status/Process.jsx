@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import LocationDropdown from "../../../../constants/LocationDropdown";
 import DateField from "../../../../constants/DateField";
@@ -9,8 +9,9 @@ import OrderNo from "../../../../constants/OrderNo";
 import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import CaseButton from "../../../../constants/CaseButton";
 import { useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // Import useTranslation for translations
+import { useTranslation } from "react-i18next";
 import ProcessSkeleton from "../../../../constants/skeleton/Process";
+import { IoInformationCircleOutline } from "react-icons/io5";
 
 const Process = ({
   selectedProcessorStatus,
@@ -21,89 +22,83 @@ const Process = ({
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
-  const { t } = useTranslation("qrScanner"); // Use the correct namespace
-  const [selectedCase, setSelectedCase] = useState(cylinderData?.case); // Initially null, means no case selected
-  const [processor, setProcessor] = useState(cylinderData?.location);
+  const { t } = useTranslation("qrScanner");
+
+  // Store the initial data and prevent changes unless the user modifies it
+  const [initialData, setInitialData] = useState(cylinderData);
+
+  const [selectedCase, setSelectedCase] = useState(initialData?.case);
+  const [processor, setProcessor] = useState(initialData?.location);
   const [date, setDate] = useState(() => {
-    const today = cylinderData?.updates?.dateDone
-      ? new Date(cylinderData?.updates?.dateDone)
+    const today = initialData?.updates?.dateDone
+      ? new Date(initialData?.updates?.dateDone)
       : new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     const hours = String(today.getHours()).padStart(2, "0");
     const minutes = String(today.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   });
   const [passed, setPassed] = useState(
-    cylinderData?.updates?.otherDetails?.isPassed,
+    initialData?.updates?.otherDetails?.isPassed,
   );
-  const [cycle, setCycle] = useState(cylinderData?.cycle);
+  const [cycle, setCycle] = useState(initialData?.cycle);
   const [selectedOrderNo, setSelectedOrderNo] = useState(
-    cylinderData?.updates?.otherDetails?.orderNumber,
+    initialData?.updates?.otherDetails?.orderNumber,
   );
+
+  const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [infoDialogContent, setInfoDialogContent] = useState("");
 
   const {
     disassembly,
     isDisassemblyLoading,
     disassemblyMutate,
-
     grooving,
     isGroovingLoading,
     groovingMutate,
-
     lmd,
     isLmdLoading,
     lmdMutate,
-
     finishing,
     isFinishingLoading,
     finishingMutate,
-
     assembly,
     isAssemblyLoading,
     assemblyMutate,
   } = useLocationProcess();
 
+  const [disabledProcessors, setDisabledProcessors] = useState([]);
+
   useEffect(() => {
-    setSelectedCase(
-      selectedProcessorStatus === cylinderData.status
-        ? cylinderData.case
-        : null,
-    );
-    setProcessor(
-      selectedProcessorStatus === cylinderData.status
-        ? cylinderData.location
-        : "",
-    );
-    setDate(() => {
-      const today =
-        selectedProcessorStatus === cylinderData.status &&
-        cylinderData.updates.dateDone
-          ? new Date(cylinderData.updates.dateDone)
-          : new Date();
+    // Only update if selectedProcessorStatus changes and it's a new operation
+    if (selectedProcessorStatus === cylinderData.status) {
+      setSelectedCase(initialData?.case);
+      setProcessor(initialData?.location);
+
+      // Update the date to the current time
+      const today = new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, "0");
       const day = String(today.getDate()).padStart(2, "0");
       const hours = String(today.getHours()).padStart(2, "0");
       const minutes = String(today.getMinutes()).padStart(2, "0");
-      return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
-    });
-    setPassed(
-      selectedProcessorStatus === cylinderData.status
-        ? cylinderData?.updates?.otherDetails?.isPassed
-        : 0,
-    );
-    setSelectedOrderNo(
-      selectedProcessorStatus === cylinderData.status
-        ? cylinderData?.updates?.otherDetails.orderNumber
-        : "",
-    );
+      setDate(`${year}-${month}-${day}T${hours}:${minutes}`);
+
+      setPassed(initialData?.updates?.otherDetails?.isPassed);
+      setSelectedOrderNo(initialData?.updates?.otherDetails?.orderNumber);
+    } else {
+      // Reset states if selectedProcessorStatus changes to a different operation
+      setPassed(null); // Reset passed
+      setDate(""); // Reset date
+      setProcessor(null); // Reset location
+    }
   }, [selectedProcessorStatus]);
 
   useEffect(() => {
     setData({
-      serialNumber: cylinderData?.serialNumber,
+      serialNumber: initialData?.serialNumber,
       location: processor,
       dateDone: date,
       cycle: cycle,
@@ -112,9 +107,17 @@ const Process = ({
     if (selectedCase && processor && date && selectedOrderNo) {
       setShowAlert(false);
     }
-  }, [processor, date, passed, cycle, selectedOrderNo, selectedCase]);
+  }, [
+    processor,
+    date,
+    passed,
+    cycle,
+    selectedOrderNo,
+    selectedCase,
+    initialData,
+    setData,
+  ]);
 
-  // Function to render different locations based on selectedProcessorStatus
   const renderLocations = () => {
     const locationOptions = {
       disassembly: disassembly?.data,
@@ -124,26 +127,17 @@ const Process = ({
       lmd: lmd?.data,
     };
 
-    console.log("Selected Processor Status:", selectedProcessorStatus);
-    console.log("Location Options:", locationOptions);
-
-    // Check if selectedProcessorStatus exists in the options
     const currentOptions = locationOptions[
       selectedProcessorStatus?.toLowerCase()
-    ]?.filter(
-      (item) => item.status !== 2, // You can adjust this filter condition if necessary
-    );
-
-    console.log("Current Options:", currentOptions);
+    ]?.filter((item) => item.status !== 2);
 
     return currentOptions ? (
       <div>
-        {/* Show alert if some fields are missing */}
-
         <CaseButton
           selectedCase={selectedCase}
           setSelectedCase={setSelectedCase}
           disabled={disabled}
+          setDisabledProcessors={setDisabledProcessors}
         />
         {showAlert && selectedCase === null && (
           <div className="p-1 text-red-600">
@@ -157,7 +151,7 @@ const Process = ({
           options={currentOptions}
           processor={processor}
           setProcessor={setProcessor}
-          disabled={disabled}
+          disabled={disabled || disabledProcessors.includes(processor)}
         />
         {showAlert && !processor && (
           <div className="p-1 text-red-600">
@@ -205,11 +199,33 @@ const Process = ({
     );
   };
 
+  const handleInfoIconClick = () => {
+    setShowInfoDialog(true);
+    setInfoDialogContent("This is sample dialog content.");
+  };
+
+  const handleInfoIconClose = () => {
+    setShowInfoDialog(false);
+  };
+
   return (
-    <div className="flex w-full flex-col rounded-lg bg-white p-2">
-      <h2 className="mt-2 text-md font-semibold leading-loose text-primaryText">
+    <div className="flex w-full flex-col rounded-lg bg-white p-2 dark:bg-gray-500">
+      <h2 className="mt-2 flex flex-row items-center gap-2 text-md font-semibold leading-loose text-primaryText dark:text-gray-100">
         {t("qrScanner:processStatus")}
+        <IoInformationCircleOutline
+          size={20}
+          className="cursor-pointer"
+          onClick={handleInfoIconClick} // Show dialog box on click
+        />
       </h2>
+
+      {showInfoDialog && (
+        <div className="absolute left-64 top-96 z-10 -translate-x-1/2 transform rounded-md border bg-white p-4 shadow-md">
+          <div className="absolute -top-2 left-1/2 h-0 w-0 -translate-x-1/2 transform border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+          <p className="pointer-events-none">{infoDialogContent}</p>
+        </div>
+      )}
+
       {renderLocations()}
     </div>
   );

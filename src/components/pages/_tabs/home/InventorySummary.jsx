@@ -248,8 +248,8 @@ const InventorySummary = ({ userId }) => {
                 }
                 className={`${
                   activeCategory === t("inventorySummary.process.all")
-                    ? "bg-gray-200 text-gray-700"
-                    : "bg-gray-100 text-gray-600"
+                    ? "bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200"
+                    : "bg-gray-100 text-gray-600 dark:bg-gray-500 dark:text-gray-200"
                 } flex items-center justify-center rounded-full px-4 py-2`}
               >
                 {t("inventorySummary.process.all")}
@@ -268,8 +268,8 @@ const InventorySummary = ({ userId }) => {
                       onClick={() => handleCategoryClick(name)}
                       className={`${
                         activeCategory === name
-                          ? "bg-gray-200 text-gray-700"
-                          : "bg-gray-100 text-gray-600"
+                          ? "bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200"
+                          : "bg-gray-100 text-gray-600 dark:bg-gray-500 dark:text-gray-200"
                       } rounded-full px-4 py-2`}
                     >
                       {categoryButtonText}
@@ -278,7 +278,7 @@ const InventorySummary = ({ userId }) => {
                     {/* Render subcategories for "Process" */}
                     {activeCategory === t("inventorySummary.process.process") &&
                       name === t("inventorySummary.process.process") && (
-                        <div className="-mt-8 ml-18 flex gap-2 rounded-full bg-gray-50">
+                        <div className="-mt-8 ml-18 flex gap-2 rounded-full bg-gray-50 dark:bg-gray-600">
                           {subcategories?.map((subcategory) => (
                             <button
                               key={subcategory.name}
@@ -287,8 +287,8 @@ const InventorySummary = ({ userId }) => {
                               }
                               className={`${
                                 activeSubcategory?.name === subcategory.name
-                                  ? "bg-gray-200 text-gray-700"
-                                  : "bg-gray-100 text-gray-600"
+                                  ? "bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                                  : "bg-gray-100 text-gray-600 dark:bg-gray-500 dark:text-gray-200"
                               } rounded-full px-4 py-2`}
                             >
                               {subcategory.name}

@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AddIcon from "../../../constants/AddIcon";
 import { TiArrowBack } from "react-icons/ti";
+import { IoArrowBack } from "react-icons/io5";
 
 export const QrHeader = ({ step, handleEdit, disabled }) => {
   const { t } = useTranslation("qrScanner");
@@ -24,13 +25,16 @@ export const QrHeader = ({ step, handleEdit, disabled }) => {
 
   return (
     <div>
-      <div className="fixed z-20 mb-3 flex w-full flex-row rounded-b-3xl bg-white px-4 py-8 shadow-sm">
+      <div className="fixed z-20 mb-3 flex w-full flex-row rounded-b-3xl bg-white px-4 py-8 shadow-sm dark:bg-gray-600">
         {/* Back arrow */}
-        <div className="flex-shrink-0" onClick={handleBack}>
-          <TiArrowBack size={24} className="fill-primaryText" />
+        <div className="flex" onClick={handleBack}>
+          <IoArrowBack
+            size={24}
+            className="text-primaryText dark:text-gray-100"
+          />
         </div>
         {/* Centered text */}
-        <p className="flex-grow text-center text-base font-semibold text-primaryText">
+        <p className="flex-grow text-center text-base font-semibold text-primaryText dark:text-gray-100">
           {t("qrScanner:scannedResult")}
         </p>
 

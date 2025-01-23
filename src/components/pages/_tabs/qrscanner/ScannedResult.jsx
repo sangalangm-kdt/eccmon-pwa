@@ -136,11 +136,11 @@ const ScannedResult = () => {
         <QrHeader step={step} handleEdit={handleEdit} />
         {step === "review" && (
           <div className="mt-20 flex w-full flex-col rounded-lg">
-            <div className="bg-white px-3 py-6">
+            <div className="px-3 py-6">
               <p className="flex px-2 text-base font-semibold">
                 {t("common:reviewInfo")}
               </p>
-              <p className="flex px-2 text-xs text-gray-500">
+              <p className="flex px-2 text-xs text-gray-500 dark:text-gray-300">
                 {t("common:reviewDetails")}
               </p>
             </div>

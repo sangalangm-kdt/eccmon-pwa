@@ -55,12 +55,7 @@ const ViewInfo = () => {
         {Object.entries(update).map(([key, value]) => {
           const label = labels[key] || key;
 
-          // Handle createdAt separately to format the date
-          if (key === "createdAt" && typeof value === "string") {
-            value = value.replace("T", ", ");
-          }
-
-          // If the field is in the exclusion list, skip rendering it
+          // Skip excluded keys
           const excludedKeys = [
             "id",
             "serialNumber",
@@ -75,76 +70,61 @@ const ViewInfo = () => {
             return null;
           }
 
-          // If the value is an object, handle nested details
-          if (typeof value === "object" && value !== null) {
-            if (key === "otherDetails") {
-              if (!value || Object.keys(value).length === 0) {
-                return null; // Don't render anything if otherDetails is null or empty
-              }
-              const details = Object.entries(value);
-              return (
-                <div key={key} className="space-y-2">
-                  <label className="text-md font-semibold text-gray-700">
-                    {labels[key]}
-                  </label>
-                  <ul className="space-y-1">
-                    {details.map(([detailKey, detailValue], index) => {
-                      // Skip specific fields in otherDetails
-                      if (excludedKeys.includes(detailKey)) {
-                        return null;
-                      }
-                      const isLastItem = index === details.length - 1;
-                      return (
-                        <li
-                          key={detailKey}
-                          className={`flex flex-row items-center justify-between px-2 py-2 ${!isLastItem ? "border-b-0.5" : ""}`}
-                        >
-                          <label className="text-md font-medium text-gray-700">
-                            {labels[detailKey] || detailKey}
-                          </label>{" "}
-                          <p className="text-sm text-gray-600">
-                            {String(detailValue || "--")}
-                            {labels[detailKey] === "Case"
-                              ? "Ongoing"
-                              : "Failed"}
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              );
+          // Handle `isPassed` specifically inside `otherDetails`
+          if (
+            key === "otherDetails" &&
+            typeof value === "object" &&
+            value !== null
+          ) {
+            if (!value || Object.keys(value).length === 0) {
+              return null; // Skip if `otherDetails` is empty
             }
-
+            const details = Object.entries(value);
             return (
               <div key={key} className="space-y-2">
-                <strong className="text-lg">{label}:</strong>
-                <ul className="flex flex-row">
-                  {Object.entries(value).map(
-                    ([nestedKey, nestedValue], index) => {
-                      // Skip specific fields in nested objects
-                      if (excludedKeys.includes(nestedKey)) {
-                        return null;
-                      }
-                      const isLastItem =
-                        index === Object.entries(value).length - 1;
-                      return (
-                        <li
-                          key={nestedKey}
-                          className={`flex flex-row items-center justify-between border-b-0.5 px-2 py-2 ${!isLastItem ? "" : ""}`}
-                        >
-                          <strong>{nestedKey}:</strong>{" "}
-                          {String(nestedValue || "--")}
-                        </li>
-                      );
-                    },
-                  )}
+                <label className="text-md font-semibold text-gray-700">
+                  {labels[key]}
+                </label>
+                <ul className="space-y-1">
+                  {details.map(([detailKey, detailValue], index) => {
+                    if (excludedKeys.includes(detailKey)) return null;
+
+                    // Special handling for `isPassed`
+                    if (detailKey === "isPassed") {
+                      const intValue = parseInt(detailValue, 10);
+                      detailValue =
+                        intValue === 1
+                          ? "Yes"
+                          : intValue === 2
+                            ? "No"
+                            : intValue === 0
+                              ? "Ongoing"
+                              : "--";
+                    }
+
+                    const isLastItem = index === details.length - 1;
+                    return (
+                      <li
+                        key={detailKey}
+                        className={`flex flex-row items-center justify-between px-2 py-2 ${
+                          !isLastItem ? "border-b-0.5" : ""
+                        }`}
+                      >
+                        <label className="text-md font-medium text-gray-700">
+                          {labels[detailKey] || detailKey}
+                        </label>
+                        <p className="text-sm text-gray-600">
+                          {String(detailValue || "--")}
+                        </p>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             );
           }
 
-          // For other values, display in paragraph format
+          // For other values, display in a paragraph format
           return (
             <div key={key}>
               <label className="text-md font-medium">{label}</label>{" "}

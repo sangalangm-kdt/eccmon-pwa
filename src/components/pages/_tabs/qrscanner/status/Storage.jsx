@@ -61,14 +61,14 @@ const Storage = ({
   };
 
   return (
-    <div className="flex flex-col rounded-lg bg-white">
-      <div className="p-2 w-full">
-        <h2 className="font-semibold text-base leading-loose text-primaryText mb-2 mt-2">
+    <div className="flex flex-col rounded-lg bg-white dark:bg-gray-500">
+      <div className="w-full p-2">
+        <h2 className="mb-2 mt-2 text-base font-semibold leading-loose text-primaryText dark:text-gray-100">
           {t("qrScanner:storageStatus")}
         </h2>
         {/* Show alert if some fields are missing */}
         <div>
-          <label className="text-sm font-semibold text-primaryText">
+          <label className="text-sm font-semibold text-primaryText dark:text-gray-200">
             {t("qrScanner:locationSite")}{" "}
             <strong className="text-red-500">*</strong>
           </label>
@@ -79,13 +79,13 @@ const Storage = ({
             disabled={disabled}
           />
           {showAlert && !processor && (
-            <div className=" text-red-600 p-1 rounded mb-2 ">
+            <div className="mb-2 rounded p-1 text-red-600">
               <p className="text-xs">Processor is required.</p>
             </div>
           )}
         </div>
-        <div className="mt-2 mb-4">
-          <label className="text-sm font-semibold text-primaryText">
+        <div className="mb-4 mt-2">
+          <label className="text-sm font-semibold text-primaryText dark:text-gray-200">
             {t("qrScanner:startDate")}{" "}
             <strong className="text-red-500">*</strong>
           </label>
@@ -96,7 +96,7 @@ const Storage = ({
             disabled={disabled}
           />
           {showAlert && !date && (
-            <div className=" text-red-600 p-1 rounded mb-2 ">
+            <div className="mb-2 rounded p-1 text-red-600">
               <p className="text-xs">Processor is required.</p>
             </div>
           )}

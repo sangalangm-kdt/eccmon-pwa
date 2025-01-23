@@ -47,12 +47,12 @@ export const customSelectStyles = (isDarkMode) => ({
       ? "rgb(229, 231, 235)" // Text color for dark mode
       : "#333", // Text color for light mode
   }),
-  indicatorSeparator: () => ({
+   indicatorSeparator: () => ({
     display: "none",
   }),
   dropdownIndicator: (base) => ({
     ...base,
-    color: "#4A5568", // Neutral indicator color
+    color: isDarkMode ? "rgb(229, 231, 235)" : "#4A5568", // Adjust arrow color for dark mode
     "&:hover": {
       color: "#00bfff", // Cyan on hover
     },

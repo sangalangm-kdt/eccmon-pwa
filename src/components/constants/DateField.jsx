@@ -41,11 +41,11 @@ const DateField = ({ date, setDate, disabled }) => {
 
   return (
     <div className="relative w-full">
-      <div className="flex w-full flex-row items-center rounded border text-sm">
+      <div className="flex w-full flex-row items-center rounded border text-sm dark:bg-gray-600">
         {/* DatePicker with responsive width */}
         <DatePicker
           ref={datePickerRef} // Attach the ref to the DatePicker
-          className="w-full rounded px-2 py-2 text-gray-800 focus:outline-none sm:w-72 md:w-80 lg:w-96"
+          className="w-full rounded bg-transparent px-2 py-2 text-gray-800 focus:outline-none dark:text-gray-100 sm:w-72 md:w-80 lg:w-96"
           selected={new Date(selectedDate)} // Convert string back to Date object
           onChange={handleDateChange}
           dateFormat="yyyy-MM-dd" // Keep the same date format
@@ -55,7 +55,7 @@ const DateField = ({ date, setDate, disabled }) => {
 
         {/* Calendar icon positioned at the right */}
         <FaRegCalendar
-          className="absolute right-2 cursor-pointer text-gray-500"
+          className="absolute right-2 cursor-pointer text-gray-500 dark:text-gray-300"
           size={18}
           onClick={handleIconClick} // Trigger the DatePicker focus on click
         />

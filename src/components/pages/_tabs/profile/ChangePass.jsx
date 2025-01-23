@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { IoArrowBack, IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -12,10 +11,11 @@ const ChangePass = () => {
   });
   const { changePassword } = useAuthentication();
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,12 +27,10 @@ const ChangePass = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Check if current password is provided
     if (!formData.currentPassword) {
       newErrors.currentPassword = "Current password is required.";
     }
 
-    // Check if new password is provided
     if (!formData.newPassword) {
       newErrors.newPassword = "New password is required.";
     } else if (formData.newPassword.length < 8) {
@@ -40,7 +38,6 @@ const ChangePass = () => {
         "New password must be at least 8 characters long.";
     }
 
-    // Check if confirm password is provided
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your new password.";
     } else if (formData.newPassword !== formData.confirmPassword) {
@@ -59,9 +56,7 @@ const ChangePass = () => {
         password: formData.newPassword,
         password_confirmation: formData.confirmPassword,
       });
-      // Simulate a password update (e.g., API call)
-
-      setSuccessMessage("Your password has been updated successfully!");
+      setShowSuccessModal(true);
       setFormData({
         currentPassword: "",
         newPassword: "",
@@ -83,6 +78,15 @@ const ChangePass = () => {
     } else if (field === "confirmPassword") {
       setShowConfirmPassword(!showConfirmPassword);
     }
+  };
+
+  const closeSuccessModal = () => {
+    setLoading(true); // Set loading state to true when the button is clicked
+    setTimeout(() => {
+      setShowSuccessModal(false);
+      navigate("/"); // Navigate after a short delay
+      setLoading(false); // Reset loading state after the delay
+    }, 2000); // Simulate a delay (e.g., for an API call)
   };
 
   return (
@@ -163,7 +167,7 @@ const ChangePass = () => {
               className="absolute right-3 top-3"
             >
               {showNewPassword ? (
-                <IoEyeOffOutline className="text-gray-60 dark:text-gray-50" />
+                <IoEyeOffOutline className="text-gray-600 dark:text-gray-50" />
               ) : (
                 <IoEyeOutline className="text-gray-600 dark:text-gray-50" />
               )}
@@ -219,6 +223,35 @@ const ChangePass = () => {
           </button>
         </div>
       </form>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+            <h2 className="mb-4 text-lg font-semibold text-gray-700 dark:text-gray-50">
+              Success!
+            </h2>
+            <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">
+              Your password has been updated successfully.
+            </p>
+            <button
+              onClick={closeSuccessModal}
+              className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              {loading ? (
+                <div
+                  className="spinner-border spinner-border-sm text-white"
+                  role="status"
+                >
+                  <span className="sr-only">Loading...</span>
+                </div>
+              ) : (
+                "Back to Login"
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

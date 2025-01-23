@@ -11,7 +11,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
 
   // Filter order numbers based on search term
   const filteredOrderNos = orderNumber?.data?.filter((orderNo) =>
-    orderNo.name.toLowerCase().includes(searchTerm.toLowerCase())
+    orderNo.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleSelectOrderNo = (orderNo) => {
@@ -21,13 +21,13 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
   };
 
   return (
-    <div className="w-full flex flex-col mt-2 text-sm  text-primaryText">
+    <div className="mt-2 flex w-full flex-col text-sm text-primaryText">
       <div className="relative w-full">
         <label className="font-semibold">
           {t("qrScanner:orderNo")} <strong className="text-red-500">*</strong>
         </label>
         <input
-          className="border w-full py-2 px-2 rounded"
+          className="w-full rounded border px-2 py-2 dark:bg-gray-600"
           type="text"
           placeholder={t("qrScanner:selectAnOrderNumber")}
           value={selectedOrderNo}
@@ -36,18 +36,18 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
           disabled={disabled}
         />
         <button
-          className="absolute mt-3 right-2 top-1/2 transform -translate-y-1/2"
+          className="absolute right-2 top-1/2 mt-3 -translate-y-1/2 transform"
           onClick={() => setIsModalOpen(true)}
         >
-          <FaChevronRight />
+          <FaChevronRight className="text-primaryText dark:text-gray-50" />
         </button>
       </div>
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-white z-50 flex flex-col">
+        <div className="fixed inset-0 z-50 flex flex-col bg-white">
           {/* Modal Header */}
-          <div className="flex justify-between items-center p-4 border-b">
+          <div className="flex items-center justify-between border-b p-4">
             <button
               className="text-gray-500"
               onClick={() => setIsModalOpen(false)}
@@ -59,7 +59,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
           {/* Search Input */}
           <div className="p-4">
             <input
-              className="border w-full p-2 rounded"
+              className="w-full rounded border p-2"
               type="text"
               placeholder="Search order numbers"
               value={searchTerm}
