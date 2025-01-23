@@ -91,7 +91,7 @@ const Process = ({
     } else {
       // Reset states if selectedProcessorStatus changes to a different operation
       setPassed(null); // Reset passed
-      setDate(""); // Reset date
+      setDate(initialData?.updates?.dateDone); // Reset date
       setProcessor(null); // Reset location
     }
   }, [selectedProcessorStatus]);
