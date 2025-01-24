@@ -35,15 +35,23 @@ export const sortHistory = (userHistory, sortOrder = "asc", sortBy = "date") => 
 // Sort function for history based on the date
 // Sort function for history based on the date and time
 export const sortHistoryByDate = (userHistory, sortOrder = "asc") => {
-  return [...userHistory].sort((a, b) => {
-    // Ensure the correct field is used for sorting
-    const dateA = new Date(a?.updates?.dateDone); // Access the correct field for date
-    const dateB = new Date(b?.updates?.dateDone); // Access the correct field for date
 
-    // Compare the timestamps directly
+  console.log(userHistory)
+  return [...userHistory].sort((a, b) => {
+    
+    // Ensure that dateDone exists and is a valid date
+    const dateA = a.updates?.dateDone ? new Date(a.updates?.dateDone ) : null;
+    const dateB = b.updates?.dateDone  ? new Date(b.updates?.dateDone ) : null;
+
+    // If any date is invalid, treat it as the lowest value (if ascending) or the highest (if descending)
+    if (isNaN(dateA)) return sortOrder === "asc" ? 1 : -1;
+    if (isNaN(dateB)) return sortOrder === "asc" ? -1 : 1;
+
+    // Compare the dates
     return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
   });
 };
+
 
 
 // Filter function for history

@@ -10,7 +10,14 @@ import {
   LocationInput,
   PasswordInput,
 } from "../../constants/TextInput"; // Keep your custom input components
-import { IoArrowBack, IoArrowForwardOutline } from "react-icons/io5";
+import {
+  IoArrowBack,
+  IoArrowForwardOutline,
+  IoLogIn,
+  IoLogInOutline,
+  IoReturnDownBackOutline,
+} from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const AccountRequestForm = () => {
   const [formData, setFormData] = useState({
@@ -237,10 +244,10 @@ const AccountRequestForm = () => {
   const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 xs:bg-white lg:bg-secondary">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm gap-1 rounded bg-white p-8 text-sm shadow-md"
+        className="w-full max-w-sm gap-1 rounded bg-white p-8 text-sm shadow-md xs:shadow-none"
       >
         <h2 className="mb-6 text-center text-2xl font-bold text-gray-700">
           Request an Account
@@ -278,7 +285,7 @@ const AccountRequestForm = () => {
         {step === 1 && (
           <>
             <div>
-              <div className="mb-4 flex flex-col gap-2 text-sm md:flex-row">
+              <div className="mb-4 flex flex-col gap-2 text-sm">
                 <TextInput
                   label="First Name"
                   name="firstName"
@@ -341,15 +348,6 @@ const AccountRequestForm = () => {
         {step === 2 && (
           <>
             <div className="mb-4">
-              <EmailInput
-                label="Email"
-                name="email"
-                placeholder="Enter email"
-                value={formData.email}
-                onChange={handleChange}
-                error={errors.email}
-              />
-
               <div className="mb-4">
                 {" "}
                 <label className="font-semibold text-primaryText">
@@ -363,6 +361,14 @@ const AccountRequestForm = () => {
                   onChange={handleAffiliationChange}
                 />
               </div>
+              <EmailInput
+                label="Email"
+                name="email"
+                placeholder="Enter email"
+                value={formData.email}
+                onChange={handleChange}
+                error={errors.email}
+              />
 
               <PasswordInput
                 label="Password"
@@ -458,6 +464,17 @@ const AccountRequestForm = () => {
           </>
         )}
       </form>
+      <div className="mt-4 flex-col text-center">
+        <Link to="/login">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-full border bg-gray-50 p-3 font-medium text-gray-600 hover:bg-primary focus:outline-none"
+          >
+            <IoLogInOutline size={25} className="" />
+          </button>
+        </Link>
+        <span className="flex p-4 text-sm text-gray-600">Go to Login</span>
+      </div>
     </div>
   );
 };

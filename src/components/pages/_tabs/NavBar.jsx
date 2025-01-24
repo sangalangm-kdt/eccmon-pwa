@@ -7,27 +7,38 @@ import InstallationButton from "../../constants/InstallationButton";
 import LanguageSwitcher from "../../constants/LanguageSwitcher";
 import { languagess } from "../../styles/header";
 import { useTranslation } from "react-i18next";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../hooks/auth";
 import { PiQrCodeBold } from "react-icons/pi";
 import { RiUser6Line, RiHome6Line } from "react-icons/ri";
-const NavBar = () => {
-  // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+const NavBar = () => {
   const currentPage = useSelector((state) => state.page.currentPage);
   const dispatch = useDispatch();
   const { t } = useTranslation("common");
   const location = useLocation();
   const { user } = useAuthentication();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const path = location.pathname.slice(1);
     dispatch(setPage(path));
   }, [location, dispatch]);
 
+  const handleLogoClick = () => {
+    if (user) {
+      // Redirect to home page if user is logged in
+      navigate("/");
+    } else {
+      // Redirect to login page if no user is logged in
+      navigate("/login");
+    }
+  };
+
   if (currentPage === "scanned-result") {
     return null;
   }
+
   return (
     <div className="fixed top-0 z-50 flex w-full flex-col">
       {!user && (
@@ -46,7 +57,12 @@ const NavBar = () => {
           <nav className={`${navbarStyles.topNavbar} dark:bg-gray-800`}>
             <div className={navbarStyles.navbarContainer}>
               <div className="m-2 flex flex-row justify-between">
-                <img src={logo} alt="Logo" className={navbarStyles.logo} />
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className={navbarStyles.logo}
+                  onClick={handleLogoClick}
+                />
                 <div>
                   <InstallationButton />
                 </div>
@@ -62,10 +78,12 @@ const NavBar = () => {
             >
               <div className={navbarStyles.navbarContainer}>
                 <div className="m-2 flex flex-row justify-between">
-                  <NavLink to="/">
-                    <img src={logo} alt="Logo" className={navbarStyles.logo} />
-                  </NavLink>
-
+                  <img
+                    src={logo}
+                    alt="Logo"
+                    className={navbarStyles.logo}
+                    onClick={handleLogoClick}
+                  />
                   {user && (
                     <div>
                       <ul className="flex space-x-4">
@@ -144,7 +162,6 @@ const NavBar = () => {
                                     : "text-gray-500 dark:text-gray-50"
                                 }`}
                               />
-                              {/* {t("common:home")} */}
                             </button>
                           </div>
                         )}
@@ -199,7 +216,6 @@ const NavBar = () => {
                                     : "text-gray-500 dark:text-gray-100"
                                 }`}
                               />
-                              {/* {t("common:profile")} */}
                             </button>
                           </div>
                         )}
@@ -216,7 +232,12 @@ const NavBar = () => {
               >
                 <div className={navbarStyles.navbarContainer}>
                   <div className="m-2 flex flex-row justify-between">
-                    <img src={logo} alt="Logo" className={navbarStyles.logo} />
+                    <img
+                      src={logo}
+                      alt="Logo"
+                      className={navbarStyles.logo}
+                      onClick={handleLogoClick}
+                    />
                     <div>
                       <InstallationButton />
                     </div>

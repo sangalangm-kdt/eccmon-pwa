@@ -16,21 +16,10 @@ const CaseButton = ({
   ];
 
   const handleSelectCase = (caseId) => {
-    setSelectedCase(caseId); // Update internal state
-    // Set the disabled processors based on the selected case
-    switch (caseId) {
-      case 0: // Case 0 (newly manufactured)
-        setDisabledProcessors(["disassembly", "grooving"]); // Disable disassembly and grooving
-        break;
-      case 1: // Case 1 (remanufactured)
-        setDisabledProcessors(["finishing", "assembly"]); // Disable finishing and assembly
-        break;
-      case 2: // Case 2 (normally maintained)
-        setDisabledProcessors(["grooving", "finishing"]); // Disable grooving and finishing
-        break;
-      default:
-        setDisabledProcessors([]);
-    }
+    // Toggle the selected case
+    setSelectedCase((prevSelectedCase) =>
+      prevSelectedCase === caseId ? null : caseId,
+    );
   };
 
   return (
@@ -46,8 +35,8 @@ const CaseButton = ({
             type="button"
             className={`${caseButton} ${
               selectedCase === caseItem.id
-                ? "bg-primary font-semibold text-white"
-                : "border border-primary font-semibold text-primary"
+                ? "bg-primary font-semibold text-white transition-all duration-200 ease-in-out"
+                : "border border-primary font-semibold text-primary transition-all duration-200 ease-in-out"
             }`}
             key={caseItem.id}
             onClick={() => handleSelectCase(caseItem.id)}

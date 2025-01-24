@@ -138,10 +138,10 @@ const HistorySummary = () => {
         type="text"
         value={value}
         readOnly
-        className="w-full border p-2 text-sm"
+        className="w-full border p-2 text-sm dark:bg-gray-700"
         placeholder="mm/dd/yy"
       />
-      <FaRegCalendar className="absolute right-2 top-3 text-gray-500" />
+      <FaRegCalendar className="absolute right-2 top-3 text-gray-500 dark:text-gray-300" />
     </div>
   ));
 
