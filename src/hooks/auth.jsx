@@ -129,7 +129,7 @@ export const useAuthentication = ({
     return axiosLib
       .post("/change-password", { id: user.id, ...props })
       .then((response) => {
-        console.log("Reset password successfully!");
+        console.log("Change password successfully!");
         console.log(response.data.message);
       })
       .catch((error) => {
