@@ -18,37 +18,56 @@ import {
   IoReturnDownBackOutline,
 } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { japan } from "../../../data/japan";
+import { useUserRequest } from "../../../hooks/user-request";
 
 const AccountRequestForm = () => {
+  const { register } = useUserRequest();
+
   const [formData, setFormData] = useState({
+    userId: "",
     firstName: "",
     lastName: "",
-    location: "",
-    city: "",
-    country: "",
+    // prefecture: "",
+    // city: "",
     email: "",
     password: "",
-    affiliation: "",
+    // affiliation: "",
   });
-
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userLocation, setUserLocation] = useState(null); // Store user's location (latitude and longitude)
   const [showMap, setShowMap] = useState(false); // Track whether map should be shown or hidden
   const [locationSuggestions, setLocationSuggestions] = useState([]); // Store nearby location suggestions
   const [step, setStep] = useState(1); // Track the current step
-  const [affiliationOptions] = useState([
-    { value: "System", label: "System" },
-    { value: "Engineering", label: "Engineering" },
-    { value: "Marketing", label: "Marketing" },
-    { value: "Sales", label: "Sales" },
-  ]);
+  const affiliationOptions = [
+    { value: "Association", label: "Association" },
+    { value: "Company", label: "Company" },
+    { value: "Group", label: "Group" },
+    { value: "Network", label: "Network" },
+    { value: "Organization", label: "Organization" },
+  ];
+  const prefectureOptions = japan.prefectures.map((prefecture) => ({
+    value: prefecture.name,
+    label: prefecture.name,
+  }));
+  const [prefecture, setPrefecture] = useState("");
+  const cityOptions = prefecture
+    ? japan.prefectures
+        .filter((pref) => pref.name === prefecture)[0]
+        .cities.map((city) => ({
+          value: city.name,
+          label: city.name,
+        }))
+    : [];
 
-  const handleAffiliationChange = (selectedOption) => {
+  const handleSelectChange = (selectedOption, name) => {
     setFormData({
       ...formData,
-      affiliation: selectedOption ? selectedOption.value : "",
+      [name]: selectedOption ? selectedOption.value : "",
     });
+
+    console.log(formData);
   };
 
   const handleChange = (e) => {
@@ -57,152 +76,7 @@ const AccountRequestForm = () => {
       ...formData,
       [name]: value,
     });
-
-    if (name === "location" && value) {
-      // Fetch location suggestions when user types in the location field
-      getLocationSuggestions(value);
-    } else {
-      // Clear suggestions when the input is empty
-      setLocationSuggestions([]);
-    }
   };
-
-  // Fetch the location based on geolocation or manual input
-  const getLocation = () => {
-    if (formData.location) {
-      // If location is manually entered, fetch the coordinates using OpenStreetMap
-      fetchCoordinatesFromLocation(formData.location);
-    } else if (navigator.geolocation) {
-      // Fallback to geolocation if no manual location
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        setFormData((prevData) => ({
-          ...prevData,
-          location: "Your current location", // Optional: Change this as needed
-          city: "",
-          country: "",
-        }));
-        setUserLocation({ latitude, longitude });
-        setShowMap(true);
-      });
-    } else {
-      alert("Geolocation is not supported by this browser.");
-    }
-  };
-
-  // Function to fetch coordinates based on a location string
-  const fetchCoordinatesFromLocation = async (location) => {
-    try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${location}&addressdetails=1&limit=1`,
-      );
-      if (response.data && response.data[0]) {
-        const { lat, lon, display_name, address } = response.data[0];
-        setFormData({
-          ...formData,
-          location: display_name,
-          city: address.city || "",
-          country: address.country || "",
-        });
-        setUserLocation({ latitude: lat, longitude: lon });
-        setShowMap(true);
-      }
-    } catch (error) {
-      console.error("Error fetching coordinates", error);
-    }
-  };
-
-  // Toggle map visibility when the map icon is clicked
-  const toggleMapVisibility = () => {
-    if (formData.location) {
-      // If a manual location is entered, fetch its coordinates
-      getLocation();
-    } else if (showMap) {
-      setShowMap(false);
-    } else {
-      getLocation(); // Trigger the map display and fetch location if the map is not open
-    }
-  };
-
-  // Fetch location suggestions based on user input
-  const getLocationSuggestions = async (query) => {
-    if (query) {
-      try {
-        const response = await axios.get(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1&limit=5`,
-        );
-        setLocationSuggestions(response.data); // Set the nearby locations as suggestions
-      } catch (error) {
-        console.error("Error fetching location suggestions", error);
-      }
-    }
-  };
-
-  // Select a location from suggestions
-  const handleLocationSelect = (suggestion) => {
-    setFormData({
-      ...formData,
-      location: suggestion.display_name,
-      city: suggestion.address.city || "",
-      country: suggestion.address.country || "",
-    });
-    setLocationSuggestions([]); // Clear suggestions after selection
-    setUserLocation({
-      latitude: suggestion.lat,
-      longitude: suggestion.lon,
-    }); // Set the selected location as userLocation
-    setShowMap(false); // Close the map after selecting a location
-  };
-
-  useEffect(() => {
-    if (showMap && userLocation) {
-      const { latitude, longitude } = userLocation;
-      const map = L.map("map").setView([latitude, longitude], 12);
-
-      // Use OpenStreetMap's default tile layer
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
-        map,
-      );
-
-      const marker = L.marker([latitude, longitude])
-        .addTo(map)
-        .bindPopup("You are here!");
-
-      // Add click listener to the map to update the location
-      map.on("click", async (e) => {
-        const { lat, lng } = e.latlng;
-
-        // Fetch the location details from OpenStreetMap
-        try {
-          const response = await axios.get(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
-          );
-          const location = response.data.display_name || "Unknown Location";
-          const city = response.data.address.city || "Unknown City";
-          const country = response.data.address.country || "Unknown Country";
-
-          // Update the form with the new location data
-          setFormData((prevData) => ({
-            ...prevData,
-            location: location,
-            city: city,
-            country: country,
-          }));
-
-          setUserLocation({ latitude: lat, longitude: lng }); // Update user's location
-
-          // Close the map after location change
-          setShowMap(false);
-        } catch (error) {
-          console.error("Error fetching location data", error);
-        }
-      });
-
-      return () => {
-        map.remove();
-      };
-    }
-  }, [showMap, userLocation]); // Trigger map rendering when map visibility or userLocation changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -220,7 +94,17 @@ const AccountRequestForm = () => {
 
     try {
       // Send request to backend
-      await axios.post("/api/account-requests", formData);
+      register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        // location: "",
+        // city: "",
+        // country: "",
+        email: formData.email,
+        password: formData.password,
+        isApprove: 2,
+        userId: formData.userId,
+      });
       alert("Your account request has been submitted successfully.");
       setFormData({
         firstName: "",
@@ -234,6 +118,7 @@ const AccountRequestForm = () => {
       setStep(1); // Reset to the first step after successful submission
     } catch (error) {
       alert("An error occurred. Please try again.");
+      console.log(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -303,33 +188,15 @@ const AccountRequestForm = () => {
                   error={errors.lastName}
                 />
               </div>
+              <TextInput
+                label="Employee Number"
+                name="userId"
+                value={formData.userId}
+                onChange={handleChange}
+                placeholder="Enter employee number"
+                error={errors.userId}
+              />
             </div>
-
-            <LocationInput
-              label="Location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              error={errors.location}
-              onLocationClick={toggleMapVisibility}
-              locationSuggestions={locationSuggestions}
-              onLocationSelect={handleLocationSelect}
-            />
-
-            {showMap && userLocation && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-                onClick={() => setShowMap(false)} // Close map when clicking outside of it
-              >
-                <div
-                  className="rounded bg-white p-4 shadow-lg"
-                  style={{ width: "80%", maxWidth: "600px", height: "80%" }}
-                  onClick={(e) => e.stopPropagation()} // Prevent map from closing when clicking inside the modal
-                >
-                  <div id="map" style={{ height: "100%" }} />
-                </div>
-              </div>
-            )}
 
             <div className="mt-6 flex justify-end">
               <button
@@ -358,7 +225,7 @@ const AccountRequestForm = () => {
                   value={affiliationOptions.find(
                     (option) => option.value === formData.affiliation,
                   )}
-                  onChange={handleAffiliationChange}
+                  onChange={(e) => handleSelectChange(e, "affiliation")}
                 />
               </div>
               <EmailInput
@@ -378,23 +245,35 @@ const AccountRequestForm = () => {
                 onChange={handleChange}
                 error={errors.password}
               />
-              <TextInput
-                label="City"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                placeholder="Enter City"
-                error={errors.city}
-              />
 
-              <TextInput
-                label="Country"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                placeholder="Enter country"
-                error={errors.country}
-              />
+              <div className="mb-4">
+                {" "}
+                <label className="font-semibold text-primaryText">
+                  Prefectures
+                </label>
+                <Select
+                  options={prefectureOptions}
+                  value={prefectureOptions.find(
+                    (option) => option.value === formData.prefecture,
+                  )}
+                  onChange={(e) => {
+                    handleSelectChange(e, "prefecture");
+                    setPrefecture(e.value);
+                  }}
+                />
+              </div>
+
+              <div className="mb-4">
+                {" "}
+                <label className="font-semibold text-primaryText">City</label>
+                <Select
+                  options={cityOptions}
+                  value={cityOptions.find(
+                    (option) => option.value === formData.city,
+                  )}
+                  onChange={(e) => handleSelectChange(e, "city")}
+                />
+              </div>
             </div>
 
             <div className="mt-6 flex justify-between">
@@ -431,7 +310,9 @@ const AccountRequestForm = () => {
                   <strong>Last Name:</strong> {formData.lastName}
                 </p>
                 <p>
-                  <strong>Location:</strong> {formData.location}
+                  <strong>Location:</strong> {formData.city}
+                  {", "}
+                  {formData.prefecture}
                 </p>
                 <p>
                   <strong>Email:</strong> {formData.email}
@@ -464,6 +345,7 @@ const AccountRequestForm = () => {
           </>
         )}
       </form>
+
       <div className="mt-4 flex-col text-center">
         <Link to="/login">
           <button
