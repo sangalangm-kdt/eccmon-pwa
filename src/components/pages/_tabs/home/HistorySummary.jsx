@@ -52,7 +52,6 @@ const HistorySummary = () => {
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  console.log(cylinders);
   // Effect for handling sorting and filtering updates
   useEffect(() => {
     if (cylinders.length && cylinderUpdates.length) {

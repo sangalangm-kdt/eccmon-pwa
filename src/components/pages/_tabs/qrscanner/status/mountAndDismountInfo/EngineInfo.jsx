@@ -48,13 +48,13 @@ const EngineInfo = ({
   return (
     <div className="flex flex-col p-2">
       {/* Site Name */}
-      <div className="flex flex-col w-full">
+      <div className="flex w-full flex-col">
         <label className="font-semibold">{t("qrScanner:engineInfo")}</label>
         <SiteNameOptions site={site} setSite={setSite} disabled={disabled} />
       </div>
 
       {showAlert && !site && (
-        <p className="text-red-600 text-xs">{t("validation.siteRequired")}</p>
+        <p className="text-xs text-red-600">{t("validation.siteRequired")}</p>
       )}
 
       {/* Engine Number */}
@@ -64,7 +64,7 @@ const EngineInfo = ({
         </label>
         <input
           value={engineNum}
-          className={`w-full p-2 rounded border ${
+          className={`w-full rounded border bg-transparent p-2 dark:bg-gray-600 ${
             engineNumError ? "border-red-500" : ""
           }`}
           type="text"
@@ -73,10 +73,10 @@ const EngineInfo = ({
           disabled={disabled}
         />
         {engineNumError && (
-          <p className="text-red-500 text-tiny">{engineNumError}</p>
+          <p className="text-tiny text-red-500">{engineNumError}</p>
         )}
         {showAlert && !engineNum && (
-          <p className="text-red-600 text-xs">
+          <p className="text-xs text-red-600">
             {t("validation.engineNumberRequired")}
           </p>
         )}
@@ -89,7 +89,7 @@ const EngineInfo = ({
           <strong className="text-red-500">*</strong>
         </label>
         <input
-          className={`w-full p-2 rounded border ${
+          className={`w-full rounded border bg-transparent p-2 dark:bg-gray-600 ${
             opHoursError ? "border-red-500" : ""
           }`}
           type="number"
@@ -100,12 +100,12 @@ const EngineInfo = ({
           required
         />
         {showAlert && opHours === "" && (
-          <p className="text-red-600 text-xs">
+          <p className="text-xs text-red-600">
             {t("validation.opHoursRequired")}
           </p>
         )}
         {opHoursError && (
-          <p className="text-red-500 text-tiny">{opHoursError}</p>
+          <p className="text-tiny text-red-500">{opHoursError}</p>
         )}
       </div>
     </div>

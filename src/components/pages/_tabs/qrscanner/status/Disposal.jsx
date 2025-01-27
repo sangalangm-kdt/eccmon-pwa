@@ -37,9 +37,9 @@ const Disposal = ({ setData, disabled, setIsComplete }) => {
   }, [date, cylinderData, setData, setIsComplete]);
 
   return (
-    <div className="flex flex-col bg-white rounded-lg pb-1">
-      <div className=" p-2 w-full ">
-        <h2 className="font-semibold mb-6">{t("qrScanner:disposalStatus")}</h2>
+    <div className="flex flex-col rounded-lg bg-white pb-1 dark:bg-gray-500">
+      <div className="w-full p-2">
+        <h2 className="mb-6 font-semibold">{t("qrScanner:disposalStatus")}</h2>
         <div className="text-sm">
           <label>{t("qrScanner:disposalDate")}</label>
 

@@ -12,7 +12,7 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
 
   // Ensure `siteData` is properly structured
   const siteList = siteData?.data || []; // Fallback to an empty array if undefined
-  console.log(siteList);
+
   // Group site names by the first letter
   const groupedNames = siteList.reduce((acc, name) => {
     const firstLetter = name.name?.charAt(0).toUpperCase();
@@ -30,7 +30,7 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
         .sort()
         .reduce((acc, letter) => {
           const filteredNames = groupedNames[letter].filter((name) =>
-            name.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            name.name?.toLowerCase().includes(searchTerm.toLowerCase()),
           );
           if (filteredNames.length > 0) {
             acc[letter] = filteredNames;
@@ -42,7 +42,7 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
   // If search term exists, flatten the filtered names
   const searchResults = searchTerm
     ? siteList.filter((name) =>
-        name.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        name.name?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     : [];
 
@@ -53,13 +53,13 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
   };
 
   return (
-    <div className="w-full flex flex-col mt-2 ">
-      <div className="relative w-full ">
+    <div className="mt-2 flex w-full flex-col">
+      <div className="relative w-full">
         <label>
           {t("qrScanner:siteName")} <strong className="text-red-500">*</strong>
         </label>
         <input
-          className="border w-full py-2 px-2 rounded"
+          className="w-full rounded border bg-transparent px-2 py-2 dark:bg-gray-600"
           type="text"
           placeholder={t("qrScanner:selectaSite")}
           value={site}
@@ -68,7 +68,7 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
           disabled={disabled}
         />
         <button
-          className="absolute mt-3 right-2 top-1/2 transform -translate-y-1/2"
+          className="absolute right-2 top-1/2 mt-3 -translate-y-1/2 transform"
           onClick={() => setIsModalOpen(true)}
         >
           <FaChevronRight />
@@ -77,11 +77,11 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-white z-50 flex flex-col">
+        <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-700">
           {/* Modal Header */}
-          <div className="flex justify-between items-center p-4 border-b">
+          <div className="flex items-center justify-between border-b p-4">
             <button
-              className="text-gray-500"
+              className="text-gray-500 dark:text-gray-50"
               onClick={() => setIsModalOpen(false)}
             >
               Close
@@ -91,7 +91,7 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
           {/* Search Input */}
           <div className="p-4">
             <input
-              className="border w-full p-2 rounded"
+              className="w-full rounded border bg-transparent p-2"
               type="text"
               placeholder="Search site names"
               value={searchTerm}

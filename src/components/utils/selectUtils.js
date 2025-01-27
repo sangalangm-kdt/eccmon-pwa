@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import zIndex from "@mui/material/styles/zIndex";
 import { useTranslation } from "react-i18next";
+import { padding } from "../styles/login";
 
 export const transformStatusOptions = (options, t) => {
   return options.map((option) => ({
@@ -63,6 +64,7 @@ export const customSelectStyles = (isDarkMode) => ({
     top: "100%",
     left: 0,
     width: "100%",
+    padding:0,
     borderRadius: "0.375rem",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
     maxHeight: "300px",

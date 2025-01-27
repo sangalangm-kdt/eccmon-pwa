@@ -10,13 +10,6 @@ export const statusColors = {
 };
 
 // Function to darken the text color based on the background color
-const darkenColor = (color, factor) => {
-  let [r, g, b] = hexToRgb(color);
-  r = Math.round(r * (1 - factor));
-  g = Math.round(g * (1 - factor));
-  b = Math.round(b * (1 - factor));
-  return rgbToHex(r, g, b);
-};
 
 // Convert hex to rgb
 const hexToRgb = (hex) => {
@@ -61,7 +54,7 @@ export const getStatusColors = (status) => {
   // Default pastel gray for unmatched statuses
   const baseColor = processStages.includes(status.toLowerCase())
     ? statusColors.process
-    : statusColors[status.toLowerCase()] || "bg-gray-100"; // Default pastel gray
+    : statusColors[status.toLowerCase()] || "bg-gray-50"; // Default pastel gray
 
   // Tailwind classes for text color based on background
   let textColor = "text-gray-700"; // Default text color
@@ -72,7 +65,7 @@ export const getStatusColors = (status) => {
   if (baseColor === "bg-yellow-100") textColor = "text-yellow-500";
   if (baseColor === "bg-orange-100") textColor = "text-orange-500";
   if (baseColor === "bg-red-100") textColor = "text-red-500";
-  if (baseColor === "bg-gray-100") textColor = "text-gray-700"; // Default text color for gray
+  if (baseColor === "bg-gray-50") textColor = "text-gray-700"; // Default text color for gray
 
   return { textColor, bgColor: baseColor };
 };

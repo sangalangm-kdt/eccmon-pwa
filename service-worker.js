@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-// This service worker can be customized!
+// This service worker can be customized! 
 // See https://developers.google.com/web/tools/workbox/modules
 // for the list of available Workbox modules, or add any other
 // code you'd like.
@@ -10,11 +10,7 @@ import { clientsClaim } from "workbox-core";
 import { ExpirationPlugin } from "workbox-expiration";
 import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import {
-  CacheFirst,
-  StaleWhileRevalidate,
-  NetworkFirst,
-} from "workbox-strategies";
+import { CacheFirst, StaleWhileRevalidate, NetworkFirst } from "workbox-strategies";
 
 clientsClaim();
 
@@ -24,7 +20,7 @@ precacheAndRoute(self.__WB_MANIFEST, {
     if (response) {
       response.headers.set(
         "Cache-Control",
-        "no-cache, no-store, must-revalidate",
+        "no-cache, no-store, must-revalidate"
       );
     }
     return response;
@@ -40,7 +36,7 @@ registerRoute(
     if (url.pathname.match(fileExtensionRegexp)) return false;
     return true;
   },
-  createHandlerBoundToURL(process.env.PUBLIC_URL + "/index.html"),
+  createHandlerBoundToURL(process.env.PUBLIC_URL + "/index.html")
 );
 
 // Caching runtime for images with CacheFirst strategy
@@ -56,7 +52,7 @@ registerRoute(
         maxAgeSeconds: 60 * 60 * 24 * 30,
       }),
     ],
-  }),
+  })
 );
 
 // Runtime caching for API requests with NetworkFirst strategy
@@ -68,8 +64,25 @@ registerRoute(
     plugins: [
       new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
     ],
-  }),
+  })
 );
+
+// Skip WebSocket requests from caching
+self.addEventListener("fetch", (event) => {
+  if (event.request.url.startsWith("wss://")) {
+    // Skip caching for WebSocket connections
+    return;
+  }
+
+  // Default fetch handling for non-WebSocket requests
+  console.log("Fetching:", event.request.url);
+
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
+    })
+  );
+});
 
 // Skip waiting to activate new SW version immediately
 self.addEventListener("message", (event) => {
@@ -78,11 +91,7 @@ self.addEventListener("message", (event) => {
   }
 });
 
-// Logging fetch events for debugging
-self.addEventListener("fetch", (event) => {
-  console.log("Fetching:", event.request.url);
-});
-
+// Logging install and activate events for debugging
 self.addEventListener("install", (event) => {
   console.log("Service Worker Installing...");
 });

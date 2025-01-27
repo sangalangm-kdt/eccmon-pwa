@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
@@ -11,8 +11,15 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
   const { t } = useTranslation("qrScanner");
   const patterns = t("eccIdInstructions.patterns", { returnObjects: true });
 
+  // Update willScan state only after modal is open
+  useEffect(() => {
+    if (isOpen) {
+      setWillScan(false); // Only set state when modal is open
+    }
+  }, [isOpen, setWillScan]);
+
   if (!isOpen) return null;
-  setWillScan(false);
+
   const handleSubmit = () => {
     if (manualData.trim() !== "") {
       if (serialCodePattern.test(manualData)) {
@@ -91,6 +98,7 @@ ManuallyAddModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
+  setWillScan: PropTypes.func.isRequired, // Ensure it's passed as a prop
 };
 
 export default ManuallyAddModal;

@@ -36,7 +36,7 @@ export const sortHistory = (userHistory, sortOrder = "asc", sortBy = "date") => 
 // Sort function for history based on the date and time
 export const sortHistoryByDate = (userHistory, sortOrder = "asc") => {
 
-  console.log(userHistory)
+
   return [...userHistory].sort((a, b) => {
     
     // Ensure that dateDone exists and is a valid date

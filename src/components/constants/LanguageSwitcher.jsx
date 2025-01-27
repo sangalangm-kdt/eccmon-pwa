@@ -103,7 +103,7 @@ const LanguageSwitcher = () => {
           <label className="text-xs font-medium">Select language</label>
           <span className="px-2">|</span>
           <button
-            className="dark:bg-black-10 flex flex-grow items-center justify-between rounded-md bg-white px-4 py-2 font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-50"
+            className="dark:bg-black-10 flex flex-grow items-center justify-between rounded-md border bg-white px-4 py-2 font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-50"
             onClick={() => setModalOpen(true)}
           >
             <span>
@@ -124,7 +124,7 @@ const LanguageSwitcher = () => {
                 {languages.map((lang) => (
                   <li
                     key={lang.id}
-                    className={`cursor-pointer rounded-md p-3 text-center text-sm ${
+                    className={`cursor-pointer rounded-md border p-3 text-center text-sm ${
                       lang.id === language
                         ? "bg-primary text-white"
                         : "hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -136,7 +136,7 @@ const LanguageSwitcher = () => {
                 ))}
               </ul>
               <button
-                className="mt-4 w-full rounded-md bg-gray-300 py-2 text-gray-700 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                className="mt-4 w-full rounded-md border bg-gray-300 py-2 text-gray-700 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 onClick={() => setModalOpen(false)}
               >
                 Close

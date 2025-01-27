@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5"; // Import Ionicons eye icons
 import {
   buttonStyles,
   container,
@@ -25,6 +26,7 @@ const Login = () => {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false); // Track password visibility
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -98,16 +100,14 @@ const Login = () => {
               <label>{t("login:loginDetails")}</label>
             </div>
 
-            <div>
-              {/* Display the errorMessage from useAuthentication */}
-              {errorMessage && (
-                <p
-                  className={`${inputStyles.inputContainer} w-full bg-red-200 text-center text-sm text-red-500`}
-                >
-                  {t("login:error:emailAndPassIncorrect")}
-                </p>
-              )}
-            </div>
+            {/* Display the errorMessage from useAuthentication */}
+            {errorMessage && (
+              <p
+                className={`${inputStyles.inputContainer} w-full bg-red-200 text-center text-sm text-red-500`}
+              >
+                {errorMessage}
+              </p>
+            )}
 
             {/* Email Input */}
             <div className={inputStyles.inputContainer}>
@@ -130,15 +130,28 @@ const Login = () => {
             {/* Password Input */}
             <div className={inputStyles.inputContainer}>
               <label className={inputStyles.label}>{t("login:password")}</label>
-              <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={handleInputChange}
-                className={inputStyles.input}
-                placeholder={t("login:enterPassword")}
-                autoComplete="off"
-              />
+              <div className="relative">
+                <input
+                  type={passwordVisible ? "text" : "password"} // Toggle between password and text
+                  name="password"
+                  value={password}
+                  onChange={handleInputChange}
+                  className={`${inputStyles.input} w-full`}
+                  placeholder={t("login:enterPassword")}
+                  autoComplete="off"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                  onClick={() => setPasswordVisible(!passwordVisible)} // Toggle visibility
+                >
+                  {passwordVisible ? (
+                    <IoEyeOffOutline className="text-gray-500" />
+                  ) : (
+                    <IoEyeOutline className="text-gray-500" />
+                  )}
+                </button>
+              </div>
               {/* Display alert message for missing password */}
               {alert && !password && (
                 <p className="text-xs text-red-500">Password is required.</p>
@@ -184,7 +197,7 @@ const Login = () => {
                   <span>{t("login:signIn")}</span>
                 )}
               </button>
-              <div className={`${inputStyles.container}`}>
+              <div className={inputStyles.container}>
                 <label className="py-2 text-center text-sm">
                   {t("login:noAccount")}
                   <button

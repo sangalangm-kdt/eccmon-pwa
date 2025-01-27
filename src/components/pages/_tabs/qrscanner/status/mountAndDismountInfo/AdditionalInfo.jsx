@@ -17,8 +17,8 @@ const AdditionalInfo = ({
   const { t } = useTranslation("qrScanner");
 
   return (
-    <div className="flex flex-col w-full p-2">
-      <label className="font-semibold mb-2">
+    <div className="flex w-full flex-col p-2">
+      <label className="mb-2 font-semibold">
         {t("qrScanner:additionalInfo")}
       </label>
       <div className="mb-2">
@@ -33,7 +33,7 @@ const AdditionalInfo = ({
           t={t}
         />
         {showAlert && !mountPos && (
-          <p className="text-red-600 text-xs">
+          <p className="text-xs text-red-600">
             {t("validation.engineNumberRequired")}
           </p>
         )}
@@ -45,7 +45,7 @@ const AdditionalInfo = ({
         </label>
         <DateField date={date} setDate={setDate} disabled={disabled} />
         {showAlert && !date && (
-          <p className="text-red-600 text-xs">
+          <p className="text-xs text-red-600">
             {t("validation.completionDateRequired")}
           </p>
         )}
@@ -53,7 +53,7 @@ const AdditionalInfo = ({
       <div className="mb-1">
         <label>{t("cycle")}</label>
         <input
-          className="w-full rounded p-2 border"
+          className="w-full rounded border p-2"
           type="number"
           value={cycle}
           onChange={(e) => setCycle(e.target.value)}

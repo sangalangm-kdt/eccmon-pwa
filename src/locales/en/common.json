@@ -59,5 +59,38 @@
     "mounted": "Mounted",
     "dismounted": "Dismounted",
     "disposal": "Disposal"
+  },
+  "viewInfo": {
+    "noDataToDisplay": "No data to display",
+    "details": "Details",
+    "back": "Back",
+    "serialNo": "Serial number",
+    "lastModifiedBy": "Last modified by",
+    "completionDate": "Completion Date",
+    "process": "Process",
+    "location": "Location",
+    "cycle": "Cycle",
+    "disposal": "Disposal",
+    "disposalDate": "Disposal Date",
+    "additionalDetails": "Additional Details",
+    "addDetails": {
+      "case": "Case",
+      "isPassed": "Status",
+      "orderNo": "Order No.",
+      "engineNo": "Engine No.",
+      "operatingHours": "Operating Hours",
+      "mountingPosition": "Mounting Position"
+    }
+  },
+
+  "errorMessages": {
+    "unauthorized": "Unauthorized access. Please log in.",
+    "userLoggedIn": "User already logged in.",
+    "invalidCredentials": "Invalid login credentials.",
+    "accessDenied": "Access denied.",
+    "unexpectedError": "An unexpected error occurred.",
+    "invalidEmail": "Invalid email address.",
+    "passwordResetSuccess": "Password reset link sent to your email.",
+    "fetchUserError": "Error fetching user data."
   }
 }
