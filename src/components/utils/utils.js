@@ -35,10 +35,7 @@ export const sortHistory = (userHistory, sortOrder = "asc", sortBy = "date") => 
 // Sort function for history based on the date
 // Sort function for history based on the date and time
 export const sortHistoryByDate = (userHistory, sortOrder = "asc") => {
-
-  console.log(userHistory)
-  return [...userHistory].sort((a, b) => {
-    
+  return userHistory.sort((a, b) => {
     // Ensure that dateDone exists and is a valid date
     const dateA = a.updates?.dateDone ? new Date(a.updates?.dateDone ) : null;
     const dateB = b.updates?.dateDone  ? new Date(b.updates?.dateDone ) : null;
@@ -65,13 +62,9 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
     return d;
   };
 
+  
   switch (filter) {
-    case "latest":
-      filteredData = filteredData?.sort((a, b) => {
-        // Ensure we are using `dateDone` instead of `createdAt`
-        return new Date(b?.updates?.dateDone) - new Date(a?.updates?.dateDone);
-      });
-      break;
+    
 
     case "last7":
       const last7Days = new Date();
@@ -111,11 +104,6 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
       });
       break;
   }
-
-  // Ensure the filtered data is always sorted in descending order by dateDone
-  filteredData = filteredData?.sort((a, b) => {
-    return new Date(b?.updates?.dateDone) - new Date(a?.updates?.dateDone);
-  });
 
   return filteredData;
 };
