@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthentication } from "../../../../hooks/auth";
 import {
+  IoBookOutline,
   IoBugOutline,
   IoChevronForwardOutline,
+  IoChevronDownOutline,
   IoLanguageOutline,
   IoMoonOutline,
   IoSettingsOutline,
@@ -23,6 +25,7 @@ const ProfilePage = () => {
   });
   const { theme, toggleTheme } = useTheme();
   const [isAccountSettingsOpen, setIsAccountSettingsOpen] = useState(false);
+  const [isHelpSupportOpen, setIsHelpSupportOpen] = useState(false); // New state for Help & Support section
   const [selectedOption, setSelectedOption] = useState(null);
   const navigate = useNavigate();
 
@@ -148,22 +151,40 @@ const ProfilePage = () => {
         </div>
         <hr className="border-gray-200 dark:border-gray-600" />
 
-        <div
-          className="flex cursor-pointer items-center gap-3 p-4 text-gray-700 transition-all duration-300 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600"
-          onClick={() => console.log("FAQ Clicked")}
-        >
-          <PiQuestion size={18} />
-          {t("menuSection.faq")}
-        </div>
-        <hr className="border-gray-200 dark:border-gray-600" />
-
-        {/* Report Bugs Section */}
-        <div
-          className="flex cursor-pointer items-center gap-3 p-4 text-gray-700 transition-all duration-300 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600"
-          onClick={() => console.log("Report Bugs Clicked")}
-        >
-          <IoBugOutline size={18} />
-          {t("menuSection.reportBugs")}
+        {/* Help & Support Section */}
+        <div className="text-gray-700 dark:text-gray-300">
+          <div
+            className="flex cursor-pointer items-center gap-3 p-4 transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+            onClick={() => setIsHelpSupportOpen((prev) => !prev)} // Toggle visibility
+          >
+            <IoBookOutline size={18} />
+            <span>{t("menuSection.helpSupport")}</span>
+          </div>
+          {isHelpSupportOpen && (
+            <div className="ml-8 space-y-2 text-gray-600 dark:text-gray-400">
+              <div
+                className="flex cursor-pointer items-center gap-3 p-3 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={() => console.log("faq Clicked")}
+              >
+                {t("menuSection.faq")}
+                <IoChevronForwardOutline size={16} className="ml-auto" />
+              </div>
+              <div
+                className="flex cursor-pointer items-center gap-3 p-3 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={() => handleNavigation("/user-guidelines")}
+              >
+                {t("menuSection.userGuidelines")}
+                <IoChevronForwardOutline size={16} className="ml-auto" />
+              </div>
+              <div
+                className="flex cursor-pointer items-center gap-3 p-3 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={() => console.log("Report Bugs Clicked")}
+              >
+                {t("menuSection.reportBugs")}
+                <IoChevronForwardOutline size={16} className="ml-auto" />
+              </div>
+            </div>
+          )}
         </div>
         <hr className="border-gray-200 dark:border-gray-600" />
 

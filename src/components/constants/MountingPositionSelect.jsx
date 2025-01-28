@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { customSelectStyles } from "../utils/selectUtils"; // Import custom select styles
+import { customSelectStyle, customSelectStyles } from "../utils/selectUtils"; // Import custom select styles
 
 const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
   const mountingPositions = [
@@ -34,6 +34,7 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
     console.log("Selected Mounting Position:", newMountPos); // Debug log
     setMountPos(newMountPos); // Update state
   };
+  const isDarkMode = document.documentElement.classList.contains("dark");
 
   return (
     <div className="flex flex-col space-y-2">
@@ -43,7 +44,7 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
         onChange={handleChange}
         options={options}
         isDisabled={disabled}
-        styles={customSelectStyles}
+        styles={customSelectStyles(isDarkMode)}
         placeholder={t("selectEnginePos")}
         isClearable
         noOptionsMessage={() => "No positions available"}

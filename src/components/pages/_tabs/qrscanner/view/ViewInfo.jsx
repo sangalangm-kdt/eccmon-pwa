@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../../../hooks/auth";
 import { IoArrowBack } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
 
 const ViewInfo = () => {
   const location = useLocation();
@@ -10,37 +11,38 @@ const ViewInfo = () => {
   const [modifiedBy, setModifiedBy] = useState(null);
   const data = location.state?.data;
   const updates = data?.updates;
+  const { t } = useTranslation("common");
 
   const labels = {
-    serialNumber: "Serial No.",
-    location: "Location",
-    dateDone: "Completion Date",
-    cycle: "Cycle",
-    case: "Case",
-    isPassed: "Status",
-    orderNumber: "Order No.",
-    otherDetails: "Additional Details",
-    engineNumber: "Engine Number",
-    operationHours: "Operation Hours",
-    mountingPosition: "Mounting Position",
-    userId: "Modified by",
-    process: "Process",
+    serialNumber: t("viewInfo.serialNo"),
+    location: t("location"),
+    dateDone: t("viewInfo.dateDone"),
+    cycle: t("viewInfo.cycle"),
+    case: t("viewInfo.addDetails.case"),
+    isPassed: t("viewInfo.addDetails.isPassed"),
+    orderNumber: t("viewInfo.addDetails.orderNo"),
+    otherDetails: t("viewInfo.additionalDetails"),
+    engineNumber: t("viewInfo.addDetails.engineNo"),
+    operationHours: t("viewInfo.addDetails.operatingHours"),
+    mountingPosition: t("viewInfo.addDetails.mountingPosition"),
+    userId: t("viewInfo.addDetails.userId"),
+    process: t("viewInfo.addDetails.process"),
   };
 
   useEffect(() => {
     if (updates?.userId === data?.user.id) {
       setModifiedBy(
-        `${data?.user.firstName} ${data?.user.lastName}` || "Unknown User",
+        `${data?.user.firstName} ${data?.user.lastName}` || t("unknownUser"),
       );
     } else {
-      setModifiedBy("Unknown User");
+      setModifiedBy(t("unknownUser"));
     }
-  }, [data?.user, updates]);
+  }, [data?.user, updates, t]);
 
   if (!data || !updates) {
     return (
       <div className="rounded-md bg-red-100 p-4">
-        <p className="text-lg text-red-600">No updates available</p>
+        <p className="text-lg text-red-600">{t("noUpdatesAvailable")}</p>
       </div>
     );
   }
@@ -65,7 +67,6 @@ const ViewInfo = () => {
 
           const label = labels[key] || key;
 
-          // Special handling for 'otherDetails' and 'isPassed'
           if (
             key === "otherDetails" &&
             value &&
@@ -94,7 +95,6 @@ const ViewInfo = () => {
                     )
                       return null;
 
-                    // Handle 'isPassed' key
                     if (detailKey === "isPassed") {
                       detailValue =
                         ["Ongoing", "Yes", "No"][parseInt(detailValue, 10)] ||
@@ -124,7 +124,7 @@ const ViewInfo = () => {
             <div key={key}>
               <label className="text-md font-medium">{label}</label>
               <p className="text-center text-gray-500">
-                {String(value || "No data to display")}
+                {String(value || t("viewInfo.noDataToDisplay"))}
               </p>
             </div>
           );
@@ -135,16 +135,16 @@ const ViewInfo = () => {
 
   return (
     <div className="dark:bg- flex min-h-screen flex-col bg-gray-100 dark:bg-gray-800">
-      <div className="flex h-18 w-full items-center justify-between rounded-b-lg bg-white p-4 shadow-sm dark:bg-gray-900">
+      <div className="flex h-20 w-full items-center justify-between rounded-b-lg bg-white p-4 shadow-sm dark:bg-gray-700">
         <button
           onClick={() => navigate("/")}
           className="flex flex-row items-center gap-0.5 text-cyan-400 hover:text-blue-700"
         >
-          <IoArrowBack size={20} /> <p>Back</p>
+          <IoArrowBack size={20} /> <p>{t("viewInfo.back")}</p>
         </button>
         <div className="flex-1 text-center">
           <p className="mr-14 text-lg font-medium text-primaryText dark:text-gray-200">
-            Details
+            {t("viewInfo.details")}
           </p>
         </div>
       </div>
@@ -155,19 +155,19 @@ const ViewInfo = () => {
             {updates.serialNumber}
           </p>
           <label className="pt-2 text-xs text-gray-500 dark:text-gray-200">
-            Serial number
+            {t("viewInfo.serialNo")}
           </label>
         </div>
 
         <div className="mt-2 flex w-full flex-col rounded-lg bg-white p-4 dark:bg-gray-600">
           {[
-            { label: "Last modified by", value: modifiedBy },
-            { label: "Process", value: updates.process },
-            { label: "Completion date", value: updates.dateDone },
-            { label: "Location", value: updates.location },
-            { label: "Cycle", value: updates.cycle },
-            { label: "Disposal", value: data.disposal },
-            { label: "Disposal Date", value: data.disposalDate },
+            { label: t("viewInfo.lastModifiedBy"), value: modifiedBy },
+            { label: t("viewInfo.process"), value: updates.process },
+            { label: t("viewInfo.completionDate"), value: updates.dateDone },
+            { label: t("viewInfo.location"), value: updates.location },
+            { label: t("viewInfo.cycle"), value: updates.cycle },
+            { label: t("viewInfo.disposal"), value: data.disposal },
+            { label: t("viewInfo.disposalDate"), value: data.disposalDate },
           ].map(({ label, value }) => (
             <div
               key={label}
@@ -177,7 +177,7 @@ const ViewInfo = () => {
                 {label}
               </label>
               <p className="text-sm text-gray-600 dark:text-gray-100">
-                {value || "--"}
+                {value || t("viewInfo.noDataToDisplay")}
               </p>
             </div>
           ))}

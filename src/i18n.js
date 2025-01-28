@@ -11,6 +11,8 @@ import dateEN from "./locales/en/date.json";
 import dateJA from "./locales/ja/date.json";
 import profileEN from "./locales/en/profile.json"
 import profileJA from "./locales/ja/profile.json"
+import textSectionEN from "./locales/en/textSection.json"
+import textSectionJA from "./locales/ja/textSection.json"
 
 
 const resources = {
@@ -19,14 +21,16 @@ const resources = {
     login: loginEN,
     qrScanner: qrScannerEN,
     date: dateEN,
-    profile:profileEN
+    profile:profileEN,
+    textSection:textSectionEN
   },
   ja: {
     common: commonJA,
     login: loginJA,
     qrScanner: qrScannerJA,
     date: dateJA,
-    profile:profileJA
+    profile:profileJA,
+     textSection:textSectionJA
   },
 };
 

@@ -23,6 +23,9 @@ const Register = lazy(() => import("./components/pages/register/Register"));
 const ProfilePage = lazy(
   () => import("./components/pages/_tabs/profile/ProfilePage"),
 );
+const UserGuidelines = lazy(
+  () => import("./components/pages/_tabs/profile/UserGuidelines"),
+);
 const Home = lazy(() => import("./components/pages/_tabs/home/Home"));
 const ScannedResult = lazy(
   () => import("./components/pages/_tabs/qrscanner/ScannedResult"),
@@ -42,7 +45,12 @@ const ChangePass = lazy(
 
 const Layout = () => {
   const location = useLocation();
-  const hideNavBarPaths = ["/update-info", "/change-password", "/view-info"];
+  const hideNavBarPaths = [
+    "/update-info",
+    "/change-password",
+    "/view-info",
+    "/user-guidelines",
+  ];
   const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
   return (
     <>
@@ -83,6 +91,10 @@ function App() {
         {
           path: "/request-account",
           element: <Register />,
+        },
+        {
+          path: "user-guidelines",
+          element: <UserGuidelines />,
         },
         {
           path: "/password-reset",

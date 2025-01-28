@@ -1,0 +1,74 @@
+{
+  "welcomeToECCMon": "Welcome to ECCMon Mobile",
+  "getStarted": "Getting Started",
+  "inventoryOverview": "ECCMon Mobile is an inventory system for monitoring cylinder covers with a convenient QR scanning feature. This will help the employees to add/update cylinder covers in real-time. Follow the steps below to get started and make the most of the app.",
+  "installApp": "Install the PWA",
+  "installAppSafari": "Install the App on Safari",
+  "installAppSafariInstructions": "Open the app in your browser on your mobile device and tap 'Add to Home Screen'.",
+  "signIn": "Sign In",
+  "openAppAndSignIn": "Open the app and sign in using your credentials.",
+  "firstTimeUserRegister": "If you're a first-time user, make sure to click the link <span class='link'><a class='text-blue-600 font-medium hover:bg-cyan-600 text-sm border hover:text-white px-2 py-1 rounded-md transition duration-300' href='/request-account'>Request Now</a></span> and fill out the form. After completing the form, wait for the confirmation email to have your registration approved by the admin.",
+  "usingQRScanner": "Using the QR Scanning Feature",
+  "operations": "Operations",
+  "submenuOptions": {
+    "storageOperations": {
+      "title": "Storage Operations",
+      "description": [
+        "When the scanned cylinder cover is new and does not exist in the database, it will automatically set in this operation.",
+        "The user will input the necessary details such as location and the date."
+      ]
+    },
+    "processOperations": {
+      "title": "Process Operations",
+      "cases": {
+        "case0": "Case 0 (newly manufactured): LMD → Finishing → Assembly",
+        "case1": "Case 1 (remanufactured): Disassembly → Grooving → LMD → Assembly",
+        "case2": "Case 2 (normally maintained): Disassembly → Assembly"
+      },
+      "description": [
+        "For the process operations, it was divided into three(3) classifications: Case 0 (newly manufactured), Case 1 (remanufactured), and Case 2 (normally maintained).",
+        "The table includes a status column, indicating whether operations are ongoing, completed, or failed."
+      ]
+    },
+    "mountedOperations": {
+      "title": "Mounted Operations",
+      "description": [
+        "Displays all mounted cylinder covers along with their details."
+      ]
+    },
+    "dismountedOperations": {
+      "title": "Dismounted Operations",
+      "description": ["Shows all dismounted cylinder covers."]
+    },
+    "disposalOperations": {
+      "title": "Disposal Operations",
+      "description": [
+        "Contains records of disposed cylinder covers, with serial numbers and disposal dates listed."
+      ]
+    }
+  },
+  "openScanner": "Open the QR Scanner",
+  "tapScanQRButton": "From the home screen, tap the 'Scan QR' button to activate your mobile device's camera.",
+  "scanCylinderQR": "Scan the Cylinder Cover QR Code",
+  "pointCameraAtQR": "Point your device's camera at the QR code on the cylinder cover you want to scan.",
+  "viewDetails": "View the Details",
+  "detailsDisplayed": "Once the QR code is scanned, the app will display details about the cylinder cover, including its status and any relevant history.",
+  "updateCylinderCover": "Updating the Cylinder Cover",
+  "updateCylinderCoverInstructions": "To update the details of a cylinder cover, scan its QR code to access its page. \nOnce it is on the Scanned Result Screen, it will show the last scanned data. \nYou just need to change the selected operation and fill out the other empty details on the screen.",
+  "menu": "Navigating the App",
+  "useSidebarToNavigate": "Use the bottom bar to navigate to sections such as Home, Qr Button and Profile.",
+  "settings": "Settings",
+  "managePreferences": "Manage language preferences, adjust theme settings, and update account details.",
+  "notifications": "Notifications",
+  "stayUpdated": "Stay updated by checking notifications for updates related to the monitoring system or app usage.",
+  "reportIssue": "Reporting an Issue",
+  "submitBugReport": "If you encounter any issues, go to the Help & Support section and submit a bug report with details about the issue you're facing.",
+  "changeLanguage": "Changing Language",
+  "switchBetweenLanguages": "You can switch between English and Japanese at any time by going to the Settings section and tapping the language toggle.",
+  "logOut": "Logging Out",
+  "secureLogOut": "To securely log out of the app, tap the Logout button in the sidebar.",
+  "performanceTips": "Tips for Better Performance",
+  "stableConnection": "Ensure your device has a stable internet connection to scan QR codes and load information effectively.",
+  "keepAppUpdated": "Keep the app updated to receive new features and bug fixes.",
+  "developerTeam": "Developer Team"
+}

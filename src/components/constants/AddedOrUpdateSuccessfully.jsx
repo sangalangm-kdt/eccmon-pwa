@@ -71,7 +71,7 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
 
           return Object.entries(parsedDetails).map(([subKey, subValue]) => (
             <li key={subKey} className="flex justify-between">
-              <span className="capitalize font-medium ">
+              <span className="font-medium capitalize">
                 {labels[subKey] || subKey}:
               </span>
               <span>{String(subValue)}</span>
@@ -85,7 +85,7 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
 
       return (
         <li key={key} className="flex justify-between">
-          <span className="capitalize font-medium">{displayKey}:</span>
+          <span className="font-medium capitalize">{displayKey}:</span>
           <span>{String(value)}</span>
         </li>
       );
@@ -93,8 +93,8 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white w-80 max-w-md rounded-lg shadow-lg p-4 transform transition-transform">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="w-80 max-w-md transform rounded-lg bg-white p-4 shadow-lg transition-transform dark:bg-gray-600">
         <div className="flex flex-col items-center justify-center">
           <div className="animate-bounce">
             <IoCheckmarkDone size={32} color="#41c88b" />
@@ -103,35 +103,37 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
 
           {selectedStatus && (
             <div
-              className="text-sm mt-2 p-2 rounded-full"
+              className="mt-2 rounded-full p-2 text-sm"
               style={{ backgroundColor, color: textColor }}
             >
               {selectedStatus}
             </div>
           )}
 
-          <div className="w-full mt-4 p-2 bg-gray-100 rounded">
-            <p className="text-sm font-semibold items-center flex justify-center">
+          <div className="mt-4 w-full rounded bg-gray-100 p-2 dark:bg-gray-500">
+            <p className="flex items-center justify-center text-sm font-semibold">
               Details
             </p>
             {data ? (
-              <ul className="text-sm text-gray-700">{renderData(data)}</ul>
+              <ul className="text-sm text-gray-700 dark:text-gray-200">
+                {renderData(data)}
+              </ul>
             ) : (
               <p className="text-sm text-gray-500">No data available</p>
             )}
           </div>
 
-          <div className="flex flex-row w-full justify-between items-center text-sm pt-8">
+          <div className="flex w-full flex-row items-center justify-between pt-8 text-sm">
             <button
               onClick={handleBackToQR}
-              className="flex w-full bg-gray-100 p-4 rounded-lg mr-3 items-center hover:bg-gray-200 transition"
+              className="mr-3 flex w-full items-center rounded-lg bg-gray-100 p-4 transition hover:bg-gray-200 dark:bg-gray-500"
             >
               <IoReturnUpBackOutline className="size-4" />
               <p className="px-2">Back to QR</p>
             </button>
             <button
               onClick={handleGoToHome}
-              className="flex w-full bg-primary p-4 rounded-lg text-white hover:bg-cyan-500 transition"
+              className="flex w-full rounded-lg bg-primary p-4 text-white transition hover:bg-cyan-500"
             >
               <IoHome className="size-4" />
               <p className="px-1">Go to home</p>

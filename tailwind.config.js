@@ -17,7 +17,9 @@ module.exports = {
         navbar: "#fafafa",
         primaryText: "#333333",
         secondaryText: "#6e7271",
-        inputBorderColor: "rgba(79,79,79,38%)",
+        inputBorderColor: "rgba(79,79,79,38%)", 
+         cyanToBlue: "linear-gradient(to right, #22d3ee, #3b82f6)",
+        cyanToBlueActive: "linear-gradient(to right, #1ca1c9, #2a6edc)",
       },
       spacing: {
         18: "4.5rem",
@@ -35,6 +37,8 @@ module.exports = {
       screens: {
         xs: "300px", // Custom breakpoint for extra small screens
       },
+      borderColor:{cyanToBlue: "linear-gradient(to right, #22d3ee, #3b82f6)",
+        cyanToBlueActive: "linear-gradient(to right, #1ca1c9, #2a6edc)",},
       borderWidth: {
         DEFAULT: "1px",
         0: "0",

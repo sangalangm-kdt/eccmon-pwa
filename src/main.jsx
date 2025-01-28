@@ -1,19 +1,21 @@
-import React, { useEffect } from "react";
+// index.js
+import React, { StrictMode, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { Provider } from "react-redux";
+import { ThemeProvider } from "./context/theme-context";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
 import store from "./state/store";
-import { Provider } from "react-redux";
-import { ThemeProvider } from "./context/theme-context";
 
-// Import the PWA registration utility from vite-plugin-pwa
 import { registerSW } from "virtual:pwa-register";
 
+// Initialize PWA registration
 const ServiceWorkerRegistration = () => {
+  const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
+
   useEffect(() => {
-    // Register the service worker to enable PWA functionality
     if ("serviceWorker" in navigator) {
       registerSW({
         onOfflineReady() {
@@ -24,27 +26,43 @@ const ServiceWorkerRegistration = () => {
         },
         onUpdated() {
           console.log("The PWA has been updated.");
+          setIsUpdateAvailable(true);
         },
       });
-    } else {
-      console.log("Service worker is not supported in this browser.");
     }
-  }, []); // Empty dependency array ensures this runs once when the app mounts
+  }, []);
 
-  return null; // This component doesn't need to render anything
+  return isUpdateAvailable ? (
+    <div className="fixed bottom-0 left-0 right-0 bg-blue-600 p-4 text-white">
+      <span>New content is available! Please refresh to update.</span>
+      <button
+        onClick={() => window.location.reload()}
+        className="rounded bg-blue-800 px-4 py-2"
+      >
+        Refresh
+      </button>
+    </div>
+  ) : null;
 };
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-
-root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ThemeProvider>
-        <I18nextProvider i18n={i18n}>
-          <ServiceWorkerRegistration />
-          <App />
-        </I18nextProvider>
-      </ThemeProvider>
-    </Provider>
-  </React.StrictMode>,
-);
+// Rendering the app with the WebSocketProvider
+if (!window.reactRoot) {
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  window.reactRoot = root; // Store it globally
+  root.render(
+    <StrictMode>
+      <Provider store={store}>
+        <ThemeProvider>
+          <I18nextProvider i18n={i18n}>
+            <ServiceWorkerRegistration />
+            <App />
+          </I18nextProvider>
+        </ThemeProvider>
+      </Provider>
+    </StrictMode>,
+  );
+} else {
+  console.warn(
+    "React root is already initialized. Skipping re-initialization.",
+  );
+}

@@ -1,8 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
+import { formatDate } from "../../../../utils/formatdate";
 
 const Dismounting = ({
   selectedStatus,
@@ -10,83 +10,61 @@ const Dismounting = ({
   disabled,
   showAlert,
   setShowAlert,
+  resetFlag, // Add resetFlag prop to trigger reset
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
-  console.log(cylinderData);
-  const [site, setSite] = useState(cylinderData?.location);
+
+  // Store the initial data and prevent changes unless the user modifies it
+  const [initialData, setInitialData] = useState(cylinderData);
+
+  const [site, setSite] = useState(initialData?.location);
   const [engineNum, setEngineNum] = useState(
-    cylinderData?.updates?.otherDetails?.engineNumber
+    initialData?.updates?.otherDetails?.engineNumber,
   );
   const [opHours, setOpHours] = useState(
-    cylinderData?.updates?.otherDetails?.operationHours
+    initialData?.updates?.otherDetails?.operationHours,
   );
   const [mountPos, setMountPos] = useState(
-    cylinderData?.updates?.otherDetails?.mountingPosition
+    initialData?.updates?.otherDetails?.mountingPosition,
   );
   const [date, setDate] = useState(() => {
-    const today = cylinderData?.updates?.dateDone
-      ? new Date(cylinderData?.updates?.dateDone)
+    const today = initialData?.updates?.dateDone
+      ? new Date(initialData?.updates?.dateDone)
       : new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    const hours = String(today.getHours()).padStart(2, "0");
-    const minutes = String(today.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
+    return formatDate(today); // Return full dateTime
   });
-  const [cycle, setCycle] = useState(cylinderData?.cycle);
+  const [cycle, setCycle] = useState(initialData?.cycle);
 
+  // Update fields when selectedStatus changes
   useEffect(() => {
-    setSite(
-      selectedStatus === cylinderData?.status ? cylinderData?.location : ""
-    );
-    setEngineNum(
-      selectedStatus === cylinderData?.status
-        ? cylinderData?.updates?.otherDetails?.engineNumber
-        : ""
-    );
-    setOpHours(
-      selectedStatus === cylinderData?.status
-        ? cylinderData?.updates?.otherDetails?.operationHours
-        : 0
-    );
-    setMountPos(
-      selectedStatus === cylinderData?.status
-        ? cylinderData?.updates?.otherDetails?.mountingPosition
-        : ""
-    );
-    setDate(() => {
-      const today =
-        selectedStatus === cylinderData?.status &&
-        cylinderData?.updates?.dateDone
-          ? new Date(cylinderData?.updates?.dateDone)
-          : new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const day = String(today.getDate()).padStart(2, "0");
-      const hours = String(today.getHours()).padStart(2, "0");
-      const minutes = String(today.getMinutes()).padStart(2, "0");
-      return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
-    });
+    if (selectedStatus === cylinderData?.status) {
+      setSite(cylinderData?.location);
+      setEngineNum(cylinderData?.updates?.otherDetails?.engineNumber);
+      setOpHours(cylinderData?.updates?.otherDetails?.operationHours);
+      setMountPos(cylinderData?.updates?.otherDetails?.mountingPosition);
+      setDate(cylinderData?.updates?.dateDone || new Date());
+    } else {
+      const today = new Date();
+      setDate(formatDate(today));
+      setOpHours("");
+    }
   }, [selectedStatus]);
 
+  // Update the data to parent component when fields change
   useEffect(() => {
     setData({
       serialNumber: cylinderData?.serialNumber,
       location: site,
-      // engineNum: engineNum,
-      // opHours: opHours,
-      // mountPos: mountPos,
       dateDone: date,
       cycle: cycle,
       otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,
     });
-  }, [site, engineNum, opHours, mountPos, date, cycle]);
+  }, [site, engineNum, opHours, mountPos, date, cycle, setData]);
 
   return (
     <div className="flex flex-col">
-      <div className="w-full p-2 rounded-lg bg-white text-sm">
+      <div className="w-full rounded-lg bg-white p-2 text-sm dark:bg-gray-500">
         <EngineInfo
           site={site}
           setSite={setSite}
@@ -100,7 +78,7 @@ const Dismounting = ({
         />
       </div>
 
-      <div className="w-full p-2 rounded-lg bg-white mt-3  text-sm">
+      <div className="mt-3 w-full rounded-lg bg-white p-2 text-sm dark:bg-gray-500">
         <AdditionalInfo
           mountPos={mountPos}
           setMountPos={setMountPos}

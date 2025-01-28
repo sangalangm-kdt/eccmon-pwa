@@ -280,7 +280,7 @@ const AccountRequestForm = () => {
               <button
                 type="button"
                 onClick={prevStep}
-                className="inline-flex items-center gap-2 rounded border bg-gray-100 px-4 py-3 font-medium text-gray-600 hover:bg-primary focus:outline-none"
+                className="border-cyanToBlue inline-flex items-center gap-2 rounded border bg-white px-4 py-3 font-medium text-gray-600 hover:bg-primary focus:outline-none"
               >
                 <IoArrowBack /> {/* Left arrow icon */}
                 <span>Back</span>
@@ -352,7 +352,7 @@ const AccountRequestForm = () => {
             type="button"
             className="inline-flex items-center gap-2 rounded-full border bg-gray-50 p-3 font-medium text-gray-600 hover:bg-primary focus:outline-none"
           >
-            <IoLogInOutline size={25} className="" />
+            <IoLogInOutline size={25} className="font-normal" />
           </button>
         </Link>
         <span className="flex p-4 text-sm text-gray-600">Go to Login</span>
