@@ -13,6 +13,8 @@ import profileEN from "./locales/en/profile.json"
 import profileJA from "./locales/ja/profile.json"
 import textSectionEN from "./locales/en/textSection.json"
 import textSectionJA from "./locales/ja/textSection.json"
+import reportBugsEN from "./locales/en/reportBugs.json"
+import reportBugsJA from "./locales/ja/reportBugs.json"
 
 
 const resources = {
@@ -22,7 +24,8 @@ const resources = {
     qrScanner: qrScannerEN,
     date: dateEN,
     profile:profileEN,
-    textSection:textSectionEN
+    textSection:textSectionEN,
+    reportBugs:reportBugsEN
   },
   ja: {
     common: commonJA,
@@ -30,7 +33,8 @@ const resources = {
     qrScanner: qrScannerJA,
     date: dateJA,
     profile:profileJA,
-     textSection:textSectionJA
+    textSection:textSectionJA,
+    reportBugs:reportBugsJA
   },
 };
 

@@ -178,7 +178,7 @@ const ProfilePage = () => {
               </div>
               <div
                 className="flex cursor-pointer items-center gap-3 p-3 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                onClick={() => console.log("Report Bugs Clicked")}
+                onClick={() => handleNavigation("/report-bugs")}
               >
                 {t("menuSection.reportBugs")}
                 <IoChevronForwardOutline size={16} className="ml-auto" />
