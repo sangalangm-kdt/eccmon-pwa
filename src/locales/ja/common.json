@@ -1,12 +1,12 @@
 {
   "installApp": "PWA",
-  "userDoesNotExist": "ユーザーは存在しません",
-  "invalidUserOrPass": "無効なメールアドレスまたはパスワードです。再試行してください。",
-  "errorNetwork": "予期しないエラーが発生しました。再試行してください。",
-  "errorFetchingUserData": "ユーザーデータの取得エラー",
+  "userDoesNotExist": "ユーザーが存在しません",
+  "invalidUserOrPass": "メールアドレスまたはパスワードが無効です。もう一度お試しください。",
+  "errorNetwork": "予期しないエラーが発生しました。もう一度お試しください。",
+  "errorFetchingUserData": "ユーザーデータの取得中にエラーが発生しました",
   "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認して再試行してください。",
-  "installAppSafari": "ホーム画面にインストール",
-  "installAppSafariInstructions": "1. Safariを開き、このページにアクセスします。\n2. 共有ボタン（上向きの矢印の付いた四角）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面にアイコンが表示されるので、タップして開きます。",
+  "installAppSafari": "ホーム画面に追加",
+  "installAppSafariInstructions": "1. Safariを開き、このページにアクセスしてください。\n2. 共有ボタン（上向き矢印の四角形）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面に表示されたアプリアイコンをタップして開いてください。",
   "home": "ホーム",
   "profile": "プロフィール",
   "scanner": "スキャナー",
@@ -24,8 +24,8 @@
 
   "welcomeToECCMon": "ECCMonへようこそ！",
   "getStarted": "始めましょう。",
-  "inventoryOverview": "このセクションでは、現在の在庫状況の概要を確認できます。",
-  "historySummary": "ここでは、活動履歴の概要を確認できます。",
+  "inventoryOverview": "このセクションでは、現在の在庫状況を概観できます。",
+  "historySummary": "ここでは、アクティビティ履歴の概要を確認できます。",
 
   "back": "戻る",
   "done": "完了",
@@ -34,7 +34,7 @@
   "saveButton": "保存",
   "editButton": "編集",
   "reviewInfo": "情報を確認する",
-  "reviewDetails": "入力した情報は正しいですか？",
+  "reviewDetails": "提出した情報は正しいですか？",
 
   "greetings": {
     "goodAMorning": "おはようございます、",
@@ -45,18 +45,18 @@
   "inventorySummary": {
     "searchPlaceholder": "シリアル番号を検索",
     "overview": "概要",
-    "totalCylinderScanned": "スキャンしたシリンダーの総数",
-    "storage": "ストレージ",
+    "totalCylinderScanned": "スキャンしたシリンダーの合計",
+    "storage": "保管",
     "process": {
       "all": "すべて",
-      "process": "工程",
-      "disassembly": "解体",
+      "process": "プロセス",
+      "disassembly": "分解",
       "grooving": "溝加工",
       "lmd": "LMD",
       "assembly": "組立",
       "finishing": "仕上げ"
     },
-    "mounted": "取り付け済み",
+    "mounted": "装着済み",
     "dismounted": "取り外し済み",
     "disposal": "廃棄"
   },
@@ -67,12 +67,12 @@
     "serialNo": "シリアル番号",
     "lastModifiedBy": "最終更新者",
     "completionDate": "完了日",
-    "process": "工程",
+    "process": "プロセス",
     "location": "場所",
     "cycle": "サイクル",
     "disposal": "廃棄",
     "disposalDate": "廃棄日",
-    "additionalDetails": "追加詳細",
+    "additionalDetails": "追加情報",
     "addDetails": {
       "case": "ケース",
       "isPassed": "ステータス",
@@ -84,13 +84,13 @@
   },
 
   "errorMessages": {
-    "unauthorized": "許可されていないアクセスです。ログインしてください。",
-    "userLoggedIn": "ユーザーは既にログインしています。",
-    "invalidCredentials": "ログイン情報が無効です。",
+    "unauthorized": "メールアドレスまたはパスワードが正しくありません。",
+    "userLoggedIn": "ユーザーはすでにログインしています。",
+    "invalidCredentials": "ログイン資格情報が無効です。",
     "accessDenied": "アクセスが拒否されました。",
     "unexpectedError": "予期しないエラーが発生しました。",
     "invalidEmail": "無効なメールアドレスです。",
-    "passwordResetSuccess": "パスワードリセットリンクをメールで送信しました。",
+    "passwordResetSuccess": "パスワードリセットリンクがメールに送信されました。",
     "fetchUserError": "ユーザーデータの取得中にエラーが発生しました。"
   }
 }

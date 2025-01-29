@@ -100,6 +100,17 @@
     "enterSerialCode": "Please enter a serial code."
   },
   "serialNumberFound": "Serial number found",
+  "yes": "Yes",
+  "cancel": "Cancel",
   "cylinderDoesNotExist": "The cylinder cover does not exist. Do you want to add it?",
-  "cylinderDisposed": "Cylinder is already disposed"
+  "cylinderDisposed": "Cylinder is already disposed",
+  "dialog": {
+    "caseDescriptions": "Description of Each Case",
+    "case0": "Case 0 (Newly Manufactured)",
+    "case1": "Case 1 (Remanufactured)",
+    "case2": "Case 2 (Normally Maintained)",
+    "case0Description": "{{process}}",
+    "case1Description": "{{process}}",
+    "case2Description": " {{process}}"
+  }
 }

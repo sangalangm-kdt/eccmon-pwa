@@ -30,7 +30,7 @@ const resources = {
     qrScanner: qrScannerJA,
     date: dateJA,
     profile:profileJA,
-     textSection:textSectionJA
+    textSection:textSectionJA
   },
 };
 

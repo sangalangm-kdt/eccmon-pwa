@@ -96,11 +96,39 @@ const ViewInfo = () => {
                       return null;
 
                     if (detailKey === "isPassed") {
+                      // Map the value to its corresponding string
                       detailValue =
-                        ["Ongoing", "Yes", "No"][parseInt(detailValue, 10)] ||
-                        "--";
-                    }
+                        ["Ongoing", "Passed", "Failed"][
+                          parseInt(detailValue, 10)
+                        ] || "--";
 
+                      // Determine the color coding based on the value
+                      let colorClasses = "";
+                      if (detailValue === "Passed") {
+                        colorClasses =
+                          "bg-green-100 text-green-500 font-medium";
+                      } else if (detailValue === "Ongoing") {
+                        colorClasses = "bg-sky-100 text-sky-500 font-medium";
+                      } else if (detailValue === "Failed") {
+                        colorClasses = "bg-red-100 text-red-500 font-medium";
+                      }
+
+                      return (
+                        <li
+                          key={detailKey}
+                          className={`flex justify-between px-2 py-2 text-tiny ${index !== details.length - 1 ? "border-b-0.5" : ""}`}
+                        >
+                          <label className="text-md font-medium text-gray-700 dark:text-gray-100">
+                            {labels[detailKey] || detailKey}
+                          </label>
+                          <p
+                            className={`rounded-full p-2 text-xs ${colorClasses}`}
+                          >
+                            {String(detailValue || "--")}
+                          </p>
+                        </li>
+                      );
+                    }
                     return (
                       <li
                         key={detailKey}
@@ -177,7 +205,7 @@ const ViewInfo = () => {
                 {label}
               </label>
               <p className="text-sm text-gray-600 dark:text-gray-100">
-                {value || t("viewInfo.noDataToDisplay")}
+                {value || "--"}
               </p>
             </div>
           ))}

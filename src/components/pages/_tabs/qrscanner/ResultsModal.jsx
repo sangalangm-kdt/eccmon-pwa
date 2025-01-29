@@ -53,13 +53,13 @@ const ResultsModal = ({
               className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-400 dark:text-gray-100"
               onClick={onClose}
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button
               className="w-full rounded-full bg-primary px-4 py-2 text-white transition"
               onClick={onConfirm}
             >
-              Yes
+              {t("yes")}
             </button>
           </div>
         ) : (

@@ -48,7 +48,7 @@ const UserGuidelines = () => {
               <li key={section} className="mb-3">
                 <button
                   onClick={() => toggleSection(section)}
-                  className="text-sm text-gray-600 hover:text-primary dark:text-gray-100 dark:hover:text-primary"
+                  className="text-sm text-gray-600 underline hover:text-primary dark:text-gray-100 dark:hover:text-primary"
                 >
                   {t(section)}
                 </button>
@@ -73,6 +73,17 @@ const UserGuidelines = () => {
               )}
         </section>
       </div>
+
+      {/* Footer */}
+      <footer className="py-4 text-center text-gray-800 dark:bg-gray-800 dark:text-white">
+        <p className="text-sm">
+          {t("footerMessage", { appName: "ECCMon" })} &copy;{" "}
+          {new Date().getFullYear()}
+        </p>
+        <p className="text-tiny font-light text-gray-600 dark:text-gray-300">
+          {t("footerDisclaimer")}
+        </p>
+      </footer>
     </div>
   );
 };

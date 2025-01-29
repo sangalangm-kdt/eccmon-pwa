@@ -42,7 +42,7 @@ const UpdateInfo = lazy(
 const ChangePass = lazy(
   () => import("./components/pages/_tabs/profile/ChangePass"),
 );
-
+const Faq = lazy(() => import("./components/pages/_tabs/profile/Faq"));
 const Layout = () => {
   const location = useLocation();
   const hideNavBarPaths = [
@@ -50,6 +50,7 @@ const Layout = () => {
     "/change-password",
     "/view-info",
     "/user-guidelines",
+    "/faq",
   ];
   const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
   return (
@@ -95,6 +96,10 @@ function App() {
         {
           path: "user-guidelines",
           element: <UserGuidelines />,
+        },
+        {
+          path: "FAQ",
+          element: <Faq />,
         },
         {
           path: "/password-reset",

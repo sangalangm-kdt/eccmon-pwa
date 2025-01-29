@@ -8,12 +8,12 @@
       "updateInfo": "Update information",
       "changePass": "Change Password"
     },
-    "language": "Language:",
+    "language": "Language",
     "theme": {
       "light": "Switch to Light Mode",
       "dark": "Switch to Dark Mode"
     },
-    "faq": "FAQ",
+    "faq": "Frequently Asked Questions (FAQ)",
     "helpSupport": "Help & Support",
     "userGuidelines": "User Guidelines",
     "reportBugs": "Report Bugs",

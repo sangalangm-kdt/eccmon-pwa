@@ -4,12 +4,7 @@ import axios from "axios";
 import Select from "react-select";
 import L from "leaflet"; // Import Leaflet for map integration
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
-import {
-  TextInput,
-  EmailInput,
-  LocationInput,
-  PasswordInput,
-} from "../../constants/TextInput"; // Keep your custom input components
+import { TextInput, RegisterSelection } from "../../constants/TextInput"; // Keep your custom input components
 import {
   IoArrowBack,
   IoArrowForwardOutline,
@@ -72,6 +67,24 @@ const AccountRequestForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Clear the error for the field being typed in
+    if (errors[name]) {
+      setErrors((prevErrors) => {
+        const newErrors = { ...prevErrors };
+        delete newErrors[name]; // Remove the error for the specific field
+        return newErrors;
+      });
+    }
+
+    // Email domain validation
+    if (name === "email" && value && !value.endsWith("@global.kawasaki.com")) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: "Email must be a @global.kawasaki.com address",
+      }));
+    }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -83,6 +96,28 @@ const AccountRequestForm = () => {
     setIsSubmitting(true);
 
     const validationErrors = {};
+
+    if (step === 1) {
+      // Validate step 1 fields
+      if (!formData.firstName)
+        validationErrors.firstName = "First name is required";
+      if (!formData.lastName)
+        validationErrors.lastName = "Last name is required";
+      if (!formData.userId)
+        validationErrors.userId = "Employee number is required";
+    }
+
+    if (step === 2) {
+      // Validate step 2 fields
+      if (!formData.affiliation)
+        validationErrors.affiliation = "Affiliation is required";
+      if (!formData.email) validationErrors.email = "Email is required";
+      if (!formData.password)
+        validationErrors.password = "Password is required";
+      if (!formData.prefecture)
+        validationErrors.prefecture = "Prefecture is required";
+      if (!formData.city) validationErrors.city = "City is required";
+    }
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -98,8 +133,8 @@ const AccountRequestForm = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         // location: "",
-        // city: "",
-        // country: "",
+        city: formData.city,
+
         email: formData.email,
         password: formData.password,
         isApprove: 2,
@@ -125,24 +160,57 @@ const AccountRequestForm = () => {
   };
 
   // Handle navigation between steps
-  const nextStep = () => setStep((prevStep) => Math.min(prevStep + 1, 3));
+  const nextStep = () => {
+    const validationErrors = {};
+
+    if (step === 1) {
+      if (!formData.firstName)
+        validationErrors.firstName = "First name is required";
+      if (!formData.lastName)
+        validationErrors.lastName = "Last name is required";
+      if (!formData.userId)
+        validationErrors.userId = "Employee number is required";
+    }
+
+    if (step === 2) {
+      if (!formData.affiliation)
+        validationErrors.affiliation = "Affiliation is required";
+      if (!formData.email) validationErrors.email = "Email is required";
+      if (!formData.password)
+        validationErrors.password = "Password is required";
+      if (!formData.prefecture)
+        validationErrors.prefecture = "Prefecture is required";
+      if (!formData.city) validationErrors.city = "City is required";
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return; // Don't move to next step if there are validation errors
+    }
+
+    setErrors({});
+    setStep((prevStep) => Math.min(prevStep + 1, 3));
+  };
+
   const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
 
+  const isDarkMode = document.documentElement.classList.contains("dark");
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 xs:bg-white lg:bg-secondary">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 dark:bg-gray-700 xs:bg-white lg:bg-secondary">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm gap-1 rounded bg-white p-8 text-sm shadow-md xs:shadow-none"
+        className="w-full max-w-sm gap-1 rounded bg-white p-8 text-sm shadow-md xs:bg-none xs:shadow-none dark:xs:bg-transparent"
       >
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-700">
+        <h2 className="mb-6 text-center text-2xl font-bold text-gray-700 dark:text-gray-50">
           Request an Account
         </h2>
-        <div className="mb-4 text-center text-xs text-gray-500">
+        <div className="mb-4 text-center text-xs text-gray-500 dark:text-gray-200">
           Please fill out the fields below
         </div>
 
         {/* Progress Bar */}
-        <div className="mb-4 flex justify-between text-xs text-gray-500">
+        <div className="mb-4 flex justify-between text-xs text-gray-500 dark:text-gray-100">
           <div
             className={`w-1/3 ${step === 1 ? "font-medium text-primary" : ""}`}
           >
@@ -173,6 +241,7 @@ const AccountRequestForm = () => {
               <div className="mb-4 flex flex-col gap-2 text-sm">
                 <TextInput
                   label="First Name"
+                  type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
@@ -182,20 +251,22 @@ const AccountRequestForm = () => {
                 <TextInput
                   label="Last Name"
                   name="lastName"
+                  type="text"
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder="Enter last name"
                   error={errors.lastName}
+                />{" "}
+                <TextInput
+                  label="Employee Number"
+                  type="text"
+                  name="userId"
+                  value={formData.userId.trim()}
+                  onChange={handleChange}
+                  placeholder="Enter employee number"
+                  error={errors.userId}
                 />
               </div>
-              <TextInput
-                label="Employee Number"
-                name="userId"
-                value={formData.userId}
-                onChange={handleChange}
-                placeholder="Enter employee number"
-                error={errors.userId}
-              />
             </div>
 
             <div className="mt-6 flex justify-end">
@@ -215,21 +286,18 @@ const AccountRequestForm = () => {
         {step === 2 && (
           <>
             <div className="mb-4">
-              <div className="mb-4">
-                {" "}
-                <label className="font-semibold text-primaryText">
-                  Affiliation
-                </label>
-                <Select
-                  options={affiliationOptions}
-                  value={affiliationOptions.find(
-                    (option) => option.value === formData.affiliation,
-                  )}
-                  onChange={(e) => handleSelectChange(e, "affiliation")}
-                />
-              </div>
-              <EmailInput
+              <RegisterSelection
+                label="Affiliation"
+                fieldName="affiliation"
+                options={affiliationOptions}
+                value={formData.affiliation}
+                onChange={handleSelectChange}
+                placeholder="Select affiliation"
+                error={errors.affiliation}
+              />
+              <TextInput
                 label="Email"
+                type="email"
                 name="email"
                 placeholder="Enter email"
                 value={formData.email}
@@ -237,8 +305,9 @@ const AccountRequestForm = () => {
                 error={errors.email}
               />
 
-              <PasswordInput
+              <TextInput
                 label="Password"
+                type="password"
                 name="password"
                 placeholder="Enter password"
                 value={formData.password}
@@ -246,41 +315,32 @@ const AccountRequestForm = () => {
                 error={errors.password}
               />
 
-              <div className="mb-4">
-                {" "}
-                <label className="font-semibold text-primaryText">
-                  Prefectures
-                </label>
-                <Select
-                  options={prefectureOptions}
-                  value={prefectureOptions.find(
-                    (option) => option.value === formData.prefecture,
-                  )}
-                  onChange={(e) => {
-                    handleSelectChange(e, "prefecture");
-                    setPrefecture(e.value);
-                  }}
-                />
-              </div>
+              <RegisterSelection
+                label="Prefectures"
+                fieldName="prefectures"
+                options={prefectureOptions}
+                value={formData.prefecture}
+                onChange={handleSelectChange}
+                placeholder="Select prefectures"
+                error={errors.prefecture}
+              />
 
-              <div className="mb-4">
-                {" "}
-                <label className="font-semibold text-primaryText">City</label>
-                <Select
-                  options={cityOptions}
-                  value={cityOptions.find(
-                    (option) => option.value === formData.city,
-                  )}
-                  onChange={(e) => handleSelectChange(e, "city")}
-                />
-              </div>
+              <RegisterSelection
+                label="City"
+                fieldName="city"
+                options={cityOptions}
+                value={formData.city}
+                onChange={handleSelectChange}
+                placeholder="Select city"
+                error={errors.city}
+              />
             </div>
 
             <div className="mt-6 flex justify-between">
               <button
                 type="button"
                 onClick={prevStep}
-                className="border-cyanToBlue inline-flex items-center gap-2 rounded border bg-white px-4 py-3 font-medium text-gray-600 hover:bg-primary focus:outline-none"
+                className="inline-flex items-center gap-2 rounded border border-cyanToBlue bg-white px-4 py-3 font-medium text-gray-600 hover:bg-primary focus:outline-none"
               >
                 <IoArrowBack /> {/* Left arrow icon */}
                 <span>Back</span>

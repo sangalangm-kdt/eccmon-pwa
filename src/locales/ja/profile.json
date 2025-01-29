@@ -1,22 +1,22 @@
 {
   "profileSection": {
-    "employeeId": "社員ID:"
+    "employeeId": "従業員ID:"
   },
   "menuSection": {
     "accountSettings": {
       "account": "アカウント設定",
-      "updateInfo": "情報を更新",
-      "changePass": "パスワードを変更"
+      "updateInfo": "情報の更新",
+      "changePass": "パスワード変更"
     },
-    "language": "言語:",
+    "language": "言語",
     "theme": {
       "light": "ライトモードに切り替え",
       "dark": "ダークモードに切り替え"
     },
-    "faq": "よくある質問",
-    "helpSupport": "ヘルプ & サポート",
-    "userGuidelines": "ユーザーガイドライン",
-    "reportBugs": "バグを報告",
+    "faq": "よくある質問 (FAQ)",
+    "helpSupport": "ヘルプ＆サポート",
+    "userGuidelines": "ユーザーガイド",
+    "reportBugs": "バグ報告",
     "logout": "ログアウト"
   }
 }

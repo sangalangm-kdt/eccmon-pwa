@@ -23,7 +23,7 @@ const Process = ({
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
-  const { t } = useTranslation("qrScanner");
+  const { t } = useTranslation();
 
   // Store the initial data and prevent changes unless the user modifies it
   const [initialData, setInitialData] = useState(cylinderData);
@@ -199,12 +199,32 @@ const Process = ({
   };
 
   const handleInfoIconClick = () => {
-    setShowInfoDialog(true);
-    setInfoDialogContent("This is sample dialog content.");
-  };
+    const caseDescriptions = {
+      0: t("qrScanner:dialog.case0Description", {
+        process: "LMD → Finishing → Assembly",
+      }),
+      1: t("qrScanner:dialog.case1Description", {
+        process: "Disassembly → Grooving → LMD → Assembly",
+      }),
+      2: t("qrScanner:dialog.case2Description", {
+        process: "Disassembly → Assembly",
+      }),
+    };
 
-  const handleInfoIconClose = () => {
-    setShowInfoDialog(false);
+    const description = `
+    <strong>${t("qrScanner:dialog.caseDescriptions")}</strong>
+    <ul classname="mb-2">
+      <li>${t("qrScanner:dialog.case0")} -<em> ${caseDescriptions[0]}</em></li>
+      <li>${t("qrScanner:dialog.case1")} -<em> ${caseDescriptions[1]}</em></li>
+      <li>${t("qrScanner:dialog.case2")} -<em> ${caseDescriptions[2]}</em></li>
+    </ul>
+  `;
+
+    setShowInfoDialog(true);
+    setInfoDialogContent(description);
+    setTimeout(() => {
+      setShowInfoDialog(false);
+    }, 5000);
   };
 
   return (
@@ -219,9 +239,11 @@ const Process = ({
       </h2>
 
       {showInfoDialog && (
-        <div className="absolute left-64 top-96 z-10 -translate-x-1/2 transform rounded-md border bg-white p-4 shadow-md">
-          <div className="absolute -top-2 left-1/2 h-0 w-0 -translate-x-1/2 transform border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
-          <p className="pointer-events-none">{infoDialogContent}</p>
+        <div className="absolute left-64 top-96 z-10 -translate-x-1/2 transform rounded-md border bg-white p-4 shadow-md dark:bg-gray-800">
+          <p
+            className="pointer-events-none text-xs"
+            dangerouslySetInnerHTML={{ __html: infoDialogContent }}
+          ></p>
         </div>
       )}
 

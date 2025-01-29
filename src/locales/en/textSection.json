@@ -1,52 +1,56 @@
 {
   "welcomeToECCMon": "Welcome to ECCMon Mobile",
   "getStarted": "Getting Started",
-  "inventoryOverview": "ECCMon Mobile is an inventory system for monitoring cylinder covers with a convenient QR scanning feature. This will help the employees to add/update cylinder covers in real-time. Follow the steps below to get started and make the most of the app.",
+  "inventoryOverview": "<span class ='font-semibold text-primaryText text-sm dark:text-gray-50'>Engine Cylinder Cover Monitoring(ECCMon) Mobile</span> is an inventory system developed by <i>KHI Design and Technical Services, Inc. (2024)</i> for monitoring cylinder covers with a convenient QR scanning feature.<br>This will help the employees to add/update cylinder covers in real-time using their mobile devices. Follow the steps below to get started and make the most of the app.",
   "installApp": "Install the PWA",
-  "installAppSafari": "Install the App on Safari",
+  "installAppSafari": "Install the App on Safari/Chrome/Edge",
   "installAppSafariInstructions": "Open the app in your browser on your mobile device and tap 'Add to Home Screen'.",
   "signIn": "Sign In",
   "openAppAndSignIn": "Open the app and sign in using your credentials.",
-  "firstTimeUserRegister": "If you're a first-time user, make sure to click the link <span class='link'><a class='text-blue-600 font-medium hover:bg-cyan-600 text-sm border hover:text-white px-2 py-1 rounded-md transition duration-300' href='/request-account'>Request Now</a></span> and fill out the form. After completing the form, wait for the confirmation email to have your registration approved by the admin.",
+  "firstTimeUserRegister": "If you're a first-time user, make sure to click the link <span class='link'><a class='text-primary font-medium hover:bg-cyan-600 text-sm border hover:text-white px-2 py-1 rounded-md transition duration-300' href='/request-account'>Request Now</a></span> and fill out the form. After completing the form, wait for the confirmation email to have your registration approved by the admin.",
   "usingQRScanner": "Using the QR Scanning Feature",
   "operations": "Operations",
+  "operationDetailInstructions": "Before we proceed, let us discuss below the following operations that are essential when selecting",
   "submenuOptions": {
     "storageOperations": {
       "title": "Storage Operations",
       "description": [
-        "When the scanned cylinder cover is new and does not exist in the database, it will automatically set in this operation.",
+        "When the scanned cylinder cover is new and does not exist, it will automatically set in this operation.",
         "The user will input the necessary details such as location and the date."
       ]
     },
     "processOperations": {
       "title": "Process Operations",
       "cases": {
-        "case0": "Case 0 (newly manufactured): LMD → Finishing → Assembly",
-        "case1": "Case 1 (remanufactured): Disassembly → Grooving → LMD → Assembly",
-        "case2": "Case 2 (normally maintained): Disassembly → Assembly"
+        "case0": "<span class='font-semibold text-gray-700 dark:text-gray-50  flex'>Case 0 (newly manufactured):</span> <span ><em>LMD → Finishing → Assembly</em></span>",
+        "case1": "<span class='font-semibold text-gray-700 dark:text-gray-50  flex'>Case 1 (remanufactured):</span> <span ><em>Disassembly → Grooving → LMD → Assembly</em></span>",
+        "case2": "<span class='font-semibold text-gray-700 dark:text-gray-50  flex'>Case 2 (normally maintained):</span> <span ><em>Disassembly → Assembly</em></span>"
       },
       "description": [
         "For the process operations, it was divided into three(3) classifications: Case 0 (newly manufactured), Case 1 (remanufactured), and Case 2 (normally maintained).",
-        "The table includes a status column, indicating whether operations are ongoing, completed, or failed."
+        "The user need to follow the process since every cases are different."
       ]
     },
     "mountedOperations": {
       "title": "Mounted Operations",
       "description": [
-        "Displays all mounted cylinder covers along with their details."
+        "It allows the user to modify/update the data such as the site name, engine number, operating hours, engine position, and date. In the Operating Hours, the user need to manually input the start of the operating time of the cylinder cover."
       ]
     },
     "dismountedOperations": {
       "title": "Dismounted Operations",
-      "description": ["Shows all dismounted cylinder covers."]
+      "description": [
+        "Just like in the Mounted Operations, the user need also to update the operating hours."
+      ]
     },
     "disposalOperations": {
       "title": "Disposal Operations",
       "description": [
-        "Contains records of disposed cylinder covers, with serial numbers and disposal dates listed."
+        "If the user chose this operation, he/she will not be able to add the current cylinder cover anymore since it was declared as disposed."
       ]
     }
   },
+  "optional": "<span class='font-light'>Optional:</span> <span class='font-light'><em>After dismounting, the user need to either store the cylinder cover in the <strong>Storage Operation</strong> or proceed to <strong>Disposal</strong>.</em></span>",
   "openScanner": "Open the QR Scanner",
   "tapScanQRButton": "From the home screen, tap the 'Scan QR' button to activate your mobile device's camera.",
   "scanCylinderQR": "Scan the Cylinder Cover QR Code",
@@ -54,15 +58,13 @@
   "viewDetails": "View the Details",
   "detailsDisplayed": "Once the QR code is scanned, the app will display details about the cylinder cover, including its status and any relevant history.",
   "updateCylinderCover": "Updating the Cylinder Cover",
-  "updateCylinderCoverInstructions": "To update the details of a cylinder cover, scan its QR code to access its page. \nOnce it is on the Scanned Result Screen, it will show the last scanned data. \nYou just need to change the selected operation and fill out the other empty details on the screen.",
+  "updateCylinderCoverInstructions": "To update the details of a cylinder cover, scan its QR code to access its page. <br> Once it is on the Scanned Result Screen, it will show the last scanned data. <br> You just need to change the selected operation and fill out the other empty details on the screen.",
   "menu": "Navigating the App",
-  "useSidebarToNavigate": "Use the bottom bar to navigate to sections such as Home, Qr Button and Profile.",
+  "useSidebarToNavigate": "Use the bottom bar to navigate to sections such as Home, QR Button, and Profile.",
   "settings": "Settings",
   "managePreferences": "Manage language preferences, adjust theme settings, and update account details.",
-  "notifications": "Notifications",
-  "stayUpdated": "Stay updated by checking notifications for updates related to the monitoring system or app usage.",
   "reportIssue": "Reporting an Issue",
-  "submitBugReport": "If you encounter any issues, go to the Help & Support section and submit a bug report with details about the issue you're facing.",
+  "submitBugReport": "If you encounter any issues, go to the Help & Support section and submit a bug report with details about the issue you're facing. However, this area is still in progress so stay tuned for the update. You can still message us if you encounter any issue and need faster solution. The email is provided in the 'Developer Team' section. ",
   "changeLanguage": "Changing Language",
   "switchBetweenLanguages": "You can switch between English and Japanese at any time by going to the Settings section and tapping the language toggle.",
   "logOut": "Logging Out",
@@ -70,5 +72,80 @@
   "performanceTips": "Tips for Better Performance",
   "stableConnection": "Ensure your device has a stable internet connection to scan QR codes and load information effectively.",
   "keepAppUpdated": "Keep the app updated to receive new features and bug fixes.",
-  "developerTeam": "Developer Team"
+  "developerTeam": "Developer Team",
+  "footerMessage": "Thank you for using {{appName}}",
+  "footerDisclaimer": "KHI Design and Technical Services, Inc. All rights reserved.",
+  "stepByStep": "Step-by-Step Guidelines",
+  "stepByStepMenu": {
+    "addNewCylinderCover": {
+      "title": "Step-by-Step Guide: Adding a New Cylinder Cover",
+      "steps": [
+        {
+          "step": "1",
+          "title": "Scan the QR Code or Add the Serial Number Manually",
+          "instruction": "Open the app and scan the QR code on the cylinder cover or manually enter the serial number if the QR code is not available."
+        },
+        {
+          "step": "2",
+          "title": "Automatic Default Operation: Storage",
+          "instruction": "Since the cylinder cover is new, it will automatically be set to the Storage operation by default."
+        },
+        {
+          "step": "3",
+          "title": "Fill Out the Location and Date",
+          "instruction": "Enter the location where the cylinder cover is stored. The Date field will default to the current date, but you can modify it if necessary."
+        },
+        {
+          "step": "4",
+          "title": "Proceed to Continue",
+          "instruction": "Once the location and date are filled out, tap Continue to move to the next screen."
+        },
+        {
+          "step": "5",
+          "title": "Review the Information",
+          "instruction": "The app will display a review screen with all the details you entered. Check the information carefully to minimize any errors. If you find any incorrect details, tap the Edit button at the top right corner to make changes."
+        },
+        {
+          "step": "6",
+          "title": "Save and Confirm the Cycle Count",
+          "instruction": "Once the information is correct, tap Save to store the cylinder cover in the system. The app will then prompt you with the current cycle count of the cylinder cover, confirming that the addition was successful."
+        }
+      ]
+    },
+    "updateCylinderCover": {
+      "title": "Step-by-Step Guide: Updating a Cylinder Cover",
+      "steps": [
+        {
+          "step": "1",
+          "title": "Scan the QR Code Again",
+          "instruction": "To update the details of an existing cylinder cover, scan its QR code again. This will take you to the Scanned Result Screen."
+        },
+        {
+          "step": "2",
+          "title": "View the Current Information",
+          "instruction": "The app will display the current details of the cylinder cover, including its last scanned data."
+        },
+        {
+          "step": "3",
+          "title": "Change the Selected Operation",
+          "instruction": "On the screen, you can select a new operation (such as Storage, Process, Mounted, etc.). Choose the appropriate operation that reflects the updated status of the cylinder cover."
+        },
+        {
+          "step": "4",
+          "title": "Fill Out the Updated Information",
+          "instruction": "Update any other necessary details on the screen, such as location, date, engine number, operating hours, and any other required fields."
+        },
+        {
+          "step": "5",
+          "title": "Review the Updated Information",
+          "instruction": "Carefully review all the updated information to ensure that everything is accurate. If any information is incorrect, tap the Edit button at the top right corner to make changes."
+        },
+        {
+          "step": "6",
+          "title": "Save the Updated Information",
+          "instruction": "Once the information is correct, tap Save to apply the updates. The app will store the updated details and show you the latest cycle count or any other relevant information."
+        }
+      ]
+    }
+  }
 }

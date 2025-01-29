@@ -13,9 +13,13 @@ import qrScannerStyles from "../../../styles/main";
 import { useTranslation } from "react-i18next";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import ManuallyAddModal from "../../../constants/ManuallyAddModal";
-import { PiCameraRotateThin } from "react-icons/pi";
 import CameraSwitchModal from "../../../constants/CameraSwitchModal";
-import { IoArrowBack } from "react-icons/io5";
+import {
+  IoArrowBack,
+  IoCameraReverseOutline,
+  IoFlashOffOutline,
+  IoFlashOutline,
+} from "react-icons/io5";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -166,12 +170,19 @@ const QRScanner = () => {
     if (track) {
       const capabilities = track.getCapabilities();
       if (capabilities.torch) {
-        track.applyConstraints({
-          advanced: [{ torch: !torchOn }],
-        });
-        setTorchOn(!torchOn);
+        track
+          .applyConstraints({
+            advanced: [{ torch: !torchOn }],
+          })
+          .then(() => {
+            setTorchOn(!torchOn);
+          })
+          .catch((err) => {
+            console.error("Error toggling torch: ", err);
+          });
       } else {
         console.error("Torch is not supported on this device.");
+        setError(t("qrScanner:torchNotSupported")); // Add a translation key for this message
       }
     }
   };
@@ -295,26 +306,22 @@ const QRScanner = () => {
         </div>
 
         <button
-          className="absolute bottom-4 left-4 rounded-full bg-white p-2 text-blue-500 shadow-md"
+          className="absolute right-18 top-8 rounded-full bg-transparent p-2 text-white shadow-md"
           onClick={toggleTorch}
         >
           {torchOn ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
-              {/* Torch On Icon */}
-            </svg>
+            <IoFlashOutline size={24} />
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6">
-              {/* Torch Off Icon */}
-            </svg>
+            <IoFlashOffOutline size={24} />
           )}
         </button>
 
         {/* Switch Camera Button */}
         <button
-          className="absolute right-5 top-8 z-60 text-white"
+          className="focus: absolute right-8 top-9 z-60 rounded-full text-white"
           onClick={handleSwitchCamera}
         >
-          <PiCameraRotateThin className="h-8 w-8" />
+          <IoCameraReverseOutline size={28} />
         </button>
 
         <div className="absolute bottom-18 z-60 flex w-80 flex-col justify-center">

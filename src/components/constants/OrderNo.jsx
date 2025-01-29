@@ -27,7 +27,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
           {t("qrScanner:orderNo")} <strong className="text-red-500">*</strong>
         </label>
         <input
-          className="w-full rounded border px-2 py-2 dark:bg-gray-600"
+          className="w-full rounded border px-2 py-2 text-gray-600 dark:bg-gray-700 dark:text-gray-100"
           type="text"
           placeholder={t("qrScanner:selectAnOrderNumber")}
           value={selectedOrderNo}
@@ -45,11 +45,11 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white">
+        <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-700">
           {/* Modal Header */}
           <div className="flex items-center justify-between border-b p-4">
             <button
-              className="text-gray-500"
+              className="text-gray-500 dark:text-gray-100"
               onClick={() => setIsModalOpen(false)}
             >
               Close
@@ -59,7 +59,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
           {/* Search Input */}
           <div className="p-4">
             <input
-              className="w-full rounded border p-2"
+              className="w-full rounded border bg-transparent p-2 dark:bg-gray-800 dark:text-gray-100"
               type="text"
               placeholder="Search order numbers"
               value={searchTerm}
@@ -75,7 +75,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
                   filteredOrderNos?.map((orderNo) => (
                     <li
                       key={orderNo.id}
-                      className="cursor-pointer hover:bg-cyan-100"
+                      className="cursor-pointer hover:bg-cyan-100 dark:text-gray-100"
                       onClick={() => handleSelectOrderNo(orderNo.name)}
                     >
                       {orderNo.name}
@@ -90,7 +90,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
                 {orderNumber?.data?.map((orderNo) => (
                   <li
                     key={orderNo.id}
-                    className="cursor-pointer hover:bg-cyan-100"
+                    className="cursor-pointer text-gray-700 hover:bg-cyan-100 dark:text-gray-100"
                     onClick={() => handleSelectOrderNo(orderNo.name)}
                   >
                     {orderNo.name}

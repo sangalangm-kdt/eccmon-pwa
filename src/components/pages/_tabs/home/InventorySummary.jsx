@@ -7,6 +7,7 @@ import {
   LiaTruckMovingSolid,
   LiaTrashSolid,
 } from "react-icons/lia";
+import { PiWarehouseFill } from "react-icons/pi";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import { GoKebabHorizontal } from "react-icons/go";
 import { useTranslation } from "react-i18next";
@@ -38,12 +39,12 @@ const InventorySummary = ({ userId }) => {
     {
       name: t("inventorySummary.storage"),
       status: "storage",
-      icon: <LiaWarehouseSolid />,
+      icon: <LiaWarehouseSolid size={22} />,
     },
     {
       name: t("inventorySummary.process.process"),
       status: ["disassembly", "grooving", "lmd", "assembly", "finishing"],
-      icon: <LiaToolsSolid />,
+      icon: <LiaToolsSolid size={22} />,
       subcategories: [
         {
           name: t("inventorySummary.process.disassembly"),
@@ -61,17 +62,17 @@ const InventorySummary = ({ userId }) => {
     {
       name: t("inventorySummary.mounted"),
       status: "mounted",
-      icon: <LiaTruckLoadingSolid />,
+      icon: <LiaTruckLoadingSolid size={22} />,
     },
     {
       name: t("inventorySummary.dismounted"),
       status: "dismounted",
-      icon: <LiaTruckMovingSolid />,
+      icon: <LiaTruckMovingSolid size={22} />,
     },
     {
       name: t("inventorySummary.disposal"),
       status: "disposal",
-      icon: <LiaTrashSolid />,
+      icon: <LiaTrashSolid size={22} />,
     },
   ];
 
@@ -102,17 +103,41 @@ const InventorySummary = ({ userId }) => {
   const getCategoryColor = (category) => {
     switch (category) {
       case t("inventorySummary.storage"):
-        return { textColor: "text-blue-500", bgColor: "bg-blue-100" };
+        return {
+          textColor: "text-cyan-500 dark:text-cyan-300",
+          bgColor: "bg-cyan-100 dark:bg-cyan-300",
+          borderColor: "border-cyan-300 dark:border-cyan-300",
+        };
       case t("inventorySummary.process.process"):
-        return { textColor: "text-green-500", bgColor: "bg-green-100" };
+        return {
+          textColor: "text-green-500",
+          bgColor: "bg-green-100",
+          borderColor: "border-green-300",
+        };
       case t("inventorySummary.mounted"):
-        return { textColor: "text-yellow-500", bgColor: "bg-yellow-100" };
+        return {
+          textColor: "text-yellow-500",
+          bgColor: "bg-yellow-100",
+          borderColor: "border-yellow-300",
+        };
       case t("inventorySummary.dismounted"):
-        return { textColor: "text-orange-500", bgColor: "bg-orange-100" };
+        return {
+          textColor: "text-orange-500",
+          bgColor: "bg-orange-100",
+          borderColor: "border-orange-300",
+        };
       case t("inventorySummary.disposal"):
-        return { textColor: "text-red-500", bgColor: "bg-red-100" };
+        return {
+          textColor: "text-red-500",
+          bgColor: "bg-red-100",
+          borderColor: "border-red-300",
+        };
       default:
-        return { textColor: "text-gray-700", bgColor: "bg-gray-100" };
+        return {
+          textColor: "text-gray-700",
+          bgColor: "bg-gray-100",
+          borderColor: "border-gray-300",
+        };
     }
   };
 
@@ -185,8 +210,15 @@ const InventorySummary = ({ userId }) => {
         <p className="text-left text-lg font-semibold text-gray-700 dark:text-gray-50">
           {t("inventorySummary.overview")}
         </p>
-        <button onClick={() => setIsMenuVisible(!isMenuVisible)}>
-          <GoKebabHorizontal className="text-xl text-gray-600 dark:text-gray-50" />
+        <button
+          onClick={() => setIsMenuVisible(!isMenuVisible)}
+          className="rounded-full bg-cyan-50 p-2 hover:bg-cyan-100 focus:outline-none dark:bg-gray-700"
+        >
+          <GoKebabHorizontal
+            className={`text-xl text-cyan-500 dark:text-gray-50 ${
+              isMenuVisible ? "rotate-90 transform" : ""
+            }`}
+          />
         </button>
       </div>
       <div
@@ -200,25 +232,36 @@ const InventorySummary = ({ userId }) => {
           <p className="mb-5 border-b-0.5 py-2 text-lg text-gray-500 dark:text-gray-50">
             {totalCount}
           </p>
-          <div className="flex flex-wrap justify-center gap-4 xs:flex-nowrap xs:gap-4 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
+          <div className="flex flex-wrap items-center justify-center gap-4 xs:flex-nowrap xs:gap-2 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
             {categoryCounts.map(({ name, count }, index) => {
-              const { textColor, bgColor } = getCategoryColor(name);
+              const { textColor, bgColor, borderColor } =
+                getCategoryColor(name);
               const icon = categories[index]?.icon;
               return (
                 <div
                   key={name}
-                  className={`flex flex-col items-center justify-center gap-2 text-tiny ${textColor} relative w-full max-w-[150px] rounded-lg p-2 xs:w-1/6 sm:w-auto md:w-1/5 lg:w-1/5`}
+                  className={`relative flex w-full flex-col items-center justify-center gap-2 rounded-lg p-2 text-tiny xs:w-full sm:w-auto md:w-1/5 lg:w-1/5`}
                 >
                   {count > 0 && (
                     <div
-                      className={`absolute left-2/3 top-0 flex h-4 w-4 -translate-x-1/2 transform items-center justify-center rounded-full text-xs ${textColor} ${bgColor}`}
+                      className={`absolute left-2/3 top-0 flex h-4 w-4 -translate-x-1/2 transform items-center justify-center rounded-full bg-sky-500 text-tiny text-white`}
                     >
                       {count}
                     </div>
                   )}
-                  <div className="text-lg sm:text-md">{icon}</div>
-                  <div className="flex flex-row justify-between">
-                    <span className="text-center capitalize xs:text-tiny sm:text-tiny">
+                  <div className="flex items-center justify-center">
+                    <div
+                      className={`rounded-full p-2 ${textColor} ${borderColor} border`}
+                    >
+                      <div className="text-lg sm:text-md">{icon}</div>
+                    </div>
+                  </div>
+                  {/* Move the text outside of the flex container */}
+                  <div className="flex items-center justify-center p-0 leading-none">
+                    {" "}
+                    <span
+                      className={`text-center capitalize ${textColor} xs:text-tiny sm:text-tiny`}
+                    >
                       {name}
                     </span>
                   </div>

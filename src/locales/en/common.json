@@ -84,7 +84,7 @@
   },
 
   "errorMessages": {
-    "unauthorized": "Unauthorized access. Please log in.",
+    "unauthorized": "The email or password is incorrect.",
     "userLoggedIn": "User already logged in.",
     "invalidCredentials": "Invalid login credentials.",
     "accessDenied": "Access denied.",

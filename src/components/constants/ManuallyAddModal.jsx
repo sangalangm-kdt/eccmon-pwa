@@ -11,10 +11,9 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
   const { t } = useTranslation("qrScanner");
   const patterns = t("eccIdInstructions.patterns", { returnObjects: true });
 
-  // Update willScan state only after modal is open
   useEffect(() => {
     if (isOpen) {
-      setWillScan(false); // Only set state when modal is open
+      setWillScan(false);
     }
   }, [isOpen, setWillScan]);
 
@@ -23,7 +22,7 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
   const handleSubmit = () => {
     if (manualData.trim() !== "") {
       if (serialCodePattern.test(manualData)) {
-        onConfirm(manualData.toUpperCase());
+        onConfirm(manualData);
         setManualData("");
         setAlertMessage("");
         onClose();
@@ -36,7 +35,8 @@ const ManuallyAddModal = ({ isOpen, onClose, onConfirm, setWillScan }) => {
   };
 
   const handleInputChange = (e) => {
-    setManualData(e.target.value);
+    const uppercaseValue = e.target.value.toUpperCase();
+    setManualData(uppercaseValue.trim());
     if (alertMessage) {
       setAlertMessage("");
     }
@@ -98,7 +98,7 @@ ManuallyAddModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
-  setWillScan: PropTypes.func.isRequired, // Ensure it's passed as a prop
+  setWillScan: PropTypes.func.isRequired,
 };
 
 export default ManuallyAddModal;

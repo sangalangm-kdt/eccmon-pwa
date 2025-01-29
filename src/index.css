@@ -9,6 +9,7 @@ html, body {
   @apply min-h-screen;
   @apply overflow-x-hidden;
   @apply overflow-y-visible;
+  @apply select-none;
 }
 
 .dark body {

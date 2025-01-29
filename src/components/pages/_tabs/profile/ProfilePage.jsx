@@ -11,6 +11,7 @@ import {
   IoMoonOutline,
   IoSettingsOutline,
   IoSunnyOutline,
+  IoChevronUpOutline,
 } from "react-icons/io5";
 import { TbLogout2 } from "react-icons/tb";
 import { useTheme } from "../../../../context/theme-context";
@@ -25,7 +26,8 @@ const ProfilePage = () => {
   });
   const { theme, toggleTheme } = useTheme();
   const [isAccountSettingsOpen, setIsAccountSettingsOpen] = useState(false);
-  const [isHelpSupportOpen, setIsHelpSupportOpen] = useState(false); // New state for Help & Support section
+  const [isHelpSupportOpen, setIsHelpSupportOpen] = useState(false);
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false); // State for language dropdown
   const [selectedOption, setSelectedOption] = useState(null);
   const navigate = useNavigate();
 
@@ -46,7 +48,7 @@ const ProfilePage = () => {
     logout();
   };
   const handleNavigation = (path) => {
-    navigate(path); // Navigate to the specified path
+    navigate(path);
   };
 
   const toggleLanguage = (isJapanese) => {
@@ -114,20 +116,45 @@ const ProfilePage = () => {
         </div>
         <hr className="border-gray-200 dark:border-gray-600" />
 
-        {/* Language Toggle */}
-        <div className="flex items-center justify-between p-4 text-gray-700 transition-all dark:text-gray-300">
-          <div className="flex items-center gap-3">
+        {/* Language Dropdown */}
+        {/* Language Dropdown */}
+        <div className="text-gray-700 dark:text-gray-300">
+          <div
+            className="flex cursor-pointer items-center gap-3 p-4 transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+            onClick={() => setIsLanguageOpen((prev) => !prev)} // Toggle language dropdown visibility
+          >
             <IoLanguageOutline size={18} />
-            <span>
-              {t("menuSection.language")}{" "}
-              {i18n.language === "en" ? "English (US)" : "日本語"}
-            </span>
+            <div className="flex w-full justify-between">
+              <span>{t("menuSection.language")}</span>{" "}
+              <span className="flex flex-row items-center text-xs text-gray-500 dark:text-gray-300">
+                {" "}
+                {i18n.language === "en" ? "English (US)" : "日本語"}{" "}
+                {isLanguageOpen ? (
+                  <IoChevronUpOutline size={16} className="ml-2" />
+                ) : (
+                  <IoChevronDownOutline size={16} className="ml-2" />
+                )}
+              </span>
+            </div>
           </div>
-          <ToggleButton
-            isToggledInitially={i18n.language === "ja"}
-            onToggle={toggleLanguage}
-          />
+          {isLanguageOpen && (
+            <div className="ml-8 space-y-2 text-gray-600 dark:text-gray-400">
+              <div
+                className="flex cursor-pointer items-center p-3 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={() => toggleLanguage(false)} // Switch to English
+              >
+                English (US)
+              </div>
+              <div
+                className="flex cursor-pointer items-center p-3 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={() => toggleLanguage(true)} // Switch to Japanese
+              >
+                日本語
+              </div>
+            </div>
+          )}
         </div>
+
         <hr className="border-gray-200 dark:border-gray-600" />
 
         {/* Theme Toggle */}
@@ -164,7 +191,7 @@ const ProfilePage = () => {
             <div className="ml-8 space-y-2 text-gray-600 dark:text-gray-400">
               <div
                 className="flex cursor-pointer items-center gap-3 p-3 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                onClick={() => console.log("faq Clicked")}
+                onClick={() => handleNavigation("/faq")}
               >
                 {t("menuSection.faq")}
                 <IoChevronForwardOutline size={16} className="ml-auto" />
