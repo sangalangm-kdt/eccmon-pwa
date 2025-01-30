@@ -11,11 +11,13 @@ import { PiWarehouseFill } from "react-icons/pi";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import { GoKebabHorizontal } from "react-icons/go";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const InventorySummary = ({ userId }) => {
   const { t } = useTranslation("common");
   const cylinders = useCylinderCover().cylinder?.data;
   const cylinderUpdates = useCylinderUpdate().cylinder?.data;
+  const navigate = useNavigate();
 
   // Filter by User ID with same serialNumber for CylinderUpdates
   const filteredCylinderUpdates =
@@ -34,6 +36,10 @@ const InventorySummary = ({ userId }) => {
         (update) => update.serialNumber === item.serialNumber,
       ),
     ) ?? [];
+
+  const handleSerialNumberClick = (item) => {
+    navigate("/view-info", { state: { data: item } });
+  };
 
   const categories = [
     {
@@ -212,10 +218,10 @@ const InventorySummary = ({ userId }) => {
         </p>
         <button
           onClick={() => setIsMenuVisible(!isMenuVisible)}
-          className="rounded-full bg-cyan-50 p-2 hover:bg-cyan-100 focus:outline-none dark:bg-gray-700"
+          className="rounded-full bg-white p-2 hover:bg-cyan-100 focus:outline-none dark:bg-gray-700"
         >
           <GoKebabHorizontal
-            className={`text-xl text-cyan-500 dark:text-gray-50 ${
+            className={`text-xl text-gray-500 dark:text-gray-50 ${
               isMenuVisible ? "rotate-90 transform" : ""
             }`}
           />
@@ -353,7 +359,10 @@ const InventorySummary = ({ userId }) => {
 
                   return (
                     <div key={index} className="mt-2 flex-row">
-                      <h5 className="border-b-0.5 p-2 text-sm font-medium text-gray-600 dark:text-gray-50">
+                      <h5
+                        className="border-b-0.5 p-3 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-50"
+                        onClick={() => handleSerialNumberClick(item)}
+                      >
                         {serials}
                       </h5>
                     </div>
@@ -367,7 +376,10 @@ const InventorySummary = ({ userId }) => {
                 (item, index) => {
                   return (
                     <div key={index} className="mt-3">
-                      <h5 className="border-b-0.5 p-2 text-sm font-medium text-gray-600 dark:text-gray-50">
+                      <h5
+                        className="border-b-0.5 p-3 text-sm font-medium text-gray-600 dark:text-gray-50"
+                        onClick={() => handleSerialNumberClick(item)}
+                      >
                         {item.serialNumber}
                       </h5>
                     </div>

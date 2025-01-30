@@ -19,11 +19,11 @@ const UpdateInfo = () => {
           <IoArrowBack className="text-gray-700 dark:text-gray-100" />
           <p className="text-sm text-gray-700 dark:text-gray-100">Back</p>
         </button>
-        <h1 className="ml-18 flex-grow font-medium text-gray-700 dark:text-gray-100">
+        <h1 className="ml-16 flex-grow font-medium text-gray-700 dark:text-gray-100">
           Update Information
         </h1>
       </div>
-      <div className="mt-4 flex items-center justify-center rounded-md border-2 border-dashed border-yellow-500 p-4 text-yellow-500">
+      <div className="m-2 mt-4 flex items-center justify-center rounded-md border-2 border-dashed border-yellow-500 p-4 text-yellow-500">
         <IoWarningOutline className="mr-2 text-3xl" />
         <p className="text-sm">
           This section is under construction. Please check back later!

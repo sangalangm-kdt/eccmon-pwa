@@ -41,7 +41,7 @@ const DateField = ({ date, setDate, disabled }) => {
 
   return (
     <div className="relative w-full">
-      <div className="flex w-full flex-row items-center rounded border text-sm dark:bg-gray-600">
+      <div className="flex w-full flex-row items-center rounded border text-sm focus:border focus:border-primary focus:outline-none dark:bg-gray-600">
         {/* DatePicker with responsive width */}
         <DatePicker
           ref={datePickerRef} // Attach the ref to the DatePicker

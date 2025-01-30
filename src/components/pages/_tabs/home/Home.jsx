@@ -74,7 +74,7 @@ const Home = () => {
   const { message, icon } = getGreeting();
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-800">
+    <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-800">
       <Onboarding />
 
       {/* Slide-in animation for logo */}

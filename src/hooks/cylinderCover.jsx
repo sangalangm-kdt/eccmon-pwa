@@ -63,7 +63,7 @@ export const useCylinderCover = () => {
       serialNumber: input,
       isDisposed: 2,
       status: "Storage",
-      location: "None",
+      location: "",
       userId: userId,
     };
     await csrf();

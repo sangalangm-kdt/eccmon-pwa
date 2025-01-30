@@ -38,17 +38,26 @@ const Mounting = ({
   useEffect(() => {
     // Update state if selectedStatus matches
     if (selectedStatus === cylinderData?.status) {
-      setSite(cylinderData?.location);
-      setEngineNum(cylinderData?.updates?.otherDetails?.engineNumber);
-      setOpHours(cylinderData?.updates?.otherDetails?.operationHours);
-      setMountPos(cylinderData?.updates?.otherDetails?.mountingPosition);
+      setSite(cylinderData?.location || "");
+      setEngineNum(cylinderData?.updates?.otherDetails?.engineNumber || "");
+      setOpHours(cylinderData?.updates?.otherDetails?.operationHours || "");
+      setMountPos(cylinderData?.updates?.otherDetails?.mountingPosition || "");
       setDate(cylinderData?.updates?.dateDone || new Date());
     } else {
       // Reset the fields when the status changes
       setOpHours(""); // Reset operating hours
+
       setDate(new Date().toISOString().slice(0, 16)); // Reset completion date to current time
     }
-  }, [selectedStatus]);
+  }, [
+    cylinderData?.location,
+    cylinderData?.status,
+    cylinderData?.updates?.dateDone,
+    cylinderData?.updates?.otherDetails?.engineNumber,
+    cylinderData?.updates?.otherDetails?.mountingPosition,
+    cylinderData?.updates?.otherDetails?.operationHours,
+    selectedStatus,
+  ]);
   useEffect(() => {
     if (selectedStatus === cylinderData?.status) {
       setSite(cylinderData?.location);

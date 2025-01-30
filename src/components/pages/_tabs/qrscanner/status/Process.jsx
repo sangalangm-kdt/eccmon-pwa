@@ -23,7 +23,7 @@ const Process = ({
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
-  const { t } = useTranslation();
+  const { t } = useTranslation("qrScanner");
 
   // Store the initial data and prevent changes unless the user modifies it
   const [initialData, setInitialData] = useState(cylinderData);

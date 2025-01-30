@@ -2,11 +2,11 @@
 
 // Lighter pastel colors for statuses
 export const statusColors = {
-  storage: "bg-blue-100", // Lighter Pastel Blue
-  process: "bg-green-100", // Lighter Pastel Green
-  mounted: "bg-yellow-100", // Lighter Pastel Yellow
-  dismounted: "bg-orange-100", // Lighter Pastel Orange
-  disposal: "bg-red-100", // Lighter Pastel Red
+  storage: "bg-cyan-100 dark:bg-transparent dark:border dark:border-cyan-300", // Lighter Pastel Blue
+  process: "bg-green-100 dark:bg-transparent dark:border dark:border-green-300", // Lighter Pastel Green
+  mounted: "bg-yellow-100 dark:bg-transparent dark:border dark:border-yellow-300", // Lighter Pastel Yellow
+  dismounted: "bg-orange-100 dark:bg-transparent dark:border dark:border-orange-300", // Lighter Pastel Orange
+  disposal: "bg-red-100 dark:bg-transparent dark:border dark:border-red-300", // Lighter Pastel Red
 };
 
 // Function to darken the text color based on the background color
@@ -60,11 +60,11 @@ export const getStatusColors = (status) => {
   let textColor = "text-gray-700"; // Default text color
 
   // Determine text color based on background (lightness/darkness)
-  if (baseColor === "bg-blue-100") textColor = "text-blue-500";
-  if (baseColor === "bg-green-100") textColor = "text-green-500";
-  if (baseColor === "bg-yellow-100") textColor = "text-yellow-500";
-  if (baseColor === "bg-orange-100") textColor = "text-orange-500";
-  if (baseColor === "bg-red-100") textColor = "text-red-500";
+  if (baseColor === "bg-cyan-100 dark:bg-transparent dark:border dark:border-cyan-300") textColor = "text-cyan-500 dark:text-cyan-300 ";
+  if (baseColor === "bg-green-100 dark:bg-transparent dark:border dark:border-green-300") textColor = "text-green-500";
+  if (baseColor === "bg-yellow-100 dark:bg-transparent dark:border dark:border-yellow-300") textColor = "text-yellow-500";
+  if (baseColor === "bg-orange-100 dark:bg-transparent dark:border dark:border-orange-300") textColor = "text-orange-500";
+  if (baseColor === "bg-red-100 dark:bg-transparent dark:border dark:border-red-300") textColor = "text-red-500";
   if (baseColor === "bg-gray-50") textColor = "text-gray-700"; // Default text color for gray
 
   return { textColor, bgColor: baseColor };

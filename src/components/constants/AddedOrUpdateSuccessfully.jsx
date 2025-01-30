@@ -13,6 +13,7 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
   const navigate = useNavigate();
   const { updateHistory } = useHistory(); // Access updateHistory function from context
   const { t } = useTranslation();
+
   const handleBackToQR = () => {
     navigate("/qrscanner");
   };
@@ -23,7 +24,8 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
     navigate("/"); // Navigate to home
   };
 
-  const { backgroundColor, textColor } = getStatusColors(selectedStatus);
+  // Get dynamic background and text colors from status
+  const { bgColor, textColor } = getStatusColors(selectedStatus);
 
   const renderData = (data) => {
     const seenKeys = new Set();
@@ -81,7 +83,6 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
           return <p className="text-sm text-gray-500">Invalid data format</p>;
         }
       }
-      console.log(data);
 
       return (
         <li key={key} className="flex justify-between">
@@ -103,8 +104,7 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
 
           {selectedStatus && (
             <div
-              className="mt-2 rounded-full p-2 text-sm"
-              style={{ backgroundColor, color: textColor }}
+              className={`mt-2 rounded-full p-2 text-sm font-medium ${textColor} ${bgColor}`}
             >
               {selectedStatus}
             </div>

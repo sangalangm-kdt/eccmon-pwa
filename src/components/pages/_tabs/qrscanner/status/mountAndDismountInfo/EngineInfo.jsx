@@ -64,10 +64,10 @@ const EngineInfo = ({
         </label>
         <input
           value={engineNum}
-          className={`w-full rounded border bg-transparent p-2 dark:bg-gray-600 ${
+          className={`w-full rounded border bg-transparent p-2 focus:border focus:border-primary focus:outline-none dark:bg-gray-600 ${
             engineNumError ? "border-red-500" : ""
           }`}
-          type="text"
+          type="number"
           placeholder="Enter engine number (max 2 characters)"
           onChange={handleEngineNumChange}
           disabled={disabled}
@@ -89,7 +89,7 @@ const EngineInfo = ({
           <strong className="text-red-500">*</strong>
         </label>
         <input
-          className={`w-full rounded border bg-transparent p-2 dark:bg-gray-600 ${
+          className={`w-full rounded border bg-transparent p-2 focus:border focus:border-primary focus:outline-none dark:bg-gray-600 ${
             opHoursError ? "border-red-500" : ""
           }`}
           type="number"

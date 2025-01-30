@@ -26,6 +26,9 @@ const ProfilePage = lazy(
 const UserGuidelines = lazy(
   () => import("./components/pages/_tabs/profile/UserGuidelines"),
 );
+const ReportBugs = lazy(
+  () => import("./components/pages/_tabs/profile/ReportBugs"),
+);
 const Home = lazy(() => import("./components/pages/_tabs/home/Home"));
 const ScannedResult = lazy(
   () => import("./components/pages/_tabs/qrscanner/ScannedResult"),
@@ -51,6 +54,7 @@ const Layout = () => {
     "/view-info",
     "/user-guidelines",
     "/faq",
+    "/report-bugs",
   ];
   const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
   return (
@@ -84,6 +88,10 @@ function App() {
             {
               path: "/view-info",
               element: <ViewInfo />,
+            },
+            {
+              path: "/report-bugs",
+              element: <ReportBugs />,
             },
             { path: "/update-info", element: <UpdateInfo /> },
             { path: "/change-password", element: <ChangePass /> },

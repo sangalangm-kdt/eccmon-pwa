@@ -77,11 +77,30 @@ const AccountRequestForm = () => {
       });
     }
 
-    // Email domain validation
-    if (name === "email" && value && !value.endsWith("@global.kawasaki.com")) {
+    if (name === "email") {
+      const atSymbolIndex = value.indexOf("@");
+
+      // Only trigger validation after '@' is typed and domain is present
+      if (atSymbolIndex !== -1 && value.substring(atSymbolIndex).length > 1) {
+        if (!value.endsWith("@global.kawasaki.com")) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            email: "Email must be a @global.kawasaki.com address",
+          }));
+        } else {
+          // Clear the email error if the condition is met
+          setErrors((prevErrors) => {
+            const newErrors = { ...prevErrors };
+            delete newErrors.email;
+            return newErrors;
+          });
+        }
+      }
+    }
+    if (name === "password" && value && value.length < 8) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        email: "Email must be a @global.kawasaki.com address",
+        password: "Password must be at least 8 characters long",
       }));
     }
 
@@ -263,7 +282,7 @@ const AccountRequestForm = () => {
                   name="userId"
                   value={formData.userId.trim()}
                   onChange={handleChange}
-                  placeholder="Enter employee number"
+                  placeholder="e.g: 000"
                   error={errors.userId}
                 />
               </div>
@@ -299,7 +318,7 @@ const AccountRequestForm = () => {
                 label="Email"
                 type="email"
                 name="email"
-                placeholder="Enter email"
+                placeholder="you@global.kawasaki.com"
                 value={formData.email}
                 onChange={handleChange}
                 error={errors.email}
@@ -309,7 +328,7 @@ const AccountRequestForm = () => {
                 label="Password"
                 type="password"
                 name="password"
-                placeholder="Enter password"
+                placeholder="Password should be at least 8 characters"
                 value={formData.password}
                 onChange={handleChange}
                 error={errors.password}
@@ -321,7 +340,7 @@ const AccountRequestForm = () => {
                 options={prefectureOptions}
                 value={formData.prefecture}
                 onChange={handleSelectChange}
-                placeholder="Select prefectures"
+                placeholder="e.g. Kyoto"
                 error={errors.prefecture}
               />
 

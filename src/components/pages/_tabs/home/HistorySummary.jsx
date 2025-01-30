@@ -339,7 +339,7 @@ const HistorySummary = () => {
                     return (
                       <li
                         key={index}
-                        className={`h-70 flex w-full cursor-pointer flex-col border-b-0.5 border-gray-200 py-2 hover:bg-gray-100 dark:border-gray-500 dark:bg-transparent dark:hover:bg-gray-400`}
+                        className={`h-70 flex w-full cursor-pointer flex-col border-b-0.5 border-gray-200 py-2 hover:bg-gray-100 dark:border-gray-500 dark:bg-transparent dark:hover:bg-gray-600`}
                         onClick={() => handleCycleClick(item)}
                       >
                         {/* Serial number and date_done */}
