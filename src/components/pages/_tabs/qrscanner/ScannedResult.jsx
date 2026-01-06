@@ -8,19 +8,20 @@ import CycleModal from "../../../constants/CycleModal";
 import { t } from "i18next";
 
 const ScannedResult = () => {
+  const { addUpdate } = useCylinderUpdate();
+
   const [selectedStatus, setSelectedStatus] = useState("None");
   const [data, setData] = useState({});
-  const { addUpdate } = useCylinderUpdate();
   const [step, setStep] = useState("view");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("success");
   const [currentCycle, setCurrentCycle] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [showAlert, setShowAlert] = useState(false); // Manage alert state
+  const [loading, setLoading] = useState(false);
 
   const handleClick = (e) => {
     e.preventDefault();
-    console.log("Data on Click:", data); // Debugging the data
 
     let otherDetails = {};
     try {
@@ -30,21 +31,16 @@ const ScannedResult = () => {
       ) {
         otherDetails = JSON.parse(data.otherDetails);
       } else {
-        console.log("otherDetails is invalid or empty.");
         otherDetails = {};
       }
     } catch (error) {
-      console.log("Error parsing otherDetails:", error);
       otherDetails = {};
     }
 
     // Validate for 'Disposal' status (check if dateDone exists)
     if (
       selectedStatus === "Disposal" &&
-      (!data.serialNumber ||
-        data.location === "" ||
-        !data.cycle ||
-        !data.dateDone)
+      (!data.serialNumber || !data.cycle || !data.dateDone)
     ) {
       setShowAlert(true); // Show alert if dateDone is missing for Disposal
       return;
@@ -53,7 +49,7 @@ const ScannedResult = () => {
     // Show alert when required fields for Storage are missing
     if (
       selectedStatus === "Storage" &&
-      (!data.location || !data.serialNumber || !data.cycle || !data.dateDone)
+      (!data.serialNumber || !data.cycle || !data.dateDone)
     ) {
       setShowAlert(true); // Show alert if required fields for Storage are missing
       return;
@@ -61,8 +57,6 @@ const ScannedResult = () => {
 
     // Validate fields for other statuses (Disposal and general fields)
     if (
-      !data.location ||
-      data.location === "" ||
       !data.serialNumber ||
       !data.cycle ||
       otherDetails.case === null ||
@@ -72,7 +66,6 @@ const ScannedResult = () => {
       otherDetails.operationHours === "" ||
       otherDetails.mountingPosition === ""
     ) {
-      console.log("Location or other fields are empty, show alert");
       setShowAlert(true); // Show the alert if any required field is missing
       return;
     } else {
@@ -87,7 +80,6 @@ const ScannedResult = () => {
     } else if (step === "review") {
       const updatedCycle = data.cycle;
       setCurrentCycle(updatedCycle);
-      addUpdate(data, selectedStatus);
 
       if (selectedStatus === "Storage") {
         setModalType("Storage");
@@ -95,7 +87,7 @@ const ScannedResult = () => {
         setModalType("success");
       }
 
-      setModalOpen(true);
+      addUpdate(data, selectedStatus, setModalOpen, setLoading);
     } else if (step === "edit") {
       setStep("review");
     }
@@ -107,25 +99,20 @@ const ScannedResult = () => {
   };
 
   useEffect(() => {
-    console.log("Data in useEffect:", data); // Debugging the data
-
-    // For "Storage" status, validate location, serialNumber, cycle, and dateDone
-    const isLocationValid = data.location && data.location !== "";
+    // For "Storage" status, validate serialNumber, cycle, and dateDone
     const isSerialNumberValid = data.serialNumber && data.serialNumber !== "";
     const isDateDoneValid = data.dateDone && data.dateDone !== "";
     const isCycleValid = data.cycle && data.cycle !== undefined;
 
     // For "Storage" status, validate required fields only for Storage
     const isStorageValid =
-      isLocationValid && isSerialNumberValid && isCycleValid && isDateDoneValid;
+      isSerialNumberValid && isCycleValid && isDateDoneValid;
 
     // For "Disposal" status, validate that dateDone exists
     const isDisposalValid = selectedStatus === "Disposal" && data.dateDone;
 
     // Combine validation logic: the form is complete if either Storage or Disposal is valid
     const isValid = isStorageValid || isDisposalValid;
-
-    console.log("isComplete value:", isValid); // Debugging the isComplete value for validation
 
     setIsComplete(isValid); // Set `isComplete` based on the combined validation logic
   }, [data, selectedStatus]); // Re-run whenever `data` or `selectedStatus` changes
@@ -172,6 +159,7 @@ const ScannedResult = () => {
               : t("common:continueButton")
           }
           disabled={!isComplete}
+          loading={loading}
         />
       </div>
 

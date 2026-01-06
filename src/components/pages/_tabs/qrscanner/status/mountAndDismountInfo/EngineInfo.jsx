@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import SiteNameOptions from "../../../../../constants/SiteNameOptions";
 import { useTranslation } from "react-i18next";
+import SiteNameOptions from "../../../../../constants/SiteNameOptions";
+import { useAuthentication } from "../../../../../../hooks/auth";
 
 const EngineInfo = ({
+  affiliation,
   site,
   setSite,
   engineNum,
@@ -14,7 +16,7 @@ const EngineInfo = ({
   setShowAlert,
 }) => {
   const { t } = useTranslation("qrScanner");
-
+  const { user } = useAuthentication();
   // State to manage error messages
   const [engineNumError, setEngineNumError] = useState("");
   const [opHoursError, setOpHoursError] = useState("");
@@ -44,17 +46,29 @@ const EngineInfo = ({
       setOpHoursError("Operating hours must be a non-negative number."); // Show error if invalid
     }
   };
-
+  console.log(site);
   return (
     <div className="flex flex-col p-2">
       {/* Site Name */}
-      <div className="flex w-full flex-col">
-        <label className="font-semibold">{t("qrScanner:engineInfo")}</label>
-        <SiteNameOptions site={site} setSite={setSite} disabled={disabled} />
-      </div>
-
-      {showAlert && !site && (
-        <p className="text-xs text-red-600">{t("validation.siteRequired")}</p>
+      {user.is_admin === 1 ? (
+        <SiteNameOptions
+          site={site}
+          setSite={setSite}
+          disabled={disabled}
+          showAlert={showAlert}
+        />
+      ) : (
+        <div className="flex w-full flex-col">
+          <label className="font-semibold">{t("qrScanner:engineInfo")}</label>
+          <label>{t("qrScanner:siteName")}</label>
+          <input
+            className="w-full rounded border bg-transparent px-2 py-2 dark:bg-gray-600"
+            type="text"
+            value={affiliation}
+            readOnly
+            disabled={disabled}
+          />
+        </div>
       )}
 
       {/* Engine Number */}
@@ -94,7 +108,7 @@ const EngineInfo = ({
           }`}
           type="number"
           value={opHours}
-          placeholder="Enter operating hours"
+          placeholder="e.g. 000"
           onChange={handleOpHoursChange}
           disabled={disabled}
           required

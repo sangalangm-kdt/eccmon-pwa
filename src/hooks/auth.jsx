@@ -39,11 +39,12 @@ export const useAuthentication = ({
 
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
 
-  const login = async ({ setStatus, setLoading, ...props }) => {
+  const login = async ({ setStatus, setErrors, setLoading, ...props }) => {
     setLoading(true); // Start loading
     await csrf();
     setStatus(null);
 
+    console.log(props);
     try {
       await axiosLib.post("/login", props);
       mutate(); // Update user data
@@ -76,12 +77,10 @@ export const useAuthentication = ({
     await csrf();
     console.log("clicked");
     console.log(email);
+
     return axiosLib
       .post(`/forgot-password?email=${email}`)
       .then((response) => {
-        // toast.success("Password reset link sent to your email!", {
-        //   position: "top-center",
-        // });
         setErrorMessage("Password reset link has been sent to your email.");
         console.log("Password reset link sent to your email!");
         console.log(response);
@@ -90,16 +89,9 @@ export const useAuthentication = ({
       })
       .catch((error) => {
         if (error.response?.status === 422) {
-          // toast.error(error.response.data.message, {
-          //   position: "top-center",
-          // });
-
           console.log("Wrong Password");
         } else {
           console.log("An unexpected error occurred.");
-          // toast.error("An unexpected error occurred.", {
-          //   position: "top-center",
-          // });
         }
         setLoading(false);
       });
@@ -123,7 +115,8 @@ export const useAuthentication = ({
       });
   };
 
-  const changePassword = async ({ ...props }) => {
+  const changePassword = async ({ setLoading, setErrors, ...props }) => {
+    setLoading(true);
     await csrf();
     console.log("clicked", { id: user.id, ...props });
     return axiosLib
@@ -131,13 +124,23 @@ export const useAuthentication = ({
       .then((response) => {
         console.log("Change password successfully!");
         console.log(response.data.message);
+        setLoading(false);
+        return { message: response.data.message, isSuccess: true };
       })
       .catch((error) => {
+        const errors = {};
         if (error.response?.status === 422) {
           console.log(error.response.data.message);
+          errors.updatePassword = error.response.data.message;
         } else {
           console.log(error.response.data.message);
+          errors.updatePassword = error.response.data.message;
         }
+
+        setErrors(errors);
+        console.log(errors);
+        setLoading(false);
+        return { message: error.response.data.message, isSuccess: false };
       });
   };
 

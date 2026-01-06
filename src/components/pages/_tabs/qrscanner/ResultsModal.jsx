@@ -8,9 +8,8 @@ const ResultsModal = ({
   onClose,
   onConfirm,
   eccId,
+  hasStoragePermission, // New prop (currently unused)
 }) => {
-  // const message = "The cylinder cover does not exist. Do you want to add it?";
-  // Handle Escape key to close modal
   const { t } = useTranslation("qrScanner");
   const translatedMessage = message;
 
@@ -21,16 +20,13 @@ const ResultsModal = ({
       }
     };
 
-    // Add event listener for keydown
     window.addEventListener("keydown", handleEscKey);
-
-    // Cleanup function to remove event listener
     return () => {
       window.removeEventListener("keydown", handleEscKey);
     };
   }, [onClose]);
 
-  if (!isOpen) return null; // Early return for rendering
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-60 flex items-end justify-center bg-black bg-opacity-50">
@@ -46,29 +42,45 @@ const ResultsModal = ({
           </p>
         </div>
 
-        <p className="py-10 text-center text-sm">{translatedMessage}</p>
-        {addDisable === false ? (
-          <div className="mt-4 flex flex-row justify-between">
+        {!hasStoragePermission ? (
+          <>
+            <p className="py-10 text-center text-sm text-red-500">
+              {t("errors.noStoragePermission")}
+            </p>
             <button
-              className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-400 dark:text-gray-100"
+              className="w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-400 dark:text-gray-100"
               onClick={onClose}
             >
-              {t("cancel")}
+              {t("Close")}
             </button>
-            <button
-              className="w-full rounded-full bg-primary px-4 py-2 text-white transition"
-              onClick={onConfirm}
-            >
-              {t("yes")}
-            </button>
-          </div>
+          </>
         ) : (
-          <button
-            className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2"
-            onClick={onClose}
-          >
-            Close
-          </button>
+          <>
+            <p className="py-10 text-center text-sm">{translatedMessage}</p>
+            {addDisable === false ? (
+              <div className="mt-4 flex flex-row justify-between">
+                <button
+                  className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-400 dark:text-gray-100"
+                  onClick={onClose}
+                >
+                  {t("cancel")}
+                </button>
+                <button
+                  className="w-full rounded-full bg-primary px-4 py-2 text-white transition"
+                  onClick={onConfirm}
+                >
+                  {t("yes")}
+                </button>
+              </div>
+            ) : (
+              <button
+                className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2"
+                onClick={onClose}
+              >
+                Close
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

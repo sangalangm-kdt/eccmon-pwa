@@ -6,7 +6,7 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { ThemeProvider } from "./context/theme-context";
 import { I18nextProvider } from "react-i18next";
-import i18n from "./i18n";
+import i18n from "./locales/i18n";
 import store from "./state/store";
 
 import { registerSW } from "virtual:pwa-register";
@@ -47,6 +47,13 @@ const ServiceWorkerRegistration = () => {
 
 // Rendering the app with the WebSocketProvider
 if (!window.reactRoot) {
+  if (import.meta.env.PROD) {
+    console.log = function () {};
+    console.info = function () {};
+    console.warn = function () {};
+    console.error = function () {};
+  }
+
   const root = ReactDOM.createRoot(document.getElementById("root"));
   window.reactRoot = root; // Store it globally
   root.render(

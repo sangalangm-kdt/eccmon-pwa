@@ -19,7 +19,7 @@ export const useScanHistory = () => {
     axiosLib
       .post("/api/scan-history", data)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;

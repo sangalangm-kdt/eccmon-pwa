@@ -1,18 +1,19 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import LocationDropdown from "../../../../constants/LocationDropdown";
 import DateField from "../../../../constants/DateField";
 import ButtonYesOrNo from "../../../../constants/ButtonYesOrNo";
 import Cycle from "../../../../constants/Cycle";
 import OrderNo from "../../../../constants/OrderNo";
-import { useLocationProcess } from "../../../../../hooks/locationProcess";
 import CaseButton from "../../../../constants/CaseButton";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProcessSkeleton from "../../../../constants/skeleton/Process";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { formatDate } from "../../../../utils/formatdate";
+import { useAuthentication } from "../../../../../hooks/auth";
+import LocationDropdown from "../../../../constants/LocationDropdown";
+import { useLocationProcess } from "../../../../../hooks/locationProcess";
 
 const Process = ({
   selectedProcessorStatus,
@@ -23,8 +24,14 @@ const Process = ({
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
-  const { t } = useTranslation("qrScanner");
+  const { user } = useAuthentication();
 
+  const { t } = useTranslation("qrScanner");
+  const selectedProcessor = useLocationProcess(
+    selectedProcessorStatus.toLowerCase(),
+  ).data;
+
+  console.log(selectedProcessor);
   // Store the initial data and prevent changes unless the user modifies it
   const [initialData, setInitialData] = useState(cylinderData);
 
@@ -46,24 +53,6 @@ const Process = ({
 
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [infoDialogContent, setInfoDialogContent] = useState("");
-
-  const {
-    disassembly,
-    isDisassemblyLoading,
-    disassemblyMutate,
-    grooving,
-    isGroovingLoading,
-    groovingMutate,
-    lmd,
-    isLmdLoading,
-    lmdMutate,
-    finishing,
-    isFinishingLoading,
-    finishingMutate,
-    assembly,
-    isAssemblyLoading,
-    assemblyMutate,
-  } = useLocationProcess();
 
   const [disabledProcessors, setDisabledProcessors] = useState([]);
 
@@ -98,7 +87,7 @@ const Process = ({
   useEffect(() => {
     setData({
       serialNumber: initialData?.serialNumber,
-      location: processor,
+      location: user.is_admin === 1 ? processor : user.affiliation,
       dateDone: date,
       cycle: cycle,
       otherDetails: `{"case" : "${selectedCase}", "isPassed" : "${passed}", "orderNumber" : "${selectedOrderNo}"}`,
@@ -119,11 +108,11 @@ const Process = ({
 
   const renderLocations = () => {
     const locationOptions = {
-      disassembly: disassembly?.data,
-      assembly: assembly?.data,
-      finishing: finishing?.data,
-      grooving: grooving?.data,
-      lmd: lmd?.data,
+      disassembly: selectedProcessor?.data,
+      assembly: selectedProcessor?.data,
+      finishing: selectedProcessor?.data,
+      grooving: selectedProcessor?.data,
+      lmd: selectedProcessor?.data,
     };
 
     const currentOptions = locationOptions[
@@ -133,6 +122,7 @@ const Process = ({
     return currentOptions ? (
       <div>
         <CaseButton
+          handleInfoIconClick={handleInfoIconClick}
           selectedCase={selectedCase}
           setSelectedCase={setSelectedCase}
           disabled={disabled}
@@ -143,22 +133,33 @@ const Process = ({
             <p className="text-xs">{t("validation.caseRequired")}</p>
           </div>
         )}
-        <label className="mt-2 text-sm font-semibold text-primaryText">
-          {t("qrScanner:processor")} <strong className="text-red-500">*</strong>
+        <label className="mt-2 text-sm font-semibold text-primaryText dark:text-gray-100">
+          {t("qrScanner:processor")}
         </label>
-        <LocationDropdown
-          options={currentOptions}
-          processor={processor}
-          setProcessor={setProcessor}
-          disabled={disabled || disabledProcessors.includes(processor)}
-        />
+        {user.is_admin === 1 ? (
+          <LocationDropdown
+            options={selectedProcessor.data}
+            // loading={isLoading}
+            processor={processor}
+            setProcessor={setProcessor}
+            disabled={disabled}
+          />
+        ) : (
+          <input
+            type="text"
+            value={user.affiliation}
+            readOnly
+            className="w-full rounded border bg-gray-100 p-2 text-sm dark:bg-gray-600"
+            disabled
+          />
+        )}
         {showAlert && !processor && (
           <div className="p-1 text-red-600">
             <p className="text-xs">{t("validation.processorRequired")}</p>
           </div>
         )}
         <div>
-          <label className="text-sm font-semibold text-primaryText">
+          <label className="text-sm font-semibold text-primaryText dark:text-gray-100">
             {t("qrScanner:completionDate")}{" "}
             <strong className="text-red-500">*</strong>
           </label>
@@ -170,7 +171,7 @@ const Process = ({
           )}
         </div>
         <div>
-          <label className="text-sm font-semibold text-primaryText">
+          <label className="text-sm font-semibold text-primaryText dark:text-gray-100">
             {t("qrScanner:passed")}
           </label>
           <ButtonYesOrNo
@@ -231,15 +232,15 @@ const Process = ({
     <div className="flex w-full flex-col rounded-lg bg-white p-2 dark:bg-gray-500">
       <h2 className="mt-2 flex flex-row items-center gap-2 text-md font-semibold leading-loose text-primaryText dark:text-gray-100">
         {t("qrScanner:processStatus")}
-        <IoInformationCircleOutline
+        {/* <IoInformationCircleOutline
           size={20}
           className="cursor-pointer"
           onClick={handleInfoIconClick} // Show dialog box on click
-        />
+        /> */}
       </h2>
 
       {showInfoDialog && (
-        <div className="absolute left-64 top-96 z-10 -translate-x-1/2 transform rounded-md border bg-white p-4 shadow-md dark:bg-gray-800">
+        <div className="absolute left-64 top-96 z-10 -translate-x-1/4 transform rounded-md border bg-white p-4 shadow-md dark:bg-gray-800">
           <p
             className="pointer-events-none text-xs"
             dangerouslySetInnerHTML={{ __html: infoDialogContent }}

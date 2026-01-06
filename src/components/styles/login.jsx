@@ -57,7 +57,7 @@ const textStyles = {
 const inputStyles = {
   container: `flex flex-col items-center justify-center  ${padding.responsive}`,
   inputContainer: `flex flex-col  gap-1 ${padding.responsive}`,
-  input: `border dark:border-gray-200 dark:bg-gray-300 dark:bg-opacity-10 rounded-md  box-border ${sizes.responsive} bg-transparent focus:outline-primary ${padding.responsive} focus:${padding.responsive}`,
+  input: `border border-gray-300 dark:border-gray-200 dark:bg-gray-300 dark:bg-opacity-10 rounded-md  box-border ${sizes.responsive} bg-transparent focus:outline-primary ${padding.responsive} focus:${padding.responsive}`,
   label: ` block font-semibold text-primaryText ${sizes.responsive} dark:text-gray-300`,
 };
 
@@ -72,7 +72,7 @@ const container = {
 
 //links
 const link = {
-  color: "text-primary text-sm hover:underline",
+  color: "text-primary font-medium text-sm hover:underline",
 };
 
 //navbar

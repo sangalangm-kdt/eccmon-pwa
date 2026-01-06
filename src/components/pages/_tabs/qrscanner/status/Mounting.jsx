@@ -3,6 +3,7 @@ import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
 import { formatDate } from "../../../../utils/formatdate";
+import { useAuthentication } from "../../../../../hooks/auth";
 
 const Mounting = ({
   selectedStatus,
@@ -13,10 +14,11 @@ const Mounting = ({
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
+  const { user } = useAuthentication();
 
   // Store the initial data and prevent changes unless the user modifies it
   const [initialData, setInitialData] = useState(cylinderData);
-
+  console.log(initialData);
   const [site, setSite] = useState(initialData?.location);
   const [engineNum, setEngineNum] = useState(
     initialData?.updates?.otherDetails?.engineNumber,
@@ -38,7 +40,7 @@ const Mounting = ({
   useEffect(() => {
     // Update state if selectedStatus matches
     if (selectedStatus === cylinderData?.status) {
-      setSite(cylinderData?.location || "");
+      setSite(cylinderData?.location);
       setEngineNum(cylinderData?.updates?.otherDetails?.engineNumber || "");
       setOpHours(cylinderData?.updates?.otherDetails?.operationHours || "");
       setMountPos(cylinderData?.updates?.otherDetails?.mountingPosition || "");
@@ -60,7 +62,6 @@ const Mounting = ({
   ]);
   useEffect(() => {
     if (selectedStatus === cylinderData?.status) {
-      setSite(cylinderData?.location);
       setEngineNum(cylinderData?.updates?.otherDetails?.engineNumber);
       setOpHours(cylinderData?.updates?.otherDetails?.operationHours);
       setMountPos(cylinderData?.updates?.otherDetails?.mountingPosition);
@@ -81,17 +82,18 @@ const Mounting = ({
     // Setting data for parent form submission
     setData({
       serialNumber: cylinderData?.serialNumber,
-      location: site,
+      location: user.is_admin === 1 ? site : user.affiliation,
       dateDone: date,
       cycle: cycle,
       otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,
     });
-  }, [site, engineNum, opHours, mountPos, date, cycle, setData]);
+  }, [engineNum, opHours, mountPos, date, cycle, setData]);
 
   return (
     <div className="flex flex-col">
       <div className="w-full rounded-lg bg-white p-2 text-sm dark:bg-gray-500">
         <EngineInfo
+          affiliation={user.affiliation}
           site={site}
           setSite={setSite}
           engineNum={engineNum}

@@ -3,6 +3,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../../../hooks/auth";
 import { IoArrowBack } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
+import { getStatusColors } from "../../../../utils/statusColors";
+
+export const ProcessStatus = ({ status }) => {
+  const { textColor, bgColor } = getStatusColors(status);
+  const { t } = useTranslation("qrScanner");
+
+  const lowerStatus = status.toLowerCase();
+  const translatedStatus = t(`${lowerStatus}`) || lowerStatus;
+
+  return (
+    <p className={`rounded-full p-2 text-tiny ${textColor} ${bgColor}`}>
+      {translatedStatus || "--"}
+    </p>
+  );
+};
 
 const ViewInfo = () => {
   const location = useLocation();
@@ -10,6 +25,7 @@ const ViewInfo = () => {
   const { user } = useAuthentication();
   const [modifiedBy, setModifiedBy] = useState(null);
   const data = location.state?.data;
+  const totalOperationHours = location.state?.totalOperationHours;
   const updates = data?.updates;
   const { t } = useTranslation("common");
 
@@ -24,6 +40,7 @@ const ViewInfo = () => {
     otherDetails: t("viewInfo.additionalDetails"),
     engineNumber: t("viewInfo.addDetails.engineNo"),
     operationHours: t("viewInfo.addDetails.operatingHours"),
+    totalHours: t("viewInfo.addDetails.totalHours"),
     mountingPosition: t("viewInfo.addDetails.mountingPosition"),
     userId: t("viewInfo.addDetails.userId"),
     process: t("viewInfo.addDetails.process"),
@@ -73,13 +90,18 @@ const ViewInfo = () => {
             typeof value === "object" &&
             Object.keys(value).length
           ) {
+            const shouldShowTotalHours =
+              data?.status?.toLowerCase() === "mounted" ||
+              data?.status?.toLowerCase() === "dismounted";
+
             const details = Object.entries(value);
+
             return (
               <div key={key} className="space-y-2">
-                <label className="text-md font-semibold text-gray-700 dark:text-gray-100">
+                <label className="flex text-center text-md font-semibold text-gray-700 dark:text-gray-100">
                   {labels[key]}
                 </label>
-                <ul className="space-y-1">
+                <ul className="text-c space-y-1 text-sm">
                   {details.map(([detailKey, detailValue], index) => {
                     if (
                       [
@@ -95,20 +117,45 @@ const ViewInfo = () => {
                     )
                       return null;
 
-                    if (detailKey === "isPassed") {
-                      // Map the value to its corresponding string
-                      detailValue =
-                        ["Ongoing", "Passed", "Failed"][
-                          parseInt(detailValue, 10)
-                        ] || "--";
+                    // ✅ Translate `case` values
+                    if (detailKey === "case") {
+                      const caseMap = {
+                        0: t("viewInfo.addDetails.caseValues.newBuild"),
+                        1: t("viewInfo.addDetails.caseValues.regeneration"),
+                        2: t("viewInfo.addDetails.caseValues.maintenance"),
+                      };
 
-                      // Determine the color coding based on the value
+                      return (
+                        <li
+                          key={detailKey}
+                          className={`flex justify-between px-2 py-2 ${
+                            index !== details.length - 1
+                              ? "border-b-0.5 border-gray-300"
+                              : ""
+                          }`}
+                        >
+                          <label className="text-md font-medium text-gray-700 dark:text-gray-100">
+                            {labels[detailKey] || detailKey}
+                          </label>
+                          <p className="text-sm text-gray-600 dark:text-gray-200">
+                            {caseMap[parseInt(detailValue)] || "--"}
+                          </p>
+                        </li>
+                      );
+                    }
+
+                    if (detailKey === "isPassed") {
+                      const statusMap = ["Ongoing", "Passed", "Failed"];
+                      detailValue =
+                        statusMap[parseInt(detailValue, 10)] || "--";
+
                       let colorClasses = "";
                       if (detailValue === "Passed") {
                         colorClasses =
                           "bg-green-100 text-green-500 font-medium";
                       } else if (detailValue === "Ongoing") {
-                        colorClasses = "bg-sky-100 text-sky-500 font-medium";
+                        colorClasses =
+                          "bg-sky-100 text-sky-500 font-medium dark:border dark:border-sky-500 dark:bg-sky-300";
                       } else if (detailValue === "Failed") {
                         colorClasses = "bg-red-100 text-red-500 font-medium";
                       }
@@ -116,7 +163,11 @@ const ViewInfo = () => {
                       return (
                         <li
                           key={detailKey}
-                          className={`flex justify-between px-2 py-2 text-tiny ${index !== details.length - 1 ? "border-b-0.5" : ""}`}
+                          className={`flex justify-between px-2 py-2 text-tiny ${
+                            index !== details.length - 1
+                              ? "border-b-0.5 border-gray-300"
+                              : ""
+                          }`}
                         >
                           <label className="text-md font-medium text-gray-700 dark:text-gray-100">
                             {labels[detailKey] || detailKey}
@@ -129,18 +180,36 @@ const ViewInfo = () => {
                         </li>
                       );
                     }
+
                     return (
-                      <li
-                        key={detailKey}
-                        className={`flex justify-between px-2 py-2 ${index !== details.length - 1 ? "border-b-0.5" : ""}`}
-                      >
-                        <label className="text-md font-medium text-gray-700 dark:text-gray-100">
-                          {labels[detailKey] || detailKey}
-                        </label>
-                        <p className="text-sm text-gray-600 dark:text-gray-200">
-                          {String(detailValue || "--")}
-                        </p>
-                      </li>
+                      <React.Fragment key={detailKey}>
+                        <li
+                          className={`flex justify-between px-2 py-2 ${
+                            index !== details.length - 1
+                              ? "border-b-0.5 border-gray-300"
+                              : ""
+                          }`}
+                        >
+                          <label className="text-md font-medium text-gray-700 dark:text-gray-100">
+                            {labels[detailKey] || detailKey}
+                          </label>
+                          <p className="border-gray-300 text-sm text-gray-600 dark:text-gray-200">
+                            {String(detailValue || "--")}
+                          </p>
+                        </li>
+
+                        {detailKey === "operationHours" &&
+                          shouldShowTotalHours && (
+                            <li className="flex justify-between border-b-0.5 border-gray-300 px-2 py-2">
+                              <label className="text-md font-medium text-gray-700 dark:text-gray-100">
+                                {labels.totalHours}
+                              </label>
+                              <p className="text-sm text-gray-600 dark:text-gray-200">
+                                {totalOperationHours || 0}
+                              </p>
+                            </li>
+                          )}
+                      </React.Fragment>
                     );
                   })}
                 </ul>
@@ -166,7 +235,7 @@ const ViewInfo = () => {
       <div className="flex h-20 w-full items-center justify-between rounded-b-lg bg-white p-4 shadow-sm dark:bg-gray-700">
         <button
           onClick={() => navigate("/")}
-          className="flex flex-row items-center gap-0.5 text-cyan-400 hover:text-blue-700"
+          className="flex flex-row items-center gap-0.5 text-cyan-400 hover:bg-gray-50"
         >
           <IoArrowBack size={20} /> <p>{t("viewInfo.back")}</p>
         </button>
@@ -190,23 +259,31 @@ const ViewInfo = () => {
         <div className="mt-2 flex w-full flex-col rounded-lg bg-white p-4 dark:bg-gray-600">
           {[
             { label: t("viewInfo.lastModifiedBy"), value: modifiedBy },
-            { label: t("viewInfo.process"), value: updates.process },
+            {
+              label: t("viewInfo.process"),
+              value: updates.process,
+              isProcess: true,
+            },
             { label: t("viewInfo.completionDate"), value: updates.dateDone },
             { label: t("viewInfo.location"), value: updates.location },
             { label: t("viewInfo.cycle"), value: updates.cycle },
             { label: t("viewInfo.disposal"), value: data.disposal },
             { label: t("viewInfo.disposalDate"), value: data.disposalDate },
-          ].map(({ label, value }) => (
+          ].map(({ label, value, isProcess }) => (
             <div
               key={label}
-              className="flex items-center justify-between border-b-0.5 px-2 py-2"
+              className="flex items-center justify-between border-b-0.5 border-gray-300 px-2 py-2"
             >
               <label className="text-md font-medium text-primaryText dark:text-gray-50">
                 {label}
               </label>
-              <p className="text-sm text-gray-600 dark:text-gray-100">
-                {value || "--"}
-              </p>
+              {isProcess ? (
+                <ProcessStatus status={value || updates.process} />
+              ) : (
+                <p className="text-sm text-gray-600 dark:text-gray-100">
+                  {value || "--"}
+                </p>
+              )}
             </div>
           ))}
         </div>

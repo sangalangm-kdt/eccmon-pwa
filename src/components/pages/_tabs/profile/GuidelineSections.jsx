@@ -254,6 +254,11 @@ export const renderSectionContent = (section, t) => {
         </div>
 
         <div className="my-2 border-t-0.5 border-gray-300" />
+        <p>
+          <strong>Systems Group</strong> provide systematic solutions for KDT
+          employees to improve work efficiency.
+        </p>
+        <br></br>
         <p className="leading-relaxed text-gray-800 dark:text-gray-50">
           Meet the individuals behind ECCMon.
         </p>

@@ -5,16 +5,31 @@ import { useNavigate } from "react-router-dom";
 import { BsTextareaResize } from "react-icons/bs";
 import { FaTimes } from "react-icons/fa";
 import { LuUpload } from "react-icons/lu";
+import { useReportBug } from "../../../../hooks/report-bug";
+import { useAuthentication } from "../../../../hooks/auth";
 
 const ReportBugs = () => {
+  const bugCategories = [
+    "Functional",
+    "Visual",
+    "Content",
+    "Security",
+    "Compatibility",
+    "Usability",
+    "Others",
+  ];
+
   const navigate = useNavigate();
   const { t } = useTranslation("reportBugs");
   const handleBackToProfile = () => navigate("/profile");
+  const { addReportBug } = useReportBug();
+  const { userId } = useAuthentication();
 
   const [isFocused, setIsFocused] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [bugTitle, setBugTitle] = useState('');
-  const [reason, setReason] = useState('');
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [reason, setReason] = useState("");
   const [images, setImages] = useState([]);
   const textareaRef = useRef(null);
 
@@ -33,7 +48,13 @@ const ReportBugs = () => {
       ].includes(file.type),
     );
 
-    setImages((prevImages) => [...prevImages, ...imageFiles]);
+    // Generate URLs only once and store them in state
+    const imageURLs = imageFiles.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+
+    setImages((prevImages) => [...prevImages, ...imageURLs]);
   };
 
   const handleDelete = (index) => {
@@ -43,20 +64,25 @@ const ReportBugs = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     try {
-        //send to backend na to
-        console.log(`Bug Title: ${bugTitle}`)
-        console.log(`Reason: ${reason}`)
-        console.log(`Images: ${images}`)
+      //send to backend na to
+      console.log(`Bug Title: ${title}`);
+      console.log(`Reason: ${reason}`);
+      console.log(`Images: ${images}`);
     } catch (error) {
-        console.log(`Error: ${error}`)
+      console.log(`Error: ${error}`);
     } finally {
-        setBugTitle('');
-        setReason('');
-        setImages([]);
+      setTitle("");
+      setReason("");
+      setImages([]);
     }
     console.log("Form submitted!");
-  }
+  };
 
+  const handleDownload = () => {
+    addReportBug({ userId, title, category, reason, files: images });
+  };
+
+  console.log(images);
   return (
     <div className="flex min-h-screen flex-col justify-between">
       {/* Header */}
@@ -79,13 +105,13 @@ const ReportBugs = () => {
           {t("reportABug")}
         </h1>
 
-        <form onSubmit={handleFormSubmit} className="flex flex-grow flex-col gap-4 px-4 text-sm">
+        <form
+          onSubmit={handleFormSubmit}
+          className="flex flex-grow flex-col gap-4 px-4 text-sm"
+        >
           {/* Bug Title Field */}
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="bugTitle"
-              className="text-gray-600 dark:text-gray-50"
-            >
+            <label htmlFor="title" className="text-gray-600 dark:text-gray-50">
               {t("bugTitle")}
               <span className="text-red-500">&nbsp;*</span>
             </label>
@@ -93,14 +119,39 @@ const ReportBugs = () => {
               <input
                 type="text"
                 id="bug-title"
-                name="bugTitle"
+                name="title"
                 className="w-full gap-2 rounded border p-2 text-gray-700 outline-none focus:border-0.5 focus:border-primary dark:border-gray-400 dark:bg-gray-800 dark:text-gray-100"
                 placeholder={t("enterBugTitle")}
                 required
                 autoComplete="false"
-                value={bugTitle}
-                onChange={(e) => setBugTitle(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
+            </div>
+          </div>
+
+          {/* Category Field */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="title" className="text-gray-600 dark:text-gray-50">
+              Category
+              <span className="text-red-500">&nbsp;*</span>
+            </label>
+            <div className="relative">
+              <select
+                name="category"
+                id="category"
+                className="w-full gap-2 rounded border p-2 text-gray-700 outline-none focus:border-0.5 focus:border-primary dark:border-gray-400 dark:bg-gray-800 dark:text-gray-100"
+                required
+                autoComplete="false"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {bugCategories.map((category, categoryIdx) => (
+                  <option key={categoryIdx} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -143,10 +194,10 @@ const ReportBugs = () => {
               {t("uploadSupportingDocument")}
             </label>
             <ul id="uploadList" className="my-4 grid grid-cols-3 gap-3">
-              {images.map((image, index) => (
+              {images.map(({ url }, index) => (
                 <li key={index} className="relative">
                   <img
-                    src={URL.createObjectURL(image)}
+                    src={url}
                     alt={`upload-${index}`}
                     className="h-24 w-24 rounded object-cover"
                   />
@@ -181,7 +232,9 @@ const ReportBugs = () => {
           {/* Report Button at the Bottom */}
           <div className="mb-10 mt-auto">
             <button
-              type="submit"
+              type="button"
+              onClick={handleDownload}
+              // type="submit"
               className="hover:bg-primary-dark w-full rounded bg-cyan-to-blue py-4 text-white focus:bg-cyan-to-blue-active focus:outline-none"
             >
               {t("reportBtn")}

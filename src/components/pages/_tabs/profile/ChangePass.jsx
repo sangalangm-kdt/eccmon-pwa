@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { IoArrowBack, IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../../hooks/auth";
+import Loader from "../../../constants/Loader";
+import Preloader from "../../../constants/preloader/Preloader";
+import { useTranslation } from "react-i18next";
+import ChangePasswordRequestModal from "../../../constants/ChangePasswordRequestModal";
 
 const ChangePass = () => {
   const [formData, setFormData] = useState({
@@ -9,60 +13,86 @@ const ChangePass = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
   const { changePassword } = useAuthentication();
   const [errors, setErrors] = useState({});
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [result, setResult] = useState("");
+  const [message, setMessage] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+  const { t } = useTranslation("profile");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrors({ ...errors, [name]: "" }); // Clear errors as user types
+    setErrors({ ...errors, [name]: "" });
   };
 
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData.currentPassword) {
-      newErrors.currentPassword = "Current password is required.";
+      newErrors.currentPassword =
+        t("changePassword.currentPass") +
+        " " +
+        t("isRequired", { ns: "common" });
     }
 
     if (!formData.newPassword) {
-      newErrors.newPassword = "New password is required.";
-    } else if (formData.newPassword.length < 8) {
       newErrors.newPassword =
-        "New password must be at least 8 characters long.";
+        t("changePassword.newPass") + " " + t("isRequired", { ns: "common" });
+    } else if (formData.newPassword.length < 8) {
+      newErrors.newPassword = t("changePassword.enterNewPass");
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your new password.";
+      newErrors.confirmPassword =
+        t("changePassword.confirmPass") +
+        " " +
+        t("isRequired", { ns: "common" });
     } else if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match.";
+      newErrors.confirmPassword = t("changePassword.enterConfirmPass");
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validateForm()) {
-      changePassword({
-        current_password: formData.currentPassword,
-        password: formData.newPassword,
-        password_confirmation: formData.confirmPassword,
-      });
-      setShowSuccessModal(true);
-      setFormData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-      setErrors({});
+      setLoading(true);
+      try {
+        const requestResult = await changePassword({
+          current_password: formData.currentPassword,
+          password: formData.newPassword,
+          password_confirmation: formData.confirmPassword,
+          setErrors,
+          setLoading,
+        });
+
+        const requestStatus = requestResult.isSuccess ? "success" : "fail";
+        setResult(requestStatus);
+
+        if (requestStatus === "success") {
+          setFormData({
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+          });
+        }
+
+        setMessage(requestResult.message);
+      } catch (err) {
+        console.error("Password change failed:", err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -80,41 +110,35 @@ const ChangePass = () => {
     }
   };
 
-  const closeSuccessModal = () => {
-    setLoading(true); // Set loading state to true when the button is clicked
-    setTimeout(() => {
-      setShowSuccessModal(false);
-      navigate("/"); // Navigate after a short delay
-      setLoading(false); // Reset loading state after the delay
-    }, 2000); // Simulate a delay (e.g., for an API call)
-  };
-
   return (
     <div className="flex h-screen flex-col justify-between">
+      {/* Header */}
       <div className="flex w-full items-center justify-start rounded-b-xl py-6 shadow-md dark:bg-gray-700">
         <button
           onClick={handleBackToProfile}
           className="flex items-center justify-center gap-1 rounded-full p-2"
         >
           <IoArrowBack className="text-gray-700 dark:text-gray-100" />
-          <p className="text-sm text-gray-700 dark:text-gray-100">Back</p>
+          <p className="text-sm text-gray-700 dark:text-gray-100">
+            {t("back", { ns: "common" })}
+          </p>
         </button>
         <h1 className="flex-1 text-center font-medium text-gray-700 dark:text-gray-100 xs:mr-16">
-          Change Password
+          {t("changePassword.title")}
         </h1>
       </div>
-
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="mt-8 flex flex-grow flex-col gap-4 px-4 text-sm"
       >
-        {/* Current Password Field */}
+        {/* Current Password */}
         <div className="flex flex-col gap-2">
           <label
             htmlFor="currentPassword"
             className="text-gray-600 dark:text-gray-50"
           >
-            Current password
+            {t("changePassword.currentPass")}
           </label>
           <div className="relative">
             <input
@@ -123,8 +147,8 @@ const ChangePass = () => {
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleChange}
-              className="w-full gap-2 rounded border p-2 text-gray-700 outline-none focus:border-0.5 focus:border-primary dark:border-gray-400 dark:bg-gray-800 dark:text-gray-100"
-              placeholder="Enter current password"
+              className="w-full rounded border p-2 text-gray-700 outline-none dark:border-gray-400 dark:bg-gray-800 dark:text-gray-100"
+              placeholder={t("changePassword.enterCurrentPass")}
             />
             <button
               type="button"
@@ -143,13 +167,13 @@ const ChangePass = () => {
           )}
         </div>
 
-        {/* New Password Field */}
+        {/* New Password */}
         <div className="flex flex-col gap-2">
           <label
             htmlFor="newPassword"
             className="text-gray-600 dark:text-gray-50"
           >
-            New password
+            {t("changePassword.newPass")}
           </label>
           <div className="relative">
             <input
@@ -158,8 +182,8 @@ const ChangePass = () => {
               name="newPassword"
               value={formData.newPassword}
               onChange={handleChange}
-              className="w-full rounded border p-2 outline-none focus:border-0.5 focus:border-primary dark:border-gray-400 dark:bg-gray-800 dark:text-gray-50"
-              placeholder="Enter new password"
+              className="w-full rounded border p-2 outline-none dark:border-gray-400 dark:bg-gray-800 dark:text-gray-50"
+              placeholder={t("changePassword.enterNewPass")}
             />
             <button
               type="button"
@@ -178,13 +202,13 @@ const ChangePass = () => {
           )}
         </div>
 
-        {/* Confirm New Password Field */}
+        {/* Confirm Password */}
         <div className="flex flex-col gap-2">
           <label
-            htmlFor="confirmNewPassword"
+            htmlFor="confirmPassword"
             className="text-gray-600 dark:text-gray-50"
           >
-            Confirm new password
+            {t("changePassword.confirmPass")}
           </label>
           <div className="relative">
             <input
@@ -193,8 +217,8 @@ const ChangePass = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full rounded border p-2 outline-none focus:border-0.5 focus:border-primary dark:border-gray-400 dark:bg-gray-800 dark:text-gray-50"
-              placeholder="Confirm new password"
+              className="w-full rounded border p-2 outline-none dark:border-gray-400 dark:bg-gray-800 dark:text-gray-50"
+              placeholder={t("changePassword.enterConfirmPass")}
             />
             <button
               type="button"
@@ -213,43 +237,50 @@ const ChangePass = () => {
           )}
         </div>
 
-        {/* Submit Button at the Bottom */}
+        {/* Submit Button */}
         <div className="mb-10 mt-auto">
           <button
             type="submit"
-            className="hover:bg-primary-dark w-full rounded bg-cyan-to-blue py-4 text-white focus:bg-cyan-to-blue-active focus:outline-none"
+            className="hover:bg-primary-dark w-full rounded bg-cyan-to-blue py-4 text-white focus:outline-none"
           >
-            Update Password
+            {loading ? (
+              <Loader label={t("updating", { ns: "common" })} />
+            ) : (
+              t("updatePassword", { ns: "common" })
+            )}
           </button>
         </div>
       </form>
-
       {/* Success Modal */}
-      {showSuccessModal && (
+      {/* {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
             <h2 className="mb-4 text-lg font-semibold text-gray-700 dark:text-gray-50">
-              Success!
+              {t("success", { ns: "common" })}
             </h2>
             <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">
-              Your password has been updated successfully.
+              {t("passwordUpdated", { ns: "common" })}
             </p>
             <button
               onClick={closeSuccessModal}
               className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
-              {loading ? (
-                <div
-                  className="spinner-border spinner-border-sm text-white"
-                  role="status"
-                >
-                  <span className="sr-only">Loading...</span>
-                </div>
-              ) : (
-                "Back to Login"
-              )}
+              {t("backToLogin", { ns: "common" })}
             </button>
           </div>
+        </div>
+      )} */}
+
+      <ChangePasswordRequestModal
+        result={result}
+        onClose={() => setResult("")}
+        message={message}
+      />
+
+      {/* Preloader Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-90 dark:bg-gray-900">
+          <Preloader isLoading={loading} />
         </div>
       )}
     </div>

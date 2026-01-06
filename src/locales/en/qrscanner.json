@@ -32,9 +32,9 @@
   "storageStatus": "Storage Status",
   "startDate": "Start Date",
   "selectALocation": "Please select a location",
-  "case0": "Case 0",
-  "case1": "Case 1",
-  "case2": "Case 2",
+  "case0": "New Build",
+  "case1": "Regeneration",
+  "case2": "Maintenance",
   "selectAnOrderNumber": "Please select an order number",
   "engineInfo": "Engine Information",
   "engineNo": "Engine no.",
@@ -97,7 +97,8 @@
   },
   "errors": {
     "invalidSerialCode": "Please enter a valid serial code.",
-    "enterSerialCode": "Please enter a serial code."
+    "enterSerialCode": "Please enter a serial code.",
+    "noStoragePermission": "You don’t have permission to add a new cylinder. Please check your access rights and try again."
   },
   "serialNumberFound": "Serial number found",
   "yes": "Yes",
@@ -106,9 +107,9 @@
   "cylinderDisposed": "Cylinder is already disposed",
   "dialog": {
     "caseDescriptions": "Description of Each Case",
-    "case0": "Case 0 (Newly Manufactured)",
-    "case1": "Case 1 (Remanufactured)",
-    "case2": "Case 2 (Normally Maintained)",
+    "case0": "New Build",
+    "case1": "Regeneration",
+    "case2": "Maintenance",
     "case0Description": "{{process}}",
     "case1Description": "{{process}}",
     "case2Description": " {{process}}"

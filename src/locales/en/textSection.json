@@ -1,4 +1,5 @@
 {
+  "userGuidelines":"User Guidelines",
   "welcomeToECCMon": "Welcome to ECCMon Mobile",
   "getStarted": "Getting Started",
   "inventoryOverview": "<span class ='font-semibold text-primaryText text-sm dark:text-gray-50'>Engine Cylinder Cover Monitoring(ECCMon) Mobile</span> is an inventory system developed by <i>KHI Design and Technical Services, Inc. (2024)</i> for monitoring cylinder covers with a convenient QR scanning feature.<br>This will help the employees to add/update cylinder covers in real-time using their mobile devices. Follow the steps below to get started and make the most of the app.",

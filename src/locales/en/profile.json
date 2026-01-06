@@ -5,7 +5,7 @@
   "menuSection": {
     "accountSettings": {
       "account": "Account Settings",
-      "updateInfo": "Update information",
+      "information": "Information",
       "changePass": "Change Password"
     },
     "language": "Language",
@@ -18,5 +18,14 @@
     "userGuidelines": "User Guidelines",
     "reportBugs": "Report Bugs",
     "logout": "Logout"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "currentPass": "Current Password",
+    "enterCurrentPass": "Please enter your current password",
+    "newPass": "New Password",
+    "enterNewPass": "Please enter your new password",
+    "confirmPass": "Confirm New Password",
+    "enterConfirmPass": "Please confirm that the new password matches"
   }
 }

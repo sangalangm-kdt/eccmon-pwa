@@ -1,4 +1,5 @@
 {
+  "userGuidelines":"ユーザーガイド",
   "welcomeToECCMon": "ECCMon モバイルへようこそ",
   "getStarted": "はじめに",
   "inventoryOverview": "<span class='font-semibold text-primaryText text-sm dark:text-gray-50'>エンジンサイリンダーカバー監視（ECCMon）モバイル</span>は、<i>KHIデザインおよび技術サービス株式会社（2024年）</i>によって開発された、QRスキャン機能を活用したサイリンダーカバー監視用のインベントリシステムです。<br>これにより、従業員はモバイルデバイスを使用してリアルタイムでサイリンダーカバーを追加・更新することができます。以下の手順に従って、アプリの使い方を理解し、最大限活用してください。",

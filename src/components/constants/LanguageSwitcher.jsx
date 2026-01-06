@@ -9,8 +9,8 @@ const LanguageSwitcher = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const languages = [
-    { id: "en", label: "English (US)" },
     { id: "ja", label: "日本語" },
+    { id: "en", label: "English (US)" },
   ];
 
   const changeLanguage = (selectedLanguage) => {

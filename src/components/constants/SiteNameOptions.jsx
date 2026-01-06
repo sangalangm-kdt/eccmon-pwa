@@ -1,17 +1,17 @@
-import React, { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 import { useTranslation } from "react-i18next";
 import SiteNameOptionsSkeleton from "./skeleton/SiteNameOptions";
+import { useState } from "react";
 
-const SiteNameOptions = ({ site, setSite, disabled }) => {
+const SiteNameOptions = ({ site, setSite, disabled, showAlert }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { siteData, isSiteLoading } = useLocationProcess();
+  const { data, isLoading } = useLocationProcess("site");
   const { t } = useTranslation();
 
-  // Ensure `siteData` is properly structured
-  const siteList = siteData?.data || []; // Fallback to an empty array if undefined
+  // Ensure `data` is properly structured
+  const siteList = data?.data || []; // Fallback to an empty array if undefined
 
   // Group site names by the first letter
   const groupedNames = siteList.reduce((acc, name) => {
@@ -61,18 +61,22 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
         <input
           className="w-full rounded border bg-transparent px-2 py-2 dark:bg-gray-600"
           type="text"
-          placeholder={t("qrScanner:selectaSite")}
-          value={site}
+          placeholder={site === "None" ? t("qrScanner:selectaSite") : site}
+          value={site === "None" ? "" : site}
           readOnly
           onClick={() => setIsModalOpen(true)}
           disabled={disabled}
         />
+
         <button
           className="absolute right-2 top-1/2 mt-3 -translate-y-1/2 transform"
           onClick={() => setIsModalOpen(true)}
         >
           <FaChevronRight />
         </button>
+        {showAlert && !site && (
+          <p className="text-xs text-red-600">{t("validation.siteRequired")}</p>
+        )}
       </div>
 
       {/* Modal */}
@@ -117,7 +121,7 @@ const SiteNameOptions = ({ site, setSite, disabled }) => {
                   <p className="text-gray-500">No results found</p>
                 )}
               </ul>
-            ) : isSiteLoading ? (
+            ) : isLoading ? (
               <SiteNameOptionsSkeleton />
             ) : (
               Object.keys(filteredGroupedNames).map((letter) => (

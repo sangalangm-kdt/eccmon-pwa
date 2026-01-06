@@ -79,7 +79,13 @@
       "orderNo": "Order No.",
       "engineNo": "Engine No.",
       "operatingHours": "Operating Hours",
-      "mountingPosition": "Mounting Position"
+      "totalHours": "Total Operating Hours",
+      "mountingPosition": "Mounting Position",
+      "caseValues": {
+        "newBuild": "New Build",
+        "regeneration": "Regeneration",
+        "maintenance": "Maintenance"
+      }
     }
   },
 
@@ -92,5 +98,42 @@
     "invalidEmail": "Invalid email address.",
     "passwordResetSuccess": "Password reset link sent to your email.",
     "fetchUserError": "Error fetching user data."
-  }
+  },
+  "reqAcc": {
+    "requestAccount": "Request an Account",
+    "fillOutFields": "Please fill out the fields below",
+    "personalInfo": "Personal Info",
+    "workInfo": "Work Info",
+    "review": "Review",
+    "firstName": "First Name",
+    "enterFirstName": "Enter first name",
+    "lastName": "Last Name",
+    "enterLastName": "Enter last name",
+    "employeeNumber": "Employee Number",
+    "enterEmployeeNumber": "e.g: 000",
+    "next": "Next",
+    "back": "Back",
+    "requestNow": "Request Now",
+    "goToLogin": "Go to Login",
+    "affiliation": "Affiliation",
+    "enterAffiliation": "Select Affiliation",
+    "email": "Email",
+    "enterEmail": "you@global.kawasaki.com",
+    "password": "Password",
+    "enterPassword": "Password should be at least 8 characters",
+    "reviewYourInformation": "Review Your Information"
+  },
+  "reqAccValidation": {
+    "firstName": "First name is required",
+    "lastName": "Last name is required",
+    "employeeId": "Employee number is required",
+    "affiliation": "Affiliation is required",
+    "email": "Email is required",
+    "password": "Password is required"
+  },
+  "updatePassword": "Update password",
+  "backToLogin": "Back to Login",
+  "success": "Success",
+  "passwordUpdated": "Your password has been successfully updated.",
+  "isRequired": "is required."
 }

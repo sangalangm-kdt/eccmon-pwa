@@ -1,7 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useNavigate } from "react-router-dom";
 import axiosLib from "../lib/axios";
-import { useCylinderCover } from "./cylinderCover";
 import useSWR from "swr";
 import { useAuthentication } from "./auth";
 
@@ -23,7 +21,8 @@ export const useCylinderUpdate = () => {
       }),
   );
 
-  const addUpdate = async (input, status) => {
+  const addUpdate = async (input, status, setModalOpen, setLoading) => {
+    setLoading(true);
     const eccId = input.serialNumber;
 
     const updateData = {
@@ -38,21 +37,24 @@ export const useCylinderUpdate = () => {
 
     await csrf();
 
-    console.log(updateData);
+    // console.log(updateData);
     axiosLib
       .post("/api/cylinder-update", updateData)
       .then((res) => {
         console.log(res);
+        setModalOpen(true);
+        setLoading(false);
         // navigate("/qrscanner");
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;
+        setLoading(false);
       });
   };
 
   return {
-    addUpdate,
     cylinder,
     mutate,
+    addUpdate,
   };
 };

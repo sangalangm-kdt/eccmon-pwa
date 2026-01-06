@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import InventorySummary from "./InventorySummary";
 import HistorySummary from "./HistorySummary";
-import Onboarding from "../Onboarding";
+import Onboarding from "../tutorials/Onboarding";
 import { useAuthentication } from "../../../../hooks/auth";
 import { motion } from "framer-motion";
 import logoIcon from "../../../assets/svg/logo.svg";

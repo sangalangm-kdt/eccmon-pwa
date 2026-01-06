@@ -1,22 +1,22 @@
 import React, { createContext, useContext } from "react";
 import { useAuthentication } from "../../hooks/auth";
-import Preloader from "../constants/preloader/Preloader";
+// import Preloader from "../constants/preloader/Preloader";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const { user, login, logout, isLoading } = useAuthentication();
 
-  if (isLoading) {
-    return (
-      <div>
-        <Preloader />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div>
+  //       <Preloader />
+  //     </div>
+  //   );
+  // }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

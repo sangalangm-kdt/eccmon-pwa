@@ -63,11 +63,11 @@ export const useCylinderCover = () => {
       serialNumber: input,
       isDisposed: 2,
       status: "Storage",
-      location: "",
+      location: "None",
       userId: userId,
     };
     await csrf();
-    console.log(data);
+    // console.log(data);
     axiosLib
       .post("/api/cylinder", data)
       .then((res) => {
@@ -75,7 +75,7 @@ export const useCylinderCover = () => {
           serialNumber: input,
           status: 2,
         };
-        console.log(res);
+        // console.log(res);
 
         addHistory(data2);
         navigate("/scanned-result", { state: res.data });

@@ -6,7 +6,7 @@ const Cycle = ({ cycle, setCycle, disabled }) => {
   const { t } = useTranslation();
   return (
     <div className="w-full">
-      <label className="text-sm font-semibold text-primaryText">
+      <label className="text-sm font-semibold text-primaryText dark:text-gray-100">
         {t("qrScanner:cycle")}
       </label>
       <div className="rounded">

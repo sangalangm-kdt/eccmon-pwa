@@ -30,7 +30,7 @@ const UserGuidelines = () => {
           <p className="text-sm text-gray-700 dark:text-gray-100">Back</p>
         </button>
         <h1 className="flex-1 text-center font-medium text-gray-700 dark:text-gray-100 xs:mr-12">
-          User Guidelines
+          {t('userGuidelines')}
         </h1>
       </div>
 

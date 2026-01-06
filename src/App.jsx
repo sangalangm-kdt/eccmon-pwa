@@ -5,7 +5,7 @@ import {
   Outlet,
   useLocation,
 } from "react-router-dom";
-import NotFoundPage from "./components/pages/NotFoundPage";
+import NotFoundPage from "./components/pages/auth/NotFoundPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import NavBar from "./components/pages/_tabs/NavBar";
 import { AuthProvider } from "./components/auth/AuthContext";
@@ -18,8 +18,8 @@ import { HistoryProvider } from "./components/utils/HistoryContext";
 const QRScanner = lazy(
   () => import("./components/pages/_tabs/qrscanner/QRScanner"),
 );
-const Login = lazy(() => import("./components/pages/Login"));
-const Register = lazy(() => import("./components/pages/register/Register"));
+const Login = lazy(() => import("./components/pages/auth/Login"));
+const Register = lazy(() => import("./components/pages/auth/Register"));
 const ProfilePage = lazy(
   () => import("./components/pages/_tabs/profile/ProfilePage"),
 );
@@ -33,11 +33,9 @@ const Home = lazy(() => import("./components/pages/_tabs/home/Home"));
 const ScannedResult = lazy(
   () => import("./components/pages/_tabs/qrscanner/ScannedResult"),
 );
-const ForgotPass = lazy(
-  () => import("./components/pages/forgotPass/PasswordReset"),
-);
+const ForgotPass = lazy(() => import("./components/pages/auth/PasswordReset"));
 const ResetPassword = lazy(
-  () => import("./components/pages/forgotPass/ResetPassword"),
+  () => import("./components/pages/auth/ResetPassword"),
 );
 const UpdateInfo = lazy(
   () => import("./components/pages/_tabs/profile/UpdateInfo"),

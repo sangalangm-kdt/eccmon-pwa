@@ -3,6 +3,7 @@ import EngineInfo from "./mountAndDismountInfo/EngineInfo";
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
 import { useLocation } from "react-router-dom";
 import { formatDate } from "../../../../utils/formatdate";
+import { useAuthentication } from "../../../../../hooks/auth";
 
 const Dismounting = ({
   selectedStatus,
@@ -12,12 +13,13 @@ const Dismounting = ({
   setShowAlert,
   resetFlag, // Add resetFlag prop to trigger reset
 }) => {
-  const location = useLocation();
+  const location = useLocation("dismounted");
   const cylinderData = location.state?.data;
+  const { user } = useAuthentication();
 
   // Store the initial data and prevent changes unless the user modifies it
   const [initialData, setInitialData] = useState(cylinderData);
-
+  console.log(initialData);
   const [site, setSite] = useState(initialData?.location);
   const [engineNum, setEngineNum] = useState(
     initialData?.updates?.otherDetails?.engineNumber,
@@ -55,7 +57,7 @@ const Dismounting = ({
   useEffect(() => {
     setData({
       serialNumber: cylinderData?.serialNumber,
-      location: site,
+      location: user.is_admin === 1 ? site : user.affiliation,
       dateDone: date,
       cycle: cycle,
       otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,
@@ -66,6 +68,7 @@ const Dismounting = ({
     <div className="flex flex-col">
       <div className="w-full rounded-lg bg-white p-2 text-sm dark:bg-gray-500">
         <EngineInfo
+          affiliation={user.affiliation}
           site={site}
           setSite={setSite}
           engineNum={engineNum}

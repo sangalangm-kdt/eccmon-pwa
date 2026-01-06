@@ -4,6 +4,10 @@ import React, { useEffect, useState } from "react";
 import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
 import { useCylinderCover } from "../../hooks/cylinderCover";
+import { useLocationProcess } from "../../hooks/locationProcess";
+import { useAuth } from "../auth/AuthContext";
+import { useAuthentication } from "../../hooks/auth";
+import { useLocation } from "../../hooks/location";
 
 export const CylinderStatusSelect = ({
   selectedStatus,
@@ -12,19 +16,33 @@ export const CylinderStatusSelect = ({
 }) => {
   // const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { user } = useAuthentication();
 
+  const { process } = useLocation(user.id) ?? [];
+  console.log(user);
   // Get cylinder status options with labelKey for translation
   const cylinderStatusOptions = [
-    { id: 1, status: "Storage", labelKey: "storage" },
-    { id: 2, status: "Disassembly", labelKey: "disassembly" },
-    { id: 3, status: "Grooving", labelKey: "grooving" },
-    { id: 4, status: "LMD", labelKey: "lmd" },
-    { id: 5, status: "Finishing", labelKey: "finishing" },
-    { id: 6, status: "Assembly", labelKey: "assembly" },
-    { id: 7, status: "Mounted", labelKey: "mounted" },
-    { id: 8, status: "Dismounted", labelKey: "dismounted" },
-    { id: 9, status: "Disposal", labelKey: "disposal" },
+    ...(process?.flatMap((process, processIdx) => {
+      if (process === "site") {
+        return [
+          { id: processIdx, status: "Mounted", labelKey: "mounted" },
+          { id: processIdx + 1, status: "Dismounted", labelKey: "dismounted" },
+        ];
+      }
+      return {
+        id: processIdx,
+        status: process,
+        labelKey: process.toLowerCase(),
+      };
+    }) || []),
   ];
+
+  // Dynamically add "Disposal" at the last index
+  cylinderStatusOptions.push({
+    id: cylinderStatusOptions.length, // Last index dynamically
+    status: "Disposal",
+    labelKey: "disposal",
+  });
 
   const hasOptions = cylinderStatusOptions.length > 0;
 
@@ -44,7 +62,9 @@ export const CylinderStatusSelect = ({
         t={t}
       />
       {!hasOptions && (
-        <p className="text-gray-500">No options available</p> // Optional message
+        <p className="text-xs text-gray-500 dark:text-gray-100">
+          No options available
+        </p> // Optional message
       )}
     </div>
   );

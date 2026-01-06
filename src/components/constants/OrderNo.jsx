@@ -6,13 +6,16 @@ import { useTranslation } from "react-i18next";
 const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { orderNumber } = useLocationProcess();
+  const orderNumber = useLocationProcess("order-number").data?.data;
   const { t } = useTranslation();
 
   // Filter order numbers based on search term
-  const filteredOrderNos = orderNumber?.data?.filter((orderNo) =>
-    orderNo.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filteredOrderNos =
+    orderNumber?.filter((orderNo) =>
+      orderNo?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
+
+  console.log(filteredOrderNos);
 
   const handleSelectOrderNo = (orderNo) => {
     setSelectedOrderNo(orderNo);
@@ -27,7 +30,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
           {t("qrScanner:orderNo")} <strong className="text-red-500">*</strong>
         </label>
         <input
-          className="w-full rounded border px-2 py-2 text-gray-600 dark:bg-gray-700 dark:text-gray-100"
+          className="w-full rounded border px-2 py-2 text-gray-600 dark:bg-gray-600 dark:text-gray-100"
           type="text"
           placeholder={t("qrScanner:selectAnOrderNumber")}
           value={selectedOrderNo}
@@ -87,7 +90,7 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
               </ul>
             ) : (
               <ul className="space-y-2">
-                {orderNumber?.data?.map((orderNo) => (
+                {orderNumber?.map((orderNo) => (
                   <li
                     key={orderNo.id}
                     className="cursor-pointer text-gray-700 hover:bg-cyan-100 dark:text-gray-100"

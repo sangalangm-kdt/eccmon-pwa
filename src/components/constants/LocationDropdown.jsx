@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { customSelectStyles } from "../utils/selectUtils"; // Ensure this accepts isDarkMode
 
 const LocationDropdown = ({
-  onLocationChange,
   options = [],
   loading,
   error,
@@ -45,7 +44,7 @@ const LocationDropdown = ({
           styles={customSelectStyles(isDarkMode)} // Pass isDarkMode here
           placeholder={t("qrScanner:selectALocation")}
           isClearable
-          noOptionsMessage={() => t("qrScanner:noOptionsAvailable")}
+          noOptionsMessage={() => t(":noOptionsAvailable")}
         />
       </div>
     </div>

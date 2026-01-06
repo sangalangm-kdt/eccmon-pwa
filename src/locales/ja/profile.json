@@ -5,7 +5,7 @@
   "menuSection": {
     "accountSettings": {
       "account": "アカウント設定",
-      "updateInfo": "情報の更新",
+      "information": "情報",
       "changePass": "パスワード変更"
     },
     "language": "言語",
@@ -18,5 +18,13 @@
     "userGuidelines": "ユーザーガイド",
     "reportBugs": "バグ報告",
     "logout": "ログアウト"
+  },
+  "changePassword": {
+    "currentPass": "現在のパスワード",
+    "enterCurrentPass": "現在のパスワードを入力してください",
+    "newPass": "新しいパスワード",
+    "enterNewPass": "新しいパスワードを入力してください",
+    "confirmPass": "新しいパスワードの確認",
+    "enterConfirmPass": "新しいパスワードが一致しているか確認してください"
   }
 }

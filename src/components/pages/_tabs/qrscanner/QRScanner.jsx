@@ -20,6 +20,8 @@ import {
   IoFlashOffOutline,
   IoFlashOutline,
 } from "react-icons/io5";
+import { useLocation } from "../../../../hooks/location";
+import { useAuthentication } from "../../../../hooks/auth";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -37,9 +39,22 @@ const QRScanner = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation("qrScanner", "common");
-  const { checkSerial, addCylinder } = useCylinderCover();
 
+  const { user } = useAuthentication();
+  const { process } = useLocation(user.id);
+  const { checkSerial, addCylinder } = useCylinderCover();
+  console.log(user);
   const codeReader = new BrowserMultiFormatReader();
+
+  const isInsideScanBox = (x, y) => {
+    const scanBox = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 }; // Adjust as needed
+    return (
+      x >= scanBox.x * window.innerWidth &&
+      x <= (scanBox.x + scanBox.width) * window.innerWidth &&
+      y >= scanBox.y * window.innerHeight &&
+      y <= (scanBox.y + scanBox.height) * window.innerHeight
+    );
+  };
 
   const handleScanResult = (result, err) => {
     if (result) {
@@ -50,6 +65,14 @@ const QRScanner = () => {
         if (!eccId) {
           setError("The scanned code does not contain a valid code.");
           return;
+        }
+
+        // Get barcode position (only if available)
+        if (result.position) {
+          const { x, y } = result.position.topLeft;
+          if (!isInsideScanBox(x, y)) {
+            return; // Ignore if it's outside the scan box
+          }
         }
 
         if (!modalOpen) {
@@ -344,6 +367,9 @@ const QRScanner = () => {
         onClose={handleClose}
         onConfirm={handleConfirm}
         eccId={scannedData}
+        hasStoragePermission={
+          user?.isAdmin === 1 || process?.includes("Storage")
+        }
       />
 
       <ManuallyAddModal

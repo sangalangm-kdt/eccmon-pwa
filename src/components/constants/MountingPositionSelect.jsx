@@ -45,7 +45,7 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
         options={options}
         isDisabled={disabled}
         styles={customSelectStyles(isDarkMode)}
-        placeholder={t("selectEnginePos")}
+        placeholder="e.g. B1"
         isClearable
         noOptionsMessage={() => "No positions available"}
       />

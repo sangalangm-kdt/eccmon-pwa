@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronIcon } from "../../../assets/icons";
 import { CloseRounded, IosShare } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -34,6 +34,36 @@ const HistorySummary = () => {
   const cylinders = useCylinderCover().cylinder?.data ?? [];
   const cylinderUpdates = useCylinderUpdate().cylinder?.data ?? [];
 
+  function filterDataByCycle(data) {
+    const grouped = {};
+
+    data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)); // Sort by createdAt
+
+    data.forEach((item) => {
+      const key = `${item.serialNumber}-${item.cycle}`;
+      grouped[key] = item; // Keep the latest occurrence for each cycle
+    });
+
+    const filteredData = Object.values(grouped);
+
+    const groupedBySerial = filteredData.reduce((acc, item) => {
+      let existingGroup = acc.find(
+        (group) => group.serialNumber === item.serialNumber,
+      );
+      if (!existingGroup) {
+        existingGroup = { serialNumber: item.serialNumber, data: [] };
+        acc.push(existingGroup);
+      }
+      existingGroup.data.push(item);
+      return acc;
+    }, []);
+
+    return groupedBySerial;
+  }
+
+  const filteredData = filterDataByCycle(cylinderUpdates);
+  console.log(filteredData);
+
   const filteredCylinderUpdates = cylinderUpdates
     ?.filter((cyl) => cyl.userId === userId)
     .filter(
@@ -49,8 +79,12 @@ const HistorySummary = () => {
   const [endDate, setEndDate] = useState(null);
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState();
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [isFetching, setIsFetching] = useState(false); // for infinite scroll
+
+  const listInnerRef = useRef(null);
 
   // Effect for handling sorting and filtering updates
   useEffect(() => {
@@ -96,17 +130,14 @@ const HistorySummary = () => {
 
   const handleFilterChange = (selectedOption) => {
     setFilter(selectedOption.value);
-    setCurrentPage(1);
   };
 
   const handleDateChange = (date, name) => {
     name === "startDate" ? setStartDate(date) : setEndDate(date);
-    setCurrentPage(1);
   };
 
   const handlePerPageChange = (selectedOption) => {
     setPerPage(selectedOption.value);
-    setCurrentPage(1);
   };
 
   const toggleSortOrder = () => {
@@ -114,7 +145,19 @@ const HistorySummary = () => {
   };
 
   const handleCycleClick = (item) => {
-    navigate("/view-info", { state: { data: item } });
+    const totalOperationHours = filteredData
+      ?.filter((data) => item.serialNumber === data.serialNumber)
+      .map((entry) => {
+        const totalHours = entry.data.reduce((sum, item) => {
+          return sum + (parseInt(item.otherDetails?.operationHours) || 0);
+        }, 0);
+
+        return totalHours;
+      })[0];
+    console.log(totalOperationHours);
+    navigate("/view-info", {
+      state: { data: item, totalOperationHours: totalOperationHours },
+    });
   };
 
   const filterOptions = [
@@ -146,22 +189,44 @@ const HistorySummary = () => {
 
   CustomDateInput.displayName = "CustomDateInput";
 
-  const totalPages = Math.ceil(filteredHistory.length / perPage);
-  const startIndex = (currentPage - 1) * perPage;
-  const endIndex = startIndex + perPage;
+  // Infinite scroll logic
+  const loadMore = () => {
+    if (isFetching || filteredHistory.length === 0) return;
+    setIsFetching(true);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    // Simulate an API call and append more items (in this case, just slice)
+    setTimeout(() => {
+      setFilteredHistory((prev) => [
+        ...prev,
+        ...filteredHistory.slice(
+          filteredHistory.length,
+          filteredHistory.length + 10,
+        ),
+      ]);
+      setIsFetching(false);
+    }, 1000);
   };
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "100px" },
+    );
+    if (listInnerRef.current) observer.observe(listInnerRef.current);
+    return () => {
+      if (listInnerRef.current) observer.unobserve(listInnerRef.current);
+    };
+  }, [filteredHistory]);
 
   const isDarkMode = document.documentElement.classList.contains("dark");
   return (
     <div
-      className={`xs:min-[300px] flex w-full flex-col overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-700 xs:px-1 lg:w-full ${
+      className={`xs:min-[300px] shadow- flex w-full flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-700 xs:px-1 lg:w-full ${
         showAll ? fullscreenClass : ""
       }`}
     >
@@ -268,44 +333,6 @@ const HistorySummary = () => {
                   </div>
                 </div>
               )}
-
-              {/* Pagination Controls */}
-              <div className="mb-2 mt-2 flex justify-between">
-                <div className="flex flex-row items-center justify-center gap-1">
-                  <label>Show</label>
-                  <Select
-                    className="w-20 text-center text-xs"
-                    options={perPageOptions}
-                    value={perPageOptions.find(
-                      (option) => option.value === perPage,
-                    )}
-                    onChange={handlePerPageChange}
-                    styles={customSelectStyle(isDarkMode)}
-                  />
-                  <label>entries</label>
-                </div>
-
-                <div className="flex items-center justify-center gap-1">
-                  <button
-                    className="rounded border p-2"
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 1}
-                  >
-                    <IoArrowBackOutline />
-                  </button>{" "}
-                  <p className="flex items-center justify-center">
-                    {t("common:page")} {currentPage} {t("common:of")}{" "}
-                    {totalPages}
-                  </p>
-                  <button
-                    className="rounded border p-2"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    <IoArrowForwardOutline />
-                  </button>
-                </div>
-              </div>
             </div>
           )}
 
@@ -324,61 +351,57 @@ const HistorySummary = () => {
                   showAll ? "max-h-fit overflow-y-auto" : "max-h-[380px]"
                 }`}
               >
-                {filteredHistory
-                  .slice(startIndex, endIndex)
-                  .map((item, index) => {
-                    // Get the status colors dynamically
-                    const { bgColor, textColor } = getStatusColors(item.status);
+                {filteredHistory.slice(0, perPage).map((item, index) => {
+                  // Get the status colors dynamically
+                  const { bgColor, textColor } = getStatusColors(item.status);
 
-                    // Format created and updated dates
-                    const createdDate = new Date(item?.updates?.dateDone);
-                    const updatedDate = item.updatedAt
-                      ? new Date(item.updatedAt)
-                      : null;
+                  // Format created and updated dates
+                  const createdDate = new Date(item?.updates?.dateDone);
+                  const updatedDate = item.updatedAt
+                    ? new Date(item.updatedAt)
+                    : null;
 
-                    return (
-                      <li
-                        key={index}
-                        className={`h-70 flex w-full cursor-pointer flex-col border-b-0.5 border-gray-200 py-2 hover:bg-gray-100 dark:border-gray-500 dark:bg-transparent dark:hover:bg-gray-600`}
-                        onClick={() => handleCycleClick(item)}
-                      >
-                        {/* Serial number and date_done */}
-                        <p className="flex items-center justify-between p-2 font-normal">
-                          <span>
-                            {item?.serialNumber ?? "No serial number"}
-                          </span>
+                  return (
+                    <li
+                      key={index}
+                      className={`h-70 flex w-full cursor-pointer flex-col border-b-0.5 border-gray-200 py-2 hover:bg-gray-100 dark:border-gray-500 dark:bg-transparent dark:hover:bg-gray-600`}
+                      onClick={() => handleCycleClick(item)}
+                    >
+                      {/* Serial number and date_done */}
+                      <p className="flex items-center justify-between p-2 font-normal">
+                        <span>{item?.serialNumber ?? "No serial number"}</span>
 
-                          <span className="ml-2 text-xs font-semibold text-gray-500 dark:text-gray-300">
-                            {`${createdDate.getHours()}:${String(createdDate.getMinutes()).padStart(2, "0")}`}
-                          </span>
+                        <span className="ml-2 text-xs font-semibold text-gray-500 dark:text-gray-300">
+                          {`${createdDate.getHours()}:${String(createdDate.getMinutes()).padStart(2, "0")}`}
+                        </span>
+                      </p>
+
+                      {/* Status label with dynamic colors */}
+                      <div className="flex flex-row justify-between px-2 text-xs">
+                        <p
+                          className={`rounded-full px-2 py-1 text-tiny ${bgColor} ${textColor}`}
+                        >
+                          {t(`qrScanner:${item.status.toLowerCase()}`)}
                         </p>
 
-                        {/* Status label with dynamic colors */}
-                        <div className="flex flex-row justify-between px-2 text-xs">
-                          <p
-                            className={`rounded-full px-2 py-1 text-tiny ${bgColor} ${textColor}`}
-                          >
-                            {t(`qrScanner:${item.status.toLowerCase()}`)}
-                          </p>
-
-                          {/* date_done */}
+                        {/* date_done */}
+                        <p className="text-xs text-gray-500 dark:text-gray-300">
+                          {isNaN(createdDate.getTime())
+                            ? "Invalid Date"
+                            : formatDate(createdDate, t)}
+                        </p>
+                        {updatedDate && (
                           <p className="text-xs text-gray-500 dark:text-gray-300">
-                            {isNaN(createdDate.getTime())
+                            {t("common:updated")}{" "}
+                            {isNaN(updatedDate.getTime())
                               ? "Invalid Date"
-                              : formatDate(createdDate, t)}
+                              : formatDate(updatedDate, t)}
                           </p>
-                          {updatedDate && (
-                            <p className="text-xs text-gray-500 dark:text-gray-300">
-                              {t("common:updated")}{" "}
-                              {isNaN(updatedDate.getTime())
-                                ? "Invalid Date"
-                                : formatDate(updatedDate, t)}
-                            </p>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

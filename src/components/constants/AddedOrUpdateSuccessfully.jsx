@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
   const navigate = useNavigate();
-  const { updateHistory } = useHistory(); // Access updateHistory function from context
+  const { updateHistory } = useHistory();
   const { t } = useTranslation();
 
   const handleBackToQR = () => {
@@ -19,18 +19,15 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
   };
 
   const handleGoToHome = () => {
-    // Update history when navigating to home
-    updateHistory(data); // Update the history in global state
-    navigate("/"); // Navigate to home
+    updateHistory(data);
+    navigate("/");
   };
 
-  // Get dynamic background and text colors from status
   const { bgColor, textColor } = getStatusColors(selectedStatus);
 
   const renderData = (data) => {
     const seenKeys = new Set();
 
-    // Define a mapping of keys to labels
     const labels = {
       serialNumber: t("qrScanner:label.serialNo"),
       location: t("qrScanner:label.location"),
@@ -49,18 +46,16 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
       if (seenKeys.has(key)) return null;
       seenKeys.add(key);
 
-      // Get the label for the key, default to the key if no label is defined
       const displayKey = labels[key] || key;
 
-      // Format the dateDone field
       if (key === "dateDone" && typeof value === "string") {
-        value = value.replace("T", ", "); // Replace T with a space
+        value = value.replace("T", ", ");
       }
 
       if (key === "otherDetails") {
         try {
           const parsedDetails = JSON.parse(value);
-          // Check and update isPassed value based on its initial value
+
           if (parsedDetails.isPassed !== "") {
             if (+parsedDetails.isPassed === 1) {
               parsedDetails.isPassed = "Yes";

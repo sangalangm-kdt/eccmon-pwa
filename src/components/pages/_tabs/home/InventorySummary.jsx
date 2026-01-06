@@ -12,6 +12,7 @@ import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import { GoKebabHorizontal } from "react-icons/go";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "../../../../hooks/location";
 
 const InventorySummary = ({ userId }) => {
   const { t } = useTranslation("common");
@@ -211,7 +212,7 @@ const InventorySummary = ({ userId }) => {
   };
 
   return (
-    <div className="lg:pt-30 z-10 flex flex-col px-4 xs:pb-1 xs:pt-1">
+    <div className="lg:pt-30 z-10 flex flex-col px-2 xs:pb-1 xs:pt-1">
       <div className="flex flex-row justify-between p-1">
         <p className="text-left text-lg font-semibold text-gray-700 dark:text-gray-50">
           {t("inventorySummary.overview")}

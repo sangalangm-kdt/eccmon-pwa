@@ -12,14 +12,13 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
   const cylinderData = location.state?.data;
   const eccId = cylinderData.serialNumber;
 
-  console.log("dattaa", location);
+  // console.log("dattaa", location);
   useEffect(() => {
     setSelectedStatus(cylinderData.status);
   }, [cylinderData.status]);
 
   // Translate selectedStatus dynamically
   const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
-  console.log();
 
   const marginTop = step === "review" ? "mt-2" : "mt-28";
 
