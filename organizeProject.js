@@ -37,7 +37,7 @@ function createFolders() {
   folders.forEach((folder) => {
     if (!fs.existsSync(folder)) {
       fs.mkdirSync(folder, { recursive: true });
-      console.log(`✅ Created folder: ${folder}`);
+     //console.log(`✅ Created folder: ${folder}`);
     }
   });
 }
@@ -50,7 +50,7 @@ function moveFiles() {
 
     if (fs.existsSync(oldPath)) {
       fs.renameSync(oldPath, newPath);
-      console.log(`📂 Moved ${file} → ${targetFolder}`);
+     //console.log(`📂 Moved ${file} → ${targetFolder}`);
     }
   });
 }

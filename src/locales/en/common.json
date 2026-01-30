@@ -30,6 +30,9 @@
   "back": "Back",
   "done": "Done",
 
+  "backToHome": "Go to home",
+  "backToQr": "Scan again",
+  "currentCycle": "Current Cycle",
   "continueButton": "Continue",
   "saveButton": "Save",
   "editButton": "Edit",
@@ -87,6 +90,13 @@
         "maintenance": "Maintenance"
       }
     }
+  },
+  "authErrors": {
+    "fetchUserFailed": "Error fetching user data.",
+    "alreadyLoggedIn": "User already logged in.",
+    "unexpected": "An unexpected error occurred.",
+    "network": "Network error. Please check your connection and try again.",
+    "invalidCredentials": "Invalid email or password."
   },
 
   "errorMessages": {

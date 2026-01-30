@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5"; // Import Ionicons eye icons
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import {
   buttonStyles,
   container,
@@ -24,87 +24,101 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState("");
-  const [passwordVisible, setPasswordVisible] = useState(false); // Track password visibility
+
+  // store an error "key" so we can render correct helper texts
+  // "emailPasswordRequired" | "emailRequired" | "passwordRequired" | ""
+  const [alertKey, setAlertKey] = useState("");
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Clear any previous error
     setStatus(null);
-    setAlert(""); // Reset alert
+    setAlertKey("");
 
-    // Check if email or password is empty
-    if (!email || !password) {
-      setAlert(t("login:emailPasswordRequired")); // Show alert if either field is empty
+    const hasEmail = Boolean(email?.trim());
+    const hasPassword = Boolean(password);
+
+    if (!hasEmail && !hasPassword) {
+      setAlertKey("emailPasswordRequired");
+      return;
+    }
+    if (!hasEmail) {
+      setAlertKey("emailRequired");
+      return;
+    }
+    if (!hasPassword) {
+      setAlertKey("passwordRequired");
       return;
     }
 
-    // Call the login function
-    setLoading(true); // Start loading
+    setLoading(true);
     login({
       setStatus,
       setErrors: () => {},
       setLoading: (loadingState) => setLoading(loadingState),
-      email,
+      email: email.trim(),
       password,
       remember: false,
-    }).catch(() => {
-      setLoading(false); // Reset loading if login fails
-    });
+    }).catch(() => setLoading(false));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "email") {
-      setEmail(value);
-    } else if (name === "password") {
-      setPassword(value);
-    }
 
-    // Hide error message when user starts typing
-    if (errorMessage) {
-      // Only reset the errorMessage if the user starts typing
-      setStatus(null);
-    }
+    if (name === "email") setEmail(value);
+    if (name === "password") setPassword(value);
 
-    // Hide alert message when user starts typing
-    if (alert) {
-      setAlert("");
-    }
+    // Clear local validation message while typing
+    if (alertKey) setAlertKey("");
+
+    // keep your original behavior (reset status when typing)
+    if (status) setStatus(null);
   };
 
+  useEffect(() => {
+    if (!errorMessage) return;
+
+    const timer = setTimeout(() => {
+      // clear backend error after 5s
+      // we cannot directly set errorMessage here (comes from hook)
+      // so we clear via typing-like behavior
+      // easiest: reload auth state by clearing status
+      setStatus(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
+
   return (
-    <div className="flex min-h-screen w-full items-center justify-center dark:bg-gray-700 xs:bg-none sm:bg-secondary lg:bg-secondary dark:lg:bg-gray-700">
+    <div className="flex min-h-screen w-full items-center justify-center dark:bg-gray-800 xs:bg-none lg:bg-secondary dark:lg:bg-gray-700">
       <div className="flex w-full max-w-md items-center sm:p-6 md:p-2">
         <div className={container.containerDiv}>
           <div className="flex w-52 items-center justify-center gap-1 xs:mb-8 lg:mt-4">
             <img src={kawasakiLogo} alt="kawasaki-icon" className="h-9" />
-            <hr className="mx-2 flex-grow border border-t border-gray-400" />
+            <hr className="mx-2 flex-grow border border-t border-gray-400 dark:border-gray-600" />
             <LogoText />
           </div>
+
           <div className={inputStyles.container}>
-            <h2
-              className={`mb-8 text-3xl font-bold text-gray-700 dark:text-gray-200 xs:text-2xl`}
-            >
+            <h2 className="mb-8 text-3xl font-bold text-gray-700 dark:text-gray-200 xs:text-2xl">
               {t("login:login")}
             </h2>
           </div>
 
           <form className={width.responsive} onSubmit={handleSubmit}>
-            <div
-              className={`text-GRAY-700 text-center text-gray-700 dark:text-gray-50 xs:p-3 xs:text-sm lg:mb-0 lg:text-md`}
-            >
+            <div className="text-center text-gray-700 dark:text-gray-50 xs:p-3 xs:text-sm lg:mb-0 lg:text-md">
               <label>{t("login:loginDetails")}</label>
             </div>
 
-            {/* Display the errorMessage from useAuthentication */}
+            {/* ✅ Backend / auth error (dark synced) */}
             {errorMessage && (
               <p
-                className={`${inputStyles.inputContainer} w-full bg-red-200 text-center text-sm text-red-500`}
+                className={`${inputStyles.inputContainer} w-full rounded-md bg-red-100 text-center text-sm text-red-700 dark:bg-red-900/30 dark:text-red-200`}
               >
                 {errorMessage}
               </p>
@@ -122,9 +136,12 @@ const Login = () => {
                 placeholder={t("login:enterEmail")}
                 autoComplete="off"
               />
-              {/* Display alert message for missing email */}
-              {alert && !email && (
-                <p className="text-xs text-red-500">Email is required.</p>
+
+              {(alertKey === "emailRequired" ||
+                alertKey === "emailPasswordRequired") && (
+                <p className="text-xs text-red-600 dark:text-red-300">
+                  {t("login:errors.emailRequired")}
+                </p>
               )}
             </div>
 
@@ -133,7 +150,7 @@ const Login = () => {
               <label className={inputStyles.label}>{t("login:password")}</label>
               <div className="relative">
                 <input
-                  type={passwordVisible ? "text" : "password"} // Toggle between password and text
+                  type={passwordVisible ? "text" : "password"}
                   name="password"
                   value={password}
                   onChange={handleInputChange}
@@ -143,19 +160,25 @@ const Login = () => {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 transform"
-                  onClick={() => setPasswordVisible(!passwordVisible)} // Toggle visibility
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 dark:text-gray-300"
+                  onClick={() => setPasswordVisible((v) => !v)}
+                  aria-label={
+                    passwordVisible ? "Hide password" : "Show password"
+                  }
                 >
                   {passwordVisible ? (
-                    <IoEyeOffOutline className="text-gray-500" />
+                    <IoEyeOffOutline className="text-gray-500 dark:text-gray-300" />
                   ) : (
-                    <IoEyeOutline className="text-gray-500" />
+                    <IoEyeOutline className="text-gray-500 dark:text-gray-300" />
                   )}
                 </button>
               </div>
-              {/* Display alert message for missing password */}
-              {alert && !password && (
-                <p className="text-xs text-red-500">Password is required.</p>
+
+              {(alertKey === "passwordRequired" ||
+                alertKey === "emailPasswordRequired") && (
+                <p className="text-xs text-red-600 dark:text-red-300">
+                  {t("login:errors.passwordRequired")}
+                </p>
               )}
             </div>
 
@@ -192,19 +215,23 @@ const Login = () => {
                         fill="currentFill"
                       />
                     </svg>
-                    <span className="ms-2 text-sm">Signing in...</span>
+                    <span className="ms-2 text-sm">
+                      {t("login:signingIn") || "Signing in..."}
+                    </span>
                   </div>
                 ) : (
                   <span>{t("login:signIn")}</span>
                 )}
               </button>
+
+              {/* ✅ dark synced + visible */}
               <div className={inputStyles.container}>
-                <label className="py-2 text-center text-sm text-gray-700">
+                <label className="py-2 text-center text-sm text-gray-700 dark:text-gray-50">
                   {t("login:noAccount")}
                   <button
-                    className="ml-1 font-semibold hover:underline"
+                    className="ml-1 font-semibold text-gray-700 hover:underline dark:text-cyan-300"
                     type="button"
-                    onClick={() => navigate("/request-account")} // Use navigate here
+                    onClick={() => navigate("/request-account")}
                   >
                     {t("login:requestNow")}
                   </button>

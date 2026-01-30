@@ -20,19 +20,19 @@ export const useUserRequest = () => {
 
   const register = async ({ ...props }) => {
     await csrf();
-    console.log("clicked", props);
+    //console.log("clicked", props);
     return axiosLib
       .post("/api/user-request", props)
       .then((response) => {
-        console.log("Request successfully!");
+        //console.log("Request successfully!");
         return { message: "Request successfully!", isSuccess: true };
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
         if (error.response?.status === 422) {
-          console.log(error.response.data.message);
+          //console.log(error.response.data.message);
         } else {
-          console.log(error.response.data.message);
+          //console.log(error.response.data.message);
         }
         const firstKey = Object.keys(error.response.data.errors)[0]; // "user_id"
         const firstError = error.response.data.errors[firstKey][0].includes(
@@ -40,7 +40,7 @@ export const useUserRequest = () => {
         )
           ? "The employee number has already been taken."
           : error.response.data.errors[firstKey][0];
-        console.log(firstError);
+        //console.log(firstError);
         return {
           message: firstError,
           isSuccess: false,

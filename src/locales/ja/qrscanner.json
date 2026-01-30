@@ -25,6 +25,7 @@
   "processStatus": "プロセスステータス",
   "processor": "処理者",
   "completionDate": "完了日",
+  "close": "閉じる",
   "case": "ケース",
   "passed": "合格",
   "cycle": "サイクル",
@@ -95,6 +96,16 @@
       "2桁の数字の後にC-Zの文字、その後3桁 (例: 23C123)"
     ]
   },
+  "backend": {
+    "eccAlreadyExists": "このECC IDはすでに存在します。",
+    "serialNotFound": "シリアル番号が見つかりません。",
+    "cylinderNotFound": "シリンダーカバーが存在しません。追加しますか？",
+    "alreadyDisposed": "このシリンダーはすでに廃棄されています。",
+    "savedSuccessfully": "保存しました。",
+    "updatedSuccessfully": "更新しました。",
+    "unknownError": "エラーが発生しました。もう一度お試しください。"
+  },
+
   "errors": {
     "invalidSerialCode": "有効なシリアルコードを入力してください。",
     "enterSerialCode": "シリアルコードを入力してください。",

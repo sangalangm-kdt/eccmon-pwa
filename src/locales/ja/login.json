@@ -7,15 +7,21 @@
   "password": "パスワード",
   "enterPassword": "パスワードを入力してください",
   "signIn": "サインイン",
+  "signingIn": "サインイン中…",
   "forgotPassword": "サインインでお困りですか？",
   "noAccount": "アカウントをお持ちでないですか？ ",
   "requestNow": "今すぐリクエスト",
   "loginDetails": "アカウントにサインインするための詳細を入力してください",
   "emailPasswordRequired": "このフィールドは必須です。",
+  "forgotPasswordHelp": "ここからパスワードをリセットできます。",
+  "resetPassword": "パスワードをリセット",
+  "resetting": "リセット中...",
+  "backToLogin": "ログインに戻る",
   "error": {
     "requiredFields": "メールアドレスとパスワードは必須です。",
     "userNotFound": "ユーザーが存在しません。",
     "incorrectPassword": "パスワードが正しくありません。",
-    "emailAndPassIncorrect": "入力されたメールアドレスまたはパスワードが正しくありません。"
+    "emailAndPassIncorrect": "入力されたメールアドレスまたはパスワードが正しくありません。",
+    "invalidEmail": "有効なメールアドレスを入力してください。"
   }
 }

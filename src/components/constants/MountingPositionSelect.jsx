@@ -31,7 +31,7 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
 
   const handleChange = (selectedOption) => {
     const newMountPos = selectedOption?.value || "";
-    console.log("Selected Mounting Position:", newMountPos); // Debug log
+    ////console.log("Selected Mounting Position:", newMountPos); // Debug log
     setMountPos(newMountPos); // Update state
   };
   const isDarkMode = document.documentElement.classList.contains("dark");

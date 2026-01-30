@@ -2,6 +2,7 @@
   "barcodePlaceCode": "Place the code inside the frame",
   "addData": "Add data",
   "cannotScanCode": "Cannot scan the serial code? Add it here manually.",
+  "close": "Close",
   "storage": "Storage",
   "process": "Process",
   "materialAndMachining": "Material and Machining",
@@ -95,6 +96,16 @@
       "2 digits followed by a letter C-Z, followed by 3 digits (e.g., 23C123)"
     ]
   },
+  "backend": {
+    "eccAlreadyExists": "This ECC ID already exists.",
+    "serialNotFound": "Serial number not found.",
+    "cylinderNotFound": "The cylinder cover does not exist. Do you want to add it?",
+    "alreadyDisposed": "Cylinder is already disposed.",
+    "savedSuccessfully": "Saved successfully.",
+    "updatedSuccessfully": "Updated successfully.",
+    "unknownError": "Something went wrong. Please try again."
+  },
+
   "errors": {
     "invalidSerialCode": "Please enter a valid serial code.",
     "enterSerialCode": "Please enter a serial code.",

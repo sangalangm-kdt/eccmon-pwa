@@ -1,79 +1,153 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuthentication } from "../../../hooks/auth";
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState("");
-  const navigate = useNavigate();
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const { forgotPassword } = useAuthentication({
+const ForgotPassword = () => {
+  const { t } = useTranslation(["common", "login"]);
+  const { forgotPassword, errorMessage } = useAuthentication({
     middleware: "guest",
     redirectIfAuthenticated: "/",
   });
 
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const trimmedEmail = useMemo(() => email.trim(), [email]);
+  const emailValid = useMemo(() => EMAIL_RE.test(trimmedEmail), [trimmedEmail]);
+
+  const emailError = useMemo(() => {
+    if (!touched) return "";
+    if (!trimmedEmail)
+      return t("login:errors.emailRequired", "Email is required.");
+    if (!emailValid)
+      return t("login:errors.invalidEmail", "Please enter a valid email.");
+    return "";
+  }, [t, touched, trimmedEmail, emailValid]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    forgotPassword({ email, setLoading });
+    setTouched(true);
+    setSuccessMessage("");
+
+    if (!trimmedEmail || !emailValid) return;
+
+    // Your hook sets errorMessage internally; we show a local success banner too.
+    try {
+      await forgotPassword({ email: trimmedEmail, setLoading });
+      // If your hook sets a success message in errorMessage, you can keep that too,
+      // but having a dedicated success banner looks cleaner.
+      setSuccessMessage(
+        t(
+          "common:authErrors.resetLinkSent",
+          "Password reset link has been sent to your email.",
+        ),
+      );
+    } catch {
+      // no-op: hook already maps & sets errorMessage
+    }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary dark:bg-gray-700">
-      <div className="w-96 rounded-lg bg-white p-8 text-center shadow-md dark:bg-gray-800">
-        <h1 className="mb-4 text-xl font-bold text-gray-700 dark:text-gray-50">
-          Forgot password?
+    <div className="flex min-h-screen items-center justify-center bg-secondary px-4 dark:bg-gray-800">
+      <div className="w-full max-w-md rounded-2xl border border-gray-200/70 bg-white p-6 shadow-lg dark:border-gray-700/70 dark:bg-gray-900">
+        <h1 className="text-center text-xl font-bold text-gray-800 dark:text-gray-100">
+          {t("login:forgotPassword", "Forgot password?")}
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-100">
-            You can reset your password here.
-          </p>
+
+        <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
+          {t("login:forgotPasswordHelp", "You can reset your password here.")}
+        </p>
+
+        {/* Success banner */}
+        {successMessage && (
+          <div className="mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/40 dark:bg-green-900/20 dark:text-green-200">
+            {successMessage}
+          </div>
+        )}
+
+        {/* Error banner from hook */}
+        {errorMessage && (
+          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-200">
+            {errorMessage}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
-            {" "}
-            <label className="block text-left text-sm text-gray-600 dark:text-gray-100">
-              Email address:
+            <label className="mb-1 block text-left text-sm font-medium text-gray-700 dark:text-gray-200">
+              {t("login:email", "Email")}
             </label>
+
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
+              onBlur={() => setTouched(true)}
               placeholder="you@global.kawasaki.com"
-              className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-cyan-400 dark:bg-gray-700"
+              className={`w-full rounded-lg border bg-transparent p-3 text-sm text-gray-800 outline-none transition dark:text-gray-100 ${
+                emailError
+                  ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:border-red-700 dark:focus:ring-red-900/30"
+                  : "border-gray-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-gray-700 dark:focus:ring-cyan-900/30"
+              } dark:bg-gray-800`}
+              autoComplete="off"
             />
+
+            {emailError && (
+              <p className="mt-1 text-xs text-red-600 dark:text-red-300">
+                {emailError}
+              </p>
+            )}
           </div>
+
           <button
             type="submit"
-            className={`${loading ? "pointer-events-none opacity-50" : ""} w-full rounded bg-cyan-to-blue p-2 text-white hover:bg-blue-600`}
-            disabled={loading}
+            disabled={loading || !!emailError}
+            className={`w-full rounded-lg bg-cyan-to-blue px-4 py-3 text-sm font-semibold text-white transition ${loading || emailError ? "cursor-not-allowed opacity-60" : "hover:opacity-95"}`}
           >
             {loading ? (
-              <div className="flex items-center justify-center">
+              <span className="inline-flex items-center justify-center gap-2">
                 <svg
                   aria-hidden="true"
-                  className="h-4 w-4 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
-                  viewBox="0 0 100 101"
+                  className="h-4 w-4 animate-spin text-white/80"
+                  viewBox="0 0 24 24"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                    fill="currentColor"
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    opacity="0.25"
                   />
                   <path
-                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                    fill="currentFill"
+                    d="M22 12a10 10 0 0 1-10 10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
                   />
                 </svg>
-                <span className="ms-2">Reset password</span>
-              </div>
+                {t("login:resetting", "Resetting...")}
+              </span>
             ) : (
-              <span>Reset password</span>
+              t("login:resetPassword", "Reset password")
             )}
           </button>
         </form>
-        {message && <p className="mt-4 text-green-500">{message}</p>}
+
+        <div className="mt-5 text-center text-sm text-gray-600 dark:text-gray-300">
+          <Link
+            to="/login"
+            className="font-semibold text-cyan-500 hover:underline"
+          >
+            {t("login:backToLogin", "Back to login")}
+          </Link>
+        </div>
       </div>
     </div>
   );

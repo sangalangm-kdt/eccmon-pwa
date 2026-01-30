@@ -5,9 +5,10 @@ import {
   transformStatusOptions,
   customSelectStyles,
 } from "../utils/selectUtils";
+import { IoLockClosed } from "react-icons/io5";
 
 const StatusDropdown = ({
-  options = [], // Original options containing the actual values
+  options = [],
   selectedStatus,
   setSelectedStatus,
   disabled,
@@ -21,54 +22,47 @@ const StatusDropdown = ({
       </select>
     );
   }
+
   const isDarkMode = document.documentElement.classList.contains("dark");
+  const statusOptions = transformStatusOptions(options, t);
 
-  // Use the `t` function from `useTranslation` and pass it to the utility function
-  const statusOptions = transformStatusOptions(options, t); // Now passing `t`
+  const selectedOption = statusOptions.find(
+    (option) => option.value === selectedStatus,
+  );
 
-  // Get the translated label for display purposes and convert to lowercase
-  const translatedSelectedStatus = t(
-    `qrScanner:${selectedStatus}`,
-  ).toLowerCase();
-
-  // Function to highlight matching text in options
-  const getOptionLabel = (option, inputValue) => {
-    if (!inputValue) {
-      return option.label; // If no input, just return the label
-    }
-
-    const regex = new RegExp(`(${inputValue})`, "gi"); // Case-insensitive match
-    const parts = option.label.split(regex);
-
-    return (
-      <div>
-        {parts.map((part, index) => (
-          <span
-            key={index}
-            style={{ fontWeight: regex.test(part) ? "normal" : "" }}
-          >
-            {part}
-          </span>
-        ))}
-      </div>
-    );
+  // ✅ If locked, don't allow changing at all
+  const handleChange = (selectedOption) => {
+    if (disabled) return;
+    setSelectedStatus(selectedOption?.value);
   };
 
   return (
-    <div className="">
-      <Select
-        options={statusOptions} // Using the transformed and translated options
-        value={statusOptions.find(
-          (option) => option.value === selectedStatus, // Use raw value for comparison
-        )}
-        onChange={(selectedOption) => setSelectedStatus(selectedOption.value)} // Keep raw value for saving
-        styles={customSelectStyles(isDarkMode)}
-        placeholder={t("qrScanner:selectAStatus")}
-        isDisabled={disabled}
-        getOptionLabel={(option) =>
-          getOptionLabel(option, translatedSelectedStatus)
-        }
-      />
+    <div className="relative">
+      {/* ✅ HARD LOCK: block pointer events so it can't be clicked/focused */}
+      <div className={disabled ? "pointer-events-none" : ""}>
+        <Select
+          options={statusOptions}
+          value={selectedOption}
+          onChange={handleChange}
+          styles={customSelectStyles(isDarkMode)}
+          placeholder={t("qrScanner:selectAStatus")}
+          isDisabled={disabled}
+          // ✅ HARD LOCK: do not allow menu to open
+          menuIsOpen={disabled ? false : undefined}
+          // ✅ optional: also prevent searching when locked
+          isSearchable={!disabled}
+          // ✅ optional: keep menu from opening on click when locked
+          openMenuOnClick={!disabled}
+          openMenuOnFocus={!disabled}
+        />
+      </div>
+
+      {/* ✅ overlay lock icon (still clickable? no, because pointer-events-none above blocks) */}
+      {disabled && (
+        <div className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-gray-400">
+          <IoLockClosed className="h-4 w-4" />
+        </div>
+      )}
     </div>
   );
 };

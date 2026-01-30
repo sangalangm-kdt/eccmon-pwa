@@ -95,7 +95,7 @@ export const stopCamera = (videoRef) => {
     videoRef.current.srcObject = null;
   }
 
-  console.log("Camera stopped");
+ //console.log("Camera stopped");
 };
 
 

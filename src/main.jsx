@@ -1,8 +1,9 @@
-// index.js
+// index.jsx
 import React, { StrictMode, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
+
 import { Provider } from "react-redux";
 import { ThemeProvider } from "./context/theme-context";
 import { I18nextProvider } from "react-i18next";
@@ -11,51 +12,113 @@ import store from "./state/store";
 
 import { registerSW } from "virtual:pwa-register";
 
-// Initialize PWA registration
+// ✅ PWA banner (JSX version, no globals)
 const ServiceWorkerRegistration = () => {
-  const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
+  const [needRefresh, setNeedRefresh] = useState(false);
+  const [offlineReady, setOfflineReady] = useState(false);
+  const [updateSW, setUpdateSW] = useState(null);
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      registerSW({
-        onOfflineReady() {
-          console.log("The PWA is ready to work offline.");
-        },
-        onNeedRefresh() {
-          console.log("Content needs to be refreshed.");
-        },
-        onUpdated() {
-          console.log("The PWA has been updated.");
-          setIsUpdateAvailable(true);
-        },
-      });
-    }
+    const update = registerSW({
+      immediate: true,
+      onNeedRefresh() {
+        setNeedRefresh(true);
+      },
+      onOfflineReady() {
+        setOfflineReady(true);
+      },
+      onRegisterError(err) {
+        console.error("SW registration error:", err);
+      },
+    });
+
+    setUpdateSW(() => update);
   }, []);
 
-  return isUpdateAvailable ? (
-    <div className="fixed bottom-0 left-0 right-0 bg-blue-600 p-4 text-white">
-      <span>New content is available! Please refresh to update.</span>
-      <button
-        onClick={() => window.location.reload()}
-        className="rounded bg-blue-800 px-4 py-2"
-      >
-        Refresh
-      </button>
+  // auto-hide offline toast
+  useEffect(() => {
+    if (!offlineReady) return;
+    const id = window.setTimeout(() => setOfflineReady(false), 2500);
+    return () => window.clearTimeout(id);
+  }, [offlineReady]);
+
+  if (!needRefresh && !offlineReady) return null;
+
+  return (
+    <div className="fixed bottom-4 left-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+      {offlineReady && !needRefresh && (
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Offline ready
+            </p>
+            <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+              The app is cached and can work offline.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setOfflineReady(false)}
+            className="rounded-lg px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+          >
+            OK
+          </button>
+        </div>
+      )}
+
+      {needRefresh && (
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              New version available
+            </p>
+            <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+              Refresh to update to the latest version.
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setNeedRefresh(false)}
+              className="rounded-lg px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+            >
+              Later
+            </button>
+
+            <button
+              type="button"
+              onClick={async () => {
+                if (updateSW)
+                  await updateSW(true); // ✅ activates new SW + reload
+                else window.location.reload();
+              }}
+              className="rounded-lg bg-cyan-500 px-3 py-1 text-xs font-semibold text-white hover:bg-cyan-600"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-  ) : null;
+  );
 };
 
-// Rendering the app with the WebSocketProvider
+// Rendering the app
 if (!window.reactRoot) {
   if (import.meta.env.PROD) {
-    console.log = function () {};
     console.info = function () {};
     console.warn = function () {};
     console.error = function () {};
   }
 
-  const root = ReactDOM.createRoot(document.getElementById("root"));
-  window.reactRoot = root; // Store it globally
+  const rootEl = document.getElementById("root");
+  if (!rootEl) throw new Error("Root element #root not found");
+
+  const root = ReactDOM.createRoot(rootEl);
+  window.reactRoot = root;
+
   root.render(
     <StrictMode>
       <Provider store={store}>

@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5"; // Import Ionicons eye icons
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import {
   buttonStyles,
   container,
   inputStyles,
   link,
   width,
+  colors,
 } from "../styles/main";
 
-import { Logo, LogoText } from "../assets/Logo";
+import { LogoText } from "../assets/Logo";
 import kawasakiLogo from "../assets/kawasaki-png-kawasaki-logo-1612.png";
 import { useAuthentication } from "../../hooks/auth";
 import { useNavigate } from "react-router-dom";
@@ -26,24 +27,31 @@ const Login = () => {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState("");
-  const [passwordVisible, setPasswordVisible] = useState(false); // Track password visibility
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Clear any previous error
     setStatus(null);
-    setAlert(""); // Reset alert
+    setAlert("");
 
-    // Check if email or password is empty
-    if (!email || !password) {
-      setAlert(t("login:emailPasswordRequired")); // Show alert if either field is empty
+    if (!email && !password) {
+      setAlert(t("login:errors.emailPasswordRequired"));
+      return;
+    }
+    if (!email) {
+      setAlert(t("login:errors.emailRequired"));
+      return;
+    }
+    if (!password) {
+      setAlert(t("login:errors.passwordRequired"));
       return;
     }
 
-    // Call the login function
-    setLoading(true); // Start loading
+    setLoading(true);
+
     login({
       setStatus,
       setErrors: () => {},
@@ -52,64 +60,56 @@ const Login = () => {
       password,
       remember: false,
     }).catch(() => {
-      setLoading(false); // Reset loading if login fails
+      setLoading(false);
     });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "email") {
-      setEmail(value);
-    } else if (name === "password") {
-      setPassword(value);
-    }
 
-    // Hide error message when user starts typing
-    if (errorMessage) {
-      // Only reset the errorMessage if the user starts typing
-      setStatus(null);
-    }
+    if (name === "email") setEmail(value);
+    if (name === "password") setPassword(value);
 
-    // Hide alert message when user starts typing
-    if (alert) {
-      setAlert("");
-    }
+    if (alert) setAlert("");
+    if (status) setStatus(null);
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center dark:bg-gray-700 xs:bg-none sm:bg-secondary lg:bg-secondary dark:lg:bg-gray-700">
-      <div className="flex w-full max-w-md items-center sm:p-6 md:p-2">
-        <div className={container.containerDiv}>
-          <div className="flex w-52 items-center justify-center gap-1 xs:mb-8 lg:mt-4">
+    <div className={`min-h-screen w-full ${colors.page}`}>
+      {/* ✅ NOT vertically centered; let it flow + scroll if needed */}
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 py-6 sm:px-6">
+        {/* ✅ Scrollable card with safe bottom padding for your bottom language bar */}
+        <div
+          className={`${container.containerDiv} max-h-[calc(100vh-120px)] w-full overflow-y-auto px-6 py-8 pb-28 xs:px-5 xs:py-7`}
+        >
+          {/* Header */}
+          <div className="flex w-52 items-center justify-center gap-1 xs:mb-6 lg:mt-2">
             <img src={kawasakiLogo} alt="kawasaki-icon" className="h-9" />
-            <hr className="mx-2 flex-grow border border-t border-gray-400" />
+            <hr className="mx-2 flex-grow border border-gray-300 dark:border-gray-600" />
             <LogoText />
           </div>
+
           <div className={inputStyles.container}>
-            <h2
-              className={`mb-8 text-3xl font-bold text-primaryText dark:text-gray-200 xs:text-2xl`}
-            >
+            <h2 className="mb-6 text-3xl font-bold text-gray-800 dark:text-gray-100 xs:text-2xl">
               {t("login:login")}
             </h2>
           </div>
 
           <form className={width.responsive} onSubmit={handleSubmit}>
-            <div
-              className={`text-center text-base text-primaryText dark:text-gray-50 xs:p-3 xs:text-sm lg:mb-0 lg:text-md`}
-            >
+            <div className="text-center text-base text-gray-700 dark:text-gray-100 xs:p-3 xs:text-sm lg:text-md">
               <label>{t("login:loginDetails")}</label>
             </div>
 
-            {/* Display the errorMessage from useAuthentication */}
+            {/* ✅ backend / auth error */}
             {errorMessage && (
               <p
-                className={`${inputStyles.inputContainer} w-full bg-red-200 text-center text-sm text-red-500`}
+                className={`${inputStyles.inputContainer} ${inputStyles.errorBanner}`}
               >
                 {errorMessage}
               </p>
             )}
 
-            {/* Email Input */}
+            {/* Email */}
             <div className={inputStyles.inputContainer}>
               <label className={inputStyles.label}>{t("login:email")}</label>
               <input
@@ -121,40 +121,41 @@ const Login = () => {
                 placeholder={t("login:enterEmail")}
                 autoComplete="off"
               />
-              {/* Display alert message for missing email */}
               {alert && !email && (
-                <p className="text-xs text-red-500">Email is required.</p>
+                <p className="text-xs text-red-600 dark:text-red-300">
+                  {t("login:errors.emailRequired")}
+                </p>
               )}
             </div>
 
-            {/* Password Input */}
+            {/* Password */}
             <div className={inputStyles.inputContainer}>
               <label className={inputStyles.label}>{t("login:password")}</label>
-              <div className="relative">
+
+              <div className="relative w-full">
                 <input
-                  type={passwordVisible ? "text" : "password"} // Toggle between password and text
+                  type={passwordVisible ? "text" : "password"}
                   name="password"
                   value={password}
                   onChange={handleInputChange}
-                  className={`${inputStyles.input} w-full`}
+                  className={inputStyles.input}
                   placeholder={t("login:enterPassword")}
                   autoComplete="off"
                 />
+
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 transform"
-                  onClick={() => setPasswordVisible(!passwordVisible)} // Toggle visibility
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-300"
+                  onClick={() => setPasswordVisible((v) => !v)}
                 >
-                  {passwordVisible ? (
-                    <IoEyeOffOutline className="text-gray-500" />
-                  ) : (
-                    <IoEyeOutline className="text-gray-500" />
-                  )}
+                  {passwordVisible ? <IoEyeOffOutline /> : <IoEyeOutline />}
                 </button>
               </div>
-              {/* Display alert message for missing password */}
+
               {alert && !password && (
-                <p className="text-xs text-red-500">Password is required.</p>
+                <p className="text-xs text-red-600 dark:text-red-300">
+                  {t("login:errors.passwordRequired")}
+                </p>
               )}
             </div>
 
@@ -164,17 +165,14 @@ const Login = () => {
               </a>
             </div>
 
+            {/* Submit */}
             <div className={inputStyles.inputContainer}>
               <button
-                className={`${
-                  loading
-                    ? `${buttonStyles.disabled}`
-                    : `${buttonStyles.primary} ${buttonStyles.base}`
-                }`}
+                className={`${loading ? buttonStyles.disabled : `${buttonStyles.primary} ${buttonStyles.base}`}`}
                 disabled={loading}
               >
                 {loading ? (
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center gap-2">
                     <svg
                       aria-hidden="true"
                       className="h-4 w-4 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
@@ -191,19 +189,25 @@ const Login = () => {
                         fill="currentFill"
                       />
                     </svg>
-                    <span className="ms-2 text-sm">Signing in</span>
+                    <span className="text-sm">
+                      {t("login:signingIn") || "Signing in"}
+                    </span>
                   </div>
                 ) : (
                   <span>{t("login:signIn")}</span>
                 )}
               </button>
-              <div className={inputStyles.container}>
-                <label className="py-2 text-center text-sm">
+
+              {/* ✅ This will no longer be hidden */}
+              <div
+                className={`${inputStyles.container} py-2 text-center text-sm text-gray-700 dark:text-gray-100`}
+              >
+                <label className="5 py-2 text-center text-sm">
                   {t("login:noAccount")}
                   <button
-                    className="ml-1 font-semibold hover:underline"
+                    className="ml-1 font-semibold text-cyan-400 hover:underline"
                     type="button"
-                    onClick={() => navigate("/request-account")} // Use navigate here
+                    onClick={() => navigate("/request-account")}
                   >
                     {t("login:requestNow")}
                   </button>

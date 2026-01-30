@@ -35,7 +35,9 @@
   "editButton": "編集",
   "reviewInfo": "情報を確認する",
   "reviewDetails": "提出した情報は正しいですか？",
-
+  "backToHome": "ホームに戻る",
+  "backToQr": "もう一度スキャンする",
+  "currentCycle": "現在の計画サイクル",
   "greetings": {
     "goodAMorning": "おはようございます、",
     "goodAfternoon": "こんにちは、",
@@ -87,6 +89,14 @@
         "maintenance": "メンテナンス"
       }
     }
+  },
+
+  "authErrors": {
+    "fetchUserFailed": "ユーザー情報の取得に失敗しました。",
+    "alreadyLoggedIn": "すでにログインしています。",
+    "unexpected": "予期しないエラーが発生しました。",
+    "network": "ネットワークエラーが発生しました。通信状況を確認してください。",
+    "invalidCredentials": "メールアドレスまたはパスワードが正しくありません。"
   },
 
   "errorMessages": {

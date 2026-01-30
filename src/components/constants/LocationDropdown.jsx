@@ -10,6 +10,7 @@ const LocationDropdown = ({
   processor,
   setProcessor,
   disabled,
+  onLocationChange,
 }) => {
   const { t } = useTranslation();
 
@@ -44,7 +45,7 @@ const LocationDropdown = ({
           styles={customSelectStyles(isDarkMode)} // Pass isDarkMode here
           placeholder={t("qrScanner:selectALocation")}
           isClearable
-          noOptionsMessage={() => t(":noOptionsAvailable")}
+          noOptionsMessage={() => t("qrScanner:noOptionsAvailable")}
         />
       </div>
     </div>

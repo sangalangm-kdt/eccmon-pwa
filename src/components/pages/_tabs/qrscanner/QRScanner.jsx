@@ -22,6 +22,8 @@ import {
 } from "react-icons/io5";
 import { useLocation } from "../../../../hooks/location";
 import { useAuthentication } from "../../../../hooks/auth";
+import { serialCodePattern } from "../../../constants/ManuallyAddModal";
+import { mapBackendMessage } from "./errorMessages";
 
 const QRScanner = () => {
   const [error, setError] = useState(null);
@@ -31,10 +33,12 @@ const QRScanner = () => {
   const [manualModalOpen, setManualModalOpen] = useState(false);
   const [willScan, setWillScan] = useState(true);
   const [message, setMessage] = useState("");
+  const [messageSeverity, setMessageSeverity] = useState("info");
   const [addDisable, setAddDisable] = useState(false);
   const [isCentered, setIsCentered] = useState(false);
-  const [currentCamera, setCurrentCamera] = useState("back"); // Track current camera
-  const [cameraSwitched, setCameraSwitched] = useState(false); // Track camera switch state
+  const [currentCamera, setCurrentCamera] = useState("back");
+  const [cameraSwitched, setCameraSwitched] = useState(false);
+
   const videoRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -43,11 +47,15 @@ const QRScanner = () => {
   const { user } = useAuthentication();
   const { process } = useLocation(user.id);
   const { checkSerial, addCylinder } = useCylinderCover();
-  console.log(user);
-  const codeReader = new BrowserMultiFormatReader();
+
+  // ✅ FIX: create reader once
+  const codeReaderRef = useRef(null);
+  if (!codeReaderRef.current) {
+    codeReaderRef.current = new BrowserMultiFormatReader();
+  }
 
   const isInsideScanBox = (x, y) => {
-    const scanBox = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 }; // Adjust as needed
+    const scanBox = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 };
     return (
       x >= scanBox.x * window.innerWidth &&
       x <= (scanBox.x + scanBox.width) * window.innerWidth &&
@@ -56,46 +64,103 @@ const QRScanner = () => {
     );
   };
 
+  const validateEccId = (value) => {
+    const normalized = (value ?? "").trim().toUpperCase();
+    if (!normalized) return { ok: false, value: "", reason: "empty" };
+    if (!serialCodePattern.test(normalized))
+      return { ok: false, value: normalized, reason: "invalid" };
+    return { ok: true, value: normalized, reason: null };
+  };
+
+  const errorTimerRef = useRef(null);
+  const showError = (msg, ms = 2200) => {
+    setError(msg);
+    if (errorTimerRef.current) window.clearTimeout(errorTimerRef.current);
+    errorTimerRef.current = window.setTimeout(() => {
+      setError(null);
+      errorTimerRef.current = null;
+    }, ms);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (errorTimerRef.current) window.clearTimeout(errorTimerRef.current);
+    };
+  }, []);
+
+  const stopCamera = () => {
+    const tracks = videoRef.current?.srcObject?.getVideoTracks();
+    if (tracks) {
+      tracks.forEach((track) => {
+        if (track.readyState === "live") track.stop();
+      });
+    }
+    if (videoRef.current) videoRef.current.srcObject = null;
+  };
+
+  const setBackendMessage = (msgOrMapped) => {
+    // if caller passed { text, severity }
+    if (msgOrMapped && typeof msgOrMapped === "object") {
+      setMessage(msgOrMapped.text ?? "");
+      setMessageSeverity(msgOrMapped.severity ?? "info");
+      return;
+    }
+
+    const mapped = mapBackendMessage(t, msgOrMapped);
+    setMessage(mapped.text);
+    setMessageSeverity(mapped.severity);
+  };
+
   const handleScanResult = (result, err) => {
     if (result) {
+      let raw = "";
       try {
-        const jsonData = JSON.parse(result.text);
-        const eccId = jsonData.eccId;
+        const parsed = JSON.parse(result.text);
+        raw = parsed?.eccId ?? "";
+      } catch {
+        raw = result.text ?? "";
+      }
 
-        if (!eccId) {
-          setError("The scanned code does not contain a valid code.");
-          return;
-        }
+      const validated = validateEccId(raw);
+      if (!validated.ok) {
+        showError(
+          validated.reason === "empty"
+            ? t("qrScanner:errors.enterSerialCode")
+            : t("qrScanner:errors.invalidSerialCode"),
+        );
+        return;
+      }
 
-        // Get barcode position (only if available)
-        if (result.position) {
-          const { x, y } = result.position.topLeft;
-          if (!isInsideScanBox(x, y)) {
-            return; // Ignore if it's outside the scan box
-          }
-        }
+      setError(null);
+      const eccId = validated.value;
 
-        if (!modalOpen) {
-          setWillScan(false);
-          checkSerial({
-            setAddDisable,
-            setMessage,
-            setModalOpen,
-            eccId,
-          });
-        }
+      if (result.position) {
+        const { x, y } = result.position.topLeft;
+        if (!isInsideScanBox(x, y)) return;
+      }
 
-        const track = videoRef.current?.srcObject?.getVideoTracks()[0];
-        if (track) {
-          setScannedData(eccId);
-          codeReader.reset();
-        }
-      } catch (e) {
-        setError("Invalid JSON data. Please check the QR code.");
+      if (!modalOpen) {
+        setWillScan(false);
+        checkSerial({
+          t,
+          setAddDisable,
+          setMessage: setBackendMessage,
+          setSeverity: setMessageSeverity,
+          setModalOpen,
+          eccId,
+        });
+      }
+
+      const track = videoRef.current?.srcObject?.getVideoTracks()[0];
+      if (track) {
+        setScannedData(eccId);
+
+        // ✅ FIX: reset the SAME reader instance
+        codeReaderRef.current?.reset();
       }
     } else if (err && !(err instanceof NotFoundException)) {
       console.error(err);
-      setError("Error scanning QR code. Please try again.");
+      setError("Error scanning code. Please try again.");
     }
   };
 
@@ -112,9 +177,9 @@ const QRScanner = () => {
   };
 
   useEffect(() => {
-    if (!willScan) {
-      stopCamera();
-    }
+    const codeReader = codeReaderRef.current;
+
+    if (!willScan) stopCamera();
 
     let selectedDeviceId;
     if (willScan) {
@@ -131,9 +196,6 @@ const QRScanner = () => {
               device.label.toLowerCase().includes("front"),
             ) || videoInputDevices[0];
 
-          console.log("FRONT CAMERA: ", frontCamera);
-          console.log("BACK CAMERA: ", backCamera);
-
           if (currentCamera === "back" && backCamera) {
             selectedDeviceId = backCamera.deviceId;
           } else if (currentCamera === "front" && frontCamera) {
@@ -145,24 +207,13 @@ const QRScanner = () => {
             videoRef.current,
             handleScanResult,
             {
-              area: {
-                x: 0.25,
-                y: 0.25,
-                width: 0.5,
-                height: 0.5,
-              },
+              area: { x: 0.25, y: 0.25, width: 0.5, height: 0.5 },
               formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
             },
           );
 
-          // Check if area is in the center
           setIsCentered(
-            isAreaInCenter({
-              x: 0.25,
-              y: 0.25,
-              width: 0.5,
-              height: 0.5,
-            }),
+            isAreaInCenter({ x: 0.25, y: 0.25, width: 0.5, height: 0.5 }),
           );
         })
         .catch((err) => {
@@ -174,7 +225,8 @@ const QRScanner = () => {
     }
 
     return () => {
-      codeReader.reset();
+      // ✅ FIX: reset the SAME reader instance
+      codeReader?.reset();
     };
   }, [willScan, currentCamera]);
 
@@ -183,7 +235,7 @@ const QRScanner = () => {
   }, [dispatch]);
 
   const handleBack = () => {
-    codeReader.reset();
+    codeReaderRef.current?.reset();
     setWillScan(false);
     navigate("/");
   };
@@ -194,18 +246,12 @@ const QRScanner = () => {
       const capabilities = track.getCapabilities();
       if (capabilities.torch) {
         track
-          .applyConstraints({
-            advanced: [{ torch: !torchOn }],
-          })
-          .then(() => {
-            setTorchOn(!torchOn);
-          })
-          .catch((err) => {
-            console.error("Error toggling torch: ", err);
-          });
+          .applyConstraints({ advanced: [{ torch: !torchOn }] })
+          .then(() => setTorchOn(!torchOn))
+          .catch((err) => console.error("Error toggling torch: ", err));
       } else {
         console.error("Torch is not supported on this device.");
-        setError(t("qrScanner:torchNotSupported")); // Add a translation key for this message
+        setError(t("qrScanner:torchNotSupported"));
       }
     }
   };
@@ -214,12 +260,7 @@ const QRScanner = () => {
     setCurrentCamera((prevCamera) => {
       const newCamera = prevCamera === "back" ? "front" : "back";
       setCameraSwitched(true);
-
-      // Hide the camera switch message after 2 seconds
-      setTimeout(() => {
-        setCameraSwitched(false);
-      }, 2000);
-
+      setTimeout(() => setCameraSwitched(false), 2000);
       return newCamera;
     });
   };
@@ -239,41 +280,14 @@ const QRScanner = () => {
     setManualModalOpen(true);
     setScannedData(manualData);
 
-    const isExisting = checkSerial({
+    checkSerial({
+      t,
       setAddDisable,
-      setMessage,
+      setMessage: setBackendMessage,
+      setSeverity: setMessageSeverity,
       setModalOpen,
       eccId: manualData,
     });
-    if (isExisting) {
-      setMessage("This ECC ID already exists.");
-      setModalOpen(false);
-      setAddDisable(true);
-    } else {
-      checkSerial({
-        setAddDisable,
-        setMessage,
-        setModalOpen,
-        eccId: manualData,
-      });
-    }
-  };
-
-  const stopCamera = () => {
-    const tracks = videoRef.current?.srcObject?.getVideoTracks();
-    if (tracks) {
-      tracks.forEach((track) => {
-        if (track.readyState === "live") {
-          track.stop();
-        }
-      });
-    }
-
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-
-    console.log("Camera stopped");
   };
 
   return (
@@ -293,43 +307,45 @@ const QRScanner = () => {
       >
         {error && <div className={qrScannerStyles.errorClass}>{error}</div>}
         <video ref={videoRef} className={qrScannerStyles.videoClass} />
+
         <div className={qrScannerStyles.overlayContainerClass}>
           <div className={qrScannerStyles.overlayClass}>
-            <div className={qrScannerStyles.overlayTopClass}></div>
-            <div className={qrScannerStyles.overlayBottomClass}></div>
-            <div className={qrScannerStyles.overlayLeftClass}></div>
-            <div className={qrScannerStyles.overlayRightClass}></div>
+            <div className={qrScannerStyles.overlayTopClass} />
+            <div className={qrScannerStyles.overlayBottomClass} />
+            <div className={qrScannerStyles.overlayLeftClass} />
+            <div className={qrScannerStyles.overlayRightClass} />
+
             <div
               className={qrScannerStyles.scannerAreaClass}
-              style={{
-                borderColor: isCentered ? "green" : "red",
-              }}
+              style={{ borderColor: isCentered ? "green" : "red" }}
             >
               <div className={qrScannerStyles.scannerFrameClass}>
-                <div className="absolute inset-0 bg-transparent"></div>
+                <div className="absolute inset-0 bg-transparent" />
                 <div
                   className={`${qrScannerStyles.scannerCornerClass} ${qrScannerStyles.topLeftCornerClass}`}
-                ></div>
+                />
                 <div
                   className={`${qrScannerStyles.scannerCornerClass} ${qrScannerStyles.topRightCornerClass}`}
-                ></div>
+                />
                 <div
                   className={`${qrScannerStyles.scannerCornerClass} ${qrScannerStyles.bottomLeftCornerClass}`}
-                ></div>
+                />
                 <div
                   className={`${qrScannerStyles.scannerCornerClass} ${qrScannerStyles.bottomRightCornerClass}`}
-                ></div>
+                />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="absolute z-60 text-white xs:top-60 xs:text-sm">
+        {/* ✅ FIX: z-60 -> z-[60] */}
+        <div className="absolute z-[60] text-white xs:top-60 xs:text-sm">
           {t("qrScanner:barcodePlaceCode")}
         </div>
 
+        {/* ✅ FIX: right-18 -> right-16 */}
         <button
-          className="absolute right-18 top-8 rounded-full bg-transparent p-2 text-white shadow-md"
+          className="absolute right-16 top-8 rounded-full bg-transparent p-2 text-white shadow-md"
           onClick={toggleTorch}
         >
           {torchOn ? (
@@ -339,15 +355,16 @@ const QRScanner = () => {
           )}
         </button>
 
-        {/* Switch Camera Button */}
+        {/* ✅ FIX: remove 'focus:' typo + z-60 -> z-[60] */}
         <button
-          className="focus: absolute right-8 top-9 z-60 rounded-full text-white"
+          className="absolute right-8 top-9 z-[60] rounded-full text-white"
           onClick={handleSwitchCamera}
         >
           <IoCameraReverseOutline size={28} />
         </button>
 
-        <div className="absolute bottom-18 z-60 flex w-80 flex-col justify-center">
+        {/* ✅ FIX: bottom-18 -> bottom-16 + z-60 -> z-[60] */}
+        <div className="absolute bottom-16 z-[60] flex w-80 flex-col justify-center">
           <label className="mb-2 text-center text-xs text-white">
             {t("qrScanner:cannotScanCode")}
           </label>
@@ -363,6 +380,7 @@ const QRScanner = () => {
       <ResultsModal
         addDisable={addDisable}
         message={message}
+        severity={messageSeverity}
         isOpen={modalOpen}
         onClose={handleClose}
         onConfirm={handleConfirm}
@@ -379,7 +397,6 @@ const QRScanner = () => {
         setWillScan={setWillScan}
       />
 
-      {/* Camera Switch Modal */}
       <CameraSwitchModal
         isOpen={cameraSwitched}
         onClose={() => setCameraSwitched(false)}

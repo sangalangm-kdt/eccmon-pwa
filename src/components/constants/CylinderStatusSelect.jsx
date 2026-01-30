@@ -1,50 +1,52 @@
-import React, { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import { fetchCylinderStatus } from "../../features/status/statusSlice";
+import React, { useMemo } from "react";
 import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
-import { useCylinderCover } from "../../hooks/cylinderCover";
-import { useLocationProcess } from "../../hooks/locationProcess";
-import { useAuth } from "../auth/AuthContext";
 import { useAuthentication } from "../../hooks/auth";
 import { useLocation } from "../../hooks/location";
+import { IoLockClosed } from "react-icons/io5";
 
 export const CylinderStatusSelect = ({
   selectedStatus,
   setSelectedStatus,
   disabled,
 }) => {
-  // const dispatch = useDispatch();
   const { t } = useTranslation();
   const { user } = useAuthentication();
 
-  const { process } = useLocation(user.id) ?? [];
-  console.log(user);
-  // Get cylinder status options with labelKey for translation
-  const cylinderStatusOptions = [
-    ...(process?.flatMap((process, processIdx) => {
-      if (process === "site") {
-        return [
-          { id: processIdx, status: "Mounted", labelKey: "mounted" },
-          { id: processIdx + 1, status: "Dismounted", labelKey: "dismounted" },
-        ];
-      }
-      return {
-        id: processIdx,
-        status: process,
-        labelKey: process.toLowerCase(),
-      };
-    }) || []),
-  ];
+  // ✅ safer: hooks always return something, but guard anyway
+  const locationRes = useLocation(user?.id);
+  const process = locationRes?.process ?? [];
 
-  // Dynamically add "Disposal" at the last index
-  cylinderStatusOptions.push({
-    id: cylinderStatusOptions.length, // Last index dynamically
-    status: "Disposal",
-    labelKey: "disposal",
-  });
+  // ✅ build options safely
+  const cylinderStatusOptions = useMemo(() => {
+    const opts =
+      process?.flatMap((p, idx) => {
+        if (String(p).toLowerCase() === "site") {
+          return [
+            { id: idx, status: "Mounted", labelKey: "mounted" },
+            { id: idx + 1, status: "Dismounted", labelKey: "dismounted" },
+          ];
+        }
+        return [{ id: idx, status: p, labelKey: String(p).toLowerCase() }];
+      }) ?? [];
+
+    // add Disposal last
+    opts.push({
+      id: opts.length,
+      status: "Disposal",
+      labelKey: "disposal",
+    });
+
+    return opts;
+  }, [process]);
 
   const hasOptions = cylinderStatusOptions.length > 0;
+
+  // ✅ wrapper setter: block changes if disabled
+  const safeSetSelectedStatus = (next) => {
+    if (disabled) return;
+    setSelectedStatus(next);
+  };
 
   return (
     <div className="flex w-full flex-col">
@@ -54,17 +56,34 @@ export const CylinderStatusSelect = ({
       >
         {t("qrScanner:status")}
       </label>
-      <StatusDropdown
-        options={cylinderStatusOptions}
-        selectedStatus={selectedStatus} // Use local state for selected status
-        setSelectedStatus={setSelectedStatus}
-        disabled={disabled}
-        t={t}
-      />
+
+      {/* ✅ LOCKED UI WRAPPER */}
+      <div
+        className={["relative", disabled ? "opacity-60" : "opacity-100"].join(
+          " ",
+        )}
+      >
+        <StatusDropdown
+          options={cylinderStatusOptions}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={safeSetSelectedStatus}
+          disabled={disabled}
+          t={t}
+        />
+
+        {/* ✅ overlay lock hint */}
+        {disabled && (
+          <div className="pointer-events-none mt-2 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-200">
+            <IoLockClosed className="text-sm" />
+            <span>{t("qrScanner:backend.alreadyDisposed")}</span>
+          </div>
+        )}
+      </div>
+
       {!hasOptions && (
         <p className="text-xs text-gray-500 dark:text-gray-100">
-          No options available
-        </p> // Optional message
+          {t("qrScanner:noOptionsAvailable")}
+        </p>
       )}
     </div>
   );

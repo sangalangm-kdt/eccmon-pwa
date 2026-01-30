@@ -12,14 +12,14 @@ export const useScanHistory = () => {
       userId: user?.id,
       status: input.status,
     };
-    console.log(data);
+    //console.log(data);
 
     await csrf();
 
     axiosLib
       .post("/api/scan-history", data)
       .then((res) => {
-        // console.log(res);
+        ////console.log(res);
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;

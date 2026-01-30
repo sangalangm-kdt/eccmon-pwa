@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import InventorySummary from "./InventorySummary";
 import HistorySummary from "./HistorySummary";
 import Onboarding from "../tutorials/Onboarding";
@@ -12,131 +12,148 @@ import eveningIcon from "../../../assets/evening.png";
 import { useTranslation } from "react-i18next";
 import kawasakiLogo from "../../../assets/kawasaki-png-kawasaki-logo-1612.png";
 
+const pageVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+};
+
+const slideLeft = {
+  initial: { x: -120, opacity: 0 },
+  animate: { x: 0, opacity: 1 },
+};
+
+const slideUp = {
+  initial: { y: 40, opacity: 0 },
+  animate: { y: 0, opacity: 1 },
+};
+
+const spring = { type: "spring", stiffness: 120, damping: 16 };
+
 const Home = () => {
   const { userId, user, errorMessage } = useAuthentication();
   const { t } = useTranslation("common");
 
   useEffect(() => {
-    if (errorMessage) {
-      console.error("Authentication Error:", errorMessage);
-    }
+    if (errorMessage) console.error("Authentication Error:", errorMessage);
   }, [errorMessage]);
 
-  const employeeFirstname = user?.first_name || "Unknown User";
+  const employeeFirstname =
+    (user?.first_name || "").trim() || t("unknownUser", "Unknown User");
 
-  const getGreeting = () => {
+  const greeting = useMemo(() => {
     const currentHour = new Date().getHours();
+
     if (currentHour < 12) {
       return {
         message: t("greetings.goodAMorning"),
-        icon: (
-          <motion.img
-            src={morningIcon}
-            alt="Morning Icon"
-            className="h-14 w-14"
-            initial={{ y: 100 }} // Slide from below
-            animate={{ y: 0 }}
-            transition={{ type: "spring", stiffness: 100 }}
-          />
-        ),
-      };
-    } else if (currentHour < 18) {
-      return {
-        message: t("greetings.goodAfternoon"),
-        icon: (
-          <motion.img
-            src={afternoonIcon}
-            alt="Afternoon Icon"
-            className="h-14 w-14"
-            initial={{ x: -100 }} // Slide from left
-            animate={{ x: 0 }}
-            transition={{ type: "spring", stiffness: 100 }}
-          />
-        ),
-      };
-    } else {
-      return {
-        message: t("greetings.goodEvening"),
-        icon: (
-          <motion.img
-            src={eveningIcon}
-            alt="Evening Icon"
-            className="h-14 w-14"
-            initial={{ y: -100 }} // Slide from above
-            animate={{ y: 0 }}
-            transition={{ type: "spring", stiffness: 100 }}
-          />
-        ),
+        iconSrc: morningIcon,
+        alt: "Morning Icon",
+        motion: {
+          initial: { y: 24, opacity: 0 },
+          animate: { y: 0, opacity: 1 },
+        },
       };
     }
-  };
 
-  const { message, icon } = getGreeting();
+    if (currentHour < 18) {
+      return {
+        message: t("greetings.goodAfternoon"),
+        iconSrc: afternoonIcon,
+        alt: "Afternoon Icon",
+        motion: {
+          initial: { x: -24, opacity: 0 },
+          animate: { x: 0, opacity: 1 },
+        },
+      };
+    }
+
+    return {
+      message: t("greetings.goodEvening"),
+      iconSrc: eveningIcon,
+      alt: "Evening Icon",
+      motion: {
+        initial: { y: -24, opacity: 0 },
+        animate: { y: 0, opacity: 1 },
+      },
+    };
+  }, [t]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-800">
+    <motion.div
+      className="min-h-screen bg-gray-100 pb-8 dark:bg-gray-800"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      transition={{ duration: 0.25 }}
+    >
       <Onboarding />
 
-      {/* Slide-in animation for logo */}
+      {/* Top Logo Row */}
       <motion.div
-        className="flex w-full items-center justify-center p-3"
-        initial={{ x: -200 }} // Start from the left
-        animate={{ x: 0 }} // Slide to the original position
-        transition={{ type: "spring", stiffness: 100 }}
+        className="mx-auto flex w-full max-w-4xl items-center justify-center px-4 pt-4"
+        variants={slideLeft}
+        initial="initial"
+        animate="animate"
+        transition={spring}
       >
-        <div className="flex flex-row items-center gap-1 rounded p-4">
-          <img src={kawasakiLogo} alt="kawasaki-icon" className="h-5" />
+        <div className="flex w-full items-center justify-center gap-2 rounded-2xl p-3 shadow-sm backdrop-blur">
+          {/* <img src={kawasakiLogo} alt="Kawasaki Logo" className="h-6" /> */}
 
-          <hr className="mx-2 flex-grow border border-t border-gray-400" />
-          <img src={logoIcon} alt="icon" className="h-5 w-5" />
-          <img src={logoText} alt="logo-text" className="h-6" />
+          <img src={logoIcon} alt="App Icon" className="h-8 w-8" />
+          <img src={logoText} alt="App Logo Text" className="h-6" />
         </div>
       </motion.div>
 
-      {/* Slide-in animation for greeting text */}
+      {/* Greeting */}
       <motion.div
-        className="flex w-full flex-row justify-between px-4 py-4"
-        initial={{ x: -200 }} // Start from the left
-        animate={{ x: 0 }} // Slide to the original position
-        transition={{ type: "spring", stiffness: 100 }}
+        className="mx-auto mt-3 flex w-full max-w-4xl items-center justify-between px-4 py-4"
+        variants={slideLeft}
+        initial="initial"
+        animate="animate"
+        transition={{ ...spring, delay: 0.05 }}
       >
         <div className="flex flex-col">
-          <p className="text-xl font-medium text-gray-700 dark:text-gray-50">
-            {message}
+          <p className="text-lg font-medium text-gray-700 dark:text-gray-50">
+            {greeting.message}
           </p>
-          <p className="text-2xl font-semibold text-gray-700 dark:text-gray-50">
+          <p className="text-2xl font-semibold text-gray-800 dark:text-gray-50">
             {employeeFirstname}
           </p>
         </div>
-        {icon}
+
+        <motion.img
+          src={greeting.iconSrc}
+          alt={greeting.alt}
+          className="h-14 w-14"
+          initial={greeting.motion.initial}
+          animate={greeting.motion.animate}
+          transition={spring}
+        />
       </motion.div>
 
-      {/* Slide-in animation for content (InventorySummary and HistorySummary) */}
-      <motion.div
-        className="h-full w-full"
-        initial={{ opacity: 0 }} // Start with 0 opacity
-        animate={{ opacity: 1 }} // Fade to full opacity
-        transition={{ delay: 0.2, duration: 0.6 }}
-      >
+      {/* Content */}
+      <div className="mx-auto w-full max-w-4xl px-2">
         <motion.div
-          initial={{ y: 100 }} // Slide from below
-          animate={{ y: 0 }}
-          transition={{ type: "spring", stiffness: 100 }}
+          variants={slideUp}
+          initial="initial"
+          animate="animate"
+          transition={spring}
         >
           <InventorySummary userId={userId} />
         </motion.div>
 
         <motion.div
-          initial={{ y: 100 }} // Slide from below
-          animate={{ y: 0 }}
-          transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
           id="history-summary"
-          className="w-full p-2"
+          className="mt-2 w-full"
+          variants={slideUp}
+          initial="initial"
+          animate="animate"
+          transition={{ ...spring, delay: 0.15 }}
         >
           <HistorySummary />
         </motion.div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 

@@ -18,7 +18,7 @@ const UpdateInfo = () => {
     affiliation: user.affiliation, // Added affiliation field
   });
 
-  console.log(user);
+  ////console.log(user);
   const handleBackToProfile = () => {
     navigate("/profile");
   };

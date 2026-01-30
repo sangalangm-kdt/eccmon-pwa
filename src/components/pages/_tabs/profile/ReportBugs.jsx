@@ -65,24 +65,24 @@ const ReportBugs = () => {
     e.preventDefault();
     try {
       //send to backend na to
-      console.log(`Bug Title: ${title}`);
-      console.log(`Reason: ${reason}`);
-      console.log(`Images: ${images}`);
+      ////console.log(`Bug Title: ${title}`);
+      ////console.log(`Reason: ${reason}`);
+      ////console.log(`Images: ${images}`);
     } catch (error) {
-      console.log(`Error: ${error}`);
+      ////console.log(`Error: ${error}`);
     } finally {
       setTitle("");
       setReason("");
       setImages([]);
     }
-    console.log("Form submitted!");
+    //console.log("Form submitted!");
   };
 
   const handleDownload = () => {
     addReportBug({ userId, title, category, reason, files: images });
   };
 
-  console.log(images);
+  //console.log(images);
   return (
     <div className="flex min-h-screen flex-col justify-between">
       {/* Header */}

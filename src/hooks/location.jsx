@@ -2,7 +2,7 @@ import axiosLib from "../lib/axios";
 import useSWR from "swr";
 
 export const useLocation = (userId) => {
-  console.log(userId);
+  //console.log(userId);
   const { data: process } = useSWR(
     `/api/locations/processes?userId=${userId}`,
     () =>

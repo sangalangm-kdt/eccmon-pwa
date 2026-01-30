@@ -30,7 +30,7 @@ const statusSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchCylinderStatus.fulfilled, (state, action) => {
-        console.log("Cylinder Status Data:", action.payload);
+       //console.log("Cylinder Status Data:", action.payload);
         state.status = "succeeded";
         state.cylinderStatusOptions = action.payload;
       })

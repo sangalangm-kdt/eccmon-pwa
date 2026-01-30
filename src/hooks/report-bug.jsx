@@ -25,19 +25,19 @@ export const useReportBug = () => {
       formData.append("files[]", image.file); // Append each file properly
     });
 
-    console.log("clicked", { ...props, formData });
+    //console.log("clicked", { ...props, formData });
     return axiosLib
       .post("/api/bug-report", { ...props, formData })
       .then((response) => {
-        console.log("Upload successfully!");
-        console.log(response);
+        //console.log("Upload successfully!");
+        //console.log(response);
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
         if (error.response?.status === 422) {
-          console.log(error.response.data.message);
+          //console.log(error.response.data.message);
         } else {
-          console.log(error.response.data.message);
+          //console.log(error.response.data.message);
         }
       });
   };

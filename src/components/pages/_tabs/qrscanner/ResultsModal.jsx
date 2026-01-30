@@ -1,86 +1,115 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
+import { FaPlusCircle } from "react-icons/fa";
+import { CheckCircle, Close } from "@mui/icons-material";
+
+import InfoIcon from "@mui/icons-material/Info";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+
+const severityUI = {
+  info: { Icon: InfoIcon, className: "text-sky-400" },
+  warning: { Icon: WarningAmberIcon, className: "text-amber-500" },
+  error: { Icon: ErrorOutlineIcon, className: "text-red-500" },
+  success: { Icon: CheckCircleOutlineIcon, className: "text-green-500" },
+};
+
 const ResultsModal = ({
   addDisable,
   message,
+  severity = "info",
   isOpen,
   onClose,
   onConfirm,
   eccId,
-  hasStoragePermission, // New prop (currently unused)
+  hasStoragePermission,
 }) => {
   const { t } = useTranslation("qrScanner");
-  const translatedMessage = message;
 
   useEffect(() => {
-    const handleEscKey = (event) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
+    const handleEscKey = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", handleEscKey);
-    return () => {
-      window.removeEventListener("keydown", handleEscKey);
-    };
+    return () => window.removeEventListener("keydown", handleEscKey);
   }, [onClose]);
 
   if (!isOpen) return null;
 
+  const { Icon, className } = severityUI[severity] || severityUI.info;
+
   return (
-    <div className="fixed inset-0 z-60 flex items-end justify-center bg-black bg-opacity-50">
-      <div
-        className={`w-full transform rounded-t-lg bg-white p-6 shadow-lg transition-transform dark:bg-gray-600 dark:text-gray-50 ${
-          isOpen ? "animate-slideUp" : "animate-slideDown"
-        }`}
-      >
-        <div className="flex flex-col items-center">
-          <p className="p-1 text-sm">{t("serialNumberFound")}</p>
-          <p className="w-full rounded-full bg-cyan-100 p-2 text-center text-lg font-semibold text-cyan-500 dark:bg-cyan-200">
-            {eccId}
+    <div className="fixed inset-0 z-[999] flex items-end justify-center bg-black/60">
+      <div className="w-full max-w-md animate-slideUp rounded-t-2xl bg-white px-5 pb-6 pt-4 shadow-xl dark:bg-gray-700 dark:text-gray-50">
+        {/* Drag handle */}
+        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300 dark:bg-gray-500" />
+
+        {/* Header */}
+        <div className="flex flex-col items-center gap-2">
+          <CheckCircle sx={{ fontSize: 34 }} className="text-green-500" />
+          <p className="text-sm text-gray-600 dark:text-gray-200">
+            {t("serialNumberFound")}
           </p>
+
+          <div className="w-full rounded-full bg-cyan-100 py-2 text-center text-lg font-semibold text-cyan-600 dark:bg-cyan-200 dark:text-cyan-900">
+            {eccId}
+          </div>
         </div>
 
+        {/* Content */}
         {!hasStoragePermission ? (
-          <>
-            <p className="py-10 text-center text-sm text-red-500">
+          <div className="mt-6 flex flex-col items-center gap-3 text-center">
+            <ErrorOutlineIcon className="text-red-500" sx={{ fontSize: 26 }} />
+            <p className="text-sm text-red-500">
               {t("errors.noStoragePermission")}
             </p>
+
             <button
-              className="w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-400 dark:text-gray-100"
               onClick={onClose}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-200 py-3 text-sm font-semibold dark:bg-gray-600"
             >
-              {t("Close")}
+              <Close fontSize="small" />
+              {t("close")}
             </button>
-          </>
+          </div>
         ) : (
-          <>
-            <p className="py-10 text-center text-sm">{translatedMessage}</p>
+          <div className="mt-6 text-center">
+            {/* ✅ Severity icon + message */}
+            <div className="mb-6 flex items-start justify-center gap-2">
+              <Icon className={className} sx={{ fontSize: 20, mt: "2px" }} />
+              <p className="text-sm text-gray-700 dark:text-gray-200">
+                {message}
+              </p>
+            </div>
+
             {addDisable === false ? (
-              <div className="mt-4 flex flex-row justify-between">
+              <div className="flex gap-3">
                 <button
-                  className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2 dark:bg-gray-400 dark:text-gray-100"
                   onClick={onClose}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-200 py-3 text-sm font-semibold dark:bg-gray-600"
                 >
+                  <Close fontSize="small" />
                   {t("cancel")}
                 </button>
+
                 <button
-                  className="w-full rounded-full bg-primary px-4 py-2 text-white transition"
                   onClick={onConfirm}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-white"
                 >
+                  <FaPlusCircle className="h-4 w-4" />
                   {t("yes")}
                 </button>
               </div>
             ) : (
               <button
-                className="mr-2 w-full rounded-full bg-gray-200 px-4 py-2"
                 onClick={onClose}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-200 py-3 text-sm font-semibold dark:bg-gray-600"
               >
-                Close
+                <Close fontSize="small" />
+                {t("qrScanner:close")}
               </button>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

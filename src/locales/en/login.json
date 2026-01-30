@@ -7,15 +7,19 @@
   "password": "Password",
   "enterPassword": "Enter password",
   "signIn": "Sign in",
+  "signingIn": "Signing in...",
   "forgotPassword": "Having trouble signing in?",
   "noAccount": "Don't have an account? ",
   "requestNow": "Request Now",
   "loginDetails": "Enter your details to get sign in to your account",
   "emailPasswordRequired": "This field is required.",
-  "error": {
-    "requiredFields": "Email and Password are required.",
-    "userNotFound": "User does not exist.",
-    "incorrectPassword": "The password is incorrect.",
-    "emailAndPassIncorrect": "The provided email or password is incorrect."
+  "resetPassword": "Reset password",
+  "backToLogin": "Back to login",
+  "forgotPasswordHelp": "You can reset your password here.",
+  "errors": {
+    "emailRequired": "Email is required.",
+    "passwordRequired": "Password is required.",
+    "emailPasswordRequired": "Email and password are required.",
+    "invalidEmail": "Please enter a valid email."
   }
 }

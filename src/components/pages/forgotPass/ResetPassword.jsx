@@ -12,7 +12,7 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
   const { token } = useParams();
-  console.log(token, email);
+  //console.log(token, email);
 
   const { resetPassword } = useAuthentication({
     middleware: "guest",

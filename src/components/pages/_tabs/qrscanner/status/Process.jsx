@@ -31,7 +31,7 @@ const Process = ({
     selectedProcessorStatus.toLowerCase(),
   ).data;
 
-  console.log(selectedProcessor);
+  ////console.log(selectedProcessor);
   // Store the initial data and prevent changes unless the user modifies it
   const [initialData, setInitialData] = useState(cylinderData);
 

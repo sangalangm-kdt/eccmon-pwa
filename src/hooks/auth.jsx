@@ -1,164 +1,162 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import axiosLib from "../lib/axios";
-// import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  mapAuthErrorByStatus,
+  mapAuthErrorMessage,
+} from "../components/pages/authErrorMessages";
 
 export const useAuthentication = ({
   middleware,
   redirectIfAuthenticated,
 } = {}) => {
-  // const navigation = useNavigate();
+  const { t } = useTranslation(["common", "login"]);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const isGuest = middleware === "guest";
+  const isAuth = middleware === "auth";
+
+  const fetchUser = useCallback(async () => {
+    try {
+      const res = await axiosLib.get("/api/user");
+      return res.data;
+    } catch (err) {
+      const status = err?.response?.status;
+
+      // ✅ Normal for guest routes (login/register): user is not signed in
+      if (status === 401 || status === 419) return null;
+
+      // ✅ Let SWR have the error (for protected routes handling)
+      throw err;
+    }
+  }, []);
 
   const {
     data: user,
     error,
     mutate,
     isLoading,
-  } = useSWR(
-    "/api/user",
-    () =>
-      axiosLib
-        .get("/api/user")
-        .then((res) => res.data)
-        .catch((error) => {
-          if (error.response.status !== 409) {
-            setErrorMessage("Error fetching user data.");
-          }
-
-          // navigation("/login");
-        }),
-    {
-      revalidateOnFocus: false, // Prevent unnecessary revalidation
-      revalidateOnReconnect: false,
-      shouldRetryOnError: false, // Prevent retries on errors
-    },
-  );
+  } = useSWR("/api/user", fetchUser, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    shouldRetryOnError: false,
+  });
 
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
 
   const login = async ({ setStatus, setErrors, setLoading, ...props }) => {
-    setLoading(true); // Start loading
-    await csrf();
-    setStatus(null);
+    setLoading(true);
+    setStatus?.(null);
+    setErrors?.({});
 
-    console.log(props);
     try {
+      await csrf();
       await axiosLib.post("/login", props);
-      mutate(); // Update user data
-      setLoading(false); // Stop loading after successful login
-    } catch (error) {
-      setLoading(false); // Reset loading on error
 
-      if (error.response) {
-        if (error.response.status === 422 || error.response.status === 403) {
-          setErrorMessage(error.response.data.error);
-        } else if (error.response.status === 409) {
-          setErrorMessage("User already logged in.");
-        } else {
-          setErrorMessage("An unexpected error occurred.");
-        }
-      }
+      setErrorMessage(null);
+      await mutate(); // refresh user
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+
+      const status = err?.response?.status;
+      const backendMsg =
+        err?.response?.data?.error || err?.response?.data?.message;
+
+      const msg = backendMsg
+        ? mapAuthErrorMessage(t, backendMsg)
+        : mapAuthErrorByStatus(t, status);
+
+      setErrorMessage(msg);
     }
   };
 
   const logout = async () => {
-    if (!error) {
-      await axiosLib.post("/logout").then(() => mutate());
+    try {
+      await axiosLib.post("/logout");
+    } catch {
+      // ignore
+    } finally {
+      await mutate(null, false);
+      window.location.pathname = "login";
     }
-
-    window.location.pathname = "login";
   };
 
   const forgotPassword = async ({ email, setLoading }) => {
     setLoading(true);
-    await csrf();
-    console.log("clicked");
-    console.log(email);
 
-    return axiosLib
-      .post(`/forgot-password?email=${email}`)
-      .then((response) => {
-        setErrorMessage("Password reset link has been sent to your email.");
-        console.log("Password reset link sent to your email!");
-        console.log(response);
+    try {
+      await csrf();
+      await axiosLib.post(`/forgot-password?email=${email}`);
 
-        setLoading(false);
-      })
-      .catch((error) => {
-        if (error.response?.status === 422) {
-          console.log("Wrong Password");
-        } else {
-          console.log("An unexpected error occurred.");
-        }
-        setLoading(false);
-      });
+      setErrorMessage(
+        t(
+          "common:authErrors.resetLinkSent",
+          "Password reset link has been sent to your email.",
+        ),
+      );
+    } catch (err) {
+      const status = err?.response?.status;
+      setErrorMessage(mapAuthErrorByStatus(t, status));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const resetPassword = async ({ ...props }) => {
+  const resetPassword = async (props) => {
     await csrf();
-    console.log("clicked", props);
-    return axiosLib
-      .post("/reset-password", props)
-      .then((response) => {
-        console.log("Reset password successfully!");
-        console.log(response);
-      })
-      .catch((error) => {
-        if (error.response?.status === 422) {
-          console.log(error.response.data.message);
-        } else {
-          console.log(error.response.data.message);
-        }
-      });
+    return axiosLib.post("/reset-password", props);
   };
 
   const changePassword = async ({ setLoading, setErrors, ...props }) => {
     setLoading(true);
-    await csrf();
-    console.log("clicked", { id: user.id, ...props });
-    return axiosLib
-      .post("/change-password", { id: user.id, ...props })
-      .then((response) => {
-        console.log("Change password successfully!");
-        console.log(response.data.message);
-        setLoading(false);
-        return { message: response.data.message, isSuccess: true };
-      })
-      .catch((error) => {
-        const errors = {};
-        if (error.response?.status === 422) {
-          console.log(error.response.data.message);
-          errors.updatePassword = error.response.data.message;
-        } else {
-          console.log(error.response.data.message);
-          errors.updatePassword = error.response.data.message;
-        }
 
-        setErrors(errors);
-        console.log(errors);
-        setLoading(false);
-        return { message: error.response.data.message, isSuccess: false };
+    try {
+      await csrf();
+      const response = await axiosLib.post("/change-password", {
+        id: user?.id,
+        ...props,
       });
+
+      setLoading(false);
+      return { message: response.data.message, isSuccess: true };
+    } catch (err) {
+      const backendMsg = err?.response?.data?.message;
+      setErrors?.({
+        updatePassword: backendMsg || t("common:authErrors.unexpected"),
+      });
+      setLoading(false);
+      return { message: backendMsg, isSuccess: false };
+    }
   };
 
   const userId = user ? user.id : null;
 
+  // ✅ Handle SWR user-fetch error ONLY on protected routes
   useEffect(() => {
-    if (middleware === "guest" && redirectIfAuthenticated && user)
-      if (middleware === "auth" && error)
-        // navigation(redirectIfAuthenticated);
+    if (!error) return;
 
-        logout();
-  }, [user, error]);
+    const status = error?.response?.status;
 
-  useEffect(() => {
-    if (error) {
-      setErrorMessage("Error fetching user data.");
+    // If protected route and auth expired, logout
+    if (isAuth && (status === 401 || status === 419)) {
+      logout();
+      return;
     }
-  }, [error]);
+
+    // Only show fetch-user errors on protected routes (not login page)
+    if (isAuth) {
+      setErrorMessage(mapAuthErrorByStatus(t, status));
+    }
+  }, [error, isAuth, t]);
+
+  // ✅ Optional: redirect logged-in user away from guest pages
+  useEffect(() => {
+    if (!isGuest) return;
+    if (!redirectIfAuthenticated) return;
+    if (user) window.location.pathname = redirectIfAuthenticated;
+  }, [isGuest, redirectIfAuthenticated, user]);
 
   return {
     user,

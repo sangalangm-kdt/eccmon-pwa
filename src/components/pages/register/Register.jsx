@@ -62,7 +62,7 @@ const AccountRequestForm = () => {
       [name]: selectedOption ? selectedOption.value : "",
     });
 
-    console.log(formData);
+    //console.log(formData);
   };
 
   const handleChange = (e) => {
@@ -172,7 +172,7 @@ const AccountRequestForm = () => {
       setStep(1); // Reset to the first step after successful submission
     } catch (error) {
       alert("An error occurred. Please try again.");
-      console.log(error);
+      //console.log(error);
     } finally {
       setIsSubmitting(false);
     }

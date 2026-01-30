@@ -2,7 +2,7 @@ import React from "react";
 import Loader from "./Loader";
 
 const SaveButton = ({ onClick, text, className, type = "button", loading }) => {
-  console.log(loading);
+  ////console.log(loading);
   return (
     <div className="fixed inset-x-0 bottom-0">
       <div className="flex w-full items-center justify-center bg-gray-50 p-3 dark:bg-gray-600">

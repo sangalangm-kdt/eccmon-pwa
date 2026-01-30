@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -9,16 +9,20 @@ import { useLocation } from "react-router-dom";
 const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
   const { t } = useTranslation();
   const location = useLocation();
-  const cylinderData = location.state?.data;
-  const eccId = cylinderData.serialNumber;
 
-  // console.log("dattaa", location);
+  // ✅ handle both shapes:
+  // - navigate("/scanned-result", { state: res.data })
+  // - where res.data looks like { data: { ...cylinder } }
+  const cylinderData = location.state?.data?.data ?? location.state?.data ?? {};
+
+  const eccId = cylinderData?.serialNumber ?? "";
+  const isDisposed = Number(cylinderData?.isDisposed) === 1;
+
   useEffect(() => {
-    setSelectedStatus(cylinderData.status);
-  }, [cylinderData.status]);
-
-  // Translate selectedStatus dynamically
-  const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
+    if (cylinderData?.status) {
+      setSelectedStatus(cylinderData.status);
+    }
+  }, [cylinderData?.status]);
 
   const marginTop = step === "review" ? "mt-2" : "mt-28";
 
@@ -31,6 +35,7 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
         <label className="text-xs text-secondaryText dark:text-gray-100">
           {t("qrScanner:cylinderDetailsInfo")}
         </label>
+
         <div className="mt-4 w-full text-lg">
           <div className="mb-2 mt-2 w-full">
             <label className="mb-1 block text-sm font-semibold text-primaryText dark:text-gray-100">
@@ -44,11 +49,20 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
               disabled
             />
           </div>
+
+          {/* ✅ LOCK Operation dropdown if disposed */}
           <CylinderStatusSelect
-            selectedStatus={selectedStatus} // Use translated status here
+            selectedStatus={selectedStatus}
             setSelectedStatus={setSelectedStatus}
-            disabled={disabled}
+            disabled={disabled || isDisposed}
           />
+
+          {/* Optional message under dropdown */}
+          {isDisposed && (
+            <p className="mt-2 text-xs font-medium text-red-500">
+              {t("qrScanner:backend.alreadyDisposed")}
+            </p>
+          )}
         </div>
       </div>
     </div>

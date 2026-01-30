@@ -19,7 +19,7 @@ const Dismounting = ({
 
   // Store the initial data and prevent changes unless the user modifies it
   const [initialData, setInitialData] = useState(cylinderData);
-  console.log(initialData);
+  ////console.log(initialData);
   const [site, setSite] = useState(initialData?.location);
   const [engineNum, setEngineNum] = useState(
     initialData?.updates?.otherDetails?.engineNumber,

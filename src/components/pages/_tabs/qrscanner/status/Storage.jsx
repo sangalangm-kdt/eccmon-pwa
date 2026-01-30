@@ -22,7 +22,7 @@ const Storage = ({
   const cylinderData = location.state?.data;
   const { data, isLoading } = useLocationProcess("storage");
   const storageData = data?.data;
-  console.log(storageData);
+  //console.log(storageData);
 
   const [date, setDate] = useState(() => {
     const today = cylinderData?.updates?.dateDone

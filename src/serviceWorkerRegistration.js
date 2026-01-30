@@ -17,7 +17,7 @@ export function register(config) {
 
         // Additional logging for localhost
         navigator.serviceWorker.ready.then(() => {
-          console.log(
+         //console.log(
             "This web app is being served cache-first by a service worker.",
           );
         });
@@ -40,7 +40,7 @@ function registerValidSW(swUrl, config) {
         installingWorker.onstatechange = () => {
           if (installingWorker.state === "installed") {
             if (navigator.serviceWorker.controller) {
-              console.log(
+             //console.log(
                 "New content is available and will be used when all tabs are closed.",
               );
 
@@ -48,7 +48,7 @@ function registerValidSW(swUrl, config) {
                 config.onUpdate(registration);
               }
             } else {
-              console.log("Content is cached for offline use.");
+             //console.log("Content is cached for offline use.");
 
               if (config && config.onSuccess) {
                 config.onSuccess(registration);
@@ -81,7 +81,7 @@ function checkValidServiceWorker(swUrl, config) {
       }
     })
     .catch(() => {
-      console.log(
+     //console.log(
         "No internet connection found. App is running in offline mode.",
       );
     });
