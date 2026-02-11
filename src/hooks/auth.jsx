@@ -78,8 +78,11 @@ export const useAuthentication = ({
     } catch {
       // ignore
     } finally {
+      // Clear SWR cache immediately
       await mutate(null, false);
-      window.location.pathname = "login";
+
+      // Hard redirect to reset app state + avoid back button showing protected pages
+      window.location.replace("/login");
     }
   };
 
