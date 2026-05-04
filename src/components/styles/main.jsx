@@ -1,0 +1,77 @@
+import {
+  colors,
+  margin,
+  padding,
+  sizes,
+  buttonStyles,
+  textStyles,
+  inputStyles,
+  width,
+  backgroundDrop,
+  container,
+  link,
+} from "./login";
+
+import { languagess, navbarStyles, modal } from "./header";
+
+import {
+  containerClass,
+  scannerContainerClass,
+  errorClass,
+  videoClass,
+  overlayContainerClass,
+  overlayClass,
+  overlayTopClass,
+  overlayBottomClass,
+  overlayLeftClass,
+  overlayRightClass,
+  scannerAreaClass,
+  scannerFrameClass,
+  scannerCornerClass,
+  topLeftCornerClass,
+  topRightCornerClass,
+  bottomLeftCornerClass,
+  bottomRightCornerClass,
+  backButtonClass,
+  backButtonIconClass,
+} from "./qrscanner";
+
+const qrScannerStyles = {
+  containerClass,
+  scannerContainerClass,
+  errorClass,
+  videoClass,
+  overlayContainerClass,
+  overlayClass,
+  overlayTopClass,
+  overlayBottomClass,
+  overlayLeftClass,
+  overlayRightClass,
+  scannerAreaClass,
+  scannerFrameClass,
+  scannerCornerClass,
+  topLeftCornerClass,
+  topRightCornerClass,
+  bottomLeftCornerClass,
+  bottomRightCornerClass,
+  backButtonClass,
+  backButtonIconClass,
+};
+
+export default qrScannerStyles;
+export {
+  colors,
+  margin,
+  padding,
+  sizes,
+  buttonStyles,
+  textStyles,
+  inputStyles,
+  width,
+  backgroundDrop,
+  container,
+  link,
+  languagess,
+  navbarStyles,
+  modal,
+};

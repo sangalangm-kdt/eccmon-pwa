@@ -1,0 +1,139 @@
+{
+  "installApp": "PWA",
+  "userDoesNotExist": "User does not exist",
+  "invalidUserOrPass": "Invalid email or password. Please try again.",
+  "errorNetwork": "An unexpected error occurred. Please try again.",
+  "errorFetchingUserData": "Error fetching user data",
+  "anErrorOccured": "An error occurred. Please check your network connection and try again.",
+  "installAppSafari": "Install on Home Screen",
+  "installAppSafariInstructions": "1. Open Safari and go to this page. \n2. Tap the Share button (square with upward arrow). \n3. Scroll down and select 'Add to Home Screen'. \n4. Tap 'Add'. \n5. Find the app icon on your home screen and tap to open.",
+  "home": "Home",
+  "profile": "Profile",
+  "scanner": "Scanner",
+  "logout": "Logout",
+  "backButton": "Back",
+  "backToScan": "Back to scan",
+  "recentHistory": "Recent History",
+  "yes": "Yes",
+  "no": "No",
+  "latest": "Latest",
+  "thisMonth": "This month",
+  "last7Days": "Last 7 days",
+  "last30Days": "Last 30 days",
+  "customDateRange": "Custom Date Range",
+
+  "welcomeToECCMon": "Welcome to ECCMon!",
+  "getStarted": "Let's get started.",
+  "inventoryOverview": "This section gives you an overview of your current inventory status.",
+  "historySummary": "Here you can view a summary of your activity history.",
+
+  "back": "Back",
+  "done": "Done",
+
+  "continueButton": "Continue",
+  "saveButton": "Save",
+  "editButton": "Edit",
+  "reviewInfo": "Review information",
+  "reviewDetails": "Is the information you submitted correct?",
+
+  "greetings": {
+    "goodAMorning": "Good morning,",
+    "goodAfternoon": "Good afternoon,",
+    "goodEvening": "Good evening,"
+  },
+
+  "inventorySummary": {
+    "searchPlaceholder": "Search serial number",
+    "overview": "Overview",
+    "totalCylinderScanned": "Total cylinder scanned",
+    "storage": "Storage",
+    "process": {
+      "all": "All",
+      "process": "Process",
+      "disassembly": "Disassembly",
+      "grooving": "Grooving",
+      "lmd": "LMD",
+      "assembly": "Assembly",
+      "finishing": "Finishing"
+    },
+    "mounted": "Mounted",
+    "dismounted": "Dismounted",
+    "disposal": "Disposal"
+  },
+  "viewInfo": {
+    "noDataToDisplay": "No data to display",
+    "details": "Details",
+    "back": "Back",
+    "serialNo": "Serial number",
+    "lastModifiedBy": "Last modified by",
+    "completionDate": "Completion Date",
+    "process": "Process",
+    "location": "Location",
+    "cycle": "Cycle",
+    "disposal": "Disposal",
+    "disposalDate": "Disposal Date",
+    "additionalDetails": "Additional Details",
+    "addDetails": {
+      "case": "Case",
+      "isPassed": "Status",
+      "orderNo": "Order No.",
+      "engineNo": "Engine No.",
+      "operatingHours": "Operating Hours",
+      "totalHours": "Total Operating Hours",
+      "mountingPosition": "Mounting Position",
+      "caseValues": {
+        "newBuild": "New Build",
+        "regeneration": "Regeneration",
+        "maintenance": "Maintenance"
+      }
+    }
+  },
+
+  "errorMessages": {
+    "unauthorized": "The email or password is incorrect.",
+    "userLoggedIn": "User already logged in.",
+    "invalidCredentials": "Invalid login credentials.",
+    "accessDenied": "Access denied.",
+    "unexpectedError": "An unexpected error occurred.",
+    "invalidEmail": "Invalid email address.",
+    "passwordResetSuccess": "Password reset link sent to your email.",
+    "fetchUserError": "Error fetching user data."
+  },
+  "reqAcc": {
+    "requestAccount": "Request an Account",
+    "fillOutFields": "Please fill out the fields below",
+    "personalInfo": "Personal Info",
+    "workInfo": "Work Info",
+    "review": "Review",
+    "firstName": "First Name",
+    "enterFirstName": "Enter first name",
+    "lastName": "Last Name",
+    "enterLastName": "Enter last name",
+    "employeeNumber": "Employee Number",
+    "enterEmployeeNumber": "e.g: 000",
+    "next": "Next",
+    "back": "Back",
+    "requestNow": "Request Now",
+    "goToLogin": "Go to Login",
+    "affiliation": "Affiliation",
+    "enterAffiliation": "Select Affiliation",
+    "email": "Email",
+    "enterEmail": "you@global.kawasaki.com",
+    "password": "Password",
+    "enterPassword": "Password should be at least 8 characters",
+    "reviewYourInformation": "Review Your Information"
+  },
+  "reqAccValidation": {
+    "firstName": "First name is required",
+    "lastName": "Last name is required",
+    "employeeId": "Employee number is required",
+    "affiliation": "Affiliation is required",
+    "email": "Email is required",
+    "password": "Password is required"
+  },
+  "updatePassword": "Update password",
+  "backToLogin": "Back to Login",
+  "success": "Success",
+  "passwordUpdated": "Your password has been successfully updated.",
+  "isRequired": "is required."
+}

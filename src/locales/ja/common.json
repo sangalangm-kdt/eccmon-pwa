@@ -1,0 +1,139 @@
+{
+  "installApp": "PWA",
+  "userDoesNotExist": "ユーザーが存在しません",
+  "invalidUserOrPass": "メールアドレスまたはパスワードが無効です。もう一度お試しください。",
+  "errorNetwork": "予期しないエラーが発生しました。もう一度お試しください。",
+  "errorFetchingUserData": "ユーザーデータの取得中にエラーが発生しました",
+  "anErrorOccured": "エラーが発生しました。ネットワーク接続を確認して再試行してください。",
+  "installAppSafari": "ホーム画面に追加",
+  "installAppSafariInstructions": "1. Safariを開き、このページにアクセスしてください。\n2. 共有ボタン（上向き矢印の四角形）をタップします。\n3. 下にスクロールして「ホーム画面に追加」を選択します。\n4. 「追加」をタップします。\n5. ホーム画面に表示されたアプリアイコンをタップして開いてください。",
+  "home": "ホーム",
+  "profile": "プロフィール",
+  "scanner": "スキャナー",
+  "logout": "ログアウト",
+  "backButton": "戻る",
+  "backToScan": "スキャンに戻る",
+  "recentHistory": "最近の履歴",
+  "yes": "はい",
+  "no": "いいえ",
+  "latest": "最新",
+  "thisMonth": "今月",
+  "last7Days": "過去7日間",
+  "last30Days": "過去30日間",
+  "customDateRange": "カスタム日付範囲",
+
+  "welcomeToECCMon": "ECCMonへようこそ！",
+  "getStarted": "始めましょう。",
+  "inventoryOverview": "このセクションでは、現在の在庫状況を概観できます。",
+  "historySummary": "ここでは、アクティビティ履歴の概要を確認できます。",
+
+  "back": "戻る",
+  "done": "完了",
+
+  "continueButton": "続ける",
+  "saveButton": "保存",
+  "editButton": "編集",
+  "reviewInfo": "情報を確認する",
+  "reviewDetails": "提出した情報は正しいですか？",
+
+  "greetings": {
+    "goodAMorning": "おはようございます、",
+    "goodAfternoon": "こんにちは、",
+    "goodEvening": "こんばんは、"
+  },
+
+  "inventorySummary": {
+    "searchPlaceholder": "シリアル番号を検索",
+    "overview": "概要",
+    "totalCylinderScanned": "スキャンしたシリンダーの合計",
+    "storage": "保管",
+    "process": {
+      "all": "すべて",
+      "process": "プロセス",
+      "disassembly": "分解",
+      "grooving": "溝加工",
+      "lmd": "LMD",
+      "assembly": "組立",
+      "finishing": "仕上げ"
+    },
+    "mounted": "装着済み",
+    "dismounted": "取り外し済み",
+    "disposal": "廃棄"
+  },
+  "viewInfo": {
+    "noDataToDisplay": "表示するデータがありません",
+    "details": "詳細",
+    "back": "戻る",
+    "serialNo": "シリアル番号",
+    "lastModifiedBy": "最終更新者",
+    "completionDate": "完了日",
+    "process": "プロセス",
+    "location": "場所",
+    "cycle": "サイクル",
+    "disposal": "廃棄",
+    "disposalDate": "廃棄日",
+    "additionalDetails": "追加情報",
+    "addDetails": {
+      "case": "ケース",
+      "isPassed": "ステータス",
+      "orderNo": "注文番号",
+      "engineNo": "エンジン番号",
+      "operatingHours": "稼働時間",
+      "totalHours": "総運転時間",
+      "mountingPosition": "取り付け位置",
+      "caseValues": {
+        "newBuild": "新造",
+        "regeneration": "再生",
+        "maintenance": "メンテナンス"
+      }
+    }
+  },
+
+  "errorMessages": {
+    "unauthorized": "メールアドレスまたはパスワードが正しくありません。",
+    "userLoggedIn": "ユーザーはすでにログインしています。",
+    "invalidCredentials": "ログイン資格情報が無効です。",
+    "accessDenied": "アクセスが拒否されました。",
+    "unexpectedError": "予期しないエラーが発生しました。",
+    "invalidEmail": "無効なメールアドレスです。",
+    "passwordResetSuccess": "パスワードリセットリンクがメールに送信されました。",
+    "fetchUserError": "ユーザーデータの取得中にエラーが発生しました。"
+  },
+  "reqAcc": {
+    "requestAccount": "アカウントを申請する",
+    "fillOutFields": "以下の項目にご記入ください",
+    "personalInfo": "個人情報",
+    "workInfo": "勤務情報",
+    "review": "確認",
+    "firstName": "名",
+    "enterFirstName": "名を入力してください",
+    "lastName": "姓",
+    "enterLastName": "姓を入力してください",
+    "employeeNumber": "社員番号",
+    "enterEmployeeNumber": "例：000",
+    "next": "次へ",
+    "back": "戻る",
+    "requestNow": "今すぐ申請",
+    "goToLogin": "ログイン画面へ",
+    "affiliation": "所属",
+    "enterAffiliation": "所属を選択してください",
+    "email": "メールアドレス",
+    "enterEmail": "you@global.kawasaki.com",
+    "password": "パスワード",
+    "enterPassword": "パスワードは8文字以上で入力してください",
+    "reviewYourInformation": "入力内容の確認"
+  },
+  "reqAccValidation": {
+    "firstName": "名は必須項目です",
+    "lastName": "姓は必須項目です",
+    "employeeId": "社員番号は必須項目です",
+    "affiliation": "所属は必須項目です",
+    "email": "メールアドレスは必須項目です",
+    "password": "パスワードは必須項目です"
+  },
+  "updatePassword": "パスワードを更新",
+  "backToLogin": "ログイン画面に戻る",
+  "success": "成功",
+  "passwordUpdated": "パスワードが正常に更新されました。",
+  "isRequired": "は必須項目です。"
+}

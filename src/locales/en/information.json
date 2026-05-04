@@ -1,0 +1,15 @@
+{
+  "information": "Information",
+  "employeeId": "Employee ID",
+  "lastName": "Last Name",
+  "firstName": "First Name",
+  "email": "Email",
+  "lastNameErrorMessage": "Last name cannot be empty",
+  "firstNameErrorMessage": "First name cannot be empty",
+  "enterLastName": "Enter your last name",
+  "enterFirstName": "Enter your first name",
+  "enterEmail": "Enter your email",
+  "accountDetails": "Account Details",
+  "personalInformation": "Personal Information",
+  "affiliation": "Affiliation"
+}

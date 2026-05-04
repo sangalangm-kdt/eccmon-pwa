@@ -1,0 +1,15 @@
+{
+  "information": "情報",
+  "employeeId": "社員ID",
+  "lastName": "姓",
+  "firstName": "名",
+  "email": "メールアドレス",
+  "lastNameErrorMessage": "姓を入力してください",
+  "firstNameErrorMessage": "名を入力してください",
+  "enterLastName": "姓を入力してください",
+  "enterFirstName": "名を入力してください",
+  "enterEmail": "メールアドレスを入力してください",
+  "accountDetails": "アカウント詳細",
+  "personalInformation": "個人情報",
+  "affiliation": "所属"
+}

@@ -1,0 +1,31 @@
+{
+  "profileSection": {
+    "employeeId": "Employee ID:"
+  },
+  "menuSection": {
+    "accountSettings": {
+      "account": "Account Settings",
+      "information": "Information",
+      "changePass": "Change Password"
+    },
+    "language": "Language",
+    "theme": {
+      "light": "Switch to Light Mode",
+      "dark": "Switch to Dark Mode"
+    },
+    "faq": "Frequently Asked Questions (FAQ)",
+    "helpSupport": "Help & Support",
+    "userGuidelines": "User Guidelines",
+    "reportBugs": "Report Bugs",
+    "logout": "Logout"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "currentPass": "Current Password",
+    "enterCurrentPass": "Please enter your current password",
+    "newPass": "New Password",
+    "enterNewPass": "Please enter your new password",
+    "confirmPass": "Confirm New Password",
+    "enterConfirmPass": "Please confirm that the new password matches"
+  }
+}

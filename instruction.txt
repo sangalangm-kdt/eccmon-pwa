@@ -1,0 +1,8 @@
+Web App
+npx next dev -H 0.0.0.0 -p 3000
+
+mobile app
+npx vite --host --port 5173
+
+netsh advfirewall firewall add rule name="NextJS Dev" dir=in action=allow protocol=TCP localport=3000
+netsh advfirewall firewall add rule name="Vite Dev" dir=in action=allow protocol=TCP localport=5173
