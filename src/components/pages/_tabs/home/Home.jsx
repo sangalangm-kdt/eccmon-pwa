@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import kawasakiLogo from "../../../assets/kawasaki-png-kawasaki-logo-1612.png";
 
 const Home = () => {
-  const { userId, user, errorMessage } = useAuthentication();
+  const { user, errorMessage } = useAuthentication();
   const { t } = useTranslation("common");
 
   useEffect(() => {
@@ -123,7 +123,7 @@ const Home = () => {
           animate={{ y: 0 }}
           transition={{ type: "spring", stiffness: 100 }}
         >
-          <InventorySummary userId={userId} />
+          <InventorySummary />
         </motion.div>
 
         <motion.div

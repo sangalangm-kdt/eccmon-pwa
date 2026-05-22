@@ -20,7 +20,6 @@ import {
   IoFlashOffOutline,
   IoFlashOutline,
 } from "react-icons/io5";
-import { useLocation } from "../../../../hooks/location";
 import { useAuthentication } from "../../../../hooks/auth";
 import { useAffiliation } from "../../../../hooks/affiliation";
 
@@ -37,19 +36,20 @@ const QRScanner = () => {
   const [currentCamera, setCurrentCamera] = useState("back"); // Track current camera
   const [cameraSwitched, setCameraSwitched] = useState(false); // Track camera switch state
   const videoRef = useRef(null);
+  const codeReaderRef = useRef(new BrowserMultiFormatReader());
+  const isProcessingScanRef = useRef(false);
+  const lastScannedRef = useRef({ value: null, timestamp: 0 });
+  const cameraSwitchTimeoutRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation("qrScanner", "common");
 
   const { user } = useAuthentication();
-  const { process } = useLocation(user.id);
   const { checkSerial, addCylinder } = useCylinderCover();
   const { affiliationProcesses } = useAffiliation() ?? [];
-
-  const codeReader = new BrowserMultiFormatReader();
+  const scanBox = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 };
 
   const isInsideScanBox = (x, y) => {
-    const scanBox = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 }; // Adjust as needed
     return (
       x >= scanBox.x * window.innerWidth &&
       x <= (scanBox.x + scanBox.width) * window.innerWidth &&
@@ -58,7 +58,7 @@ const QRScanner = () => {
     );
   };
 
-  const handleScanResult = (result, err) => {
+  const handleScanResult = async (result, err) => {
     if (result) {
       try {
         const jsonData = JSON.parse(result.text);
@@ -77,23 +77,31 @@ const QRScanner = () => {
           }
         }
 
-        if (!modalOpen) {
-          setWillScan(false);
-          checkSerial({
-            setAddDisable,
-            setMessage,
-            setModalOpen,
-            eccId,
-          });
+        const now = Date.now();
+        const isDuplicateScan =
+          lastScannedRef.current.value === eccId &&
+          now - lastScannedRef.current.timestamp < 1500;
+
+        if (modalOpen || isProcessingScanRef.current || isDuplicateScan) {
+          return;
         }
 
-        const track = videoRef.current?.srcObject?.getVideoTracks()[0];
-        if (track) {
-          setScannedData(eccId);
-          codeReader.reset();
-        }
+        isProcessingScanRef.current = true;
+        lastScannedRef.current = { value: eccId, timestamp: now };
+        setWillScan(false);
+        setScannedData(eccId);
+        stopCamera();
+
+        await checkSerial({
+          setAddDisable,
+          setMessage,
+          setModalOpen,
+          eccId,
+        });
       } catch (e) {
         setError("Invalid JSON data. Please check the QR code.");
+      } finally {
+        isProcessingScanRef.current = false;
       }
     } else if (err && !(err instanceof NotFoundException)) {
       console.error(err);
@@ -120,7 +128,7 @@ const QRScanner = () => {
 
     let selectedDeviceId;
     if (willScan) {
-      codeReader
+      codeReaderRef.current
         .listVideoInputDevices()
         .then((videoInputDevices) => {
           const backCamera =
@@ -133,39 +141,24 @@ const QRScanner = () => {
               device.label.toLowerCase().includes("front"),
             ) || videoInputDevices[0];
 
-          console.log("FRONT CAMERA: ", frontCamera);
-          console.log("BACK CAMERA: ", backCamera);
-
           if (currentCamera === "back" && backCamera) {
             selectedDeviceId = backCamera.deviceId;
           } else if (currentCamera === "front" && frontCamera) {
             selectedDeviceId = frontCamera.deviceId;
           }
 
-          codeReader.decodeFromVideoDevice(
+          codeReaderRef.current.decodeFromVideoDevice(
             selectedDeviceId,
             videoRef.current,
             handleScanResult,
             {
-              area: {
-                x: 0.25,
-                y: 0.25,
-                width: 0.5,
-                height: 0.5,
-              },
+              area: scanBox,
               formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
             },
           );
 
           // Check if area is in the center
-          setIsCentered(
-            isAreaInCenter({
-              x: 0.25,
-              y: 0.25,
-              width: 0.5,
-              height: 0.5,
-            }),
-          );
+          setIsCentered(isAreaInCenter(scanBox));
         })
         .catch((err) => {
           console.error("Error accessing video devices: ", err);
@@ -176,7 +169,7 @@ const QRScanner = () => {
     }
 
     return () => {
-      codeReader.reset();
+      codeReaderRef.current.reset();
     };
   }, [willScan, currentCamera]);
 
@@ -185,7 +178,7 @@ const QRScanner = () => {
   }, [dispatch]);
 
   const handleBack = () => {
-    codeReader.reset();
+    codeReaderRef.current.reset();
     setWillScan(false);
     navigate("/");
   };
@@ -218,7 +211,8 @@ const QRScanner = () => {
       setCameraSwitched(true);
 
       // Hide the camera switch message after 2 seconds
-      setTimeout(() => {
+      clearTimeout(cameraSwitchTimeoutRef.current);
+      cameraSwitchTimeoutRef.current = setTimeout(() => {
         setCameraSwitched(false);
       }, 2000);
 
@@ -236,28 +230,22 @@ const QRScanner = () => {
     setModalOpen(false);
   };
 
-  const handleManualAdd = (manualData) => {
+  const handleManualAdd = async (manualData) => {
     setWillScan(false);
-    setManualModalOpen(true);
+    setManualModalOpen(false);
     setScannedData(manualData);
+    isProcessingScanRef.current = true;
 
-    const isExisting = checkSerial({
+    const result = await checkSerial({
       setAddDisable,
       setMessage,
       setModalOpen,
       eccId: manualData,
     });
-    if (isExisting) {
-      setMessage("This ECC ID already exists.");
-      setModalOpen(false);
-      setAddDisable(true);
-    } else {
-      checkSerial({
-        setAddDisable,
-        setMessage,
-        setModalOpen,
-        eccId: manualData,
-      });
+    isProcessingScanRef.current = false;
+
+    if (result?.exists && !result?.isDisposed) {
+      setManualModalOpen(false);
     }
   };
 
@@ -274,9 +262,14 @@ const QRScanner = () => {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
-
-    console.log("Camera stopped");
+    codeReaderRef.current.reset();
   };
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(cameraSwitchTimeoutRef.current);
+    };
+  }, []);
 
   return (
     <div

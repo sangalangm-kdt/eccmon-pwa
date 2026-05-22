@@ -22,7 +22,6 @@ export const ProcessStatus = ({ status }) => {
 const ViewInfo = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuthentication();
   const [modifiedBy, setModifiedBy] = useState(null);
   const data = location.state?.data;
   const totalOperationHours = location.state?.totalOperationHours;
@@ -42,7 +41,6 @@ const ViewInfo = () => {
     operationHours: t("viewInfo.addDetails.operatingHours"),
     totalHours: t("viewInfo.addDetails.totalHours"),
     mountingPosition: t("viewInfo.addDetails.mountingPosition"),
-    userId: t("viewInfo.addDetails.userId"),
     process: t("viewInfo.addDetails.process"),
   };
 
@@ -77,6 +75,7 @@ const ViewInfo = () => {
               "dateDone",
               "createdAt",
               "userId",
+              "user",
               "cycle",
             ].includes(key)
           )
@@ -112,6 +111,7 @@ const ViewInfo = () => {
                         "dateDone",
                         "createdAt",
                         "userId",
+                        "user",
                         "cycle",
                       ].includes(detailKey)
                     )

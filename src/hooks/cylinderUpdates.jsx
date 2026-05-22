@@ -1,23 +1,48 @@
-/* eslint-disable no-unused-vars */
 import axiosLib from "../lib/axios";
 import useSWR from "swr";
 
-export const useCylinderUpdate = () => {
+const buildUpdateQuery = (params = {}) => {
+  const searchParams = new URLSearchParams();
+
+  if (params.perPage) searchParams.set("per_page", String(params.perPage));
+  if (params.page) searchParams.set("page", String(params.page));
+
+  if (Array.isArray(params.serialNumbers)) {
+    params.serialNumbers
+      .filter(Boolean)
+      .forEach((serialNumber) =>
+        searchParams.append("serialNumbers[]", serialNumber),
+      );
+  }
+
+  const queryString = searchParams.toString();
+  return queryString
+    ? `/api/cylinder-update?${queryString}`
+    : "/api/cylinder-update";
+};
+
+export const useCylinderUpdate = (params = {}) => {
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
-  //   const navigate = useNavigate();
+  const endpoint = params.enabled === false ? null : buildUpdateQuery(params);
 
   const {
     data: cylinder,
     error,
     mutate,
-  } = useSWR("/api/cylinder-update", () =>
-    axiosLib
-      .get("/api/cylinder-update")
-      .then((res) => res.data)
-      .catch((error) => {
-        console.error(error);
-        if (error.response.status !== 409) throw error;
-      }),
+    isLoading,
+  } = useSWR(
+    endpoint,
+    () =>
+      axiosLib
+        .get(endpoint)
+        .then((res) => res.data)
+        .catch((error) => {
+          console.error(error);
+          if (error.response.status !== 409) throw error;
+        }),
+    {
+      revalidateOnFocus: false,
+    },
   );
 
   const addUpdate = async (input, status, setModalOpen, setLoading) => {
@@ -51,6 +76,7 @@ export const useCylinderUpdate = () => {
 
   return {
     cylinder,
+    isLoading: params.enabled === false ? true : isLoading,
     mutate,
     addUpdate,
   };

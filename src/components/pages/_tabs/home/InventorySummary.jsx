@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import {
   LiaWarehouseSolid,
@@ -7,36 +7,54 @@ import {
   LiaTruckMovingSolid,
   LiaTrashSolid,
 } from "react-icons/lia";
-import { PiWarehouseFill } from "react-icons/pi";
-import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import { GoKebabHorizontal } from "react-icons/go";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "../../../../hooks/location";
+import { useAuthentication } from "../../../../hooks/auth";
 
-const InventorySummary = ({ userId }) => {
+const InventorySummarySkeleton = () => (
+  <div className="lg:pt-30 z-10 flex flex-col px-2 xs:pb-1 xs:pt-1">
+    <div className="flex flex-row justify-between p-1">
+      <div className="h-7 w-44 animate-pulse rounded-full bg-gray-200 dark:bg-gray-600"></div>
+      <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-600"></div>
+    </div>
+    <div className="rounded-xl bg-white p-4 shadow dark:bg-gray-700">
+      <div className="animate-pulse">
+        <div className="h-5 w-44 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+        <div className="mb-5 mt-3 h-8 w-20 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+        <div className="flex flex-wrap items-center justify-center gap-4 xs:flex-nowrap xs:gap-2 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="relative flex w-full flex-col items-center justify-center gap-2 rounded-lg p-2 text-tiny xs:w-full sm:w-auto md:w-1/5 lg:w-1/5"
+            >
+              <div className="mt-2 h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+              <div className="h-3 w-12 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const InventorySummaryListSkeleton = () => (
+  <div className="mt-4 animate-pulse">
+    {Array.from({ length: 4 }).map((_, index) => (
+      <div
+        key={index}
+        className="mt-2 rounded-lg border-b-0.5 border-gray-200 px-3 py-4 dark:border-gray-500"
+      >
+        <div className="h-4 w-32 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+      </div>
+    ))}
+  </div>
+);
+
+const InventorySummary = () => {
   const { t } = useTranslation("common");
-  const cylinders = useCylinderCover().cylinder?.data;
-  const cylinderUpdates = useCylinderUpdate().cylinder?.data;
   const navigate = useNavigate();
-
-  // Filter by User ID with same serialNumber for CylinderUpdates
-  const filteredCylinderUpdates =
-    cylinderUpdates
-      ?.filter((cyl) => cyl.userId === userId)
-      .filter(
-        (cyl, index, self) =>
-          index ===
-          self.findIndex((item) => item.serialNumber === cyl.serialNumber),
-      ) ?? [];
-
-  // Filter by serialNumber
-  const filteredData =
-    cylinders?.filter((item) =>
-      filteredCylinderUpdates.some(
-        (update) => update.serialNumber === item.serialNumber,
-      ),
-    ) ?? [];
+  const { user, isLoading: isUserLoading } = useAuthentication();
 
   const handleSerialNumberClick = (item) => {
     navigate("/view-info", { state: { data: item } });
@@ -82,30 +100,6 @@ const InventorySummary = ({ userId }) => {
       icon: <LiaTrashSolid size={22} />,
     },
   ];
-
-  const categoryCounts = categories.map((category) => {
-    const { name, status } = category;
-    const count =
-      filteredData?.filter((item) =>
-        Array.isArray(status)
-          ? status.includes(item.status.toLowerCase())
-          : item.status.toLowerCase() === status,
-      ).length || 0;
-
-    return { name, count };
-  });
-
-  const totalSerialNumbers = filteredData
-    ?.map((item) => item.serialNumber)
-    .reduce((acc, serial) => {
-      acc[serial] = (acc[serial] || 0) + 1;
-      return acc;
-    }, {});
-
-  const totalCount = Object.values(totalSerialNumbers || {}).reduce(
-    (acc, count) => acc + count,
-    0,
-  );
 
   const getCategoryColor = (category) => {
     switch (category) {
@@ -154,8 +148,120 @@ const InventorySummary = ({ userId }) => {
   );
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-
+  const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const queriesEnabled = !isUserLoading && !!user;
+  const locationFilter = user?.is_admin === 1 ? "" : user?.affiliation || "";
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery.trim());
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const activeStatusFilter = useMemo(() => {
+    if (activeSubcategory?.status) {
+      return activeSubcategory.status;
+    }
+
+    if (activeCategory === t("inventorySummary.storage")) return "Storage";
+    if (activeCategory === t("inventorySummary.process.process")) {
+      return "Process";
+    }
+    if (activeCategory === t("inventorySummary.mounted")) return "Mounted";
+    if (activeCategory === t("inventorySummary.dismounted")) {
+      return "Dismounted";
+    }
+    if (activeCategory === t("inventorySummary.disposal")) return "Disposal";
+
+    return "";
+  }, [activeCategory, activeSubcategory, t]);
+
+  const listQuery = {
+    perPage: 20,
+    page,
+    search: debouncedSearchQuery,
+    location: locationFilter,
+    includeUpdates: true,
+    direction: "desc",
+    status: activeStatusFilter || undefined,
+  };
+
+  const allCylindersQuery = useCylinderCover({
+    enabled: queriesEnabled,
+    perPage: 1,
+    location: locationFilter,
+    search: debouncedSearchQuery,
+    includeUpdates: false,
+  });
+  const storageCylindersQuery = useCylinderCover({
+    enabled: queriesEnabled,
+    perPage: 1,
+    location: locationFilter,
+    search: debouncedSearchQuery,
+    includeUpdates: false,
+    status: "Storage",
+  });
+  const processCylindersQuery = useCylinderCover({
+    enabled: queriesEnabled,
+    perPage: 1,
+    location: locationFilter,
+    search: debouncedSearchQuery,
+    includeUpdates: false,
+    status: "Process",
+  });
+  const mountedCylindersQuery = useCylinderCover({
+    enabled: queriesEnabled,
+    perPage: 1,
+    location: locationFilter,
+    search: debouncedSearchQuery,
+    includeUpdates: false,
+    status: "Mounted",
+  });
+  const dismountedCylindersQuery = useCylinderCover({
+    enabled: queriesEnabled,
+    perPage: 1,
+    location: locationFilter,
+    search: debouncedSearchQuery,
+    includeUpdates: false,
+    status: "Dismounted",
+  });
+  const disposalCylindersQuery = useCylinderCover({
+    enabled: queriesEnabled,
+    perPage: 1,
+    location: locationFilter,
+    search: debouncedSearchQuery,
+    includeUpdates: false,
+    status: "Disposal",
+  });
+  const cylinderListQuery = useCylinderCover({
+    ...listQuery,
+    enabled: queriesEnabled,
+  });
+  const allCylinders = allCylindersQuery.cylinder;
+  const storageCylinders = storageCylindersQuery.cylinder;
+  const processCylinders = processCylindersQuery.cylinder;
+  const mountedCylinders = mountedCylindersQuery.cylinder;
+  const dismountedCylinders = dismountedCylindersQuery.cylinder;
+  const disposalCylinders = disposalCylindersQuery.cylinder;
+  const cylinderListResponse = cylinderListQuery.cylinder;
+  const filteredData = cylinderListResponse?.data ?? [];
+  const isListFetching =
+    cylinderListQuery.isLoading || cylinderListQuery.isValidating;
+  const totalCount =
+    allCylinders?.meta?.total ?? allCylinders?.data?.length ?? 0;
+  const isDashboardLoading =
+    isUserLoading ||
+    (!allCylinders && allCylindersQuery.isLoading) ||
+    (!storageCylinders && storageCylindersQuery.isLoading) ||
+    (!processCylinders && processCylindersQuery.isLoading) ||
+    (!mountedCylinders && mountedCylindersQuery.isLoading) ||
+    (!dismountedCylinders && dismountedCylindersQuery.isLoading) ||
+    (!disposalCylinders && disposalCylindersQuery.isLoading) ||
+    (!cylinderListResponse && cylinderListQuery.isLoading);
 
   const filteredBySearch = (data) => {
     if (!searchQuery) return data;
@@ -172,12 +278,14 @@ const InventorySummary = ({ userId }) => {
 
       setActiveCategory(category);
       setActiveSubcategory(defaultSubcategory || subcategory);
+      setPage(1);
     } else {
       // Toggle the category if clicked again
       setActiveCategory((prev) =>
         prev === category ? t("inventorySummary.process.all") : category,
       );
       setActiveSubcategory(subcategory);
+      setPage(1);
     }
   };
 
@@ -185,31 +293,45 @@ const InventorySummary = ({ userId }) => {
     setActiveSubcategory(
       subcategory === activeSubcategory ? null : subcategory,
     );
+    setPage(1);
   };
 
-  const filteredByCategory = (category) => {
-    if (category === t("inventorySummary.process.all")) return filteredData;
+  const categoryCounts = [
+    {
+      name: t("inventorySummary.storage"),
+      count:
+        storageCylinders?.meta?.total ?? storageCylinders?.data?.length ?? 0,
+    },
+    {
+      name: t("inventorySummary.process.process"),
+      count:
+        processCylinders?.meta?.total ?? processCylinders?.data?.length ?? 0,
+    },
+    {
+      name: t("inventorySummary.mounted"),
+      count:
+        mountedCylinders?.meta?.total ?? mountedCylinders?.data?.length ?? 0,
+    },
+    {
+      name: t("inventorySummary.dismounted"),
+      count:
+        dismountedCylinders?.meta?.total ??
+        dismountedCylinders?.data?.length ??
+        0,
+    },
+    {
+      name: t("inventorySummary.disposal"),
+      count:
+        disposalCylinders?.meta?.total ?? disposalCylinders?.data?.length ?? 0,
+    },
+  ];
 
-    const categoryData = categories.find((c) => c.name === category);
-    const categoryStatus = categoryData?.status || [];
-    const itemStatus = (item) => item.status?.trim().toLowerCase();
+  const currentPage = cylinderListResponse?.meta?.current_page ?? 1;
+  const lastPage = cylinderListResponse?.meta?.last_page ?? 1;
 
-    if (Array.isArray(categoryStatus)) {
-      return filteredData.filter((item) =>
-        categoryStatus.includes(itemStatus(item)),
-      );
-    }
-
-    return filteredData.filter(
-      (item) => itemStatus(item) === categoryStatus.toLowerCase(),
-    );
-  };
-
-  const filteredBySubcategory = (subcategory) => {
-    return filteredData.filter(
-      (item) => item.status.toLowerCase() === subcategory.status.toLowerCase(),
-    );
-  };
+  if (isDashboardLoading) {
+    return <InventorySummarySkeleton />;
+  }
 
   return (
     <div className="lg:pt-30 z-10 flex flex-col px-2 xs:pb-1 xs:pt-1">
@@ -251,7 +373,7 @@ const InventorySummary = ({ userId }) => {
                 >
                   {count > 0 && (
                     <div
-                      className={`absolute left-2/3 top-0 flex h-4 w-4 -translate-x-1/2 transform items-center justify-center rounded-full bg-sky-500 text-tiny text-white`}
+                      className={`absolute left-2/3 top-0 flex min-h-4 min-w-4 -translate-x-1/2 transform items-center justify-center rounded-full bg-sky-500 text-tiny text-white`}
                     >
                       {count}
                     </div>
@@ -285,7 +407,10 @@ const InventorySummary = ({ userId }) => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
                 placeholder={t("inventorySummary.searchPlaceholder")}
                 className="w-full rounded-lg border bg-transparent px-4 py-2 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:text-gray-50"
               />
@@ -352,41 +477,47 @@ const InventorySummary = ({ userId }) => {
             </div>
 
             {/* Display serial numbers for the selected category */}
-            {activeCategory &&
-              activeCategory !== t("inventorySummary.process.process") &&
-              filteredBySearch(filteredByCategory(activeCategory)).map(
-                (item, index) => {
-                  const serials = item.serialNumber;
+            {isListFetching ? (
+              <InventorySummaryListSkeleton />
+            ) : filteredBySearch(filteredData).length === 0 ? (
+              <div className="mt-4 rounded-lg border border-dashed border-gray-300 px-4 py-6 text-center text-sm text-gray-500 dark:border-gray-500 dark:text-gray-300">
+                No results found.
+              </div>
+            ) : (
+              filteredBySearch(filteredData).map((item, index) => (
+                <div
+                  key={`${item.serialNumber}-${index}`}
+                  className="mt-2 flex-row"
+                >
+                  <h5
+                    className="border-b-0.5 p-3 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-50"
+                    onClick={() => handleSerialNumberClick(item)}
+                  >
+                    {item.serialNumber}
+                  </h5>
+                </div>
+              ))
+            )}
 
-                  return (
-                    <div key={index} className="mt-2 flex-row">
-                      <h5
-                        className="border-b-0.5 p-3 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-50"
-                        onClick={() => handleSerialNumberClick(item)}
-                      >
-                        {serials}
-                      </h5>
-                    </div>
-                  );
-                },
-              )}
-
-            {/* Display serial numbers for the selected subcategory */}
-            {activeSubcategory &&
-              filteredBySearch(filteredBySubcategory(activeSubcategory)).map(
-                (item, index) => {
-                  return (
-                    <div key={index} className="mt-3">
-                      <h5
-                        className="border-b-0.5 p-3 text-sm font-medium text-gray-600 dark:text-gray-50"
-                        onClick={() => handleSerialNumberClick(item)}
-                      >
-                        {item.serialNumber}
-                      </h5>
-                    </div>
-                  );
-                },
-              )}
+            <div className="mt-4 flex items-center justify-between text-xs text-gray-600 dark:text-gray-200">
+              <button
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage <= 1}
+                className="rounded-full bg-gray-100 px-3 py-2 disabled:opacity-50 dark:bg-gray-500"
+              >
+                Prev
+              </button>
+              <span>
+                Page {currentPage} of {lastPage}
+              </span>
+              <button
+                onClick={() => setPage((prev) => Math.min(prev + 1, lastPage))}
+                disabled={currentPage >= lastPage}
+                className="rounded-full bg-gray-100 px-3 py-2 disabled:opacity-50 dark:bg-gray-500"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

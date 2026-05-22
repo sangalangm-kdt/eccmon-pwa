@@ -35,6 +35,9 @@ export const useLocationProcess = (process) => {
   const { data, error, isLoading, mutate } = useSWR(
     process ? API_ENDPOINTS[process] : null,
     fetcher,
+    {
+      revalidateOnFocus: false,
+    },
   );
 
   return {

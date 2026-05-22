@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useRef } from "react";
-import { ChevronIcon } from "../../../assets/icons";
-import { CloseRounded, IosShare } from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+import { CloseRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { GoSortDesc, GoSortAsc } from "react-icons/go";
 import {
@@ -9,7 +8,6 @@ import {
   filterHistory,
   formatDate,
 } from "../../../utils/utils";
-import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import { fullscreenClass } from "../../../styles/home";
 import { getStatusColors } from "../../../utils/statusColors";
 import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary";
@@ -18,21 +16,15 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendar } from "react-icons/fa";
-import {
-  IoArrowBackOutline,
-  IoArrowForwardOutline,
-  IoChevronForwardOutline,
-} from "react-icons/io5";
+import { IoChevronForwardOutline } from "react-icons/io5";
 import { useAuthentication } from "../../../../hooks/auth";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
 import { customSelectStyle } from "../../../utils/selectUtils";
 
 const HistorySummary = () => {
-  const { userId } = useAuthentication();
+  const { user, isLoading: isUserLoading } = useAuthentication();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const cylinders = useCylinderCover().cylinder?.data ?? [];
-  const cylinderUpdates = useCylinderUpdate().cylinder?.data ?? [];
 
   function filterDataByCycle(data) {
     const grouped = {};
@@ -61,17 +53,6 @@ const HistorySummary = () => {
     return groupedBySerial;
   }
 
-  const filteredData = filterDataByCycle(cylinderUpdates);
-  console.log(filteredData);
-
-  const filteredCylinderUpdates = cylinderUpdates
-    ?.filter((cyl) => cyl.userId === userId)
-    .filter(
-      (cyl, index, self) =>
-        index ===
-        self.findIndex((item) => item.serialNumber === cyl.serialNumber),
-    );
-
   const [showAll, setShowAll] = useState(false);
   const [filter, setFilter] = useState("latest");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -79,27 +60,37 @@ const HistorySummary = () => {
   const [endDate, setEndDate] = useState(null);
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [perPage, setPerPage] = useState();
+  const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [isFetching, setIsFetching] = useState(false); // for infinite scroll
-
-  const listInnerRef = useRef(null);
+  const queriesEnabled = !isUserLoading && !!user;
+  const locationFilter = user?.is_admin === 1 ? "" : user?.affiliation || "";
+  const { cylinder, isLoading: isUpdatesLoading } = useCylinderUpdate({
+    enabled: queriesEnabled,
+    perPage,
+    page: currentPage,
+  });
+  const cylinderUpdates = cylinder?.data ?? [];
+  const filteredData = filterDataByCycle(cylinderUpdates);
 
   // Effect for handling sorting and filtering updates
   useEffect(() => {
-    if (cylinders.length && cylinderUpdates.length) {
-      setLoading(false);
+    setLoading(isUserLoading || isUpdatesLoading);
 
-      // Filter the cylinders that have matching updates for the user
-      const userHistory = cylinders.filter((item) =>
-        filteredCylinderUpdates.some(
-          (update) => update.serialNumber === item.serialNumber,
-        ),
+    if (cylinderUpdates.length) {
+      const scopedHistory = cylinderUpdates.filter((item) =>
+        locationFilter ? item.location === locationFilter : true,
       );
-
-      // Apply the filter and sort logic
-      const sortedHistory = sortHistoryByDate(userHistory, sortOrder); // First sort by date
+      const normalizedHistory = scopedHistory.map((item) => ({
+        serialNumber: item.serialNumber,
+        status: item.process,
+        location: item.location,
+        cycle: item.cycle,
+        disposalDate: null,
+        user: item.user,
+        updates: item,
+      }));
+      const sortedHistory = sortHistoryByDate(normalizedHistory, sortOrder);
 
       // Then apply the custom filtering based on selected filter and date range
       const filteredData = filterHistory(
@@ -115,9 +106,11 @@ const HistorySummary = () => {
       }
     }
   }, [
-    cylinders,
+    cylinder,
     cylinderUpdates,
-    filteredCylinderUpdates,
+    isUpdatesLoading,
+    isUserLoading,
+    locationFilter,
     sortOrder,
     filter,
     startDate,
@@ -138,6 +131,7 @@ const HistorySummary = () => {
 
   const handlePerPageChange = (selectedOption) => {
     setPerPage(selectedOption.value);
+    setCurrentPage(1);
   };
 
   const toggleSortOrder = () => {
@@ -154,7 +148,6 @@ const HistorySummary = () => {
 
         return totalHours;
       })[0];
-    console.log(totalOperationHours);
     navigate("/view-info", {
       state: { data: item, totalOperationHours: totalOperationHours },
     });
@@ -189,41 +182,8 @@ const HistorySummary = () => {
 
   CustomDateInput.displayName = "CustomDateInput";
 
-  // Infinite scroll logic
-  const loadMore = () => {
-    if (isFetching || filteredHistory.length === 0) return;
-    setIsFetching(true);
-
-    // Simulate an API call and append more items (in this case, just slice)
-    setTimeout(() => {
-      setFilteredHistory((prev) => [
-        ...prev,
-        ...filteredHistory.slice(
-          filteredHistory.length,
-          filteredHistory.length + 10,
-        ),
-      ]);
-      setIsFetching(false);
-    }, 1000);
-  };
-
-  // Intersection observer for infinite scroll
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          loadMore();
-        }
-      },
-      { rootMargin: "100px" },
-    );
-    if (listInnerRef.current) observer.observe(listInnerRef.current);
-    return () => {
-      if (listInnerRef.current) observer.unobserve(listInnerRef.current);
-    };
-  }, [filteredHistory]);
-
   const isDarkMode = document.documentElement.classList.contains("dark");
+  const lastPage = cylinder?.meta?.last_page ?? 1;
   return (
     <div
       className={`xs:min-[300px] shadow- flex w-full flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-700 xs:px-1 lg:w-full ${
@@ -307,6 +267,38 @@ const HistorySummary = () => {
                   )}
                 </button>
               </div>
+              <div className="mt-2 flex justify-between gap-2">
+                <Select
+                  className="w-28"
+                  options={perPageOptions}
+                  value={perPageOptions.find((option) => option.value === perPage)}
+                  onChange={handlePerPageChange}
+                  styles={customSelectStyle(isDarkMode)}
+                />
+                <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-200">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage <= 1}
+                    className="rounded-full bg-gray-100 px-3 py-2 disabled:opacity-50 dark:bg-gray-600"
+                  >
+                    Prev
+                  </button>
+                  <span>
+                    Page {currentPage} of {lastPage}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, lastPage))
+                    }
+                    disabled={currentPage >= lastPage}
+                    className="rounded-full bg-gray-100 px-3 py-2 disabled:opacity-50 dark:bg-gray-600"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
 
               {/* Custom Date Range Section */}
               {filter === "custom" && (
@@ -347,11 +339,11 @@ const HistorySummary = () => {
           ) : (
             <div>
               <ul
-                className={`border-box h-screen transition-transform duration-500 ease-in-out ${
-                  showAll ? "max-h-fit overflow-y-auto" : "max-h-[380px]"
+                className={`border-box transition-transform duration-500 ease-in-out ${
+                  showAll ? "pb-24" : "pb-20"
                 }`}
               >
-                {filteredHistory.slice(0, perPage).map((item, index) => {
+                {filteredHistory.map((item, index) => {
                   // Get the status colors dynamically
                   const { bgColor, textColor } = getStatusColors(item.status);
 

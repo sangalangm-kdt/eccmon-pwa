@@ -1,28 +1,77 @@
-/* eslint-disable no-unused-vars */
 import axiosLib from "../lib/axios";
 import { useNavigate } from "react-router-dom";
 import { useScanHistory } from "./scanHistory";
 import useSWR from "swr";
 import { useAuthentication } from "./auth";
 
-export const useCylinderCover = () => {
+const buildCylinderQuery = (params = {}) => {
+  const searchParams = new URLSearchParams();
+
+  if (params.perPage) searchParams.set("per_page", String(params.perPage));
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.search) searchParams.set("search", params.search);
+  if (params.location) searchParams.set("location", params.location);
+  if (params.status) searchParams.set("status", params.status);
+  if (params.statusFilter) {
+    searchParams.set("status_filter", params.statusFilter);
+  }
+  if (params.sort) searchParams.set("sort", params.sort);
+  if (params.direction) searchParams.set("direction", params.direction);
+  if (params.caseFilter !== undefined && params.caseFilter !== null) {
+    searchParams.set("case", String(params.caseFilter));
+  }
+  if (typeof params.includeUpdates === "boolean") {
+    searchParams.set("include_updates", params.includeUpdates ? "1" : "0");
+  }
+
+  const queryString = searchParams.toString();
+  return queryString ? `/api/cylinder?${queryString}` : "/api/cylinder";
+};
+
+const shouldFetchCylinderList = (params = {}) =>
+  params.fetchList === true ||
+  [
+    "perPage",
+    "page",
+    "search",
+    "location",
+    "status",
+    "statusFilter",
+    "sort",
+    "direction",
+    "caseFilter",
+    "includeUpdates",
+  ].some((key) => params[key] !== undefined);
+
+export const useCylinderCover = (params = {}) => {
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
   const navigate = useNavigate();
   const { addHistory } = useScanHistory();
   const { userId } = useAuthentication();
+  const shouldFetchList =
+    params.enabled !== false && shouldFetchCylinderList(params);
+  const endpoint = shouldFetchList ? buildCylinderQuery(params) : null;
 
   const {
     data: cylinder,
     error,
     mutate,
-  } = useSWR("/api/cylinder", () =>
-    axiosLib
-      .get("/api/cylinder")
-      .then((res) => res.data)
-      .catch((error) => {
-        console.error(error);
-        if (error.response.status !== 409) throw error;
-      }),
+    isLoading,
+    isValidating,
+  } = useSWR(
+    endpoint,
+    () =>
+      axiosLib
+        .get(endpoint)
+        .then((res) => res.data)
+        .catch((error) => {
+          console.error(error);
+          if (error.response.status !== 409) throw error;
+        }),
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
   );
 
   const checkSerial = async ({
@@ -31,32 +80,35 @@ export const useCylinderCover = () => {
     setModalOpen,
     ...props
   }) => {
-    await csrf();
+    try {
+      const res = await axiosLib.get(`/api/cylinder/${props.eccId}`);
 
-    axiosLib
-      .get(`/api/cylinder/${props.eccId}`)
-      .then((res) => {
-        console.log(res.data);
-        if (res.data.data) {
-          if (+res.data.data.isDisposed === 1) {
-            setAddDisable(true);
-            setMessage("Cylinder is already disposed");
-            setModalOpen(true);
-          } else {
-            navigate("/scanned-result", { replace: true, state: res.data });
-          }
-        } else {
-          setAddDisable(false);
-          setMessage(
-            "The cylinder cover does not exist. Do you want to add it?",
-          );
+      if (res.data.data) {
+        if (+res.data.data.isDisposed === 1) {
+          setAddDisable(true);
+          setMessage("Cylinder is already disposed");
           setModalOpen(true);
+
+          return { exists: true, isDisposed: true, data: res.data.data };
         }
+
+        navigate("/scanned-result", { replace: true, state: res.data });
+        return { exists: true, isDisposed: false, data: res.data.data };
+      }
+
+      setAddDisable(false);
+      setMessage("The cylinder cover does not exist. Do you want to add it?");
+      setModalOpen(true);
+
+      return { exists: false, isDisposed: false, data: null };
+    } catch (error) {
+      if (error.response.status !== 422) throw error;
+      return { exists: false, isDisposed: false, data: null };
+    } finally {
+      if (shouldFetchList) {
         mutate();
-      })
-      .catch((error) => {
-        if (error.response.status !== 422) throw error;
-      });
+      }
+    }
   };
 
   const addCylinder = async (input) => {
@@ -80,7 +132,9 @@ export const useCylinderCover = () => {
 
         addHistory(data2);
         navigate("/scanned-result", { state: res.data });
-        mutate();
+        if (shouldFetchList) {
+          mutate();
+        }
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;
@@ -110,6 +164,8 @@ export const useCylinderCover = () => {
 
   return {
     cylinder,
+    isLoading: shouldFetchList ? isLoading : false,
+    isValidating: shouldFetchList ? isValidating : false,
     checkSerial,
     addCylinder,
     updateCylinder,

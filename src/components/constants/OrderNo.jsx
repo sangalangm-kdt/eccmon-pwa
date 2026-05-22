@@ -6,7 +6,7 @@ import { useOrderNumber } from "../../hooks/orderNumber";
 const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { orderNumber } = useOrderNumber();
+  const { orderNumber, isLoading } = useOrderNumber({ enabled: isModalOpen });
   const orderNumberList = orderNumber?.data || [];
   const { t } = useTranslation();
 
@@ -15,8 +15,6 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
     orderNumberList?.filter((orderNo) =>
       orderNo?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     ) || [];
-
-  console.log(filteredOrderNos);
 
   const handleSelectOrderNo = (orderNo) => {
     setSelectedOrderNo(orderNo);
@@ -73,7 +71,9 @@ const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
 
           {/* Vertical List */}
           <div className="flex-1 overflow-y-auto p-4">
-            {searchTerm ? (
+            {isLoading ? (
+              <p className="text-gray-500 dark:text-gray-100">Loading...</p>
+            ) : searchTerm ? (
               <ul className="space-y-2">
                 {filteredOrderNos.length > 0 ? (
                   filteredOrderNos?.map((orderNo) => (

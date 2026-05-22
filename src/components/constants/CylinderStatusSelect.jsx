@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 // import { useSelector, useDispatch } from "react-redux";
 // import { fetchCylinderStatus } from "../../features/status/statusSlice";
 import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
-import { useCylinderCover } from "../../hooks/cylinderCover";
-import { useLocationProcess } from "../../hooks/locationProcess";
-import { useAuth } from "../auth/AuthContext";
 import { useAuthentication } from "../../hooks/auth";
 import { useLocation } from "../../hooks/location";
 
@@ -18,8 +15,9 @@ export const CylinderStatusSelect = ({
   const { t } = useTranslation();
   const { user } = useAuthentication();
 
-  const { process } = useLocation(user.id) ?? [];
-  console.log(user);
+  const { process } =
+    useLocation(user?.id, { enabled: !!user, includeAffiliation: false }) ??
+    [];
   // Get cylinder status options with labelKey for translation
   const cylinderStatusOptions = [
     ...(process?.flatMap((process, processIdx) => {
@@ -36,13 +34,6 @@ export const CylinderStatusSelect = ({
       };
     }) || []),
   ];
-
-  // Dynamically add "Disposal" at the last index
-  cylinderStatusOptions.push({
-    id: cylinderStatusOptions.length, // Last index dynamically
-    status: "Disposal",
-    labelKey: "disposal",
-  });
 
   const hasOptions = cylinderStatusOptions.length > 0;
 

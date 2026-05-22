@@ -9,13 +9,18 @@ export const useUserRequest = () => {
     data: userRequest,
     error,
     mutate,
-  } = useSWR("/api/user-request", () =>
-    axiosLib
-      .get("/api/user-request")
-      .then((res) => res.data)
-      .catch((error) => {
-        if (error.response.status !== 409) throw error;
-      }),
+  } = useSWR(
+    "/api/user-request",
+    () =>
+      axiosLib
+        .get("/api/user-request")
+        .then((res) => res.data)
+        .catch((error) => {
+          if (error.response.status !== 409) throw error;
+        }),
+    {
+      revalidateOnFocus: false,
+    },
   );
 
   const register = async ({ ...props }) => {
