@@ -162,6 +162,24 @@ export const useCylinderCover = (params = {}) => {
       });
   };
 
+  const deleteCylinder = async (id) => {
+    await csrf();
+
+    return axiosLib
+      .delete(`/api/cylinder/${id}`)
+      .then((res) => {
+        if (shouldFetchList) {
+          mutate();
+        }
+
+        return res.data;
+      })
+      .catch((error) => {
+        if (error.response?.status !== 409) throw error;
+        return null;
+      });
+  };
+
   return {
     cylinder,
     isLoading: shouldFetchList ? isLoading : false,
@@ -169,5 +187,6 @@ export const useCylinderCover = (params = {}) => {
     checkSerial,
     addCylinder,
     updateCylinder,
+    deleteCylinder,
   };
 };

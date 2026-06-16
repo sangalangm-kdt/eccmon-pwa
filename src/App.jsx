@@ -44,6 +44,9 @@ const ChangePass = lazy(
   () => import("./components/pages/_tabs/profile/ChangePass"),
 );
 const Faq = lazy(() => import("./components/pages/_tabs/profile/Faq"));
+const Changelog = lazy(
+  () => import("./components/pages/_tabs/profile/Changelog"),
+);
 const Layout = () => {
   const location = useLocation();
   const hideNavBarPaths = [
@@ -53,6 +56,7 @@ const Layout = () => {
     "/user-guidelines",
     "/faq",
     "/report-bugs",
+    "/changelog",
   ];
   const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
   return (
@@ -98,6 +102,10 @@ function App() {
             {
               path: "/report-bugs",
               element: <ReportBugs />,
+            },
+            {
+              path: "/changelog",
+              element: <Changelog />,
             },
             { path: "/update-info", element: <UpdateInfo /> },
             { path: "/change-password", element: <ChangePass /> },

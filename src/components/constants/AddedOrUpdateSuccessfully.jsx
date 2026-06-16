@@ -9,10 +9,15 @@ import { getStatusColors } from "../utils/statusColors";
 import { useHistory } from "../utils/HistoryContext";
 import { useTranslation } from "react-i18next";
 
-const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
+const AddedOrUpdateSuccessfully = ({
+  data,
+  selectedStatus,
+  action = "update",
+}) => {
   const navigate = useNavigate();
   const { updateHistory } = useHistory();
   const { t } = useTranslation();
+  const isDelete = action === "delete";
 
   const formatDetailValue = (key, value) => {
     if (key === "case") {
@@ -51,7 +56,9 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
   };
 
   const handleGoToHome = () => {
-    updateHistory(data);
+    if (!isDelete) {
+      updateHistory(data);
+    }
     navigate("/");
   };
 
@@ -118,6 +125,18 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
     });
   };
 
+  const renderDeleteData = () => (
+    <div className="space-y-3 text-sm text-gray-700 dark:text-gray-200">
+      <div className="flex justify-between gap-4">
+        <span className="font-medium">{t("qrScanner:label.serialNo")}:</span>
+        <span>{data?.serialNumber ?? "--"}</span>
+      </div>
+      <p className="text-center text-sm">
+        {t("qrScanner:label.deletedWithRelatedUpdates")}
+      </p>
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-80 max-w-md transform rounded-lg bg-white p-4 shadow-lg transition-transform dark:bg-gray-600">
@@ -126,10 +145,12 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
             <IoCheckmarkDone size={32} color="#41c88b" />
           </div>
           <p className="font-medium text-green-500">
-            {t("qrScanner:label.updatedSuccessfully")}
+            {isDelete
+              ? t("qrScanner:label.deletedSuccessfully")
+              : t("qrScanner:label.updatedSuccessfully")}
           </p>
 
-          {selectedStatus && (
+          {selectedStatus && !isDelete && (
             <div
               className={`mt-2 rounded-full p-2 text-sm font-medium ${textColor} ${bgColor}`}
             >
@@ -141,7 +162,9 @@ const AddedOrUpdateSuccessfully = ({ data, selectedStatus }) => {
             <p className="flex items-center justify-center text-sm font-semibold">
               {t("qrScanner:label.details")}
             </p>
-            {data ? (
+            {isDelete ? (
+              renderDeleteData()
+            ) : data ? (
               <ul className="text-sm text-gray-700 dark:text-gray-200">
                 {renderData(data)}
               </ul>

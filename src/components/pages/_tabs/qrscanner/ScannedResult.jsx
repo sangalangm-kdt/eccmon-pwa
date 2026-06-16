@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
 import ScanCodes from "./ScanCodes";
-import SaveButton from "../../../constants/SaveButton";
+import ScannedResultActions from "../../../constants/ScannedResultActions";
 import { CylinderInfo, QrHeader } from "./components";
 import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
+import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import AddedOrUpdateSuccessfully from "../../../constants/AddedOrUpdateSuccessfully";
 import CycleModal from "../../../constants/CycleModal";
+import Loader from "../../../constants/Loader";
 import { t } from "i18next";
+import { useLocation } from "react-router-dom";
+import { useAuthentication } from "../../../../hooks/auth";
 
 const ScannedResult = () => {
   const { addUpdate } = useCylinderUpdate();
+  const { deleteCylinder } = useCylinderCover();
+  const { user } = useAuthentication();
+  const location = useLocation();
+  const cylinderId = location.state?.data?.id;
+  const serialNumber = location.state?.data?.serialNumber ?? "";
+  const isAdmin = user?.is_admin === 1;
 
   const [selectedStatus, setSelectedStatus] = useState("None");
   const [data, setData] = useState({});
@@ -19,6 +29,8 @@ const ScannedResult = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [showAlert, setShowAlert] = useState(false); // Manage alert state
   const [loading, setLoading] = useState(false);
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+  const [removeConfirmation, setRemoveConfirmation] = useState("");
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -98,6 +110,32 @@ const ScannedResult = () => {
     setStep("edit");
   };
 
+  const handleRemoveClick = () => {
+    if (!isAdmin) {
+      return;
+    }
+
+    setRemoveConfirmation("");
+    setRemoveDialogOpen(true);
+  };
+
+  const handleRemoveConfirm = async () => {
+    if (!cylinderId || removeConfirmation !== serialNumber) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await deleteCylinder(cylinderId);
+      setRemoveDialogOpen(false);
+      setModalType("delete");
+      setModalOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     // For "Storage" status, validate serialNumber, cycle, and dateDone
     const isSerialNumberValid = data.serialNumber && data.serialNumber !== "";
@@ -139,7 +177,7 @@ const ScannedResult = () => {
           disabled={step === "review"}
           step={step}
         />
-        <div className="mt-2">
+        <div className="my-4">
           <CylinderInfo
             selectedStatus={selectedStatus}
             setData={setData}
@@ -151,8 +189,10 @@ const ScannedResult = () => {
           />
         </div>
 
-        <SaveButton
-          onClick={handleClick}
+        <ScannedResultActions
+          onPrimaryClick={handleClick}
+          onRemoveClick={handleRemoveClick}
+          showRemoveButton={isAdmin}
           text={
             step === "review"
               ? t("common:saveButton")
@@ -174,18 +214,84 @@ const ScannedResult = () => {
             />
           ) : (
             <AddedOrUpdateSuccessfully
-              data={data}
+              data={modalType === "delete" ? location.state?.data : data}
               selectedStatus={selectedStatus}
-              onClose={() => setModalOpen(false)}
+              action={modalType === "delete" ? "delete" : "update"}
             />
           )
         ) : (
           <AddedOrUpdateSuccessfully
-            data={data}
+            data={modalType === "delete" ? location.state?.data : data}
             selectedStatus={selectedStatus}
-            onClose={() => setModalOpen(false)}
+            action={modalType === "delete" ? "delete" : "update"}
           />
         ))}
+
+      {isAdmin && removeDialogOpen && (
+        <div className="fixed inset-0 z-60 flex items-end justify-center bg-black bg-opacity-50">
+          <div className="w-full rounded-t-lg bg-white p-6 shadow-lg dark:bg-gray-600 dark:text-gray-50">
+            <p className="text-center text-base font-semibold text-red-600 dark:text-red-400">
+              {t("common:removeThisCover")}
+            </p>
+            <p className="mt-3 text-center text-sm text-gray-500 dark:text-gray-200">
+              {t("common:confirmRemoveThisCover")}
+            </p>
+            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-300">
+              <p className="font-semibold">
+                {t("common:removeThisCoverWarningTitle")}
+              </p>
+              <p className="mt-1">{t("common:removeThisCoverWarningBody")}</p>
+            </div>
+            <div className="mt-4">
+              <label className="mb-2 block text-sm font-medium text-primaryText dark:text-gray-100">
+                {t("common:typeSerialToConfirm")}
+              </label>
+              <div className="mb-2 rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold tracking-wide text-primaryText dark:border-gray-500 dark:bg-gray-700 dark:text-gray-50">
+                {serialNumber || "--"}
+              </div>
+              <input
+                type="text"
+                value={removeConfirmation}
+                onChange={(e) => setRemoveConfirmation(e.target.value)}
+                placeholder={t("common:enterSerialNumber")}
+                className="w-full rounded-md border border-gray-300 px-3 py-3 text-sm text-primaryText focus:border-red-500 focus:outline-none dark:border-gray-500 dark:bg-gray-700 dark:text-gray-50"
+                disabled={loading}
+              />
+              {removeConfirmation !== "" &&
+                removeConfirmation !== serialNumber && (
+                  <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                    {t("common:serialNumberDoesNotMatch")}
+                  </p>
+                )}
+            </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setRemoveDialogOpen(false);
+                  setRemoveConfirmation("");
+                }}
+                className="w-full rounded-full bg-gray-200 px-4 py-3 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-gray-400 dark:text-gray-100"
+                disabled={loading}
+              >
+                {t("common:no")}
+              </button>
+              <button
+                type="button"
+                onClick={handleRemoveConfirm}
+                className="w-full rounded-full bg-red-500 px-4 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={
+                  loading ||
+                  !serialNumber ||
+                  removeConfirmation !== serialNumber
+                }
+              >
+                {loading ? <Loader label={t("common:removing")} /> : t("common:yes")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

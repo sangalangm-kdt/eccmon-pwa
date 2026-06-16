@@ -74,6 +74,8 @@
     "operatingHours": "Operating Hours",
     "mountingPosition": "Mounting Position",
     "updatedSuccessfully": "Updated Successfully",
+    "deletedSuccessfully": "Deleted Successfully",
+    "deletedWithRelatedUpdates": "Cylinder cover and related updates deleted successfully.",
     "details": "Details",
     "noDataAvailable": "No Data Available",
     "backToQR": "Back to QR",

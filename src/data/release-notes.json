@@ -1,0 +1,9 @@
+[
+  {
+    "version": "1.0.5",
+    "date": "2026-06-05",
+    "items": [
+      "Admins can now remove a cylinder cover directly from the scan result screen when needed. A confirmation step was added before removing a cover to help prevent accidental deletion."
+    ]
+  }
+]

@@ -75,6 +75,8 @@
     "mountingPosition": "取り付け位置",
     "totalOpHours": "総運転時間",
     "updatedSuccessfully": "正常に更新されました",
+    "deletedSuccessfully": "正常に削除されました",
+    "deletedWithRelatedUpdates": "シリンダーカバーと関連する更新が正常に削除されました。",
     "details": "詳細",
     "noDataAvailable": "利用可能なデータがありません",
     "backToQR": "QRに戻る",

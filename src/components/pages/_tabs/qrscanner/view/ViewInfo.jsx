@@ -45,7 +45,7 @@ const ViewInfo = () => {
   };
 
   useEffect(() => {
-    if (updates?.userId === data?.user.id) {
+    if (updates?.userId === data?.user.userId) {
       setModifiedBy(
         `${data?.user.firstName} ${data?.user.lastName}` || t("unknownUser"),
       );
