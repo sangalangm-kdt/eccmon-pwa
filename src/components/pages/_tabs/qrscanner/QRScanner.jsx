@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import ResultsModal from "./ResultsModal";
 import {
   BrowserMultiFormatReader,
-  BarcodeFormat,
   NotFoundException,
 } from "@zxing/library";
 import { useDispatch } from "react-redux";
@@ -23,6 +22,57 @@ import {
 import { useLocation } from "../../../../hooks/location";
 import { useAuthentication } from "../../../../hooks/auth";
 
+const eccIdPattern = /^[A-Z0-9-]+$/i;
+
+const extractEccId = (qrContent) => {
+  try {
+    const parsed = JSON.parse(qrContent);
+    return parsed?.eccId?.trim() || null;
+  } catch {
+    return qrContent?.trim() || null;
+  }
+};
+
+const isValidEccId = (eccId) => eccIdPattern.test(eccId);
+
+const hasVideoDimensions = (video) =>
+  Boolean(video && video.videoWidth > 0 && video.videoHeight > 0);
+
+const waitForVideoReady = (video) =>
+  new Promise((resolve, reject) => {
+    if (!video) {
+      reject(new Error("missing_video_element"));
+      return;
+    }
+
+    if (hasVideoDimensions(video)) {
+      resolve();
+      return;
+    }
+
+    const handleLoadedMetadata = () => {
+      if (hasVideoDimensions(video)) {
+        cleanup();
+        resolve();
+      }
+    };
+
+    const handleError = () => {
+      cleanup();
+      reject(new Error("video_metadata_error"));
+    };
+
+    const cleanup = () => {
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      video.removeEventListener("canplay", handleLoadedMetadata);
+      video.removeEventListener("error", handleError);
+    };
+
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    video.addEventListener("canplay", handleLoadedMetadata);
+    video.addEventListener("error", handleError);
+  });
+
 const QRScanner = () => {
   const [error, setError] = useState(null);
   const [torchOn, setTorchOn] = useState(false);
@@ -35,16 +85,22 @@ const QRScanner = () => {
   const [isCentered, setIsCentered] = useState(false);
   const [currentCamera, setCurrentCamera] = useState("back"); // Track current camera
   const [cameraSwitched, setCameraSwitched] = useState(false); // Track camera switch state
+  const [isCameraInitializing, setIsCameraInitializing] = useState(false);
+  const [torchSupported, setTorchSupported] = useState(false);
+  const [isCheckingSerial, setIsCheckingSerial] = useState(false);
   const videoRef = useRef(null);
+  const codeReaderRef = useRef(new BrowserMultiFormatReader());
+  const cameraSwitchTimeoutRef = useRef(null);
+  const isCheckingSerialRef = useRef(false);
+  const keepCameraVisibleWhileCheckingRef = useRef(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation("qrScanner", "common");
+  const { t } = useTranslation(["qrScanner", "common"]);
 
   const { user } = useAuthentication();
   const { process } = useLocation(user.id);
-  const { checkSerial, addCylinder } = useCylinderCover();
+  const { checkSerial } = useCylinderCover();
   console.log(user);
-  const codeReader = new BrowserMultiFormatReader();
 
   const isInsideScanBox = (x, y) => {
     const scanBox = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 }; // Adjust as needed
@@ -56,46 +112,71 @@ const QRScanner = () => {
     );
   };
 
-  const handleScanResult = (result, err) => {
+  const handleScanResult = async (result, err) => {
+    const video = videoRef.current;
+
+    if (
+      isCameraInitializing ||
+      isCheckingSerialRef.current ||
+      !willScan ||
+      !hasVideoDimensions(video)
+    ) {
+      return;
+    }
+
     if (result) {
-      try {
-        const jsonData = JSON.parse(result.text);
-        const eccId = jsonData.eccId;
+      const eccId = extractEccId(result.text);
 
-        if (!eccId) {
-          setError("The scanned code does not contain a valid code.");
-          return;
+      if (!eccId) {
+        setError("errors.enterSerialCode");
+        return;
+      }
+
+      if (!isValidEccId(eccId)) {
+        setError("errors.invalidSerialCode");
+        return;
+      }
+
+      // Get barcode position (only if available)
+      if (result.position) {
+        const { x, y } = result.position.topLeft;
+        if (!isInsideScanBox(x, y)) {
+          return; // Ignore if it's outside the scan box
         }
+      }
 
-        // Get barcode position (only if available)
-        if (result.position) {
-          const { x, y } = result.position.topLeft;
-          if (!isInsideScanBox(x, y)) {
-            return; // Ignore if it's outside the scan box
-          }
-        }
+      const track = videoRef.current?.srcObject?.getVideoTracks()[0];
+      if (track) {
+        setScannedData(eccId);
+        codeReaderRef.current.reset();
+      }
 
-        if (!modalOpen) {
-          setWillScan(false);
-          checkSerial({
+      if (!modalOpen) {
+        isCheckingSerialRef.current = true;
+        keepCameraVisibleWhileCheckingRef.current = true;
+        setWillScan(false);
+        setIsCheckingSerial(true);
+        setError(null);
+
+        try {
+          await checkSerial({
             setAddDisable,
             setMessage,
             setModalOpen,
             eccId,
           });
+        } catch (error) {
+          console.error(error);
+          setError("errors.checkSerial");
+          setWillScan(true);
+        } finally {
+          isCheckingSerialRef.current = false;
+          setIsCheckingSerial(false);
         }
-
-        const track = videoRef.current?.srcObject?.getVideoTracks()[0];
-        if (track) {
-          setScannedData(eccId);
-          codeReader.reset();
-        }
-      } catch (e) {
-        setError("Invalid JSON data. Please check the QR code.");
       }
     } else if (err && !(err instanceof NotFoundException)) {
       console.error(err);
-      setError("Error scanning QR code. Please try again.");
+      setError("errors.scan");
     }
   };
 
@@ -111,112 +192,183 @@ const QRScanner = () => {
     return isCenteredHorizontally && isCenteredVertically && isReasonablySized;
   };
 
+  const getCameraDeviceId = async () => {
+    const videoInputDevices =
+      await codeReaderRef.current.listVideoInputDevices();
+
+    const backCamera =
+      videoInputDevices.find((device) =>
+        device.label.toLowerCase().includes("back"),
+      ) || videoInputDevices[0];
+
+    const frontCamera =
+      videoInputDevices.find((device) =>
+        device.label.toLowerCase().includes("front"),
+      ) || videoInputDevices[0];
+
+    console.log("FRONT CAMERA: ", frontCamera);
+    console.log("BACK CAMERA: ", backCamera);
+
+    if (currentCamera === "back" && backCamera) {
+      return backCamera.deviceId;
+    }
+
+    if (currentCamera === "front" && frontCamera) {
+      return frontCamera.deviceId;
+    }
+
+    return videoInputDevices[0]?.deviceId;
+  };
+
+  const startCamera = async (isActive = () => true) => {
+    const video = videoRef.current;
+    if (!video || !navigator.mediaDevices?.getUserMedia) return;
+
+    setIsCameraInitializing(true);
+    setError(null);
+    stopCamera();
+    codeReaderRef.current.reset();
+    setTorchOn(false);
+    setTorchSupported(false);
+
+    try {
+      const selectedDeviceId = await getCameraDeviceId();
+      if (!selectedDeviceId || !videoRef.current || !isActive()) return;
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: { exact: selectedDeviceId },
+        },
+      });
+
+      if (!videoRef.current || !isActive()) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+
+      videoRef.current.srcObject = stream;
+      await waitForVideoReady(videoRef.current);
+      if (!isActive()) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+
+      await videoRef.current.play();
+
+      if (!isActive() || !hasVideoDimensions(videoRef.current)) return;
+
+      const track = videoRef.current?.srcObject?.getVideoTracks?.()[0];
+      const capabilities = track?.getCapabilities?.();
+      setTorchSupported(Boolean(capabilities?.torch));
+
+      codeReaderRef.current.decodeFromVideoElement(
+        videoRef.current,
+        handleScanResult,
+      );
+
+      // Check if area is in the center
+      if (isActive()) {
+        setIsCentered(
+          isAreaInCenter({
+            x: 0.25,
+            y: 0.25,
+            width: 0.5,
+            height: 0.5,
+          }),
+        );
+      }
+    } catch (err) {
+      console.error("Error accessing video devices: ", err);
+      setError("errors.cameraAccess");
+    } finally {
+      if (isActive()) {
+        setIsCameraInitializing(false);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!willScan) {
-      stopCamera();
+      codeReaderRef.current.reset();
+      if (!isCheckingSerial) {
+        stopCamera();
+      }
+      return undefined;
     }
 
-    let selectedDeviceId;
-    if (willScan) {
-      codeReader
-        .listVideoInputDevices()
-        .then((videoInputDevices) => {
-          const backCamera =
-            videoInputDevices.find((device) =>
-              device.label.toLowerCase().includes("back"),
-            ) || videoInputDevices[0];
-
-          const frontCamera =
-            videoInputDevices.find((device) =>
-              device.label.toLowerCase().includes("front"),
-            ) || videoInputDevices[0];
-
-          console.log("FRONT CAMERA: ", frontCamera);
-          console.log("BACK CAMERA: ", backCamera);
-
-          if (currentCamera === "back" && backCamera) {
-            selectedDeviceId = backCamera.deviceId;
-          } else if (currentCamera === "front" && frontCamera) {
-            selectedDeviceId = frontCamera.deviceId;
-          }
-
-          codeReader.decodeFromVideoDevice(
-            selectedDeviceId,
-            videoRef.current,
-            handleScanResult,
-            {
-              area: {
-                x: 0.25,
-                y: 0.25,
-                width: 0.5,
-                height: 0.5,
-              },
-              formats: [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX],
-            },
-          );
-
-          // Check if area is in the center
-          setIsCentered(
-            isAreaInCenter({
-              x: 0.25,
-              y: 0.25,
-              width: 0.5,
-              height: 0.5,
-            }),
-          );
-        })
-        .catch((err) => {
-          console.error("Error accessing video devices: ", err);
-          setError(
-            "Error accessing video devices. Please check your camera permissions.",
-          );
-        });
-    }
+    let isActive = true;
+    startCamera(() => isActive);
 
     return () => {
-      codeReader.reset();
+      isActive = false;
+      codeReaderRef.current.reset();
+      if (keepCameraVisibleWhileCheckingRef.current) {
+        keepCameraVisibleWhileCheckingRef.current = false;
+        return;
+      }
+      stopCamera();
     };
   }, [willScan, currentCamera]);
+
+  useEffect(() => {
+    if (!willScan && !isCheckingSerial) {
+      stopCamera();
+    }
+  }, [willScan, isCheckingSerial]);
+
+  useEffect(() => {
+    return () => {
+      if (cameraSwitchTimeoutRef.current) {
+        clearTimeout(cameraSwitchTimeoutRef.current);
+      }
+      codeReaderRef.current.reset();
+      stopCamera();
+    };
+  }, []);
 
   useEffect(() => {
     dispatch(setPage("qrscanner"));
   }, [dispatch]);
 
   const handleBack = () => {
-    codeReader.reset();
+    codeReaderRef.current.reset();
     setWillScan(false);
     navigate("/");
   };
 
-  const toggleTorch = () => {
-    const track = videoRef.current?.srcObject?.getVideoTracks()[0];
-    if (track) {
-      const capabilities = track.getCapabilities();
-      if (capabilities.torch) {
-        track
-          .applyConstraints({
-            advanced: [{ torch: !torchOn }],
-          })
-          .then(() => {
-            setTorchOn(!torchOn);
-          })
-          .catch((err) => {
-            console.error("Error toggling torch: ", err);
-          });
-      } else {
-        console.error("Torch is not supported on this device.");
-        setError(t("qrScanner:torchNotSupported")); // Add a translation key for this message
-      }
+  const toggleTorch = async () => {
+    if (isCameraInitializing || isCheckingSerial || !torchSupported) return;
+
+    const track = videoRef.current?.srcObject?.getVideoTracks?.()[0];
+    if (!track) return;
+
+    try {
+      await track.applyConstraints({
+        advanced: [{ torch: !torchOn }],
+      });
+      setTorchOn(!torchOn);
+    } catch (err) {
+      console.error("Error toggling torch: ", err);
     }
   };
 
+  const isTorchDisabled =
+    isCameraInitializing || isCheckingSerial || !torchSupported;
+
   const handleSwitchCamera = () => {
+    if (isCameraInitializing || isCheckingSerial) return;
+    stopCamera();
+    codeReaderRef.current.reset();
+
     setCurrentCamera((prevCamera) => {
       const newCamera = prevCamera === "back" ? "front" : "back";
       setCameraSwitched(true);
 
       // Hide the camera switch message after 2 seconds
-      setTimeout(() => {
+      if (cameraSwitchTimeoutRef.current) {
+        clearTimeout(cameraSwitchTimeoutRef.current);
+      }
+      cameraSwitchTimeoutRef.current = setTimeout(() => {
         setCameraSwitched(false);
       }, 2000);
 
@@ -226,7 +378,21 @@ const QRScanner = () => {
 
   const handleConfirm = () => {
     setModalOpen(false);
-    addCylinder(scannedData);
+    keepCameraVisibleWhileCheckingRef.current = false;
+    navigate("/scanned-result", {
+      replace: true,
+      state: {
+        isNewCylinder: true,
+        data: {
+          serialNumber: scannedData,
+          is_disposed: 1,
+          isDisposed: 1,
+          status: "None",
+          cycle: 0,
+          location: "",
+        },
+      },
+    });
   };
 
   const handleClose = () => {
@@ -234,32 +400,38 @@ const QRScanner = () => {
     setModalOpen(false);
   };
 
-  const handleManualAdd = (manualData) => {
-    setWillScan(false);
-    setManualModalOpen(true);
-    setScannedData(manualData);
+  const handleManualAdd = async (manualData) => {
+    if (isCheckingSerialRef.current) return;
 
-    const isExisting = checkSerial({
-      setAddDisable,
-      setMessage,
-      setModalOpen,
-      eccId: manualData,
-    });
-    if (isExisting) {
-      setMessage("This ECC ID already exists.");
-      setModalOpen(false);
-      setAddDisable(true);
-    } else {
-      checkSerial({
+    isCheckingSerialRef.current = true;
+    setWillScan(false);
+    setScannedData(manualData);
+    setIsCheckingSerial(true);
+    setError(null);
+
+    try {
+      await checkSerial({
         setAddDisable,
         setMessage,
         setModalOpen,
         eccId: manualData,
       });
+    } catch (error) {
+      console.error(error);
+      setError("errors.checkSerial");
+      throw error;
+    } finally {
+      isCheckingSerialRef.current = false;
+      setIsCheckingSerial(false);
     }
   };
 
   const stopCamera = () => {
+    const video = videoRef.current;
+    if (!video?.srcObject) {
+      return;
+    }
+
     const tracks = videoRef.current?.srcObject?.getVideoTracks();
     if (tracks) {
       tracks.forEach((track) => {
@@ -269,9 +441,12 @@ const QRScanner = () => {
       });
     }
 
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
+    if (video) {
+      video.srcObject = null;
     }
+
+    setTorchOn(false);
+    setTorchSupported(false);
 
     console.log("Camera stopped");
   };
@@ -291,8 +466,17 @@ const QRScanner = () => {
       <div
         className={`${qrScannerStyles.scannerContainerClass} h-full w-full sm:h-screen sm:w-screen`}
       >
-        {error && <div className={qrScannerStyles.errorClass}>{error}</div>}
-        <video ref={videoRef} className={qrScannerStyles.videoClass} />
+        {error && (
+          <div className={qrScannerStyles.errorClass}>
+            {t(`qrScanner:${error}`)}
+          </div>
+        )}
+        <video
+          ref={videoRef}
+          className={qrScannerStyles.videoClass}
+          playsInline
+          muted
+        />
         <div className={qrScannerStyles.overlayContainerClass}>
           <div className={qrScannerStyles.overlayClass}>
             <div className={qrScannerStyles.overlayTopClass}></div>
@@ -328,9 +512,26 @@ const QRScanner = () => {
           {t("qrScanner:barcodePlaceCode")}
         </div>
 
+        {isCheckingSerial && !manualModalOpen ? (
+          <div
+            className="absolute left-1/2 z-[70] w-72 max-w-[85vw] -translate-x-1/2 xs:top-[15.5rem]"
+            role="status"
+            aria-live="polite"
+          >
+            <p className="text-center text-xs text-white/90">
+              {t("qrScanner:checkingCylinder")}
+            </p>
+            <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-white/25">
+              <div className="h-full w-1/3 rounded-full bg-primary animate-serial-progress" />
+            </div>
+          </div>
+        ) : null}
+
         <button
+          type="button"
           className="absolute right-18 top-8 rounded-full bg-transparent p-2 text-white shadow-md"
           onClick={toggleTorch}
+          disabled={isTorchDisabled}
         >
           {torchOn ? (
             <IoFlashOutline size={24} />
@@ -377,6 +578,7 @@ const QRScanner = () => {
         onClose={() => setManualModalOpen(false)}
         onConfirm={handleManualAdd}
         setWillScan={setWillScan}
+        isLoading={isCheckingSerial}
       />
 
       {/* Camera Switch Modal */}

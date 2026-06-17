@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import axiosLib from "../lib/axios";
 import useSWR from "swr";
+import { mapMessageToErrorKey } from "../components/utils/authErrors";
 
 export const useUserRequest = () => {
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
@@ -25,23 +25,24 @@ export const useUserRequest = () => {
       .post("/api/user-request", props)
       .then((response) => {
         console.log("Request successfully!");
-        return { message: "Request successfully!", isSuccess: true };
+        return {
+          messageKey: "common:authFeedback.requestSuccess",
+          message: response.data?.message,
+          isSuccess: true,
+        };
       })
       .catch((error) => {
         console.log(error);
-        if (error.response?.status === 422) {
-          console.log(error.response.data.message);
-        } else {
-          console.log(error.response.data.message);
-        }
-        const firstKey = Object.keys(error.response.data.errors)[0]; // "user_id"
-        const firstError = error.response.data.errors[firstKey][0].includes(
-          "user id",
-        )
-          ? "The employee number has already been taken."
-          : error.response.data.errors[firstKey][0];
+        const errors = error.response?.data?.errors || {};
+        const firstKey = Object.keys(errors)[0];
+        const firstError = firstKey
+          ? errors[firstKey][0].includes("user id")
+            ? "The employee number has already been taken."
+            : errors[firstKey][0]
+          : error.response?.data?.message || "Request failed.";
         console.log(firstError);
         return {
+          messageKey: mapMessageToErrorKey(firstError, firstKey),
           message: firstError,
           isSuccess: false,
         };

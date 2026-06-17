@@ -1,17 +1,28 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IoReturnUpBackOutline, IoHome, IoClose } from "react-icons/io5"; // Add IoClose for close icon
+import { IoReturnUpBackOutline, IoHome } from "react-icons/io5";
 import { GrPowerCycle } from "react-icons/gr";
+import { useTranslation } from "react-i18next";
+import ResponsiveSheet from "./ResponsiveSheet";
 
-const CycleModal = ({ selectedStatus, data, onClose }) => {
+const CycleModal = ({ selectedStatus, cycle: savedCycle, data, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const cylinderData = location.state?.data;
 
+  const hasSavedCycle =
+    savedCycle !== undefined &&
+    savedCycle !== null &&
+    `${savedCycle}`.trim() !== "";
+  const baseCycle = Number(hasSavedCycle ? savedCycle : data?.cycle) || 1;
+
   const cycle =
-    cylinderData?.status === "Dismounted" && selectedStatus === "Storage"
-      ? +data?.cycle + 1
-      : +data?.cycle;
+    !hasSavedCycle &&
+    cylinderData?.status === "Dismounted" &&
+    selectedStatus === "Storage"
+      ? baseCycle + 1
+      : baseCycle;
 
   const handleBackToQR = () => {
     navigate("/qrscanner");
@@ -22,51 +33,46 @@ const CycleModal = ({ selectedStatus, data, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
-      <div className="relative w-80 max-w-md transform rounded-lg bg-white p-6 shadow-lg transition-all duration-500 dark:bg-gray-600">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute right-2 top-2 text-gray-400 transition hover:text-gray-600"
-        >
-          <IoClose size={20} />
-        </button>
+    <ResponsiveSheet
+      isOpen
+      onClose={onClose}
+      title={t("qrScanner:label.currentCycle")}
+      size="sm"
+      zIndex={50}
+      closeLabel={t("common:close")}
+      bodyClassName="p-4 sm:p-6"
+    >
+      <div className="flex flex-col items-center justify-center">
+        <div className="p-2">
+          <GrPowerCycle size={32} color="#41c88b" />
+        </div>
 
-        {/* Content */}
-        <div className="flex flex-col items-center justify-center">
-          {/* Icon and Title */}
-          <div className="p-2">
-            <GrPowerCycle size={32} color="#41c88b" />
-          </div>
-          <p className="text-lg font-medium text-green-500">Current Cycle</p>
+        <div className="mt-2 w-full rounded-lg bg-gray-100 py-2 text-center shadow-inner dark:bg-gray-700">
+          <p className="text-lg font-bold text-gray-700 dark:text-gray-200">
+            {cycle}
+          </p>
+        </div>
 
-          {/* Cycle Display */}
-          <div className="mt-4 w-full rounded-lg bg-gray-100 py-2 text-center shadow-inner dark:bg-gray-700">
-            <p className="text-lg font-bold text-gray-700 dark:text-gray-200">
-              {cycle}
-            </p>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex w-full flex-row items-center justify-between pt-6 text-sm">
-            <button
-              onClick={handleBackToQR}
-              className="mr-2 flex w-full items-center justify-center rounded-lg bg-gray-100 p-3 text-gray-600 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100"
-            >
-              <IoReturnUpBackOutline size={16} />
-              <p className="ml-2 font-medium">Back to QR</p>
-            </button>
-            <button
-              onClick={handleGoToHome}
-              className="flex w-full justify-center rounded-lg bg-primary p-3 text-white transition hover:bg-cyan-500"
-            >
-              <IoHome size={16} />
-              <p className="ml-2 font-medium">Go to home</p>
-            </button>
-          </div>
+        <div className="flex w-full flex-row items-center justify-between gap-2 pt-6 text-sm">
+          <button
+            type="button"
+            onClick={handleBackToQR}
+            className="flex min-h-[44px] w-full items-center justify-center rounded-lg bg-gray-100 p-3 text-gray-600 transition-all duration-200 active:scale-95 dark:bg-gray-800 dark:text-gray-100"
+          >
+            <IoReturnUpBackOutline size={16} />
+            <p className="ml-2 font-medium">{t("qrScanner:label.backToQR")}</p>
+          </button>
+          <button
+            type="button"
+            onClick={handleGoToHome}
+            className="flex min-h-[44px] w-full items-center justify-center rounded-lg bg-primary p-3 text-white transition-all duration-200 active:scale-95"
+          >
+            <IoHome size={16} />
+            <p className="ml-2 font-medium">{t("qrScanner:label.goToHome")}</p>
+          </button>
         </div>
       </div>
-    </div>
+    </ResponsiveSheet>
   );
 };
 

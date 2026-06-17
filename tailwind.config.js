@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
-  darkMode:'class',
+  darkMode: "class",
   theme: {
     extend: {
       backgroundImage: {
@@ -17,8 +17,8 @@ module.exports = {
         navbar: "#fafafa",
         primaryText: "#333333",
         secondaryText: "#6e7271",
-        inputBorderColor: "rgba(79,79,79,38%)", 
-         cyanToBlue: "linear-gradient(to right, #22d3ee, #3b82f6)",
+        inputBorderColor: "rgba(79,79,79,38%)",
+        cyanToBlue: "linear-gradient(to right, #22d3ee, #3b82f6)",
         cyanToBlueActive: "linear-gradient(to right, #1ca1c9, #2a6edc)",
       },
       spacing: {
@@ -35,10 +35,12 @@ module.exports = {
         md: "0.9375rem",
       },
       screens: {
-        xs: "300px", // Custom breakpoint for extra small screens
+        xs: "300px",
       },
-      borderColor:{cyanToBlue: "linear-gradient(to right, #22d3ee, #3b82f6)",
-        cyanToBlueActive: "linear-gradient(to right, #1ca1c9, #2a6edc)",},
+      borderColor: {
+        cyanToBlue: "linear-gradient(to right, #22d3ee, #3b82f6)",
+        cyanToBlueActive: "linear-gradient(to right, #1ca1c9, #2a6edc)",
+      },
       borderWidth: {
         DEFAULT: "1px",
         0: "0",
@@ -61,18 +63,26 @@ module.exports = {
           "0%": { transform: "translateY(0)", opacity: "1" },
           "100%": { transform: "translateY(100%)", opacity: "0" },
         },
-        // Adding bounce-fast keyframes
         "bounce-fast": {
           "0%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.1)" },
           "100%": { transform: "scale(1)" },
         },
+        "serial-progress": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(200%)" },
+        },
+        responsiveSheetIn: {
+          "0%": { opacity: "0", transform: "scale(0.96)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         slideUp: "slideUp 0.2s ease-out",
         slideDown: "slideDown 0.2s ease-out",
-        // Adding bounce-fast animation
         "bounce-fast": "bounce-fast 0.5s ease-in-out",
+        "serial-progress": "serial-progress 1.2s ease-in-out infinite",
+        "responsive-sheet-in": "responsiveSheetIn 0.2s ease-out",
       },
     },
   },

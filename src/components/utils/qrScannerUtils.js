@@ -39,7 +39,7 @@ export const handleScanResult = (
       const eccId = jsonData.eccId;
 
       if (!eccId) {
-        setError("The scanned code does not contain a valid code.");
+        setError("errors.invalidScannedCode");
         return;
       }
 
@@ -59,11 +59,11 @@ export const handleScanResult = (
         codeReader.reset();
       }
     } catch (e) {
-      setError("Invalid JSON data. Please check the QR code.");
+      setError("errors.invalidQrData");
     }
   } else if (err && !(err instanceof NotFoundException)) {
     console.error(err);
-    setError("Error scanning QR code. Please try again.");
+    setError("errors.scan");
   }
 };
 // Utility function for handling camera switching
@@ -164,9 +164,7 @@ export const startScan = (
       })
       .catch((err) => {
         console.error("Error accessing video devices: ", err);
-        setError(
-          "Error accessing video devices. Please check your camera permissions.",
-        );
+        setError("errors.cameraAccess");
       });
   }
 };

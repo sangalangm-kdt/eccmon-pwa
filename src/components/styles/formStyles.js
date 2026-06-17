@@ -8,5 +8,6 @@ export const inputField = "w-full rounded border px-4 py-2 focus:outline-none fo
 export const labelText = "mb-2 block font-medium text-gray-700";
 export const buttonStyles = "hover:bg-primary-dark w-full rounded bg-cyan-to-blue px-4 py-2 text-white focus:outline-none";
 export const locationInputContainer = "relative flex items-center gap-4";
-export const locationSuggestionsList = "absolute z-40 mt-2 max-h-48 w-full overflow-y-auto rounded-lg border bg-white shadow-lg";
+export const locationSuggestionsList =
+  "ecc-scroll absolute z-40 mt-2 max-h-48 w-full overflow-y-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800";
 export const suggestionItem = "cursor-pointer p-2 hover:bg-gray-200";

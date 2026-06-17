@@ -2,99 +2,416 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .ecc-serial {
+    @apply text-xl font-semibold leading-tight md:text-lg;
+  }
 
+  .ecc-section-title {
+    @apply text-xl font-semibold leading-snug md:text-lg;
+  }
 
-html, body {
-  @apply font-sans;
-  @apply min-h-screen;
-  @apply overflow-x-hidden;
-  @apply overflow-y-visible;
-  @apply select-none;
+  .ecc-touch-input {
+    @apply min-h-[44px];
+  }
+
+  .ecc-touch-btn {
+    @apply min-h-[44px];
+  }
+}
+
+html,
+body {
+  @apply min-h-screen select-none overflow-x-hidden overflow-y-visible font-sans;
 }
 
 .dark body {
-  background-color: #1F2937;
+  background-color: #1f2937;
   color: #edf2f7;
 }
 
-
 .fill-primary {
-  @apply text-primary; /* Use a text color utility or set custom fill color */
+  @apply text-primary;
 }
 
 .active {
-  @apply text-primary; /* Apply Tailwind text-primary for active state */
+  @apply text-primary;
 }
 
 .active .fill-primary {
-  @apply text-primary; /* Apply Tailwind color to fill in active state */
+  @apply text-primary;
 }
 
-/* styles.css */
+.eccmon-datepicker-calendar {
+  @apply w-full max-w-full border-0 bg-transparent font-sans;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__month-container {
+  @apply float-none w-full max-w-full;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__header {
+  @apply border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700;
+  padding-top: 0.75rem;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__current-month,
+.eccmon-datepicker-calendar .react-datepicker__day-name {
+  @apply text-gray-800 dark:text-gray-100;
+  font-size: 14px;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__current-month {
+  @apply px-8 transition-opacity duration-200 ease-out;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__day-names {
+  @apply mb-1 flex justify-around;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__day-name {
+  @apply m-0 inline-flex h-11 w-11 flex-1 max-w-[2.75rem] items-center justify-center;
+  line-height: 1;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__month {
+  @apply m-0 flex flex-col;
+  min-height: 16.5rem;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__week {
+  @apply flex justify-around;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__day {
+  @apply m-0 inline-flex h-11 w-11 flex-1 max-w-[2.75rem] items-center justify-center rounded-full text-base text-gray-800;
+  @apply transition-all duration-200 ease-out;
+  line-height: 1;
+  transform-origin: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.eccmon-datepicker-calendar
+  .react-datepicker__day:active:not(.react-datepicker__day--disabled) {
+  @apply scale-95;
+}
+
+.eccmon-datepicker-calendar
+  .react-datepicker__day:hover:not(.react-datepicker__day--selected):not(
+    .react-datepicker__day--disabled
+  ) {
+  @apply rounded-full bg-cyan-50;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__day--selected,
+.eccmon-datepicker-calendar .react-datepicker__day--keyboard-selected {
+  @apply scale-105 rounded-full bg-primary text-white shadow-md;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__day--outside-month {
+  @apply text-gray-300 dark:text-gray-500;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__day--disabled {
+  @apply cursor-not-allowed opacity-40;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__navigation {
+  @apply top-3 transition-transform duration-200 ease-out;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.eccmon-datepicker-calendar
+  .react-datepicker__navigation:active:not(:disabled) {
+  @apply scale-95;
+}
+
+.eccmon-datepicker-calendar .react-datepicker__navigation-icon::before {
+  @apply border-gray-600 transition-colors duration-200 ease-out dark:border-gray-200;
+}
+
+.eccmon-datepicker-calendar--month-next .react-datepicker__month,
+.eccmon-datepicker-calendar--month-next .react-datepicker__current-month {
+  animation: eccmon-datepicker-month-next 200ms ease-out;
+}
+
+.eccmon-datepicker-calendar--month-prev .react-datepicker__month,
+.eccmon-datepicker-calendar--month-prev .react-datepicker__current-month {
+  animation: eccmon-datepicker-month-prev 200ms ease-out;
+}
+
+@keyframes eccmon-datepicker-month-next {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes eccmon-datepicker-month-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.dark .eccmon-datepicker-calendar .react-datepicker__day {
+  @apply text-gray-100;
+}
+
+.dark
+  .eccmon-datepicker-calendar
+  .react-datepicker__day:hover:not(.react-datepicker__day--selected):not(
+    .react-datepicker__day--disabled
+  ) {
+  @apply bg-gray-600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .max-sm\:animate-slideUp,
+  .sm\:animate-responsive-sheet-in {
+    animation: none !important;
+  }
+
+  .eccmon-datepicker-calendar .react-datepicker__day,
+  .eccmon-datepicker-calendar .react-datepicker__navigation,
+  .eccmon-datepicker-calendar .react-datepicker__current-month {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .eccmon-datepicker-calendar .react-datepicker__day:active:not(
+      .react-datepicker__day--disabled
+    ),
+  .eccmon-datepicker-calendar .react-datepicker__day--selected,
+  .eccmon-datepicker-calendar .react-datepicker__day--keyboard-selected,
+  .eccmon-datepicker-calendar
+    .react-datepicker__navigation:active:not(:disabled) {
+    transform: none !important;
+  }
+
+  .eccmon-datepicker-calendar--month-next .react-datepicker__month,
+  .eccmon-datepicker-calendar--month-prev .react-datepicker__month,
+  .eccmon-datepicker-calendar--month-next .react-datepicker__current-month,
+  .eccmon-datepicker-calendar--month-prev .react-datepicker__current-month {
+    animation: none !important;
+  }
+}
 
 .custom-datepicker-popper .react-datepicker__header {
-  @apply text-xs; /* Smaller text */
-   @apply text-primaryText;
+  @apply text-xs text-primaryText;
 }
 
 .custom-datepicker-popper .react-datepicker__month {
-  @apply text-xs; /* Smaller month text */
+  @apply text-xs;
 }
 
 .custom-datepicker-popper .react-datepicker__day {
-  @apply text-sm; /* Smaller day text */
+  @apply text-sm;
 }
 
 .custom-datepicker-popper .react-datepicker {
-  @apply scale-100; 
-  @apply max-w-full; /* Ensure max-width is 100% */
-  @apply w-auto; /* Set width to auto, allowing it to shrink */
+  @apply w-auto max-w-full scale-100;
   @apply w-[15rem];
 }
 
-
-/* Reset shadow and text-shadow to ensure clean rendering */
 .introjs-button {
-  background-color: #4CAF50 !important;  /* Green background for both buttons */
-  color: white !important;               /* White text color */
-  padding: 10px 20px !important;         /* Custom padding */
-  border-radius: 5px !important;         /* Rounded corners */
-  font-size: 14px !important;            /* Font size */
-  border: none !important;               /* Remove default border */
-  text-shadow: none !important;          /* Remove any text-shadow */
-  box-shadow: none !important;           /* Remove any box-shadow */
+  background-color: #4caf50 !important;
+  color: white !important;
+  padding: 10px 20px !important;
+  border-radius: 5px !important;
+  font-size: 14px !important;
+  border: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .introjs-prevbutton {
-  background-color: #fefefe !important;  /* Light gray background for Back button */
-  color: #333 !important;               /* Dark gray text */
-  border: 2px solid #d3d3d3 !important; /* Light gray border */
-  text-shadow: none !important;          /* Remove text shadow */
-  box-shadow: none !important;           /* Remove box shadow */
-  padding: 10px 20px !important;         /* Padding for the button */
-  font-size: 14px !important;            /* Font size */
-  border-radius: 5px !important;         /* Rounded corners */
+  background-color: #fefefe !important;
+  color: #333 !important;
+  border: 2px solid #d3d3d3 !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  border-radius: 5px !important;
 }
 
 .introjs-nextbutton {
-  background-color: #00bfff !important;  /* Blue background for Next button */
-  color: white !important;               /* White text color */
-  text-shadow: none !important;          /* Remove text shadow */
-  box-shadow: none !important;           /* Remove box shadow */
+  background-color: #00bfff !important;
+  color: white !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
 }
 
-/* Additional customization for the progress bar */
 .introjs-progress {
-  background-color: #cfeeff !important;  /* Tailwind colors or custom colors */
-  height: 6px !important;                /* Change the height */
+  background-color: #cfeeff !important;
+  height: 6px !important;
 }
 
-/* Hide scrollbar but allow scrolling */
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* For Chrome, Safari */
+  display: none;
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+:root {
+  --ecc-scrollbar-track: transparent;
+  --ecc-scrollbar-track-desktop: #f3f4f6;
+  --ecc-scrollbar-thumb: #cbd5e1;
+  --ecc-scrollbar-thumb-hover: #94a3b8;
+  --ecc-scrollbar-thumb-subtle: rgba(203, 213, 225, 0.72);
+}
+
+.dark {
+  --ecc-scrollbar-track-desktop: rgba(31, 41, 55, 0.55);
+  --ecc-scrollbar-thumb: #64748b;
+  --ecc-scrollbar-thumb-hover: #94a3b8;
+  --ecc-scrollbar-thumb-subtle: rgba(100, 116, 139, 0.55);
+}
+
+/* ECCMon scroll utilities — native scrolling on mobile, styled scrollbars on tablet+ */
+.ecc-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .ecc-scroll {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (min-width: 768px) {
+  html,
+  .ecc-scroll,
+  .eccmon-datepicker-calendar,
+  .react-select__menu-list,
+  .custom-datepicker-popper .react-datepicker {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ecc-scrollbar-thumb) var(--ecc-scrollbar-track);
+  }
+
+  html::-webkit-scrollbar,
+  .ecc-scroll::-webkit-scrollbar,
+  .eccmon-datepicker-calendar::-webkit-scrollbar,
+  .react-select__menu-list::-webkit-scrollbar,
+  .custom-datepicker-popper .react-datepicker::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  html::-webkit-scrollbar-track,
+  .ecc-scroll::-webkit-scrollbar-track,
+  .eccmon-datepicker-calendar::-webkit-scrollbar-track,
+  .react-select__menu-list::-webkit-scrollbar-track,
+  .custom-datepicker-popper .react-datepicker::-webkit-scrollbar-track {
+    background: var(--ecc-scrollbar-track);
+  }
+
+  html::-webkit-scrollbar-thumb,
+  .ecc-scroll::-webkit-scrollbar-thumb,
+  .eccmon-datepicker-calendar::-webkit-scrollbar-thumb,
+  .react-select__menu-list::-webkit-scrollbar-thumb,
+  .custom-datepicker-popper .react-datepicker::-webkit-scrollbar-thumb {
+    background: var(--ecc-scrollbar-thumb);
+    border-radius: 999px;
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  .ecc-scroll::-webkit-scrollbar-thumb:hover,
+  .eccmon-datepicker-calendar::-webkit-scrollbar-thumb:hover,
+  .react-select__menu-list::-webkit-scrollbar-thumb:hover,
+  .custom-datepicker-popper .react-datepicker::-webkit-scrollbar-thumb:hover {
+    background: var(--ecc-scrollbar-thumb-hover);
+  }
+}
+
+@media (min-width: 1024px) {
+  html,
+  .ecc-scroll,
+  .eccmon-datepicker-calendar,
+  .react-select__menu-list,
+  .custom-datepicker-popper .react-datepicker {
+    scrollbar-color: var(--ecc-scrollbar-thumb) var(--ecc-scrollbar-track-desktop);
+  }
+
+  html::-webkit-scrollbar,
+  .ecc-scroll::-webkit-scrollbar,
+  .eccmon-datepicker-calendar::-webkit-scrollbar,
+  .react-select__menu-list::-webkit-scrollbar,
+  .custom-datepicker-popper .react-datepicker::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  html::-webkit-scrollbar-track,
+  .ecc-scroll::-webkit-scrollbar-track,
+  .eccmon-datepicker-calendar::-webkit-scrollbar-track,
+  .react-select__menu-list::-webkit-scrollbar-track,
+  .custom-datepicker-popper .react-datepicker::-webkit-scrollbar-track {
+    background: var(--ecc-scrollbar-track-desktop);
+  }
+}
+
+/* History / full-screen lists — lighter thumb, transparent track */
+@media (min-width: 768px) {
+  .ecc-scroll-subtle {
+    scrollbar-color: var(--ecc-scrollbar-thumb-subtle) transparent;
+  }
+
+  .ecc-scroll-subtle::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .ecc-scroll-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .ecc-scroll-subtle::-webkit-scrollbar-thumb {
+    background: var(--ecc-scrollbar-thumb-subtle);
+    border-radius: 999px;
+  }
+
+  .ecc-scroll-subtle::-webkit-scrollbar-thumb:hover {
+    background: var(--ecc-scrollbar-thumb-hover);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ecc-scroll-subtle::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .ecc-scroll-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-serial-progress {
+    animation: none;
+    width: 100%;
+    opacity: 0.65;
+  }
 }

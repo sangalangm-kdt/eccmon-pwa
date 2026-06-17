@@ -1,26 +1,53 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
+import { getDisplayStatus, normalizeScannedCylinder } from "../../../utils/cylinderStatus";
 
-const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
+const ScanCodes = ({
+  selectedStatus,
+  setSelectedStatus,
+  disabled,
+  readOnly,
+  step,
+}) => {
   const { t } = useTranslation();
   const location = useLocation();
-  const cylinderData = location.state?.data;
-  const eccId = cylinderData.serialNumber;
+  const initializedRef = useRef(false);
 
-  // console.log("dattaa", location);
+  const cylinderData = useMemo(
+    () => normalizeScannedCylinder(location.state),
+    [
+      location.state?.data,
+      location.state?.is_disposed,
+      location.state?.isDisposed,
+      location.state?.disposedReadOnly,
+      location.state?.isNewCylinder,
+    ],
+  );
+  const eccId = cylinderData?.serialNumber ?? "";
+
   useEffect(() => {
-    setSelectedStatus(cylinderData.status);
-  }, [cylinderData.status]);
+    if (!cylinderData || initializedRef.current) return;
 
-  // Translate selectedStatus dynamically
-  const translatedStatus = t(`qrScanner:${selectedStatus.toLowerCase()}`);
+    const isNewCylinder = location.state?.isNewCylinder === true;
 
-  const marginTop = step === "review" ? "mt-2" : "mt-28";
+    if (isNewCylinder) {
+      setSelectedStatus("Storage");
+    } else {
+      const displayStatus = getDisplayStatus(cylinderData);
+      setSelectedStatus(
+        displayStatus === "--" ? cylinderData.status || "None" : displayStatus,
+      );
+    }
+
+    initializedRef.current = true;
+  }, [cylinderData, location.state?.isNewCylinder, setSelectedStatus]);
+
+  const marginTop = readOnly || step === "review" ? "mt-2" : "mt-28";
 
   return (
     <div className={`flex flex-col px-4 py-0 ${marginTop}`}>
@@ -45,9 +72,9 @@ const ScanCodes = ({ selectedStatus, setSelectedStatus, disabled, step }) => {
             />
           </div>
           <CylinderStatusSelect
-            selectedStatus={selectedStatus} // Use translated status here
+            selectedStatus={selectedStatus}
             setSelectedStatus={setSelectedStatus}
-            disabled={disabled}
+            disabled={disabled || readOnly}
           />
         </div>
       </div>

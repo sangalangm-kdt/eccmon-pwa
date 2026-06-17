@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import DateField from "../../../../../constants/DateField";
 import MountingPositionSelect from "../../../../../constants/MountingPositionSelect";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,6 @@ const AdditionalInfo = ({
   setCycle,
   disabled,
   showAlert,
-  setShowAlert,
 }) => {
   const { t } = useTranslation("qrScanner");
 
@@ -33,8 +32,8 @@ const AdditionalInfo = ({
           t={t}
         />
         {showAlert && !mountPos && (
-          <p className="text-xs text-red-600">
-            {t("validation.engineNumberRequired")}
+          <p className="text-sm text-red-600 md:text-xs">
+            {t("validation.enginePosRequired")}
           </p>
         )}
       </div>
@@ -45,7 +44,7 @@ const AdditionalInfo = ({
         </label>
         <DateField date={date} setDate={setDate} disabled={disabled} />
         {showAlert && !date && (
-          <p className="text-xs text-red-600">
+          <p className="text-sm text-red-600 md:text-xs">
             {t("validation.completionDateRequired")}
           </p>
         )}

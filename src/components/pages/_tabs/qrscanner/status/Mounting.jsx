@@ -1,25 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+
 import EngineInfo from "./mountAndDismountInfo/EngineInfo";
+
 import AdditionalInfo from "./mountAndDismountInfo/AdditionalInfo";
+
 import { useLocation } from "react-router-dom";
+
 import { formatDate } from "../../../../utils/formatdate";
+
 import { useAuthentication } from "../../../../../hooks/auth";
+
+import { useTranslation } from "react-i18next";
+
+import {
+  getContinueDisabledMessage,
+  getMissingRequiredFieldKeys,
+  validateSelectionField,
+} from "../../../../utils/formFieldValidation";
+
+import {
+  setFormDataIfChanged,
+  setStateIfChanged,
+} from "../../../../utils/syncFormState";
+
+const MOUNT_DATA_KEYS = [
+  "serialNumber",
+  "location",
+  "dateDone",
+  "cycle",
+  "otherDetails",
+];
 
 const Mounting = ({
   selectedStatus,
   setData,
   disabled,
   showAlert,
-  setShowAlert,
+  setIsComplete,
+  setContinueDisabledReason,
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
+  const serialNumber = cylinderData?.serialNumber ?? "";
+  const cylinderStatus = cylinderData?.status;
   const { user } = useAuthentication();
+  const { t } = useTranslation("qrScanner");
 
-  // Store the initial data and prevent changes unless the user modifies it
-  const [initialData, setInitialData] = useState(cylinderData);
-  console.log(initialData);
+  const [initialData] = useState(cylinderData);
   const [site, setSite] = useState(initialData?.location);
+  const [siteOptionsAvailable, setSiteOptionsAvailable] = useState(true);
   const [engineNum, setEngineNum] = useState(
     initialData?.updates?.otherDetails?.engineNumber,
   );
@@ -37,57 +66,92 @@ const Mounting = ({
   });
   const [cycle, setCycle] = useState(initialData?.cycle);
 
+  const siteRequired = user.is_admin === 1;
+  const resolvedSite = useMemo(
+    () =>
+      user.is_admin === 1 ? site || user.affiliation || "None" : user.affiliation,
+    [site, user.affiliation, user.is_admin],
+  );
+
   useEffect(() => {
-    // Update state if selectedStatus matches
-    if (selectedStatus === cylinderData?.status) {
+    if (selectedStatus === cylinderStatus) {
       setSite(cylinderData?.location);
       setEngineNum(cylinderData?.updates?.otherDetails?.engineNumber || "");
       setOpHours(cylinderData?.updates?.otherDetails?.operationHours || "");
       setMountPos(cylinderData?.updates?.otherDetails?.mountingPosition || "");
-      setDate(cylinderData?.updates?.dateDone || new Date());
+      setDate(cylinderData?.updates?.dateDone || formatDate(new Date()));
     } else {
-      // Reset the fields when the status changes
-      setOpHours(""); // Reset operating hours
-
-      setDate(new Date().toISOString().slice(0, 16)); // Reset completion date to current time
+      setSite("");
+      setEngineNum("");
+      setOpHours("");
+      setMountPos("");
+      setDate(formatDate(new Date()));
     }
-  }, [
-    cylinderData?.location,
-    cylinderData?.status,
-    cylinderData?.updates?.dateDone,
-    cylinderData?.updates?.otherDetails?.engineNumber,
-    cylinderData?.updates?.otherDetails?.mountingPosition,
-    cylinderData?.updates?.otherDetails?.operationHours,
-    selectedStatus,
-  ]);
-  useEffect(() => {
-    if (selectedStatus === cylinderData?.status) {
-      setEngineNum(cylinderData?.updates?.otherDetails?.engineNumber);
-      setOpHours(cylinderData?.updates?.otherDetails?.operationHours);
-      setMountPos(cylinderData?.updates?.otherDetails?.mountingPosition);
-      setDate(cylinderData?.updates?.dateDone || new Date());
-    } else {
-      setOpHours(""); // Reset operating hours
-      setDate(formatDate(new Date())); // Reset completion date to current time
-    }
-  }, [selectedStatus, cylinderData]);
-
-  // Update date whenever 'passed' changes
-  useEffect(() => {
-    const today = new Date();
-    setDate(formatDate(today)); // Update date when 'passed' changes
-  }, []);
+  }, [selectedStatus, cylinderStatus]);
 
   useEffect(() => {
-    // Setting data for parent form submission
-    setData({
-      serialNumber: cylinderData?.serialNumber,
-      location: user.is_admin === 1 ? site : user.affiliation,
-      dateDone: date,
-      cycle: cycle,
-      otherDetails: `{"engineNumber" : "${engineNum}", "operationHours" : "${opHours}", "mountingPosition" : "${mountPos}"}`,
+    const siteCheck = validateSelectionField({
+      required: siteRequired,
+      hasOptions: siteOptionsAvailable,
+      value: site === "None" ? "" : site,
+      missingSelectionMessageKey: "validation.siteRequired",
     });
-  }, [engineNum, opHours, mountPos, date, cycle, setData]);
+
+    const engineValid = Boolean(engineNum);
+    const opHoursValid =
+      opHours !== "" && opHours !== null && opHours !== undefined;
+    const mountPosValid = Boolean(mountPos);
+    const dateValid = Boolean(date);
+
+    const fieldEntries = [
+      ["validation.siteRequired", siteCheck.valid],
+      ["validation.engineNumberRequired", engineValid],
+      ["validation.opHoursRequired", opHoursValid],
+      ["validation.enginePosRequired", mountPosValid],
+      ["validation.completionDateRequired", dateValid],
+    ];
+    const missingKeys = getMissingRequiredFieldKeys(fieldEntries);
+    const isFormComplete = missingKeys.length === 0;
+
+    const otherDetails = JSON.stringify({
+      engineNumber: engineNum ?? "",
+      operationHours: opHours ?? "",
+      mountingPosition: mountPos ?? "",
+    });
+
+    setFormDataIfChanged(
+      setData,
+      {
+        serialNumber,
+        location: resolvedSite,
+        dateDone: date,
+        cycle,
+        otherDetails,
+      },
+      MOUNT_DATA_KEYS,
+    );
+
+    setStateIfChanged(setIsComplete, isFormComplete);
+    setContinueDisabledReason?.((prev) => {
+      const next = getContinueDisabledMessage(missingKeys, t);
+      return prev === next ? prev : next;
+    });
+  }, [
+    site,
+    engineNum,
+    opHours,
+    mountPos,
+    date,
+    cycle,
+    resolvedSite,
+    siteRequired,
+    siteOptionsAvailable,
+    serialNumber,
+    setData,
+    setIsComplete,
+    setContinueDisabledReason,
+    t,
+  ]);
 
   return (
     <div className="flex flex-col">
@@ -102,7 +166,9 @@ const Mounting = ({
           setOpHours={setOpHours}
           disabled={disabled}
           showAlert={showAlert}
-          setShowAlert={setShowAlert}
+          siteRequired={siteRequired}
+          siteOptionsAvailable={siteOptionsAvailable}
+          onSiteOptionsAvailabilityChange={setSiteOptionsAvailable}
         />
       </div>
 
@@ -116,7 +182,6 @@ const Mounting = ({
           setCycle={setCycle}
           disabled={disabled}
           showAlert={showAlert}
-          setShowAlert={setShowAlert}
         />
       </div>
     </div>

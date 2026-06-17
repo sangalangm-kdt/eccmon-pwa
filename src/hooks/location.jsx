@@ -2,33 +2,37 @@ import axiosLib from "../lib/axios";
 import useSWR from "swr";
 
 export const useLocation = (userId) => {
-  console.log(userId);
-  const { data: process } = useSWR(
-    `/api/locations/processes?userId=${userId}`,
-    () =>
-      axiosLib
-        .get(`/api/locations/processes?userId=${userId}`)
-        .then((res) => res.data)
-        .catch((error) => {
-          if (error.response.status !== 409) {
-            setErrorMessage("Error fetching user data.");
-          }
-        }),
+  const processKey = userId
+    ? `/api/locations/processes?userId=${userId}`
+    : null;
+
+  const { data: process } = useSWR(processKey, () =>
+    axiosLib
+      .get(`/api/locations/processes?userId=${userId}`)
+      .then((res) => res.data)
+      .catch((error) => {
+        if (error.response?.status !== 409) throw error;
+      }),
   );
 
-  const { data: affiliation } = useSWR("/api/locations", () =>
+  const {
+    data: locations,
+    error: affiliationError,
+    isLoading: isAffiliationLoading,
+  } = useSWR("/api/locations", () =>
     axiosLib
       .get("/api/locations")
       .then((res) => res.data)
       .catch((error) => {
-        if (error.response.status !== 409) {
-          setErrorMessage("Error fetching user data.");
-        }
+        if (error.response?.status !== 409) throw error;
       }),
   );
 
   return {
     process,
-    affiliation,
+    locations,
+    affiliation: locations,
+    affiliationError,
+    isAffiliationLoading,
   };
 };

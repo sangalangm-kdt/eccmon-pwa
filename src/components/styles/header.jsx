@@ -9,17 +9,23 @@ const languagess = {
 
 const navbarStyles = {
   topNavbar: `border-t-2 px-2 py-1 bg-navbar w-full shadow md:top-0 xs:top-0 lg:justify-between float-none dark:border-gray-700 `,
-  navbarContainer: "items-center justify-between p-0",
+  navbarContainer:
+    "mx-auto flex w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8",
   navBarInstall: "lg:right-0",
   navbarLink:
-    "hover:text-primary focus:text-primary text-secondaryText font-semibold p-2 flex flex-col items-center", // Centering text and icons
+    "hover:text-primary focus:text-primary text-secondaryText font-semibold p-2 md:text-base flex flex-col items-center",
   activeLink: "text-primary",
   logo: "w-10 p-1 mr-4 xs:justify-center ",
-  bottomNavbar: `fixed bottom-0 w-full bg-white border flex justify-center items-center rounded-t-xl shadow-md p-2`,
-  bottomNavbarButton: `flex flex-col items-center justify-center px-8 py-2`, // Centering buttons
-  iconContainer: "w-6 h-6 mb-1  focus:fill-primary focus:outline-none",
-  navbarLinkBottom: "text-sm",
-  qrContainer: "border border-none bg-cyan-to-blue rounded-full p-4 shadow-md", // Removed absolute positioning
+  bottomNavbar:
+    "fixed bottom-0 z-50 w-full border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 md:hidden",
+  bottomNavbarInner:
+    "mx-auto flex h-[72px] w-full max-w-6xl items-center justify-around px-4 pb-[env(safe-area-inset-bottom,0px)]",
+  bottomNavbarButton:
+    "flex h-full flex-1 items-center justify-center",
+  bottomNavIcon: "size-6 shrink-0 focus:outline-none",
+  qrContainer:
+    "flex size-16 -mt-5 items-center justify-center rounded-full bg-cyan-to-blue shadow-lg",
+  qrIcon: "size-7 text-white",
 };
 const modal = {
   modalContent: "bg-primary text-white px-2 py-2 rounded mr-0",

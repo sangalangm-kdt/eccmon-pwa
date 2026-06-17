@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
-import { useEffect, useState } from "react";
 import axiosLib from "../lib/axios";
-// import { useNavigate } from "react-router-dom";
+import {
+  AUTH_ERROR_KEYS,
+  normalizeAuthError,
+} from "../components/utils/authErrors";
 
 export const useAuthentication = ({
   middleware,
   redirectIfAuthenticated,
 } = {}) => {
-  // const navigation = useNavigate();
   const [errorMessage, setErrorMessage] = useState(null);
+  const [errorKey, setErrorKey] = useState(null);
 
   const {
     data: user,
@@ -19,146 +21,147 @@ export const useAuthentication = ({
     isLoading,
   } = useSWR(
     "/api/user",
-    () =>
-      axiosLib
-        .get("/api/user")
-        .then((res) => res.data)
-        .catch((error) => {
-          if (error.response.status !== 409) {
-            setErrorMessage("Error fetching user data.");
-          }
+    async () => {
+      try {
+        const response = await axiosLib.get("/api/user");
+        return response.data;
+      } catch (error) {
+        const status = error.response?.status;
+        if (status === 401 || status === 409) {
+          return null;
+        }
 
-          // navigation("/login");
-        }),
+        setErrorKey(AUTH_ERROR_KEYS.server);
+        return null;
+      }
+    },
     {
-      revalidateOnFocus: false, // Prevent unnecessary revalidation
+      revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      shouldRetryOnError: false, // Prevent retries on errors
+      shouldRetryOnError: false,
     },
   );
 
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
 
   const login = async ({ setStatus, setErrors, setLoading, ...props }) => {
-    setLoading(true); // Start loading
-    await csrf();
+    setLoading(true);
     setStatus(null);
+    setErrorMessage(null);
+    setErrorKey(null);
 
-    console.log(props);
     try {
+      await csrf();
       await axiosLib.post("/login", props);
-      mutate(); // Update user data
-      setLoading(false); // Stop loading after successful login
+      await mutate();
     } catch (error) {
-      setLoading(false); // Reset loading on error
+      const status = error.response?.status;
+      const normalizedError = normalizeAuthError(error);
 
-      if (error.response) {
-        if (error.response.status === 422 || error.response.status === 403) {
-          setErrorMessage(error.response.data.error);
-        } else if (error.response.status === 409) {
-          setErrorMessage("User already logged in.");
-        } else {
-          setErrorMessage("An unexpected error occurred.");
-        }
+      if (status === 422 || status === 403) {
+        setErrorKey(normalizedError.general);
+      } else if (status === 409) {
+        setErrorKey(AUTH_ERROR_KEYS.invalidCredentials);
+      } else {
+        setErrorKey(normalizedError.general);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
-    if (!error) {
-      await axiosLib.post("/logout").then(() => mutate());
+    try {
+      if (!error) {
+        await axiosLib.post("/logout");
+        await mutate(null, false);
+      }
+    } catch {
+      await mutate(null, false);
+    } finally {
+      window.location.pathname = "/login";
     }
-
-    window.location.pathname = "login";
   };
 
   const forgotPassword = async ({ email, setLoading }) => {
     setLoading(true);
-    await csrf();
-    console.log("clicked");
-    console.log(email);
+    setErrorMessage(null);
+    setErrorKey(null);
 
-    return axiosLib
-      .post(`/forgot-password?email=${email}`)
-      .then((response) => {
-        setErrorMessage("Password reset link has been sent to your email.");
-        console.log("Password reset link sent to your email!");
-        console.log(response);
-
-        setLoading(false);
-      })
-      .catch((error) => {
-        if (error.response?.status === 422) {
-          console.log("Wrong Password");
-        } else {
-          console.log("An unexpected error occurred.");
-        }
-        setLoading(false);
-      });
+    try {
+      await csrf();
+      const params = new URLSearchParams({ email });
+      await axiosLib.post(`/forgot-password?${params.toString()}`);
+      return { messageKey: "common:authFeedback.passwordResetSent", isSuccess: true };
+    } catch (error) {
+      const normalizedError = normalizeAuthError(error);
+      setErrorKey(normalizedError.general);
+      return { messageKey: normalizedError.general, isSuccess: false };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetPassword = async ({ ...props }) => {
-    await csrf();
-    console.log("clicked", props);
-    return axiosLib
-      .post("/reset-password", props)
-      .then((response) => {
-        console.log("Reset password successfully!");
-        console.log(response);
-      })
-      .catch((error) => {
-        if (error.response?.status === 422) {
-          console.log(error.response.data.message);
-        } else {
-          console.log(error.response.data.message);
-        }
-      });
+    try {
+      await csrf();
+      const response = await axiosLib.post("/reset-password", props);
+      return {
+        messageKey: "common:authFeedback.passwordResetSuccess",
+        message: response.data?.message,
+        isSuccess: true,
+      };
+    } catch (error) {
+      const normalizedError = normalizeAuthError(error);
+      return {
+        messageKey: normalizedError.general || "common:authFeedback.passwordResetError",
+        message: error.response?.data?.message,
+        isSuccess: false,
+      };
+    }
   };
 
   const changePassword = async ({ setLoading, setErrors, ...props }) => {
     setLoading(true);
-    await csrf();
-    console.log("clicked", { id: user.id, ...props });
-    return axiosLib
-      .post("/change-password", { id: user.id, ...props })
-      .then((response) => {
-        console.log("Change password successfully!");
-        console.log(response.data.message);
-        setLoading(false);
-        return { message: response.data.message, isSuccess: true };
-      })
-      .catch((error) => {
-        const errors = {};
-        if (error.response?.status === 422) {
-          console.log(error.response.data.message);
-          errors.updatePassword = error.response.data.message;
-        } else {
-          console.log(error.response.data.message);
-          errors.updatePassword = error.response.data.message;
-        }
-
-        setErrors(errors);
-        console.log(errors);
-        setLoading(false);
-        return { message: error.response.data.message, isSuccess: false };
+    try {
+      await csrf();
+      const response = await axiosLib.post("/change-password", {
+        id: user.id,
+        ...props,
       });
+      return { message: response.data.message, isSuccess: true };
+    } catch (error) {
+      const normalizedError = normalizeAuthError(error);
+      setErrors(normalizedError.fields);
+      return {
+        messageKey:
+          normalizedError.general || "common:authFeedback.changePasswordError",
+        message: error.response?.data?.message,
+        isSuccess: false,
+      };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const userId = user ? user.id : null;
 
   useEffect(() => {
-    if (middleware === "guest" && redirectIfAuthenticated && user)
-      if (middleware === "auth" && error)
-        // navigation(redirectIfAuthenticated);
-
-        logout();
+    if (middleware === "auth" && error) {
+      logout();
+    }
   }, [user, error]);
 
   useEffect(() => {
     if (error) {
-      setErrorMessage("Error fetching user data.");
+      setErrorKey(AUTH_ERROR_KEYS.server);
     }
   }, [error]);
+
+  const clearAuthError = useCallback(() => {
+    setErrorMessage(null);
+    setErrorKey(null);
+  }, []);
 
   return {
     user,
@@ -167,6 +170,8 @@ export const useAuthentication = ({
     logout,
     isLoading,
     errorMessage,
+    errorKey,
+    clearAuthError,
     forgotPassword,
     resetPassword,
     changePassword,

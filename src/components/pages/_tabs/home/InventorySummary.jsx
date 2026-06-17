@@ -13,6 +13,45 @@ import { GoKebabHorizontal } from "react-icons/go";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "../../../../hooks/location";
+import {
+  getDisplayUpdatedAt,
+  getInventoryCategoryStatus,
+  getLatestHistoryRecord,
+  INVENTORY_PROCESS_STAGES,
+  isDisposed,
+  matchesInventoryCategory,
+} from "../../../utils/cylinderStatus";
+
+const formatActivityTimestamp = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") {
+    const normalized = value.replace("T", " ");
+    return normalized.length > 16 ? normalized.slice(0, 16) : normalized;
+  }
+  return String(value);
+};
+
+const formatCountBadge = (count) => (count > 999 ? "999+" : count);
+
+const CountBadge = ({ count }) => {
+  if (count <= 0) return null;
+
+  const label = formatCountBadge(count);
+  const sizeClasses =
+    count > 99
+      ? "h-4 min-w-[1.75rem] px-1 text-[9px] md:min-w-[1.85rem]"
+      : count > 9
+        ? "h-3.5 min-w-4 px-0.5 text-[10px]"
+        : "h-3.5 min-w-3.5 px-0.5 text-tiny";
+
+  return (
+    <span
+      className={`absolute right-0 top-0 z-10 flex -translate-y-1/3 translate-x-1/3 items-center justify-center rounded-full bg-sky-500 font-semibold leading-none text-white md:translate-x-1/4 md:-translate-y-1/4 ${sizeClasses} md:h-4 md:min-w-4 md:px-1 md:text-tiny`}
+    >
+      {label}
+    </span>
+  );
+};
 
 const InventorySummary = ({ userId }) => {
   const { t } = useTranslation("common");
@@ -36,7 +75,19 @@ const InventorySummary = ({ userId }) => {
       filteredCylinderUpdates.some(
         (update) => update.serialNumber === item.serialNumber,
       ),
-    ) ?? [];
+    ).map((item) => {
+      const latestUpdate = getLatestHistoryRecord(
+        item.serialNumber,
+        cylinderUpdates,
+        userId,
+      );
+
+      return {
+        ...item,
+        displayUpdatedAt: getDisplayUpdatedAt(item, latestUpdate),
+        updates: latestUpdate ?? item.updates,
+      };
+    }) ?? [];
 
   const handleSerialNumberClick = (item) => {
     navigate("/view-info", { state: { data: item } });
@@ -50,7 +101,7 @@ const InventorySummary = ({ userId }) => {
     },
     {
       name: t("inventorySummary.process.process"),
-      status: ["disassembly", "grooving", "lmd", "assembly", "finishing"],
+      status: INVENTORY_PROCESS_STAGES,
       icon: <LiaToolsSolid size={22} />,
       subcategories: [
         {
@@ -83,29 +134,20 @@ const InventorySummary = ({ userId }) => {
     },
   ];
 
+  const getMatchingCategoryItems = (status) =>
+    filteredData.filter((item) => matchesInventoryCategory(item, status));
+
+  const getUniqueSerialCount = (items) =>
+    new Set(items.map((item) => item.serialNumber).filter(Boolean)).size;
+
   const categoryCounts = categories.map((category) => {
     const { name, status } = category;
-    const count =
-      filteredData?.filter((item) =>
-        Array.isArray(status)
-          ? status.includes(item.status.toLowerCase())
-          : item.status.toLowerCase() === status,
-      ).length || 0;
+    const count = getUniqueSerialCount(getMatchingCategoryItems(status));
 
     return { name, count };
   });
 
-  const totalSerialNumbers = filteredData
-    ?.map((item) => item.serialNumber)
-    .reduce((acc, serial) => {
-      acc[serial] = (acc[serial] || 0) + 1;
-      return acc;
-    }, {});
-
-  const totalCount = Object.values(totalSerialNumbers || {}).reduce(
-    (acc, count) => acc + count,
-    0,
-  );
+  const totalScanned = getUniqueSerialCount(filteredData);
 
   const getCategoryColor = (category) => {
     switch (category) {
@@ -192,34 +234,40 @@ const InventorySummary = ({ userId }) => {
 
     const categoryData = categories.find((c) => c.name === category);
     const categoryStatus = categoryData?.status || [];
-    const itemStatus = (item) => item.status?.trim().toLowerCase();
+
+    if (categoryStatus === "disposal") {
+      return filteredData.filter((item) => isDisposed(item));
+    }
 
     if (Array.isArray(categoryStatus)) {
       return filteredData.filter((item) =>
-        categoryStatus.includes(itemStatus(item)),
+        matchesInventoryCategory(item, categoryStatus),
       );
     }
 
-    return filteredData.filter(
-      (item) => itemStatus(item) === categoryStatus.toLowerCase(),
+    return filteredData.filter((item) =>
+      matchesInventoryCategory(item, categoryStatus),
     );
   };
 
   const filteredBySubcategory = (subcategory) => {
     return filteredData.filter(
-      (item) => item.status.toLowerCase() === subcategory.status.toLowerCase(),
+      (item) =>
+        !isDisposed(item) &&
+        getInventoryCategoryStatus(item) ===
+          subcategory.status.toLowerCase(),
     );
   };
 
   return (
-    <div className="lg:pt-30 z-10 flex flex-col px-2 xs:pb-1 xs:pt-1">
-      <div className="flex flex-row justify-between p-1">
-        <p className="text-left text-lg font-semibold text-gray-700 dark:text-gray-50">
+    <div className="z-10 flex w-full flex-col">
+      <div className="flex flex-row justify-between py-1 md:px-1">
+        <p className="ecc-section-title text-left text-gray-700 dark:text-gray-50">
           {t("inventorySummary.overview")}
         </p>
         <button
           onClick={() => setIsMenuVisible(!isMenuVisible)}
-          className="rounded-full bg-white p-2 hover:bg-cyan-100 focus:outline-none dark:bg-gray-700"
+          className="rounded-full bg-white p-1.5 hover:bg-cyan-100 focus:outline-none dark:bg-gray-700 md:p-2"
         >
           <GoKebabHorizontal
             className={`text-xl text-gray-500 dark:text-gray-50 ${
@@ -229,17 +277,17 @@ const InventorySummary = ({ userId }) => {
         </button>
       </div>
       <div
-        className="h-full rounded-xl bg-white p-4 shadow dark:bg-gray-700"
+        className="h-full rounded-xl bg-white p-3 shadow dark:bg-gray-700 md:p-4 md:shadow-sm"
         id="inventory-summary"
       >
         <div>
-          <h2 className="text-md text-gray-500 dark:text-gray-50">
+          <h2 className="text-base text-gray-600 dark:text-gray-50 md:text-base">
             {t("inventorySummary.totalCylinderScanned")}
           </h2>
-          <p className="mb-5 border-b-0.5 py-2 text-lg text-gray-500 dark:text-gray-50">
-            {totalCount}
+          <p className="mb-3 py-1 text-3xl font-semibold text-gray-700 dark:text-gray-50 md:mb-5 md:py-2 md:text-xl">
+            {totalScanned}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 xs:flex-nowrap xs:gap-2 sm:flex-nowrap sm:gap-2 md:flex-wrap md:gap-6 lg:flex-wrap lg:gap-8">
+          <div className="grid w-full grid-cols-6 gap-x-2 gap-y-2 md:grid-cols-5 md:gap-4">
             {categoryCounts.map(({ name, count }, index) => {
               const { textColor, bgColor, borderColor } =
                 getCategoryColor(name);
@@ -247,27 +295,22 @@ const InventorySummary = ({ userId }) => {
               return (
                 <div
                   key={name}
-                  className={`relative flex w-full flex-col items-center justify-center gap-2 rounded-lg p-2 text-tiny xs:w-full sm:w-auto md:w-1/5 lg:w-1/5`}
+                  className={`col-span-2 flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg p-0.5 md:col-span-1 md:gap-2 md:p-2 ${
+                    index === 3 ? "col-start-2 md:col-start-auto" : ""
+                  }`}
                 >
-                  {count > 0 && (
+                  <div className="relative inline-flex shrink-0">
                     <div
-                      className={`absolute left-2/3 top-0 flex h-4 w-4 -translate-x-1/2 transform items-center justify-center rounded-full bg-sky-500 text-tiny text-white`}
+                      className={`flex h-9 w-9 items-center justify-center rounded-full ${textColor} ${borderColor} border md:h-12 md:w-12`}
                     >
-                      {count}
+                      <div className="text-sm md:text-lg">{icon}</div>
                     </div>
-                  )}
-                  <div className="flex items-center justify-center">
-                    <div
-                      className={`rounded-full p-2 ${textColor} ${borderColor} border`}
-                    >
-                      <div className="text-lg sm:text-md">{icon}</div>
-                    </div>
+                    <CountBadge count={count} />
                   </div>
-                  {/* Move the text outside of the flex container */}
-                  <div className="flex items-center justify-center p-0 leading-none">
-                    {" "}
+                  <div className="flex w-full items-center justify-center p-0 leading-none">
                     <span
-                      className={`text-center capitalize ${textColor} xs:text-tiny sm:text-tiny`}
+                      className={`line-clamp-2 text-center text-[10px] capitalize leading-tight md:text-xs ${textColor}`}
+                      title={name}
                     >
                       {name}
                     </span>
@@ -298,8 +341,8 @@ const InventorySummary = ({ userId }) => {
                 }
                 className={`${
                   activeCategory === t("inventorySummary.process.all")
-                    ? "bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200"
-                    : "bg-gray-100 text-gray-600 dark:bg-gray-500 dark:text-gray-200"
+                    ? "whitespace-nowrap bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200"
+                    : "whitespace-nowrap bg-gray-100 text-gray-600 dark:bg-gray-500 dark:text-gray-200"
                 } flex items-center justify-center rounded-full px-4 py-2`}
               >
                 {t("inventorySummary.process.all")}
@@ -318,8 +361,8 @@ const InventorySummary = ({ userId }) => {
                       onClick={() => handleCategoryClick(name)}
                       className={`${
                         activeCategory === name
-                          ? "bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200"
-                          : "bg-gray-100 text-gray-600 dark:bg-gray-500 dark:text-gray-200"
+                          ? "whitespace-nowrap bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200"
+                          : "whitespace-nowrap bg-gray-100 text-gray-600 dark:bg-gray-500 dark:text-gray-200"
                       } rounded-full px-4 py-2`}
                     >
                       {categoryButtonText}
@@ -328,7 +371,7 @@ const InventorySummary = ({ userId }) => {
                     {/* Render subcategories for "Process" */}
                     {activeCategory === t("inventorySummary.process.process") &&
                       name === t("inventorySummary.process.process") && (
-                        <div className="-mt-8 ml-18 flex gap-2 rounded-full bg-gray-50 dark:bg-gray-600">
+                        <div className="-mt-8 ml-18 flex gap-2 whitespace-nowrap rounded-full bg-gray-50 dark:bg-gray-600">
                           {subcategories?.map((subcategory) => (
                             <button
                               key={subcategory.name}
@@ -357,6 +400,9 @@ const InventorySummary = ({ userId }) => {
               filteredBySearch(filteredByCategory(activeCategory)).map(
                 (item, index) => {
                   const serials = item.serialNumber;
+                  const displayUpdatedAt = formatActivityTimestamp(
+                    item.displayUpdatedAt,
+                  );
 
                   return (
                     <div key={index} className="mt-2 flex-row">
@@ -364,7 +410,12 @@ const InventorySummary = ({ userId }) => {
                         className="border-b-0.5 p-3 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-50"
                         onClick={() => handleSerialNumberClick(item)}
                       >
-                        {serials}
+                        <span className="block">{serials}</span>
+                        {displayUpdatedAt && (
+                          <span className="block text-xs font-normal text-gray-400 dark:text-gray-300">
+                            {t("updated")}: {displayUpdatedAt}
+                          </span>
+                        )}
                       </h5>
                     </div>
                   );
@@ -381,7 +432,13 @@ const InventorySummary = ({ userId }) => {
                         className="border-b-0.5 p-3 text-sm font-medium text-gray-600 dark:text-gray-50"
                         onClick={() => handleSerialNumberClick(item)}
                       >
-                        {item.serialNumber}
+                        <span className="block">{item.serialNumber}</span>
+                        {item.displayUpdatedAt && (
+                          <span className="block text-xs font-normal text-gray-400 dark:text-gray-300">
+                            {t("updated")}:{" "}
+                            {formatActivityTimestamp(item.displayUpdatedAt)}
+                          </span>
+                        )}
                       </h5>
                     </div>
                   );

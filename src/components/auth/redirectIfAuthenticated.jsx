@@ -1,10 +1,13 @@
-/* eslint-disable no-unused-vars */
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import Preloader from "../constants/preloader/Preloader";
 
 const RedirectIfAuthenticated = ({ children }) => {
-  // const { isAuthenticated } = useAuth();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Preloader />;
+  }
 
   return user ? <Navigate to="/" /> : children;
 };

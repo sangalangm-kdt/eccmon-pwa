@@ -1,81 +1,139 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { TextInput } from "../../constants/TextInput";
+import GuestAppChrome from "../../constants/GuestAppChrome";
 import { useAuthentication } from "../../../hooks/auth";
+import { getValidationErrorKey } from "../../utils/authErrors";
+
+const primaryButtonClassName =
+  "ecc-touch-btn flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-cyan-to-blue px-4 py-3 text-base font-semibold text-white transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState("");
-  const navigate = useNavigate();
+  const [messageKey, setMessageKey] = useState("");
+  const [errorKey, setErrorKey] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const { t, i18n } = useTranslation(["common", "login"]);
 
   const { forgotPassword } = useAuthentication({
     middleware: "guest",
     redirectIfAuthenticated: "/",
   });
 
+  useEffect(() => {
+    setMessageKey("");
+    setErrorKey("");
+    setFieldErrors({});
+  }, [location.pathname, i18n.language]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    forgotPassword({ email, setLoading });
+    setMessageKey("");
+    setErrorKey("");
+    setFieldErrors({});
+
+    const emailError = getValidationErrorKey("email", email);
+    if (emailError) {
+      setFieldErrors({ email: emailError });
+      return;
+    }
+
+    const result = await forgotPassword({ email, setLoading });
+    if (result?.isSuccess) {
+      setMessageKey(result.messageKey);
+    } else {
+      setErrorKey(result?.messageKey || "common:authErrors.server");
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setMessageKey("");
+    setErrorKey("");
+    setFieldErrors((prevErrors) => {
+      const nextErrors = { ...prevErrors };
+      delete nextErrors.email;
+      return nextErrors;
+    });
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary dark:bg-gray-700">
-      <div className="w-96 rounded-lg bg-white p-8 text-center shadow-md dark:bg-gray-800">
-        <h1 className="mb-4 text-xl font-bold text-gray-700 dark:text-gray-50">
-          Forgot password?
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-100">
-            You can reset your password here.
-          </p>
-          <div>
-            {" "}
-            <label className="block text-left text-sm text-gray-600 dark:text-gray-100">
-              Email address:
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="you@global.kawasaki.com"
-              className="w-full rounded border border-gray-300 p-2 text-sm focus:outline-cyan-400 dark:bg-gray-700"
-            />
+    <GuestAppChrome>
+      <div className="w-full max-w-[30rem]">
+        <div className="border-none bg-transparent p-0 shadow-none md:rounded-2xl md:border md:border-gray-200/90 md:bg-white/95 md:p-8 md:shadow-xl md:shadow-gray-300/25 md:backdrop-blur-sm dark:md:border-gray-600/80 dark:md:bg-gray-800/95 dark:md:shadow-black/30">
+          <div className="mb-4 text-center md:mb-5">
+            <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50 md:text-2xl">
+              {t("authFeedback.forgotPasswordTitle")}
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              {t("authFeedback.forgotPasswordDescription")}
+            </p>
           </div>
-          <button
-            type="submit"
-            className={`${loading ? "pointer-events-none opacity-50" : ""} w-full rounded bg-cyan-to-blue p-2 text-white hover:bg-blue-600`}
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <svg
-                  aria-hidden="true"
-                  className="h-4 w-4 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
-                  viewBox="0 0 100 101"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                    fill="currentFill"
-                  />
-                </svg>
-                <span className="ms-2">Reset password</span>
+
+          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+            {errorKey ? (
+              <div
+                className="rounded-xl bg-red-50 px-3 py-2.5 text-center text-sm font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300 md:border md:border-red-200 md:px-4 md:py-3 dark:md:border-red-900/50"
+                role="alert"
+              >
+                {t(errorKey)}
               </div>
-            ) : (
-              <span>Reset password</span>
-            )}
-          </button>
-        </form>
-        {message && <p className="mt-4 text-green-500">{message}</p>}
+            ) : null}
+
+            {messageKey ? (
+              <div
+                className="rounded-xl bg-green-50 px-3 py-2.5 text-center text-sm font-medium text-green-700 dark:bg-green-950/40 dark:text-green-300 md:border md:border-green-200 md:px-4 md:py-3 dark:md:border-green-900/50"
+                role="status"
+              >
+                {t(messageKey)}
+              </div>
+            ) : null}
+
+            <TextInput
+              variant="auth"
+              label={t("authFeedback.emailAddress")}
+              type="email"
+              name="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder={t("reqAcc.enterEmail")}
+              error={fieldErrors.email ? t(fieldErrors.email) : ""}
+            />
+
+            <button
+              type="submit"
+              className={primaryButtonClassName}
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                  <span>{t("authFeedback.sendingResetLink")}</span>
+                </span>
+              ) : (
+                t("authFeedback.sendResetLink")
+              )}
+            </button>
+          </form>
+
+          <p className="mt-5 text-center text-sm text-gray-600 dark:text-gray-300">
+            <Link
+              to="/login"
+              className="font-semibold text-primary hover:underline"
+            >
+              {t("authFeedback.backToSignIn")}
+            </Link>
+          </p>
+        </div>
+
+        <p className="mt-4 text-center text-[11px] leading-relaxed text-gray-400 dark:text-gray-500 sm:mt-5">
+          {t("login:kawasakiCopyright")}
+        </p>
       </div>
-    </div>
+    </GuestAppChrome>
   );
 };
 

@@ -1,22 +1,32 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import GuestAppChrome from "../GuestAppChrome";
 import "./preloader.scss";
 import LogoPreloader from "./logo.svg";
 
-// The Preloader now relies on a prop to control visibility
-const Preloader = ({ isLoading }) => {
+const Preloader = () => {
+  const { t } = useTranslation("common");
+
   return (
-    <div
-      className={`h-screen w-full flex flex-row items-center justify-center m-0 p-0`}
-    >
-      <div className="container-logo">
-        <div className="📦">
-          <img src={LogoPreloader} className="logo-preloader" alt="logo" />
+    <GuestAppChrome>
+      <div className="flex flex-col items-center gap-5 sm:gap-6">
+        <div className="container-logo">
+          <div className="📦">
+            <img src={LogoPreloader} className="logo-preloader" alt="" />
+          </div>
+          {[...Array(5)].map((_, index) => (
+            <div className="📦" key={index} />
+          ))}
         </div>
-        {[...Array(5)].map((_, index) => (
-          <div className="📦" key={index}></div>
-        ))}
+        <p
+          className="text-sm font-medium text-gray-600 dark:text-gray-300"
+          role="status"
+          aria-live="polite"
+        >
+          {t("loading")}
+        </p>
       </div>
-    </div>
+    </GuestAppChrome>
   );
 };
 

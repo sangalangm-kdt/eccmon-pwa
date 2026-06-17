@@ -1,8 +1,129 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { IoClose } from "react-icons/io5";
 import { modal } from "../styles/header";
 
-const InstallationButton = () => {
+const PwaInstallModal = ({
+  isOpen,
+  onClose,
+  isSafari,
+  canNativeInstall,
+  onInstall,
+}) => {
+  const { t } = useTranslation("common");
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const showInstallAction = canNativeInstall || isSafari;
+  const installLabel = isSafari
+    ? t("pwaInstall.addToHomeScreen")
+    : t("pwaInstall.install");
+
+  const handleInstallClick = () => {
+    if (canNativeInstall) {
+      onInstall();
+      return;
+    }
+
+    if (isSafari) {
+      onClose();
+    }
+  };
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6"
+      role="presentation"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/55"
+        onClick={onClose}
+        aria-label={t("close")}
+        tabIndex={-1}
+      />
+
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pwa-install-title"
+        className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="ecc-touch-btn absolute right-3 top-3 flex size-9 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+          aria-label={t("close")}
+        >
+          <IoClose size={22} aria-hidden="true" />
+        </button>
+
+        <h2
+          id="pwa-install-title"
+          className="pr-10 text-lg font-bold text-gray-900 dark:text-gray-50"
+        >
+          {t("pwaInstall.title")}
+        </h2>
+
+        <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+          {t("pwaInstall.message")}
+        </p>
+
+        {isSafari ? (
+          <p className="mt-4 whitespace-pre-line rounded-xl bg-gray-50 px-4 py-3 text-sm leading-relaxed text-gray-700 dark:bg-gray-900/50 dark:text-gray-200">
+            {t("installAppSafariInstructions")}
+          </p>
+        ) : null}
+
+        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="ecc-touch-btn min-h-[44px] rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
+          >
+            {t("close")}
+          </button>
+
+          {showInstallAction ? (
+            <button
+              type="button"
+              onClick={handleInstallClick}
+              className="ecc-touch-btn min-h-[44px] rounded-xl bg-cyan-to-blue px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-105 active:scale-[0.99]"
+            >
+              {installLabel}
+            </button>
+          ) : null}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+};
+
+const InstallationButton = ({ buttonClassName }) => {
   const { t } = useTranslation("common");
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -19,36 +140,26 @@ const InstallationButton = () => {
 
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
-      console.log("beforeinstallprompt event fired:", e);
 
-      // Ensure the event has a prompt function
       if (e && typeof e.prompt === "function") {
         setDeferredPrompt(e);
-        sessionStorage.setItem("deferredPrompt", true); // Save state
-      } else {
-        console.error(
-          "beforeinstallprompt event is invalid or missing prompt method",
-        );
+        sessionStorage.setItem("deferredPrompt", true);
       }
     };
 
     const handleAppInstalled = () => {
-      // console.log("App installed");
       setIsInstalled(true);
-      sessionStorage.removeItem("deferredPrompt"); // Clear state
+      sessionStorage.removeItem("deferredPrompt");
+      setShowModal(false);
     };
 
     const userAgent = window.navigator.userAgent.toLowerCase();
     if (userAgent.includes("safari") && !userAgent.includes("chrome")) {
       setIsSafari(true);
-      // console.log("Safari browser detected");
     }
 
-    // Add event listeners
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
-
-    // Check standalone mode
     checkStandaloneMode();
 
     return () => {
@@ -60,94 +171,51 @@ const InstallationButton = () => {
     };
   }, []);
 
-  const handleInstallClick = () => {
-    if (deferredPrompt && typeof deferredPrompt.prompt === "function") {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === "accepted") {
-          // console.log("PWA installation accepted");
-          sessionStorage.removeItem("deferredPrompt");
-        } else {
-          // console.log("PWA installation dismissed");
-        }
-        setDeferredPrompt(null);
-      });
-    } else {
-      console.error("No valid deferredPrompt available");
-    }
-  };
-
-  const handleSafariInstallClick = () => {
-    setShowModal(true);
-    // console.log("Safari install button clicked");
-  };
-
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setShowModal(false);
-    // console.log("Modal closed");
-  };
+  }, []);
 
-  const handleModalClick = (e) => {
-    if (e.target === e.currentTarget) {
-      closeModal();
+  const handleNativeInstall = useCallback(() => {
+    if (!deferredPrompt || typeof deferredPrompt.prompt !== "function") {
+      return;
     }
-  };
 
-  // // Debugging outputs
-  // console.log("Deferred Prompt:", deferredPrompt);
-  // console.log("isInstalled:", isInstalled);
-  // console.log("isStandalone:", isStandalone);
-  // console.log("isSafari:", isSafari);
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === "accepted") {
+        sessionStorage.removeItem("deferredPrompt");
+      }
+      setDeferredPrompt(null);
+      closeModal();
+    });
+  }, [deferredPrompt, closeModal]);
 
-  // Return nothing if the app is already installed or running in standalone mode
   if (isInstalled || isStandalone) return null;
 
   return (
-    <div>
-      {/* Safari-specific modal for installation instructions */}
-      {isSafari && (
-        <>
-          <button
-            onClick={handleSafariInstallClick}
-            className={`${modal.modalContent}`}
-            aria-label={t("installApp")}
-          >
-            {t("installApp")}
-          </button>
-          {showModal && (
-            <div
-              className={`${modal.modalBackground}`}
-              onClick={handleModalClick}
-            >
-              <div className={`${modal.modalContainer} dark:bg-gray-500`}>
-                <span
-                  className={`${modal.exitButton} dark:text-gray-50`}
-                  onClick={closeModal}
-                >
-                  ×
-                </span>
-                <p className="text-lg font-bold">{t("installAppSafari")}</p>
-                <p className="ml-2 mt-5 whitespace-pre-line text-sm">
-                  {t("installAppSafariInstructions")}
-                </p>
-              </div>
-            </div>
-          )}
-        </>
-      )}
+    <>
+      <button
+        type="button"
+        onClick={() => setShowModal(true)}
+        className={buttonClassName ?? modal.modalContent}
+        aria-label={t("pwaInstall.title")}
+      >
+        {t("installApp")}
+      </button>
 
-      {/* Non-Safari browsers (e.g., Chrome, Edge) */}
-      {!isSafari && deferredPrompt && (
-        <button
-          onClick={handleInstallClick}
-          className={`${modal.modalContent}`}
-          aria-label={t("installApp")}
-        >
-          {t("installApp")}
-        </button>
-      )}
-    </div>
+      <PwaInstallModal
+        isOpen={showModal}
+        onClose={closeModal}
+        isSafari={isSafari}
+        canNativeInstall={Boolean(deferredPrompt)}
+        onInstall={handleNativeInstall}
+      />
+    </>
   );
+};
+
+InstallationButton.propTypes = {
+  buttonClassName: PropTypes.string,
 };
 
 export default InstallationButton;

@@ -6,8 +6,7 @@ import { useTranslation } from "react-i18next";
 
 const UpdateInfo = () => {
   const navigate = useNavigate();
-  const {} = useAuthentication();
-  const { t } = useTranslation("information");
+  const { t } = useTranslation(["information", "common"]);
   const { user } = useAuthentication();
 
   const [formData, setFormData] = useState({
@@ -32,7 +31,9 @@ const UpdateInfo = () => {
           className="flex items-center justify-center gap-1 rounded-full p-2"
         >
           <IoArrowBack className="text-gray-700 dark:text-gray-100" />
-          <p className="text-sm text-gray-700 dark:text-gray-100">Back</p>
+          <p className="text-sm text-gray-700 dark:text-gray-100">
+            {t("common:back")}
+          </p>
         </button>
         <h1 className="flex-1 text-center text-sm font-medium text-gray-700 dark:text-gray-100 xs:mr-14">
           {t("information")}

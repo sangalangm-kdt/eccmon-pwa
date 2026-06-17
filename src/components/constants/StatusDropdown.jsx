@@ -7,37 +7,38 @@ import {
 } from "../utils/selectUtils";
 
 const StatusDropdown = ({
-  options = [], // Original options containing the actual values
+  options = [],
   selectedStatus,
   setSelectedStatus,
   disabled,
 }) => {
   const { t } = useTranslation();
+  const isDarkMode = document.documentElement.classList.contains("dark");
 
   if (options.length === 0) {
     return (
-      <select id="status-select" disabled>
+      <select
+        id="status-select"
+        disabled
+        className="w-full rounded border bg-gray-100 px-2 py-2.5 text-base text-gray-500 dark:bg-gray-600 dark:text-gray-300 md:min-h-0 md:text-sm"
+      >
         <option value="">{t("qrScanner:noOptionsAvailable")}</option>
       </select>
     );
   }
-  const isDarkMode = document.documentElement.classList.contains("dark");
 
-  // Use the `t` function from `useTranslation` and pass it to the utility function
-  const statusOptions = transformStatusOptions(options, t); // Now passing `t`
+  const statusOptions = transformStatusOptions(options, t);
 
-  // Get the translated label for display purposes and convert to lowercase
   const translatedSelectedStatus = t(
     `qrScanner:${selectedStatus}`,
   ).toLowerCase();
 
-  // Function to highlight matching text in options
   const getOptionLabel = (option, inputValue) => {
     if (!inputValue) {
-      return option.label; // If no input, just return the label
+      return option.label;
     }
 
-    const regex = new RegExp(`(${inputValue})`, "gi"); // Case-insensitive match
+    const regex = new RegExp(`(${inputValue})`, "gi");
     const parts = option.label.split(regex);
 
     return (
@@ -55,21 +56,18 @@ const StatusDropdown = ({
   };
 
   return (
-    <div className="">
-      <Select
-        options={statusOptions} // Using the transformed and translated options
-        value={statusOptions.find(
-          (option) => option.value === selectedStatus, // Use raw value for comparison
-        )}
-        onChange={(selectedOption) => setSelectedStatus(selectedOption.value)} // Keep raw value for saving
-        styles={customSelectStyles(isDarkMode)}
-        placeholder={t("qrScanner:selectAStatus")}
-        isDisabled={disabled}
-        getOptionLabel={(option) =>
-          getOptionLabel(option, translatedSelectedStatus)
-        }
-      />
-    </div>
+    <Select
+      options={statusOptions}
+      value={statusOptions.find((option) => option.value === selectedStatus)}
+      onChange={(selectedOption) => setSelectedStatus(selectedOption.value)}
+      styles={customSelectStyles(isDarkMode)}
+      placeholder={t("qrScanner:selectAStatus")}
+      isDisabled={disabled}
+      noOptionsMessage={() => t("qrScanner:noOptionsAvailable")}
+      getOptionLabel={(option) =>
+        getOptionLabel(option, translatedSelectedStatus)
+      }
+    />
   );
 };
 

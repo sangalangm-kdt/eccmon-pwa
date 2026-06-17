@@ -1,58 +1,68 @@
 import React from "react";
 import {
-  IoClose,
   IoCheckmarkCircleOutline,
   IoAlertCircleOutline,
 } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import ResponsiveSheet from "./ResponsiveSheet";
 
-const ChangePasswordRequestModal = ({ result, onClose, message }) => {
-  if (!result) return null;
+const ChangePasswordRequestModal = ({
+  result,
+  onClose,
+  message,
+  messageKey,
+}) => {
+  const { t } = useTranslation("common");
+
+  const displayMessage = messageKey ? t(messageKey) : message;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-          >
-            <IoClose size={24} />
-          </button>
-        </div>
-
-        <div className="flex flex-col items-center">
-          {result === "success" ? (
-            <IoCheckmarkCircleOutline size={50} className="text-green-500" />
-          ) : (
-            <IoAlertCircleOutline size={50} className="text-red-500" />
-          )}
-          <h2 className="mt-2 text-xl font-semibold text-gray-700 dark:text-white">
-            {result === "success" ? "Successfully Changed!" : "Error Occurred"}
-          </h2>
-          <p className="mt-1 text-center text-gray-600 dark:text-gray-300">
-            {message}
-          </p>
-        </div>
-
-        <div className="mt-4 flex justify-center">
-          {result === "success" ? (
-            <Link to="/login">
-              <button className="rounded bg-cyan-to-blue px-4 py-2 text-white hover:bg-cyan-600 dark:bg-cyan-700 dark:hover:bg-cyan-600">
-                Go to Login
-              </button>
-            </Link>
-          ) : (
-            <button
-              onClick={onClose}
-              className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600"
-            >
-              Close
-            </button>
-          )}
-        </div>
+    <ResponsiveSheet
+      isOpen={Boolean(result)}
+      onClose={onClose}
+      title={
+        result === "success"
+          ? t("authFeedback.successfullyChanged")
+          : t("authFeedback.requestError")
+      }
+      size="sm"
+      zIndex={50}
+      closeLabel={t("close")}
+      bodyClassName="p-4 sm:p-6"
+    >
+      <div className="flex flex-col items-center">
+        {result === "success" ? (
+          <IoCheckmarkCircleOutline size={50} className="text-green-500" />
+        ) : (
+          <IoAlertCircleOutline size={50} className="text-red-500" />
+        )}
+        <p className="mt-2 text-center text-gray-600 dark:text-gray-300">
+          {displayMessage}
+        </p>
       </div>
-    </div>
+
+      <div className="mt-4 flex justify-center">
+        {result === "success" ? (
+          <Link to="/login">
+            <button
+              type="button"
+              className="min-h-[44px] rounded bg-cyan-to-blue px-4 py-2 text-white transition-all duration-200 active:scale-95 dark:bg-cyan-700"
+            >
+              {t("authFeedback.goToLogin")}
+            </button>
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={onClose}
+            className="min-h-[44px] rounded bg-red-500 px-4 py-2 text-white transition-all duration-200 active:scale-95 dark:bg-red-700"
+          >
+            {t("close")}
+          </button>
+        )}
+      </div>
+    </ResponsiveSheet>
   );
 };
 

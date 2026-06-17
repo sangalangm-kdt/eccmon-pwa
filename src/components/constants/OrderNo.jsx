@@ -1,109 +1,142 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import { useLocationProcess } from "../../hooks/locationProcess";
 import { useTranslation } from "react-i18next";
+import OptionBottomSheet from "./OptionBottomSheet";
+import { getOrderNoValue, hasFieldValue } from "../utils/formFieldValidation";
 
-const OrderNo = ({ selectedOrderNo, setSelectedOrderNo, disabled }) => {
+const OrderNo = ({
+  selectedOrderNo,
+  setSelectedOrderNo,
+  disabled,
+  required = true,
+  onOptionsAvailabilityChange,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const orderNumber = useLocationProcess("order-number").data?.data;
-  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const { data, isLoading } = useLocationProcess("order-number");
+  const orderNumber = data?.data ?? [];
+  const { t } = useTranslation("qrScanner");
+  const hasOptions = orderNumber.length > 0;
+  const isRequired = required && hasOptions;
 
-  // Filter order numbers based on search term
-  const filteredOrderNos =
-    orderNumber?.filter((orderNo) =>
-      orderNo?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-    ) || [];
+  useEffect(() => {
+    onOptionsAvailabilityChange?.(hasOptions);
+  }, [hasOptions, onOptionsAvailabilityChange]);
 
-  console.log(filteredOrderNos);
+  const selectedValue = hasFieldValue(selectedOrderNo) ? `${selectedOrderNo}`.trim() : "";
+
+  const filteredOrderNos = useMemo(() => {
+    if (!searchTerm.trim()) return orderNumber;
+    const query = searchTerm.trim().toLowerCase();
+    return orderNumber.filter((orderNo) =>
+      getOrderNoValue(orderNo).toLowerCase().includes(query),
+    );
+  }, [orderNumber, searchTerm]);
+
+  const handleOpen = () => {
+    if (disabled || isLoading || !hasOptions) return;
+    setSearchTerm("");
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setSearchTerm("");
+  };
 
   const handleSelectOrderNo = (orderNo) => {
-    setSelectedOrderNo(orderNo);
-    setSearchTerm("");
-    setIsModalOpen(false);
+    setSelectedOrderNo(getOrderNoValue(orderNo));
+    handleClose();
   };
+
+  const isSelected = (orderNo) => getOrderNoValue(orderNo) === selectedValue;
 
   return (
     <div className="mt-2 flex w-full flex-col text-sm text-primaryText">
-      <div className="relative w-full">
-        <label className="font-semibold">
-          {t("qrScanner:orderNo")} <strong className="text-red-500">*</strong>
-        </label>
-        <input
-          className="w-full rounded border px-2 py-2 text-gray-600 dark:bg-gray-600 dark:text-gray-100"
-          type="text"
-          placeholder={t("qrScanner:selectAnOrderNumber")}
-          value={selectedOrderNo}
-          readOnly
-          onClick={() => setIsModalOpen(true)}
-          disabled={disabled}
-        />
-        <button
-          className="absolute right-2 top-1/2 mt-3 -translate-y-1/2 transform"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <FaChevronRight className="text-primaryText dark:text-gray-50" />
-        </button>
-      </div>
+      <label className="font-semibold text-primaryText dark:text-gray-100">
+        {t("orderNo")}
+        {isRequired && <strong className="text-red-500"> *</strong>}
+      </label>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-700">
-          {/* Modal Header */}
-          <div className="flex items-center justify-between border-b p-4">
-            <button
-              className="text-gray-500 dark:text-gray-100"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Close
-            </button>
-          </div>
-
-          {/* Search Input */}
-          <div className="p-4">
-            <input
-              className="w-full rounded border bg-transparent p-2 dark:bg-gray-800 dark:text-gray-100"
-              type="text"
-              placeholder="Search order numbers"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          {/* Vertical List */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {searchTerm ? (
-              <ul className="space-y-2">
-                {filteredOrderNos.length > 0 ? (
-                  filteredOrderNos?.map((orderNo) => (
-                    <li
-                      key={orderNo.id}
-                      className="cursor-pointer hover:bg-cyan-100 dark:text-gray-100"
-                      onClick={() => handleSelectOrderNo(orderNo.name)}
-                    >
-                      {orderNo.name}
-                    </li>
-                  ))
-                ) : (
-                  <p className="text-gray-500">No results found</p>
-                )}
-              </ul>
-            ) : (
-              <ul className="space-y-2">
-                {orderNumber?.map((orderNo) => (
-                  <li
-                    key={orderNo.id}
-                    className="cursor-pointer text-gray-700 hover:bg-cyan-100 dark:text-gray-100"
-                    onClick={() => handleSelectOrderNo(orderNo.name)}
-                  >
-                    {orderNo.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+      {isLoading ? (
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
+          {t("loadingOptions")}
+        </p>
+      ) : hasOptions ? (
+        <div className="relative mt-1 w-full">
+          <input
+            className="w-full rounded border px-2 py-2.5 pr-10 text-gray-600 dark:bg-gray-600 dark:text-gray-100"
+            type="text"
+            placeholder={t("selectOrderNo")}
+            value={selectedValue}
+            readOnly
+            onClick={handleOpen}
+            disabled={disabled}
+          />
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 -translate-y-1/2 transform"
+            onClick={handleOpen}
+            disabled={disabled}
+            aria-label={t("selectOrderNo")}
+          >
+            <FaChevronRight className="text-primaryText dark:text-gray-50" />
+          </button>
         </div>
+      ) : (
+        <>
+          <select
+            disabled
+            className="mt-1 w-full rounded border bg-gray-100 px-2 py-2.5 text-sm text-gray-500 dark:bg-gray-600 dark:text-gray-300"
+          >
+            <option>{t("noOrderNumbersAvailable")}</option>
+          </select>
+          {required && (
+            <p className="mt-1 text-sm text-amber-600 dark:text-amber-300 md:text-xs">
+              {t("noOrderNumbersConfigured")}
+            </p>
+          )}
+        </>
       )}
+
+      <OptionBottomSheet
+        isOpen={isOpen}
+        onClose={handleClose}
+        title={t("selectOrderNo")}
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder={t("searchOrderNo")}
+        showSearch={hasOptions}
+      >
+        {searchTerm.trim() && filteredOrderNos.length === 0 ? (
+          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-300">
+            {t("noMatchingOptionsFound")}
+          </p>
+        ) : (
+          <div className="space-y-1">
+            {filteredOrderNos.map((orderNo) => {
+              const label = getOrderNoValue(orderNo);
+              const selected = isSelected(orderNo);
+
+              return (
+                <button
+                  key={orderNo.id ?? label}
+                  type="button"
+                  onClick={() => handleSelectOrderNo(orderNo)}
+                  className={`flex min-h-12 w-full items-center rounded-lg px-3 text-left text-sm transition-colors ${
+                    selected
+                      ? "bg-cyan-50 font-medium text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-200"
+                      : "text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </OptionBottomSheet>
     </div>
   );
 };

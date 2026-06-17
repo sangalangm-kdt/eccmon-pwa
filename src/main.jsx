@@ -1,17 +1,15 @@
-// index.js
 import React, { StrictMode, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
 import { Provider } from "react-redux";
-import { ThemeProvider } from "./context/theme-context";
 import { I18nextProvider } from "react-i18next";
-import i18n from "./locales/i18n";
-import store from "./state/store";
-
 import { registerSW } from "virtual:pwa-register";
 
-// Initialize PWA registration
+import App from "./App.jsx";
+import { ThemeProvider } from "./context/theme-context";
+import i18n from "./locales/i18n";
+import store from "./state/store";
+import "./index.css";
+
 const ServiceWorkerRegistration = () => {
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
 
@@ -34,28 +32,26 @@ const ServiceWorkerRegistration = () => {
 
   return isUpdateAvailable ? (
     <div className="fixed bottom-0 left-0 right-0 bg-blue-600 p-4 text-white">
-      <span>New content is available! Please refresh to update.</span>
+      <span>{i18n.t("common:pwaUpdate.message")}</span>
       <button
         onClick={() => window.location.reload()}
         className="rounded bg-blue-800 px-4 py-2"
       >
-        Refresh
+        {i18n.t("common:pwaUpdate.refresh")}
       </button>
     </div>
   ) : null;
 };
 
-// Rendering the app with the WebSocketProvider
 if (!window.reactRoot) {
   if (import.meta.env.PROD) {
     console.log = function () {};
     console.info = function () {};
     console.warn = function () {};
-    console.error = function () {};
   }
 
   const root = ReactDOM.createRoot(document.getElementById("root"));
-  window.reactRoot = root; // Store it globally
+  window.reactRoot = root;
   root.render(
     <StrictMode>
       <Provider store={store}>

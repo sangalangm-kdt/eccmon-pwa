@@ -1,8 +1,16 @@
 {
   "profileSection": {
-    "employeeId": "従業員ID:"
+    "employeeId": "従業員ID:",
+    "affiliation": "所属:"
   },
   "menuSection": {
+    "account": "アカウント",
+    "supportAndApp": "サポートとアプリ",
+    "aboutEccMon": "ECCMonについて",
+    "version": "バージョン",
+    "languageEnglish": "English (US)",
+    "languageJapanese": "日本語",
+    "copyright": "© {{year}} KHI Design and Technical Services, Inc. All Rights Reserved.",
     "accountSettings": {
       "account": "アカウント設定",
       "information": "情報",
@@ -19,8 +27,69 @@
     "reportBugs": "バグ報告",
     "logout": "ログアウト"
   },
+  "unknownUser": "不明なユーザー",
+  "faq": {
+    "back": "戻る",
+    "title": "FAQ",
+    "heading": "よくある質問",
+    "greeting": "こんにちは",
+    "greetingSuffix": "、どのようなご用件ですか？",
+    "searchPlaceholder": "質問を検索",
+    "categories": {
+      "一般情報": [
+        {
+          "question": "ECCMonとは何ですか？",
+          "answer": "ECCMonはシリンダーカバーを監視するためのQRスキャンシステムです。"
+        },
+        {
+          "question": "ECCMon Mobileとは何ですか？",
+          "answer": "ECCMon MobileはECCMonのPWA版です。"
+        },
+        {
+          "question": "QRコードをスキャンした後はどうなりますか？",
+          "answer": "アプリはシリンダーカバーの詳細情報を表示します。"
+        },
+        {
+          "question": "ECCMon Mobileの操作種別は何ですか？",
+          "answer": "ECCMon Mobileは保管、処理、取り付け、取り外し、廃棄の操作を追跡します。"
+        }
+      ],
+      "はじめに": [
+        {
+          "question": "ECCMonはどのように始めますか？",
+          "answer": "PWAをインストールし、サインインしてQRコードのスキャンを開始します。"
+        },
+        {
+          "question": "シリンダーカバーのQRコードはどのようにスキャンしますか？",
+          "answer": "QRスキャンをタップし、カメラをQRコードに向けます。"
+        }
+      ],
+      "操作": [
+        {
+          "question": "新しいシリンダーカバーはどのように追加しますか？",
+          "answer": "QRコードをスキャンするか、シリアル番号を手動で入力します。"
+        },
+        {
+          "question": "既存のシリンダーカバーはどのように更新しますか？",
+          "answer": "QRコードをスキャンし、必要な操作を選択します。"
+        }
+      ],
+      "アカウントと設定": [
+        {
+          "question": "アプリの言語を変更できますか？",
+          "answer": "はい。設定で希望の言語を選択できます。"
+        },
+        {
+          "question": "アプリからどのようにログアウトしますか？",
+          "answer": "プロフィール画面のログアウトボタンをタップします。"
+        }
+      ]
+    }
+  },
   "changePassword": {
+    "title": "\u30d1\u30b9\u30ef\u30fc\u30c9\u5909\u66f4",
     "currentPass": "現在のパスワード",
+    "currentPassRequired": "\u73fe\u5728\u306e\u30d1\u30b9\u30ef\u30fc\u30c9\u306f\u5fc5\u9808\u3067\u3059\u3002",
     "enterCurrentPass": "現在のパスワードを入力してください",
     "newPass": "新しいパスワード",
     "enterNewPass": "新しいパスワードを入力してください",

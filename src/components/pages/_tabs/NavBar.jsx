@@ -13,6 +13,23 @@ import { PiQrCodeBold } from "react-icons/pi";
 import { RiUser6Line, RiHome6Line } from "react-icons/ri";
 import { motion } from "framer-motion"; // Import Framer Motion
 
+const topNavLinkBase =
+  "inline-flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 md:text-base";
+
+const topNavStandardLink = ({ isActive }) =>
+  `${topNavLinkBase} ${
+    isActive
+      ? "border-b-2 border-primary text-primary"
+      : "text-secondaryText hover:text-primary"
+  }`;
+
+const topNavScanLink = ({ isActive }) =>
+  `inline-flex min-h-[44px] items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 md:text-base ${
+    isActive
+      ? "bg-primary text-white shadow-sm"
+      : "border-2 border-primary bg-primary/5 text-primary hover:bg-primary/10"
+  }`;
+
 const NavBar = () => {
   const currentPage = useSelector((state) => state.page.currentPage);
   const dispatch = useDispatch();
@@ -35,6 +52,14 @@ const NavBar = () => {
   };
 
   if (currentPage === "scanned-result") {
+    return null;
+  }
+
+  if (
+    location.pathname === "/login" ||
+    location.pathname === "/request-account" ||
+    location.pathname === "/password-reset"
+  ) {
     return null;
   }
 
@@ -73,10 +98,10 @@ const NavBar = () => {
         <>
           <div>
             <nav
-              className={`${navbarStyles.topNavbar} dark:bg-gray-900 xs:hidden sm:flex md:flex lg:flex`}
+              className={`${navbarStyles.topNavbar} hidden dark:bg-gray-900 md:flex`}
             >
               <div className={navbarStyles.navbarContainer}>
-                <div className="m-2 flex flex-row justify-between">
+                <div className="flex min-h-[56px] w-full items-center justify-between gap-4 px-2 py-2">
                   <img
                     src={logo}
                     alt="Logo"
@@ -84,48 +109,43 @@ const NavBar = () => {
                     onClick={handleLogoClick}
                   />
                   {user && (
-                    <div>
-                      <ul className="flex space-x-4">
-                        <li className={navbarStyles.navbarLink}>
-                          <NavLink
-                            id="home-link"
-                            to="/"
-                            aria-label="Home"
-                            className={({ isActive }) =>
-                              isActive ? `${navbarStyles.activeLink}` : ""
-                            }
-                          >
-                            {t("common:home")}
-                          </NavLink>
-                        </li>
-                        <li className={navbarStyles.navbarLink}>
-                          <NavLink
-                            id="qrscanner-link"
-                            to="/qrscanner"
-                            aria-label="QR Scanner"
-                            className={({ isActive }) =>
-                              isActive ? `${navbarStyles.activeLink}` : ""
-                            }
-                          >
-                            {t("scanner")}
-                          </NavLink>
-                        </li>
-                        <li className={navbarStyles.navbarLink}>
-                          <NavLink
-                            id="profile-link"
-                            to="/profile"
-                            aria-label="Profile"
-                            className={({ isActive }) =>
-                              isActive ? `${navbarStyles.activeLink}` : ""
-                            }
-                          >
-                            {t("common:profile")}
-                          </NavLink>
-                        </li>
-                      </ul>
-                    </div>
+                    <ul className="flex flex-1 items-center justify-center gap-6 lg:gap-8">
+                      <li>
+                        <NavLink
+                          id="home-link"
+                          to="/"
+                          aria-label={t("home")}
+                          className={topNavStandardLink}
+                        >
+                          <RiHome6Line className="size-5 shrink-0" aria-hidden />
+                          {t("home")}
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink
+                          id="qrscanner-link"
+                          to="/qrscanner"
+                          aria-label={t("scanQr")}
+                          className={topNavScanLink}
+                        >
+                          <PiQrCodeBold className="size-5 shrink-0" aria-hidden />
+                          {t("scanQr")}
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink
+                          id="profile-link"
+                          to="/profile"
+                          aria-label={t("profile")}
+                          className={topNavStandardLink}
+                        >
+                          <RiUser6Line className="size-5 shrink-0" aria-hidden />
+                          {t("profile")}
+                        </NavLink>
+                      </li>
+                    </ul>
                   )}
-                  <div>
+                  <div className="shrink-0">
                     <InstallationButton />
                   </div>
                 </div>
@@ -134,76 +154,65 @@ const NavBar = () => {
           </div>
           {user ? (
             <div>
-              <nav
-                className={`${navbarStyles.bottomNavbar} dark:border-none dark:bg-gray-900 xs:flex sm:hidden md:hidden lg:hidden`}
-              >
-                <div className={navbarStyles.navbarContainer}>
-                  <ul className="flex justify-center">
-                    <li className={navbarStyles.bottomNavbarButton}>
-                      <NavLink id="home-link" to="/" aria-label="Home">
-                        {({ isActive }) => (
-                          <div className="flex flex-col items-center text-tiny font-medium">
-                            <button className="flex flex-col items-center p-1">
-                              <RiHome6Line
-                                className={`${navbarStyles.iconContainer} ${
-                                  isActive
-                                    ? "fill-primary"
-                                    : "text-gray-500 dark:text-gray-50"
-                                }`}
-                              />
-                            </button>
-                          </div>
-                        )}
-                      </NavLink>
-                    </li>
-                    <li className={navbarStyles.bottomNavbarButton}>
-                      <NavLink
-                        id="qrscanner-link"
-                        to="/qrscanner"
-                        aria-label="QR Scanner"
+              <nav className={navbarStyles.bottomNavbar}>
+                <div className={navbarStyles.bottomNavbarInner}>
+                  <NavLink
+                    id="home-link"
+                    to="/"
+                    aria-label={t("home")}
+                    className={navbarStyles.bottomNavbarButton}
+                  >
+                    {({ isActive }) => (
+                      <RiHome6Line
+                        className={`${navbarStyles.bottomNavIcon} ${
+                          isActive
+                            ? "text-primary"
+                            : "text-gray-500 dark:text-gray-50"
+                        }`}
+                        aria-hidden
+                      />
+                    )}
+                  </NavLink>
+
+                  <NavLink
+                    id="qrscanner-link"
+                    to="/qrscanner"
+                    aria-label={t("scanQr")}
+                    className={`${navbarStyles.bottomNavbarButton} items-end`}
+                  >
+                    {({ isActive }) => (
+                      <motion.div
+                        initial={{ scale: 1 }}
+                        animate={{ scale: isActive ? 1.05 : 1 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                        whileTap={{ scale: 0.95 }}
+                        className={navbarStyles.qrContainer}
                       >
-                        {({ isActive }) => (
-                          <motion.div
-                            initial={{ scale: 1 }}
-                            animate={{ scale: isActive ? 1.2 : 1 }}
-                            transition={{ duration: 0.2, ease: "easeInOut" }}
-                            whileHover={{ scale: 1.2 }}
-                            whileTap={{ scale: 0.9 }}
-                            className={`flex flex-col items-center ${navbarStyles.qrContainer} focus:bg-cyan-to-blue`}
-                          >
-                            <button className="flex flex-col items-center p-1">
-                              <PiQrCodeBold
-                                className={`size-6 rounded-full text-white ${
-                                  isActive ? "fill-primary" : ""
-                                }`}
-                              />
-                            </button>
-                          </motion.div>
-                        )}
-                      </NavLink>
-                    </li>
-                    <li className={navbarStyles.bottomNavbarButton}>
-                      <NavLink
-                        id="profile-link"
-                        to="/profile"
-                        aria-label="Profile"
-                      >
-                        {({ isActive }) => (
-                          <div className="flex flex-col items-center text-tiny font-medium">
-                            <button className="flex flex-col items-center p-1">
-                              <RiUser6Line
-                                className={`${navbarStyles.iconContainer} ${
-                                  isActive
-                                    ? "fill-primary"
-                                    : "text-gray-500 dark:text-gray-100"
-                                }`}
-                              />
-                            </button>
-                          </div>
-                        )}
-                      </NavLink>
-                    </li>
-                  </ul>
+                        <PiQrCodeBold
+                          className={navbarStyles.qrIcon}
+                          aria-hidden
+                        />
+                      </motion.div>
+                    )}
+                  </NavLink>
+
+                  <NavLink
+                    id="profile-link"
+                    to="/profile"
+                    aria-label={t("profile")}
+                    className={navbarStyles.bottomNavbarButton}
+                  >
+                    {({ isActive }) => (
+                      <RiUser6Line
+                        className={`${navbarStyles.bottomNavIcon} ${
+                          isActive
+                            ? "text-primary"
+                            : "text-gray-500 dark:text-gray-100"
+                        }`}
+                        aria-hidden
+                      />
+                    )}
+                  </NavLink>
                 </div>
               </nav>
             </div>
