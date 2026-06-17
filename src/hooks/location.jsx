@@ -1,5 +1,6 @@
 import axiosLib from "../lib/axios";
 import useSWR from "swr";
+import { parseLocationsFromResponse } from "../components/utils/affiliationOptions";
 
 export const useLocation = (
   _userId,
@@ -13,28 +14,28 @@ export const useLocation = (
     processKey,
     () =>
       axiosLib
-        .get(`/api/locations/processes`)
+        .get("/api/locations/processes")
         .then((res) => res.data)
         .catch((error) => {
-          if (error.response.status !== 409) {
-            setErrorMessage("Error fetching user data.");
-          }
+          if (error.response?.status !== 409) throw error;
         }),
     {
       revalidateOnFocus: false,
     },
   );
 
-  const { data: affiliation } = useSWR(
+  const {
+    data: locations = [],
+    error: affiliationError,
+    isLoading: isAffiliationLoading,
+  } = useSWR(
     affiliationKey,
     () =>
       axiosLib
         .get("/api/locations")
-        .then((res) => res.data)
+        .then((res) => parseLocationsFromResponse(res))
         .catch((error) => {
-          if (error.response.status !== 409) {
-            setErrorMessage("Error fetching user data.");
-          }
+          if (error.response?.status !== 409) throw error;
         }),
     {
       revalidateOnFocus: false,
@@ -43,6 +44,9 @@ export const useLocation = (
 
   return {
     process,
-    affiliation,
+    locations,
+    affiliation: locations,
+    affiliationError,
+    isAffiliationLoading,
   };
 };

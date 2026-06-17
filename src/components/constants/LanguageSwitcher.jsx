@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import Select from "react-select"; // Import react-select
-import { FaChevronDown } from "react-icons/fa"; // Import chevron icons
+import { FaChevronDown } from "react-icons/fa";
+import ResponsiveSheet from "./ResponsiveSheet";
 
-const LanguageSwitcher = () => {
-  const { i18n } = useTranslation();
+const LanguageSwitcher = ({ variant = "default" }) => {
+  const { t, i18n } = useTranslation("common");
   const [language, setLanguage] = useState(i18n.language);
   const [isModalOpen, setModalOpen] = useState(false);
 
+  useEffect(() => {
+    setLanguage(i18n.language);
+  }, [i18n.language]);
+
   const languages = [
-    { id: "ja", label: "日本語" },
-    { id: "en", label: "English (US)" },
+    { id: "ja", label: "日本語", shortLabel: "日本語" },
+    { id: "en", label: "English (US)", shortLabel: "EN" },
   ];
 
   const changeLanguage = (selectedLanguage) => {
@@ -82,6 +88,36 @@ const LanguageSwitcher = () => {
     }),
   };
 
+  if (variant === "guest") {
+    return (
+      <div
+        className="inline-flex items-center gap-0.5 rounded-full p-0.5 md:gap-1 md:border md:border-gray-200 md:bg-gray-50 md:p-1 md:shadow-sm dark:md:border-gray-600 dark:md:bg-gray-800"
+        role="group"
+        aria-label={t("language.select")}
+      >
+        {languages.map((lang) => {
+          const isActive = language === lang.id;
+
+          return (
+            <button
+              key={lang.id}
+              type="button"
+              onClick={() => changeLanguage(lang)}
+              className={`ecc-touch-btn min-h-[36px] rounded-full px-3 py-1.5 text-xs font-semibold transition-colors md:min-h-[40px] md:px-4 md:py-2 md:text-sm ${
+                isActive
+                  ? "bg-primary text-white md:shadow-sm"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+              }`}
+              aria-pressed={isActive}
+            >
+              {lang.shortLabel}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Inline dropdown for larger screens */}
@@ -93,14 +129,14 @@ const LanguageSwitcher = () => {
           getOptionLabel={(e) => e.label}
           getOptionValue={(e) => e.id}
           styles={customSelectStyles}
-          placeholder="Select Language"
+          placeholder={t("language.select")}
         />
       </div>
 
       {/* Modal for xs screens */}
       <div className="block sm:hidden">
         <div className="flex items-center space-x-1">
-          <label className="text-xs font-medium">Select language</label>
+          <label className="text-sm font-medium md:text-xs">{t("language.select")}</label>
           <span className="px-2">|</span>
           <button
             className="dark:bg-black-10 flex flex-grow items-center justify-between rounded-md border bg-white px-4 py-2 font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-50"
@@ -108,45 +144,46 @@ const LanguageSwitcher = () => {
           >
             <span>
               {languages.find((lang) => lang.id === language)?.label ||
-                "English (US)"}
+                t("language.english")}
             </span>
             <FaChevronDown className="ml-2 text-gray-600 dark:text-gray-50" />
           </button>
         </div>
 
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-end bg-black bg-opacity-50">
-            <div className="w-full rounded-t-lg bg-white p-4 dark:bg-black">
-              <h2 className="text-center text-sm font-semibold text-gray-600 dark:text-gray-50">
-                Select Language
-              </h2>
-              <ul className="mt-4 space-y-2">
-                {languages.map((lang) => (
-                  <li
-                    key={lang.id}
-                    className={`cursor-pointer rounded-md border p-3 text-center text-sm ${
-                      lang.id === language
-                        ? "bg-primary text-white"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`}
-                    onClick={() => changeLanguage(lang)}
-                  >
-                    {lang.label}
-                  </li>
-                ))}
-              </ul>
-              <button
-                className="mt-4 w-full rounded-md border bg-gray-300 py-2 text-gray-700 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                onClick={() => setModalOpen(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
+        <ResponsiveSheet
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          title={t("language.select")}
+          size="sm"
+          zIndex={50}
+          closeLabel={t("close")}
+          bodyClassName="p-4"
+        >
+          <ul className="space-y-2">
+            {languages.map((lang) => (
+              <li key={lang.id}>
+                <button
+                  type="button"
+                  className={`min-h-[44px] w-full rounded-md border p-3 text-center text-sm transition-all duration-200 active:scale-[0.99] ${
+                    lang.id === language
+                      ? "bg-primary text-white"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                  }`}
+                  onClick={() => changeLanguage(lang)}
+                >
+                  {lang.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </ResponsiveSheet>
       </div>
     </>
   );
+};
+
+LanguageSwitcher.propTypes = {
+  variant: PropTypes.oneOf(["default", "guest"]),
 };
 
 export default LanguageSwitcher;

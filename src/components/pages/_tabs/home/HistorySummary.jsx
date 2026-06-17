@@ -1,44 +1,114 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+﻿/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { CloseRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { GoSortDesc, GoSortAsc } from "react-icons/go";
 import {
-  sortHistoryByDate,
   filterHistory,
   formatDate,
 } from "../../../utils/utils";
-import { fullscreenClass } from "../../../styles/home";
+import { useCylinderCover } from "../../../../hooks/cylinderCover";
 import { getStatusColors } from "../../../utils/statusColors";
 import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { FaRegCalendar } from "react-icons/fa";
 import { IoChevronForwardOutline } from "react-icons/io5";
+import ResponsiveDatePicker from "../../../constants/ResponsiveDatePicker";
+import FullScreenSheet from "../../../constants/FullScreenSheet";
 import { useAuthentication } from "../../../../hooks/auth";
-import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
+import {
+  normalizeApiListResponse,
+  useCylinderUpdate,
+} from "../../../../hooks/cylinderUpdates";
 import { customSelectStyle } from "../../../utils/selectUtils";
+import {
+  buildCylinderHistoryEvents,
+  getDisplayStatus,
+  getHistoryEventDate,
+  getHistoryStatusBadgeText,
+  resolveCurrentCylinderStatusLabel,
+} from "../../../utils/cylinderStatus";
+
+const PREVIEW_LIMITS = {
+  mobile: 5,
+  tablet: 8,
+  desktop: 10,
+};
+
+const getPreviewRecordLimit = () => {
+  if (typeof window === "undefined") return PREVIEW_LIMITS.mobile;
+  if (window.matchMedia("(min-width: 1024px)").matches) {
+    return PREVIEW_LIMITS.desktop;
+  }
+  if (window.matchMedia("(min-width: 768px)").matches) {
+    return PREVIEW_LIMITS.tablet;
+  }
+  return PREVIEW_LIMITS.mobile;
+};
+
+const HISTORY_PAGE_SIZE = 50;
 
 const HistorySummary = () => {
-  const { user, isLoading: isUserLoading } = useAuthentication();
-  const { t } = useTranslation();
+  const { user, userId, isLoading: isUserLoading } = useAuthentication();
+  const { t } = useTranslation(["common", "date", "qrScanner"]);
   const navigate = useNavigate();
+
+  const queriesEnabled = !isUserLoading && !!user;
+  const locationFilter = user?.is_admin === 1 ? "" : user?.affiliation || "";
+  const historyUserId = user?.is_admin === 1 ? null : userId;
+
+  const cylinderListQuery = {
+    enabled: queriesEnabled,
+    perPage: HISTORY_PAGE_SIZE,
+    page: 1,
+    includeUpdates: true,
+    direction: "desc",
+    ...(locationFilter ? { location: locationFilter } : {}),
+  };
+
+  const updateListQuery = {
+    enabled: queriesEnabled,
+    perPage: HISTORY_PAGE_SIZE,
+    page: 1,
+  };
+
+  const { cylinder: cylinderListResponse, isLoading: isCylindersLoading } =
+    useCylinderCover(cylinderListQuery);
+  const { records: cylinderUpdates, isLoading: isUpdatesLoading } =
+    useCylinderUpdate(updateListQuery);
+
+  const [showAll, setShowAll] = useState(false);
+  const [filter, setFilter] = useState("latest");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredHistory, setFilteredHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [previewLimit, setPreviewLimit] = useState(PREVIEW_LIMITS.mobile);
+
+  const cylinders = normalizeApiListResponse(cylinderListResponse);
+
+  const safeCylinderUpdates = Array.isArray(cylinderUpdates)
+    ? cylinderUpdates
+    : [];
+
+  const scopedCylinderUpdates = locationFilter
+    ? safeCylinderUpdates.filter((item) => item.location === locationFilter)
+    : safeCylinderUpdates;
 
   function filterDataByCycle(data) {
     const grouped = {};
 
-    data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)); // Sort by createdAt
-
-    data.forEach((item) => {
-      const key = `${item.serialNumber}-${item.cycle}`;
-      grouped[key] = item; // Keep the latest occurrence for each cycle
-    });
+    [...data]
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+      .forEach((item) => {
+        const key = `${item.serialNumber}-${item.cycle}`;
+        grouped[key] = item;
+      });
 
     const filteredData = Object.values(grouped);
 
-    const groupedBySerial = filteredData.reduce((acc, item) => {
+    return filteredData.reduce((acc, item) => {
       let existingGroup = acc.find(
         (group) => group.serialNumber === item.serialNumber,
       );
@@ -49,72 +119,95 @@ const HistorySummary = () => {
       existingGroup.data.push(item);
       return acc;
     }, []);
-
-    return groupedBySerial;
   }
 
-  const [showAll, setShowAll] = useState(false);
-  const [filter, setFilter] = useState("latest");
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [filteredHistory, setFilteredHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [perPage, setPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
+  const cycleGroupedUpdates = filterDataByCycle(scopedCylinderUpdates);
 
-  const queriesEnabled = !isUserLoading && !!user;
-  const locationFilter = user?.is_admin === 1 ? "" : user?.affiliation || "";
-  const { cylinder, isLoading: isUpdatesLoading } = useCylinderUpdate({
-    enabled: queriesEnabled,
-    perPage,
-    page: currentPage,
-  });
-  const cylinderUpdates = cylinder?.data ?? [];
-  const filteredData = filterDataByCycle(cylinderUpdates);
+  const buildHistoryItems = (cylinder) =>
+    buildCylinderHistoryEvents(cylinder, scopedCylinderUpdates, historyUserId);
+
+  useEffect(() => {
+    const updatePreviewLimit = () => {
+      setPreviewLimit(getPreviewRecordLimit());
+    };
+
+    updatePreviewLimit();
+    window.addEventListener("resize", updatePreviewLimit);
+    return () => window.removeEventListener("resize", updatePreviewLimit);
+  }, []);
 
   // Effect for handling sorting and filtering updates
   useEffect(() => {
-    setLoading(isUserLoading || isUpdatesLoading);
-
-    if (cylinderUpdates.length) {
-      const scopedHistory = cylinderUpdates.filter((item) =>
-        locationFilter ? item.location === locationFilter : true,
-      );
-      const normalizedHistory = scopedHistory.map((item) => ({
-        serialNumber: item.serialNumber,
-        status: item.process,
-        location: item.location,
-        cycle: item.cycle,
-        disposalDate: null,
-        user: item.user,
-        updates: item,
-      }));
-      const sortedHistory = sortHistoryByDate(normalizedHistory, sortOrder);
-
-      // Then apply the custom filtering based on selected filter and date range
-      const filteredData = filterHistory(
-        sortedHistory,
-        filter,
-        startDate,
-        endDate,
-      );
-
-      // Update the filtered history if it has changed
-      if (JSON.stringify(filteredData) !== JSON.stringify(filteredHistory)) {
-        setFilteredHistory(filteredData);
-      }
+    if (isUserLoading || isCylindersLoading || isUpdatesLoading) {
+      setLoading(true);
+      return;
     }
+
+    setLoading(false);
+
+    if (!scopedCylinderUpdates.length) {
+      setFilteredHistory([]);
+      return;
+    }
+
+    const updateSerialNumbers = new Set(
+      scopedCylinderUpdates.map((update) => update.serialNumber).filter(Boolean),
+    );
+
+    const cylinderSource = cylinders.length
+      ? cylinders
+      : [...updateSerialNumbers].map((serialNumber) => {
+          const latestUpdate = scopedCylinderUpdates.find(
+            (update) => update.serialNumber === serialNumber,
+          );
+
+          return {
+            serialNumber,
+            status: latestUpdate?.process ?? latestUpdate?.status,
+            location: latestUpdate?.location,
+            cycle: latestUpdate?.cycle,
+            updates: latestUpdate,
+          };
+        });
+
+    const userHistory = cylinderSource
+      .filter((item) => updateSerialNumbers.has(item.serialNumber))
+      .flatMap(buildHistoryItems)
+      .filter(Boolean);
+
+    const sortedHistory = [...userHistory].sort((a, b) => {
+      const dateA = getHistoryEventDate(a);
+      const dateB = getHistoryEventDate(b);
+      const timeA = dateA ? new Date(dateA).getTime() : 0;
+      const timeB = dateB ? new Date(dateB).getTime() : 0;
+
+      if (!timeA && !timeB) return 0;
+      if (!timeA) return 1;
+      if (!timeB) return -1;
+
+      return sortOrder === "asc" ? timeA - timeB : timeB - timeA;
+    });
+
+    const filteredData = filterHistory(
+      sortedHistory,
+      filter,
+      startDate,
+      endDate,
+    );
+
+    setFilteredHistory(filteredData);
   }, [
-    cylinder,
-    cylinderUpdates,
-    isUpdatesLoading,
+    cylinders,
+    scopedCylinderUpdates,
+    historyUserId,
     isUserLoading,
-    locationFilter,
+    isCylindersLoading,
+    isUpdatesLoading,
     sortOrder,
     filter,
     startDate,
     endDate,
+    locationFilter,
   ]);
 
   useEffect(() => {
@@ -129,27 +222,36 @@ const HistorySummary = () => {
     name === "startDate" ? setStartDate(date) : setEndDate(date);
   };
 
-  const handlePerPageChange = (selectedOption) => {
-    setPerPage(selectedOption.value);
-    setCurrentPage(1);
-  };
-
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
   const handleCycleClick = (item) => {
-    const totalOperationHours = filteredData
-      ?.filter((data) => item.serialNumber === data.serialNumber)
+    const cylinder = item.cylinder ?? item;
+    const processEvent = buildCylinderHistoryEvents(
+      cylinder,
+      scopedCylinderUpdates,
+      historyUserId,
+    ).find((event) => event.eventType === "process");
+
+    const totalOperationHours = cycleGroupedUpdates
+      ?.filter((data) => cylinder.serialNumber === data.serialNumber)
       .map((entry) => {
-        const totalHours = entry.data.reduce((sum, item) => {
-          return sum + (parseInt(item.otherDetails?.operationHours) || 0);
+        const totalHours = entry.data.reduce((sum, entryItem) => {
+          return sum + (parseInt(entryItem.otherDetails?.operationHours) || 0);
         }, 0);
 
         return totalHours;
       })[0];
+
     navigate("/view-info", {
-      state: { data: item, totalOperationHours: totalOperationHours },
+      state: {
+        data: {
+          ...cylinder,
+          updates: processEvent?.updates ?? cylinder.updates,
+        },
+        totalOperationHours: totalOperationHours,
+      },
     });
   };
 
@@ -161,245 +263,252 @@ const HistorySummary = () => {
     { value: "custom", label: t("common:customDateRange") },
   ];
 
-  const perPageOptions = [
-    { value: 10, label: "10" },
-    { value: 20, label: "20" },
-    { value: 50, label: "50" },
-  ];
+  const getHistorySearchText = (item) => {
+    const cylinder = item.cylinder ?? item;
+    const status =
+      item.historyDisplay?.status ?? getDisplayStatus(cylinder);
+    const statusKey =
+      item.historyDisplay?.statusKey ?? status.toLowerCase();
+    const eventDate =
+      item.historyDisplay?.eventDate ?? getHistoryEventDate(item);
+    const serialNumber = item.historyDisplay?.serialNumber ?? item.serialNumber;
+    const eventDateValue = eventDate ? new Date(eventDate) : null;
+    const translatedStatus = t(`qrScanner:${statusKey}`);
+    const formattedDate =
+      eventDateValue && !Number.isNaN(eventDateValue.getTime())
+        ? formatDate(eventDateValue, t)
+        : "";
 
-  const CustomDateInput = React.forwardRef(({ value, onClick }, ref) => (
-    <div className="relative w-full cursor-pointer" onClick={onClick} ref={ref}>
-      <input
-        type="text"
-        value={value}
-        readOnly
-        className="w-full border p-2 text-sm dark:bg-gray-700"
-        placeholder="mm/dd/yy"
-      />
-      <FaRegCalendar className="absolute right-2 top-3 text-gray-500 dark:text-gray-300" />
-    </div>
-  ));
+    return [serialNumber, status, translatedStatus, formattedDate, eventDate]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+  };
 
-  CustomDateInput.displayName = "CustomDateInput";
+  const visibleHistory = filteredHistory.filter((item) => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true;
+    return getHistorySearchText(item).includes(query);
+  });
 
   const isDarkMode = document.documentElement.classList.contains("dark");
-  const lastPage = cylinder?.meta?.last_page ?? 1;
-  return (
+
+  const historyGridCols =
+    "md:grid md:grid-cols-[minmax(6rem,1.2fr)_minmax(5rem,1fr)_7.5rem_4rem] md:items-center md:gap-4";
+
+  const renderHistoryColumnHeaders = (sticky = false) => (
     <div
-      className={`xs:min-[300px] shadow- flex w-full flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-700 xs:px-1 lg:w-full ${
-        showAll ? fullscreenClass : ""
+      className={`${historyGridCols} hidden border-b border-gray-200 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:border-gray-600 dark:text-gray-300 md:grid ${
+        sticky
+          ? "sticky top-0 z-[1] bg-white dark:bg-gray-700"
+          : ""
       }`}
     >
-      {showAll && (
-        <button
-          onClick={() => setShowAll(false)}
-          className="text-gray fixed right-2 top-6 z-60 rounded-full p-2 dark:text-gray-50"
-        >
-          <CloseRounded />
-        </button>
-      )}
+      <span>{t("qrScanner:serialNumber")}</span>
+      <span>{t("qrScanner:status")}</span>
+      <span>{t("qrScanner:label.completionDate")}</span>
+      <span className="text-right">{t("date:time")}</span>
+    </div>
+  );
 
-      <div
-        className={`bg-white transition-transform duration-500 ease-in-out dark:bg-gray-700 ${
-          showAll ? "animate-slideUp" : "animate-slideDown"
-        }`}
+  const renderHistoryItem = (item, index) => {
+    const cylinder = item.cylinder ?? item;
+    const statusLabel =
+      item.historyDisplay?.status ??
+      resolveCurrentCylinderStatusLabel(cylinder);
+    const badgeText = getHistoryStatusBadgeText(item, t);
+    const eventDate =
+      item.historyDisplay?.eventDate ?? getHistoryEventDate(item);
+    const serialNumber =
+      item.historyDisplay?.serialNumber ?? item.serialNumber;
+    const { bgColor, textColor } = getStatusColors(statusLabel);
+    const eventDateValue = eventDate ? new Date(eventDate) : null;
+    const hasValidEventDate =
+      eventDateValue && !Number.isNaN(eventDateValue.getTime());
+    const timeLabel = hasValidEventDate
+      ? `${String(eventDateValue.getHours()).padStart(2, "0")}:${String(eventDateValue.getMinutes()).padStart(2, "0")}`
+      : "--";
+    const dateLabel = hasValidEventDate
+      ? formatDate(eventDateValue, t)
+      : "--";
+
+    return (
+      <li
+        key={`${serialNumber}-${item.eventType ?? "process"}-${index}`}
+        className="cursor-pointer border-b border-gray-200 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-600/60"
+        onClick={() => handleCycleClick(item)}
       >
-        <div
-          className={`flex flex-col px-0 py-4 ${showAll ? "dark:bg-gray-800" : ""}`}
-        >
-          <div
-            className={`flex justify-between border-b border-gray-300 ${
-              showAll
-                ? "fixed left-0 top-0 z-10 w-full bg-white shadow dark:bg-gray-700"
-                : "px-1 py-3"
-            }`}
-          >
-            <label
-              className={`${
-                showAll
-                  ? "px-1 py-8 font-semibold text-gray-600"
-                  : "px-1 pb-2 font-semibold text-gray-600"
-              } dark:text-gray-50`}
+        <div className="px-3 py-3 md:hidden">
+          <p className="flex min-w-0 items-center justify-between gap-2 font-normal">
+            <span className="min-w-0 truncate text-lg font-semibold leading-tight text-gray-900 dark:text-gray-50">
+              {serialNumber || "--"}
+            </span>
+            <span className="shrink-0 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+              {timeLabel}
+            </span>
+          </p>
+          <div className="mt-0.5 flex min-w-0 items-center justify-between gap-2">
+            <p
+              className={`max-w-[65%] truncate rounded-full px-1.5 py-0.5 text-tiny font-medium ${bgColor} ${textColor}`}
+              title={badgeText}
             >
-              {t("common:recentHistory")}
-            </label>
-            {!showAll && (
-              <div className="flex flex-row items-center justify-center pt-1 text-xs">
-                <button
-                  className="flex pb-2 text-primaryText dark:text-gray-50"
-                  onClick={() => setShowAll(true)}
-                >
-                  <label className="flex-row items-center justify-center">
-                    See all
-                  </label>
-                  <div className="flex-row items-center justify-center">
-                    <IoChevronForwardOutline />
-                  </div>
-                </button>
-              </div>
-            )}
+              {badgeText}
+            </p>
+            <p className="shrink-0 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+              {dateLabel}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={`${historyGridCols} hidden px-3 py-2.5 md:grid`}
+        >
+          <span className="ecc-serial truncate md:text-sm">
+            {serialNumber || "--"}
+          </span>
+          <span
+            className={`w-fit max-w-full truncate rounded-full px-2 py-0.5 text-tiny font-medium ${bgColor} ${textColor}`}
+            title={badgeText}
+          >
+            {badgeText}
+          </span>
+          <span className="truncate text-xs text-gray-500 dark:text-gray-300">
+            {dateLabel}
+          </span>
+          <span className="text-right text-xs font-semibold text-gray-500 dark:text-gray-300">
+            {timeLabel}
+          </span>
+        </div>
+      </li>
+    );
+  };
+
+  const renderHistoryList = (expanded = false, items = visibleHistory) => {
+    if (loading) {
+      return (
+        <div className="p-4">
+          <HistorySummarySkeleton />
+        </div>
+      );
+    }
+
+    if (items.length === 0) {
+      return (
+        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+          <p>
+            {searchQuery
+              ? t("common:noHistoryFound")
+              : t("common:noRecentHistory")}
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {renderHistoryColumnHeaders(expanded)}
+        <ul className="min-w-0 divide-y divide-gray-100 dark:divide-gray-600">
+          {items.map(renderHistoryItem)}
+        </ul>
+      </>
+    );
+  };
+
+  const previewHistory = visibleHistory.slice(0, previewLimit);
+
+  return (
+    <>
+      <div className="flex w-full flex-col overflow-hidden rounded-lg bg-white shadow dark:bg-gray-700 md:rounded-xl md:shadow-sm">
+        <div className="flex flex-col bg-white dark:bg-gray-700">
+          <div className="border-b border-gray-300 px-3 py-2 dark:border-gray-600 md:px-3 md:py-3">
+            <div className="flex items-center justify-between">
+              <label className="text-lg font-semibold text-gray-700 dark:text-gray-50 md:ecc-section-title">
+                {t("common:recentHistory")}
+              </label>
+              <button
+                type="button"
+                className="flex items-center gap-0.5 text-sm text-primaryText transition-colors hover:text-primary dark:text-gray-50"
+                onClick={() => setShowAll(true)}
+              >
+                <span>See all</span>
+                <IoChevronForwardOutline />
+              </button>
+            </div>
           </div>
 
-          {showAll && (
-            <div className="mb-4 mt-20 flex w-full flex-col bg-white text-sm dark:bg-gray-800">
-              {/* Filter and Sort Section */}
-              <div className="flex justify-between">
-                <Select
-                  className="w-48 sm:w-64"
-                  options={filterOptions}
-                  value={filterOptions.find(
-                    (option) => option.value === filter,
-                  )}
-                  onChange={handleFilterChange}
-                  styles={customSelectStyle(isDarkMode)}
-                />
-                <button className="py-2" onClick={toggleSortOrder}>
-                  {sortOrder === "asc" ? (
-                    <GoSortAsc
-                      size={24}
-                      className="text-gray-600 dark:text-gray-100"
-                    />
-                  ) : (
-                    <GoSortDesc
-                      size={24}
-                      className="text-gray-600 dark:text-gray-100"
-                    />
-                  )}
-                </button>
-              </div>
-              <div className="mt-2 flex justify-between gap-2">
-                <Select
-                  className="w-28"
-                  options={perPageOptions}
-                  value={perPageOptions.find((option) => option.value === perPage)}
-                  onChange={handlePerPageChange}
-                  styles={customSelectStyle(isDarkMode)}
-                />
-                <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-200">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage <= 1}
-                    className="rounded-full bg-gray-100 px-3 py-2 disabled:opacity-50 dark:bg-gray-600"
-                  >
-                    Prev
-                  </button>
-                  <span>
-                    Page {currentPage} of {lastPage}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, lastPage))
-                    }
-                    disabled={currentPage >= lastPage}
-                    className="rounded-full bg-gray-100 px-3 py-2 disabled:opacity-50 dark:bg-gray-600"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-
-              {/* Custom Date Range Section */}
-              {filter === "custom" && (
-                <div className="item-center mb-2 flex justify-between gap-1 p-2">
-                  <div className="flex-1 lg:w-full">
-                    <DatePicker
-                      selected={startDate}
-                      onChange={(date) => handleDateChange(date, "startDate")}
-                      className="custom-datepicker w-full border px-4 py-2"
-                      dateFormat="MM/dd/yy"
-                      customInput={<CustomDateInput />}
-                      popperClassName="custom-datepicker-popper"
-                    />
-                  </div>
-                  <div className="flex-1 xs:w-32 sm:w-48 md:w-56 lg:w-full">
-                    <DatePicker
-                      selected={endDate}
-                      onChange={(date) => handleDateChange(date, "endDate")}
-                      className="custom-datepicker w-full border px-4 py-2"
-                      dateFormat="MM/dd/yy"
-                      customInput={<CustomDateInput />}
-                      popperClassName="custom-datepicker-popper"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {loading ? (
-            <div className="h-72 p-4">
-              <HistorySummarySkeleton />
-            </div>
-          ) : filteredHistory.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              <p>No recent history</p>
-            </div>
-          ) : (
-            <div>
-              <ul
-                className={`border-box transition-transform duration-500 ease-in-out ${
-                  showAll ? "pb-24" : "pb-20"
-                }`}
-              >
-                {filteredHistory.map((item, index) => {
-                  // Get the status colors dynamically
-                  const { bgColor, textColor } = getStatusColors(item.status);
-
-                  // Format created and updated dates
-                  const createdDate = new Date(item?.updates?.dateDone);
-                  const updatedDate = item.updatedAt
-                    ? new Date(item.updatedAt)
-                    : null;
-
-                  return (
-                    <li
-                      key={index}
-                      className={`h-70 flex w-full cursor-pointer flex-col border-b-0.5 border-gray-200 py-2 hover:bg-gray-100 dark:border-gray-500 dark:bg-transparent dark:hover:bg-gray-600`}
-                      onClick={() => handleCycleClick(item)}
-                    >
-                      {/* Serial number and date_done */}
-                      <p className="flex items-center justify-between p-2 font-normal">
-                        <span>{item?.serialNumber ?? "No serial number"}</span>
-
-                        <span className="ml-2 text-xs font-semibold text-gray-500 dark:text-gray-300">
-                          {`${createdDate.getHours()}:${String(createdDate.getMinutes()).padStart(2, "0")}`}
-                        </span>
-                      </p>
-
-                      {/* Status label with dynamic colors */}
-                      <div className="flex flex-row justify-between px-2 text-xs">
-                        <p
-                          className={`rounded-full px-2 py-1 text-tiny ${bgColor} ${textColor}`}
-                        >
-                          {t(`qrScanner:${item.status.toLowerCase()}`)}
-                        </p>
-
-                        {/* date_done */}
-                        <p className="text-xs text-gray-500 dark:text-gray-300">
-                          {isNaN(createdDate.getTime())
-                            ? "Invalid Date"
-                            : formatDate(createdDate, t)}
-                        </p>
-                        {updatedDate && (
-                          <p className="text-xs text-gray-500 dark:text-gray-300">
-                            {t("common:updated")}{" "}
-                            {isNaN(updatedDate.getTime())
-                              ? "Invalid Date"
-                              : formatDate(updatedDate, t)}
-                          </p>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
+          {renderHistoryList(false, previewHistory)}
         </div>
       </div>
-    </div>
+
+      <FullScreenSheet
+        isOpen={showAll}
+        onClose={() => setShowAll(false)}
+        title={t("common:recentHistory")}
+        closeLabel={t("common:backButton")}
+        zIndex={110}
+        stickyContent={
+          <div className="flex w-full flex-col gap-3 text-sm">
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder={t("common:searchHistory")}
+              className="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-700 outline-none focus:ring-1 focus:ring-gray-400 dark:border-gray-600 dark:text-gray-50"
+            />
+
+            <div className="flex min-w-0 items-center justify-between gap-2">
+              <Select
+                className="min-w-0 flex-1"
+                options={filterOptions}
+                value={filterOptions.find((option) => option.value === filter)}
+                onChange={handleFilterChange}
+                styles={customSelectStyle(isDarkMode)}
+              />
+              <button
+                type="button"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center py-2"
+                onClick={toggleSortOrder}
+              >
+                {sortOrder === "asc" ? (
+                  <GoSortAsc
+                    size={24}
+                    className="text-gray-600 dark:text-gray-100"
+                  />
+                ) : (
+                  <GoSortDesc
+                    size={24}
+                    className="text-gray-600 dark:text-gray-100"
+                  />
+                )}
+              </button>
+            </div>
+
+            {filter === "custom" ? (
+              <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:gap-3">
+                <div className="min-w-0 flex-1">
+                  <ResponsiveDatePicker
+                    selected={startDate}
+                    onChange={(date) => handleDateChange(date, "startDate")}
+                    title={t("date:startDate")}
+                    maxDate={endDate ?? undefined}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <ResponsiveDatePicker
+                    selected={endDate}
+                    onChange={(date) => handleDateChange(date, "endDate")}
+                    title={t("date:endDate")}
+                    minDate={startDate ?? undefined}
+                  />
+                </div>
+              </div>
+            ) : null}
+          </div>
+        }
+      >
+        <div className="px-2 md:px-3">{renderHistoryList(true, visibleHistory)}</div>
+      </FullScreenSheet>
+    </>
   );
 };
 

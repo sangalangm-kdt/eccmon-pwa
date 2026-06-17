@@ -1,21 +1,82 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TextInput, RegisterSelection } from "../../constants/TextInput";
-import {
-  IoArrowBack,
-  IoArrowForwardOutline,
-  IoLogInOutline,
-} from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { IoArrowBack, IoArrowForwardOutline, IoCheckmark } from "react-icons/io5";
+import { Link, useLocation as useRouterLocation } from "react-router-dom";
 import { useUserRequest } from "../../../hooks/user-request";
 import { useLocation } from "../../../hooks/location";
 import AccountRequestModal from "../../constants/AccountRequestModal";
+import GuestAppChrome from "../../constants/GuestAppChrome";
+import { getValidationErrorKey } from "../../utils/authErrors";
+import { resolveAffiliationOptions } from "../../utils/affiliationOptions";
+
+const primaryButtonClassName =
+  "ecc-touch-btn inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-cyan-to-blue px-4 py-3 text-base font-semibold text-white transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-[8.5rem]";
+
+const secondaryButtonClassName =
+  "ecc-touch-btn inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-200 dark:hover:bg-gray-700 sm:w-auto sm:min-w-[7.5rem]";
+
+const StepIndicator = ({ steps, currentStep }) => {
+  const progress =
+    steps.length > 1 ? ((currentStep - 1) / (steps.length - 1)) * 100 : 0;
+
+  return (
+    <div className="mb-5">
+      <div className="flex items-start justify-between gap-1 sm:gap-2">
+        {steps.map((stepItem) => {
+          const isActive = currentStep === stepItem.id;
+          const isComplete = currentStep > stepItem.id;
+
+          return (
+            <div
+              key={stepItem.id}
+              className="flex min-w-0 flex-1 flex-col items-center"
+            >
+              <div
+                className={`flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors sm:size-9 ${
+                  isActive
+                    ? "bg-primary text-white shadow-sm"
+                    : isComplete
+                      ? "bg-primary/15 text-primary dark:bg-primary/25"
+                      : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+                }`}
+              >
+                {isComplete ? (
+                  <IoCheckmark className="size-4 sm:size-5" aria-hidden="true" />
+                ) : (
+                  stepItem.id
+                )}
+              </div>
+              <span
+                className={`mt-1.5 line-clamp-2 text-center text-[10px] leading-tight sm:text-xs ${
+                  isActive
+                    ? "font-semibold text-primary"
+                    : isComplete
+                      ? "font-medium text-gray-600 dark:text-gray-300"
+                      : "text-gray-500 dark:text-gray-400"
+                }`}
+              >
+                {stepItem.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+        <div
+          className="h-full rounded-full bg-cyan-to-blue transition-all duration-300 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  );
+};
 
 const AccountRequestForm = () => {
   const { register } = useUserRequest();
-  const { t } = useTranslation("common");
-  const { affiliation } = useLocation();
+  const { t, i18n } = useTranslation(["common", "login"]);
+  const { locations, affiliationError, isAffiliationLoading } = useLocation();
+  const routeLocation = useRouterLocation();
 
   const [formData, setFormData] = useState({
     userId: "",
@@ -28,19 +89,52 @@ const AccountRequestForm = () => {
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const [messageKey, setMessageKey] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
   const [result, setResult] = useState("");
 
-  const affiliationOptions = affiliation?.map((aff) => ({
-    value: aff.name,
-    label: aff.name,
-  }));
+  const affiliationOptions = useMemo(
+    () =>
+      (locations ?? [])
+        .filter((aff) => aff?.name)
+        .map((aff) => ({
+          value: aff.name,
+          label: aff.name,
+        })),
+    [locations],
+  );
+
+  const isAffiliationEmpty =
+    !isAffiliationLoading &&
+    !affiliationError &&
+    affiliationOptions.length === 0;
+
+  const steps = useMemo(
+    () => [
+      { id: 1, label: t("reqAcc.personalInfo") },
+      { id: 2, label: t("reqAcc.workInfo") },
+      { id: 3, label: t("reqAcc.review") },
+    ],
+    [t, i18n.language],
+  );
+
+  useEffect(() => {
+    setErrors({});
+    setMessage("");
+    setMessageKey("");
+    setResult("");
+  }, [routeLocation.pathname, i18n.language]);
 
   const handleSelectChange = (selectedOption, name) => {
     setFormData({
       ...formData,
       [name]: selectedOption ? selectedOption.value : "",
+    });
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[name];
+      return newErrors;
     });
   };
 
@@ -58,7 +152,7 @@ const AccountRequestForm = () => {
     if (name === "password" && value && value.length < 8) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        password: t("reqAcc.enterPassword"),
+        password: "common:authErrors.passwordTooShort",
       }));
     }
 
@@ -71,20 +165,18 @@ const AccountRequestForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrors({});
+    setMessage("");
+    setMessageKey("");
 
     const validationErrors = {};
 
-    if (!formData.firstName)
-      validationErrors.firstName = t("reqAccValidation.firstName");
-    if (!formData.lastName)
-      validationErrors.lastName = t("reqAccValidation.lastName");
-    if (!formData.userId)
-      validationErrors.userId = t("reqAccValidation.employeeId");
-    if (!formData.affiliation)
-      validationErrors.affiliation = t("reqAccValidation.affiliation");
-    if (!formData.email) validationErrors.email = t("reqAccValidation.email");
-    if (!formData.password)
-      validationErrors.password = t("reqAccValidation.password");
+    ["firstName", "lastName", "userId", "affiliation", "email", "password"].forEach(
+      (field) => {
+        const errorKey = getValidationErrorKey(field, formData[field]);
+        if (errorKey) validationErrors[field] = errorKey;
+      },
+    );
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -105,6 +197,7 @@ const AccountRequestForm = () => {
 
       const requestStatus = requestResult.isSuccess ? "success" : "fail";
       setResult(requestStatus);
+      setMessageKey(requestResult.messageKey || "");
 
       if (requestStatus === "success") {
         setFormData({
@@ -118,9 +211,10 @@ const AccountRequestForm = () => {
         setStep(1);
       }
 
-      setMessage(requestResult.message);
+      setMessage(requestResult.message || "");
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      setResult("fail");
+      setMessageKey("common:authErrors.server");
     } finally {
       setIsSubmitting(false);
     }
@@ -130,20 +224,17 @@ const AccountRequestForm = () => {
     const validationErrors = {};
 
     if (step === 1) {
-      if (!formData.firstName)
-        validationErrors.firstName = t("reqAccValidation.firstName");
-      if (!formData.lastName)
-        validationErrors.lastName = t("reqAccValidation.lastName");
-      if (!formData.userId)
-        validationErrors.userId = t("reqAccValidation.employeeId");
+      ["firstName", "lastName", "userId"].forEach((field) => {
+        const errorKey = getValidationErrorKey(field, formData[field]);
+        if (errorKey) validationErrors[field] = errorKey;
+      });
     }
 
     if (step === 2) {
-      if (!formData.affiliation)
-        validationErrors.affiliation = t("reqAccValidation.affiliation");
-      if (!formData.email) validationErrors.email = t("reqAccValidation.email");
-      if (!formData.password)
-        validationErrors.password = t("reqAccValidation.password");
+      ["affiliation", "email", "password"].forEach((field) => {
+        const errorKey = getValidationErrorKey(field, formData[field]);
+        if (errorKey) validationErrors[field] = errorKey;
+      });
     }
 
     if (Object.keys(validationErrors).length > 0) {
@@ -158,231 +249,217 @@ const AccountRequestForm = () => {
   const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 dark:bg-gray-700 xs:bg-white lg:bg-secondary">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm gap-1 rounded bg-white p-8 text-sm shadow-md xs:bg-none xs:shadow-none dark:xs:bg-transparent"
-      >
-        <h2 className="mb-6 text-center text-2xl font-bold text-gray-700 dark:text-gray-50">
-          {t("reqAcc.requestAccount")}
-        </h2>
-        <div className="mb-4 text-center text-xs text-gray-500 dark:text-gray-200">
-          {t("reqAcc.fillOutFields")}
-        </div>
-
-        <div className="mb-4 flex justify-between text-xs text-gray-500 dark:text-gray-100">
-          <div
-            className={`w-1/3 ${step === 1 ? "font-medium text-primary" : ""}`}
-          >
-            {t("reqAcc.personalInfo")}
-          </div>
-          <div
-            className={`w-1/3 ${step === 2 ? "font-medium text-primary" : ""}`}
-          >
-            {t("reqAcc.workInfo")}
-          </div>
-          <div
-            className={`w-1/3 ${step === 3 ? "font-medium text-primary" : ""}`}
-          >
-            {t("reqAcc.review")}
-          </div>
-        </div>
-
-        <div className="mb-4 h-1 bg-gray-300">
-          <div
-            className={`h-full bg-cyan-to-blue`}
-            style={{ width: `${(step - 1) * 33.33}%` }}
-          />
-        </div>
-
-        {step === 1 && (
-          <>
-            <div className="mb-4 flex flex-col gap-2 text-sm">
-              <TextInput
-                label={t("reqAcc.firstName")}
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                placeholder={t("reqAcc.enterFirstName")}
-                error={errors.firstName}
-              />
-              <TextInput
-                label={t("reqAcc.lastName")}
-                name="lastName"
-                type="text"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder={t("reqAcc.enterLastName")}
-                error={errors.lastName}
-              />
-              <TextInput
-                label={t("reqAcc.employeeNumber")}
-                type="text"
-                name="userId"
-                value={formData.userId}
-                onChange={handleChange}
-                placeholder={t("reqAcc.enterEmployeeNumber")}
-                error={errors.userId}
-              />
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                type="button"
-                onClick={nextStep}
-                className="inline-flex items-center gap-2 rounded bg-cyan-to-blue px-4 py-3 font-medium text-white"
-              >
-                <span>{t("reqAcc.next")}</span>
-                <IoArrowForwardOutline />
-              </button>
-            </div>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <div className="mb-4">
-              <RegisterSelection
-                label={t("reqAcc.affiliation")}
-                fieldName="affiliation"
-                options={affiliationOptions}
-                value={formData.affiliation}
-                onChange={handleSelectChange}
-                placeholder={t("reqAcc.enterAffiliation")}
-                error={errors.affiliation}
-              />
-              <TextInput
-                label={t("reqAcc.email")}
-                type="email"
-                name="email"
-                placeholder={t("reqAcc.enterEmail")}
-                value={formData.email}
-                onChange={handleChange}
-                error={errors.email}
-              />
-              <TextInput
-                label={t("reqAcc.password")}
-                type="password"
-                name="password"
-                placeholder={t("reqAcc.enterPassword")}
-                value={formData.password}
-                onChange={handleChange}
-                error={errors.password}
-              />
-            </div>
-
-            <div className="mt-6 flex justify-between">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="inline-flex items-center gap-2 border border-cyanToBlue px-4 py-3 text-gray-600"
-              >
-                <IoArrowBack />
-                <span>{t("reqAcc.back")}</span>
-              </button>
-              <button
-                type="button"
-                onClick={nextStep}
-                className="inline-flex items-center gap-2 bg-cyan-to-blue px-4 py-3 text-white"
-              >
-                <span>{t("reqAcc.next")}</span>
-                <IoArrowForwardOutline />
-              </button>
-            </div>
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <div className="mb-6">
-              <p className="mb-4 text-center text-lg font-semibold">
-                {t("reqAcc.reviewYourInformation")}
+    <GuestAppChrome className="justify-start overflow-y-auto py-4 md:justify-center md:py-6">
+      <div className="w-full max-w-[32rem]">
+        <div className="border-none bg-transparent p-0 shadow-none md:rounded-2xl md:border md:border-gray-200/90 md:bg-white/95 md:p-8 md:shadow-xl md:shadow-gray-300/25 md:backdrop-blur-sm dark:md:border-gray-600/80 dark:md:bg-gray-800/95 dark:md:shadow-black/30">
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="mb-4 text-center md:mb-5">
+              <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50 md:text-2xl">
+                {t("reqAcc.requestAccount")}
+              </h1>
+              <p className="mt-1.5 text-sm leading-snug text-gray-600 dark:text-gray-300">
+                {t("reqAcc.fillOutFields")}
               </p>
-              <div className="rounded-xl border p-6 text-gray-900 dark:text-gray-200">
-                <div className="space-y-2 text-sm">
-                  <p>
-                    <span className="font-semibold">
-                      {t("reqAcc.employeeNumber")}:
-                    </span>{" "}
-                    {formData.userId}
-                  </p>
-                  <p>
-                    <span className="font-semibold">
-                      {t("reqAcc.firstName")}:
-                    </span>{" "}
-                    {formData.firstName}
-                  </p>
-                  <p>
-                    <span className="font-semibold">
-                      {t("reqAcc.lastName")}:
-                    </span>{" "}
-                    {formData.lastName}
-                  </p>
-                  <p>
-                    <span className="font-semibold">
-                      {t("reqAcc.affiliation")}:
-                    </span>{" "}
-                    {formData.affiliation}
-                  </p>
-                  <p>
-                    <span className="font-semibold">{t("reqAcc.email")}:</span>{" "}
-                    {formData.email}
-                  </p>
-                  <p>
-                    <span className="font-semibold">
-                      {t("reqAcc.password")}:
-                    </span>{" "}
-                    ********
-                  </p>
+            </div>
+
+            <StepIndicator steps={steps} currentStep={step} />
+
+            {step === 1 && (
+              <>
+                <div className="space-y-0">
+                  <TextInput
+                    variant="auth"
+                    label={t("reqAcc.firstName")}
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    placeholder={t("reqAcc.enterFirstName")}
+                    error={errors.firstName ? t(errors.firstName) : ""}
+                  />
+                  <TextInput
+                    variant="auth"
+                    label={t("reqAcc.lastName")}
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder={t("reqAcc.enterLastName")}
+                    error={errors.lastName ? t(errors.lastName) : ""}
+                  />
+                  <TextInput
+                    variant="auth"
+                    label={t("reqAcc.employeeNumber")}
+                    type="text"
+                    name="userId"
+                    value={formData.userId}
+                    onChange={handleChange}
+                    placeholder={t("reqAcc.enterEmployeeNumber")}
+                    error={errors.userId ? t(errors.userId) : ""}
+                  />
                 </div>
-              </div>
-            </div>
 
-            <div className="mt-6 flex justify-between">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="inline-flex items-center gap-2 bg-gray-100 px-4 py-3"
-              >
-                <IoArrowBack />
-                <span>{t("reqAcc.back")}</span>
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`inline-flex items-center gap-2 bg-cyan-to-blue px-4 py-3 text-white ${
-                  isSubmitting ? "cursor-not-allowed opacity-50" : ""
-                }`}
-              >
-                <span>{t("reqAcc.requestNow")}</span>
-              </button>
-            </div>
-          </>
-        )}
-      </form>
+                <div className="mt-5 flex justify-stretch sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className={primaryButtonClassName}
+                  >
+                    <span>{t("reqAcc.next")}</span>
+                    <IoArrowForwardOutline aria-hidden="true" />
+                  </button>
+                </div>
+              </>
+            )}
 
-      <div className="mt-4 flex-col text-center">
-        <Link to="/login">
-          <button
-            type="button"
-            name="back-to-login"
-            className="inline-flex items-center gap-2 border p-3 text-gray-600 dark:text-gray-100"
-          >
-            <IoLogInOutline size={25} />
-          </button>
-        </Link>
-        <span className="flex p-4 text-sm text-gray-600 dark:text-white">
-          {t("reqAcc.goToLogin")}
-        </span>
+            {step === 2 && (
+              <>
+                <div className="space-y-0">
+                  <RegisterSelection
+                    variant="auth"
+                    label={t("reqAcc.affiliation")}
+                    fieldName="affiliation"
+                    options={affiliationOptions}
+                    value={formData.affiliation}
+                    onChange={handleSelectChange}
+                    placeholder={t("reqAcc.enterAffiliation")}
+                    error={errors.affiliation ? t(errors.affiliation) : ""}
+                    isLoading={isAffiliationLoading}
+                    loadingMessage={t("reqAcc.loadingAffiliations")}
+                    errorMessage={
+                      affiliationError ? t("reqAcc.unableToLoadAffiliations") : ""
+                    }
+                    emptyMessage={
+                      isAffiliationEmpty ? t("reqAcc.noAffiliations") : ""
+                    }
+                  />
+                  <TextInput
+                    variant="auth"
+                    label={t("reqAcc.email")}
+                    type="email"
+                    name="email"
+                    placeholder={t("reqAcc.enterEmail")}
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={errors.email ? t(errors.email) : ""}
+                  />
+                  <TextInput
+                    variant="auth"
+                    label={t("reqAcc.password")}
+                    type="password"
+                    name="password"
+                    placeholder={t("reqAcc.enterPassword")}
+                    value={formData.password}
+                    onChange={handleChange}
+                    error={errors.password ? t(errors.password) : ""}
+                  />
+                </div>
+
+                <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className={secondaryButtonClassName}
+                  >
+                    <IoArrowBack aria-hidden="true" />
+                    <span>{t("reqAcc.back")}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className={primaryButtonClassName}
+                  >
+                    <span>{t("reqAcc.next")}</span>
+                    <IoArrowForwardOutline aria-hidden="true" />
+                  </button>
+                </div>
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <div className="mb-4">
+                  <p className="mb-3 text-center text-sm font-semibold text-gray-800 dark:text-gray-100 sm:text-base">
+                    {t("reqAcc.reviewYourInformation")}
+                  </p>
+                  <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-4 text-sm text-gray-800 dark:border-gray-600 dark:bg-gray-900/40 dark:text-gray-200 sm:p-5">
+                    <dl className="space-y-2.5">
+                      {[
+                        ["userId", t("reqAcc.employeeNumber")],
+                        ["firstName", t("reqAcc.firstName")],
+                        ["lastName", t("reqAcc.lastName")],
+                        ["affiliation", t("reqAcc.affiliation")],
+                        ["email", t("reqAcc.email")],
+                      ].map(([key, label]) => (
+                        <div key={key} className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                          <dt className="font-semibold sm:min-w-[8.5rem]">{label}</dt>
+                          <dd className="text-gray-700 dark:text-gray-300">
+                            {formData[key]}
+                          </dd>
+                        </div>
+                      ))}
+                      <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                        <dt className="font-semibold sm:min-w-[8.5rem]">
+                          {t("reqAcc.password")}
+                        </dt>
+                        <dd className="text-gray-700 dark:text-gray-300">********</dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className={secondaryButtonClassName}
+                    disabled={isSubmitting}
+                  >
+                    <IoArrowBack aria-hidden="true" />
+                    <span>{t("reqAcc.back")}</span>
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={primaryButtonClassName}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                        <span>{t("reqAcc.submitting")}</span>
+                      </>
+                    ) : (
+                      <span>{t("reqAcc.requestNow")}</span>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+          </form>
+
+          <p className="mt-5 text-center text-sm text-gray-600 dark:text-gray-300">
+            {t("reqAcc.alreadyHaveAccount")}
+            <Link
+              to="/login"
+              className="font-semibold text-primary hover:underline"
+            >
+              {t("reqAcc.signIn")}
+            </Link>
+          </p>
+        </div>
+
+        <p className="mt-4 text-center text-[11px] leading-relaxed text-gray-400 dark:text-gray-500 sm:mt-5">
+          {t("login:kawasakiCopyright")}
+        </p>
       </div>
 
       <AccountRequestModal
         result={result}
         onClose={() => setResult("")}
         message={message}
+        messageKey={messageKey}
       />
-    </div>
+    </GuestAppChrome>
   );
 };
 

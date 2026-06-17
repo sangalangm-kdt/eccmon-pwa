@@ -1,4 +1,11 @@
 {
+  "pickDate": "Select date",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "placeholder": "YYYY-MM-DD",
+  "time": "Time",
+  "invalidDate": "Please enter a valid date.",
+  "openCalendar": "Open calendar",
   "months": {
     "1": "January",
     "2": "February",

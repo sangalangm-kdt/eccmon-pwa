@@ -1,49 +1,145 @@
-import React, { useState, useEffect } from "react";
-import DateField from "../../../../constants/DateField"; // Assuming DateField component is working as expected
+import React, { useEffect, useMemo, useState } from "react";
+import DateField from "../../../../constants/DateField";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
+import { isDisposed, normalizeScannedCylinder, toDisposalDatePayload } from "../../../../utils/cylinderStatus";
+import {
+  setFormDataIfChanged,
+  setStateIfChanged,
+} from "../../../../utils/syncFormState";
 
-const Disposal = ({ setData, disabled, setIsComplete }) => {
-  // const [disposalDate, setDisposalDate] = useState(""); // Disposal date state
-  const [date, setDate] = useState(() => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    const hours = String(today.getHours()).padStart(2, "0");
-    const minutes = String(today.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`; // Return full dateTime
-  });
+const DISPOSAL_DATA_KEYS = [
+  "serialNumber",
+  "location",
+  "status",
+  "process",
+  "dateDone",
+  "disposalDate",
+  "disposal_date",
+  "cycle",
+  "is_disposed",
+  "isDisposed",
+];
 
-  const { t } = useTranslation();
+const formatInputDate = (value) => {
+  if (!value) return "";
 
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+const getCurrentInputDate = () => formatInputDate(new Date());
+
+const getRecordedDisposalDate = (cylinderData) =>
+  formatInputDate(cylinderData?.disposalDate);
+
+const buildDisposalData = ({ serialNumber, cycle, date }) => {
+  const disposalDate = toDisposalDatePayload(date);
+
+  return {
+    serialNumber,
+    location: "None",
+    status: "Disposal",
+    process: "Disposal",
+    dateDone: date,
+    disposalDate,
+    disposal_date: disposalDate,
+    cycle,
+    is_disposed: 2,
+    isDisposed: 2,
+  };
+};
+
+const Disposal = ({
+  setData,
+  disabled,
+  readOnly = false,
+  setIsComplete,
+  setContinueDisabledReason,
+}) => {
+  const { t } = useTranslation("qrScanner");
   const location = useLocation();
-  const cylinderData = location.state?.data;
-  // const [isDisposed, setIsDisposed] = useState(0); // Automatically set to 0 (not disposed) or 1 (disposed)
+
+  const cylinderData = useMemo(
+    () => normalizeScannedCylinder(location.state),
+    [
+      location.state?.data,
+      location.state?.is_disposed,
+      location.state?.isDisposed,
+      location.state?.disposedReadOnly,
+      location.state?.isNewCylinder,
+    ],
+  );
+
+  const serialNumber = cylinderData?.serialNumber ?? "";
+  const cycle = cylinderData?.cycle;
+  const recordedDisposalDate = getRecordedDisposalDate(cylinderData);
+  const disposed = readOnly || isDisposed(cylinderData);
+
+  const [date, setDate] = useState(() =>
+    disposed ? recordedDisposalDate : getCurrentInputDate(),
+  );
+
+  const dateRequiredMessage = t("validation.dateRequired");
 
   useEffect(() => {
-    setData({
-      serialNumber: cylinderData?.serialNumber,
-      location: "None",
-      dateDone: date,
-      cycle: cylinderData?.cycle,
-    });
+    if (!disposed) return;
+    setDate((prev) =>
+      prev === recordedDisposalDate ? prev : recordedDisposalDate,
+    );
+  }, [disposed, recordedDisposalDate]);
 
-    if (date) {
-      setIsComplete(true); // Mark as complete when date is set
-    } else {
-      setIsComplete(false); // Mark as incomplete when date is not set
+  useEffect(() => {
+    const nextData = buildDisposalData({ serialNumber, cycle, date });
+    setFormDataIfChanged(setData, nextData, DISPOSAL_DATA_KEYS);
+
+    if (disposed) {
+      setStateIfChanged(setIsComplete, false);
+      setStateIfChanged(setContinueDisabledReason, null);
+      return;
     }
-  }, [date, cylinderData, setData, setIsComplete]);
+
+    const dateValid = Boolean(date);
+    setStateIfChanged(setIsComplete, dateValid);
+    setContinueDisabledReason?.((prev) => {
+      const next = dateValid ? null : dateRequiredMessage;
+      return prev === next ? prev : next;
+    });
+  }, [
+    date,
+    serialNumber,
+    cycle,
+    disposed,
+    dateRequiredMessage,
+    setData,
+    setIsComplete,
+    setContinueDisabledReason,
+  ]);
 
   return (
     <div className="flex flex-col rounded-lg bg-white pb-1 dark:bg-gray-500">
       <div className="w-full p-2">
-        <h2 className="mb-6 font-semibold">{t("qrScanner:disposalStatus")}</h2>
+        <h2 className="mb-6 font-semibold">{t("disposalStatus")}</h2>
         <div className="text-sm">
-          <label>{t("qrScanner:disposalDate")}</label>
-
-          <DateField date={date} setDate={setDate} disabled={disabled} />
+          <label>{t("disposalDate")}</label>
+          <DateField
+            date={date}
+            setDate={setDate}
+            disabled={disabled || disposed}
+          />
+          {disposed && !date && (
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-200 md:text-xs">
+              {t("noDisposalDateRecorded")}
+            </p>
+          )}
         </div>
       </div>
     </div>

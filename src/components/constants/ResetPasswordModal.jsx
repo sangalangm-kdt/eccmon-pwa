@@ -1,24 +1,34 @@
 import React from "react";
 import { IoCheckmarkCircle } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
+import ResponsiveSheet from "./ResponsiveSheet";
 
 const ResetPasswordSuccessModal = ({ onClose }) => {
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-96 rounded-lg bg-white p-6 text-center shadow-lg">
-        <IoCheckmarkCircle className="mx-auto text-green-500" size={50} />
-        <h2 className="mt-2 text-xl font-bold text-gray-700">Success!</h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Your password has been successfully changed.
-        </p>
+  const { t } = useTranslation("common");
 
-        <button
-          onClick={onClose}
-          className="mt-4 w-full rounded bg-cyan-to-blue p-2 text-white hover:bg-blue-600"
-        >
-          OK
-        </button>
-      </div>
-    </div>
+  return (
+    <ResponsiveSheet
+      isOpen
+      onClose={onClose}
+      title={t("success")}
+      size="sm"
+      zIndex={50}
+      closeLabel={t("close")}
+      bodyClassName="p-4 text-center sm:p-6"
+    >
+      <IoCheckmarkCircle className="mx-auto text-green-500" size={50} />
+      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+        {t("authFeedback.passwordResetSuccess")}
+      </p>
+
+      <button
+        type="button"
+        onClick={onClose}
+        className="mt-4 min-h-[44px] w-full rounded bg-cyan-to-blue p-2 text-white transition-all duration-200 active:scale-95"
+      >
+        {t("done")}
+      </button>
+    </ResponsiveSheet>
   );
 };
 

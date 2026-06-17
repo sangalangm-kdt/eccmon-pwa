@@ -1,16 +1,21 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import Preloader from "../constants/preloader/Preloader";
 
 const ProtectedRoute = () => {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
-    return <Preloader />; // Show Preloader only inside protected pages
+    return <Preloader />;
   }
 
-  return !user ? <Navigate to="/login" /> : <Outlet />;
+  return user ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login" replace state={{ from: location }} />
+  );
 };
 
 export default ProtectedRoute;

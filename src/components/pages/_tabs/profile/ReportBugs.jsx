@@ -10,13 +10,13 @@ import { useAuthentication } from "../../../../hooks/auth";
 
 const ReportBugs = () => {
   const bugCategories = [
-    "Functional",
-    "Visual",
-    "Content",
-    "Security",
-    "Compatibility",
-    "Usability",
-    "Others",
+    "functional",
+    "visual",
+    "content",
+    "security",
+    "compatibility",
+    "usability",
+    "others",
   ];
 
   const navigate = useNavigate();
@@ -92,7 +92,9 @@ const ReportBugs = () => {
           className="flex items-center justify-center gap-1 rounded-full p-2"
         >
           <IoArrowBack className="text-gray-700 dark:text-gray-100" />
-          <p className="text-sm text-gray-700 dark:text-gray-100">Back</p>
+          <p className="text-sm text-gray-700 dark:text-gray-100">
+            {t("back")}
+          </p>
         </button>
         <h1 className="flex-1 text-center font-medium text-gray-700 dark:text-gray-100 xs:mr-12">
           {t("reportBugsTitle")}
@@ -133,7 +135,7 @@ const ReportBugs = () => {
           {/* Category Field */}
           <div className="flex flex-col gap-2">
             <label htmlFor="title" className="text-gray-600 dark:text-gray-50">
-              Category
+              {t("category")}
               <span className="text-red-500">&nbsp;*</span>
             </label>
             <div className="relative">
@@ -148,7 +150,7 @@ const ReportBugs = () => {
               >
                 {bugCategories.map((category, categoryIdx) => (
                   <option key={categoryIdx} value={category}>
-                    {category}
+                    {t(`categories.${category}`)}
                   </option>
                 ))}
               </select>

@@ -7,6 +7,7 @@ export const statusColors = {
   mounted: "bg-yellow-100 dark:bg-transparent dark:border dark:border-yellow-300", // Lighter Pastel Yellow
   dismounted: "bg-orange-100 dark:bg-transparent dark:border dark:border-orange-300", // Lighter Pastel Orange
   disposal: "bg-red-100 dark:bg-transparent dark:border dark:border-red-300", // Lighter Pastel Red
+  disposed: "bg-red-100 dark:bg-transparent dark:border dark:border-red-300",
 };
 
 // Function to darken the text color based on the background color
@@ -54,7 +55,10 @@ export const getStatusColors = (status) => {
   // Default pastel gray for unmatched statuses
   const baseColor = processStages.includes(status.toLowerCase())
     ? statusColors.process
-    : statusColors[status.toLowerCase()] || "bg-gray-50"; // Default pastel gray
+    : statusColors[status.toLowerCase()] ||
+      (status.toLowerCase() === "disposed"
+        ? statusColors.disposed
+        : "bg-gray-50");
 
   // Tailwind classes for text color based on background
   let textColor = "text-gray-700"; // Default text color

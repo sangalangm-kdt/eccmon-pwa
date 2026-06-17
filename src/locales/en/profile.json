@@ -1,8 +1,16 @@
 {
   "profileSection": {
-    "employeeId": "Employee ID:"
+    "employeeId": "Employee ID:",
+    "affiliation": "Affiliation:"
   },
   "menuSection": {
+    "account": "Account",
+    "supportAndApp": "Support & App",
+    "aboutEccMon": "About ECCMon",
+    "version": "Version",
+    "languageEnglish": "English (US)",
+    "languageJapanese": "日本語",
+    "copyright": "© {{year}} KHI Design and Technical Services, Inc. All Rights Reserved.",
     "accountSettings": {
       "account": "Account Settings",
       "information": "Information",
@@ -20,9 +28,69 @@
     "reportBugs": "Report Bugs",
     "logout": "Logout"
   },
+  "unknownUser": "Unknown User",
+  "faq": {
+    "back": "Back",
+    "title": "FAQ",
+    "heading": "Frequently Asked Questions",
+    "greeting": "Hello",
+    "greetingSuffix": ", how can we help you?",
+    "searchPlaceholder": "Search for a question",
+    "categories": {
+      "General Information": [
+        {
+          "question": "What is ECCMon?",
+          "answer": "ECCMon is a QR scanning system designed to monitor cylinder covers."
+        },
+        {
+          "question": "What is ECCMon Mobile?",
+          "answer": "ECCMon Mobile is the progressive web app (PWA) version of ECCMon."
+        },
+        {
+          "question": "What happens after scanning the QR code?",
+          "answer": "The app will display detailed information about the cylinder cover."
+        },
+        {
+          "question": "What are the different types of operations in ECCMon mobile?",
+          "answer": "ECCMon mobile tracks Storage, Process, Mounted, Dismounted, and Disposal operations."
+        }
+      ],
+      "Getting Started": [
+        {
+          "question": "How do I get started with ECCMon?",
+          "answer": "Install the PWA, sign in, and start scanning QR codes."
+        },
+        {
+          "question": "How do I scan a cylinder cover's QR code?",
+          "answer": "Tap Scan QR and point your camera at the QR code."
+        }
+      ],
+      "Operations": [
+        {
+          "question": "How do I add a new cylinder cover?",
+          "answer": "Scan the QR code or enter the serial number manually."
+        },
+        {
+          "question": "How do I update an existing cylinder cover?",
+          "answer": "Scan the QR code and select the desired operation."
+        }
+      ],
+      "Account & Settings": [
+        {
+          "question": "Can I change the language in the app?",
+          "answer": "Yes, go to Settings and select your preferred language."
+        },
+        {
+          "question": "How can I log out of the app?",
+          "answer": "Tap the Logout button in the profile section."
+        }
+      ]
+    }
+  },
   "changePassword": {
     "title": "Change Password",
     "currentPass": "Current Password",
+    "currentPassRequired": "Current password is required.",
     "enterCurrentPass": "Please enter your current password",
     "newPass": "New Password",
     "enterNewPass": "Please enter your new password",

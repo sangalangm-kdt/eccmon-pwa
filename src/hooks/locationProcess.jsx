@@ -16,7 +16,7 @@ const API_ENDPOINTS = {
 export const useLocationProcess = (process) => {
   const { user } = useAuthentication();
 
-  if (user.is_admin !== 1) {
+  if (user?.is_admin !== 1) {
     return {
       data: null,
       isLoading: false,

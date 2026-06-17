@@ -1,17 +1,17 @@
 import React, { Suspense, lazy } from "react";
 import {
   createBrowserRouter,
-  RouterProvider,
   Outlet,
+  RouterProvider,
   useLocation,
 } from "react-router-dom";
-import NotFoundPage from "./components/pages/auth/NotFoundPage";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import NavBar from "./components/pages/_tabs/NavBar";
+
 import { AuthProvider } from "./components/auth/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RedirectIfAuthenticated from "./components/auth/redirectIfAuthenticated";
-// import ScannedResult from "./components/pages/_tabs/qrscanner/ScannedResult";
 import Preloader from "./components/constants/preloader/Preloader";
+import NavBar from "./components/pages/_tabs/NavBar";
+import NotFoundPage from "./components/pages/auth/NotFoundPage";
 import ViewInfo from "./components/pages/_tabs/qrscanner/view/ViewInfo";
 import { HistoryProvider } from "./components/utils/HistoryContext";
 
@@ -58,7 +58,10 @@ const Layout = () => {
     "/report-bugs",
     "/changelog",
   ];
-  const shouldHideNavBar = hideNavBarPaths.includes(location.pathname);
+  const shouldHideNavBar = hideNavBarPaths.includes(
+    location.pathname.toLowerCase(),
+  );
+
   return (
     <>
       {!shouldHideNavBar && <NavBar />}
@@ -116,11 +119,15 @@ function App() {
           element: <Register />,
         },
         {
-          path: "user-guidelines",
+          path: "/user-guidelines",
           element: <UserGuidelines />,
         },
         {
-          path: "FAQ",
+          path: "/faq",
+          element: <Faq />,
+        },
+        {
+          path: "/FAQ",
           element: <Faq />,
         },
         {

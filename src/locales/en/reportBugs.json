@@ -7,5 +7,16 @@
     "whatWentWrong":"What went wrong?",
     "uploadSupportingDocument":"Upload Supporting Documents",
     "selectFiles":"Select Files",
-    "reportBtn":"Report"
+    "reportBtn":"Report",
+    "back": "Back",
+    "category": "Category",
+    "categories": {
+        "functional": "Functional",
+        "visual": "Visual",
+        "content": "Content",
+        "security": "Security",
+        "compatibility": "Compatibility",
+        "usability": "Usability",
+        "others": "Others"
+    }
 }

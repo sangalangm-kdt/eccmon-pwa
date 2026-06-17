@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
-import { customSelectStyles } from "../utils/selectUtils"; // Ensure this accepts isDarkMode
+import { customSelectStyles } from "../utils/selectUtils";
 
 const LocationDropdown = ({
   options = [],
@@ -10,15 +10,14 @@ const LocationDropdown = ({
   processor,
   setProcessor,
   disabled,
+  emptyHelperKey = "noOptionsForProcess",
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("qrScanner");
+  const isDarkMode = document.documentElement.classList.contains("dark");
+  const hasOptions = options.length > 0;
 
   const handleChange = (selectedOption) => {
-    const newLocation = selectedOption?.value || "";
-    setProcessor(newLocation);
-    if (onLocationChange) {
-      onLocationChange(newLocation); // Call the passed function
-    }
+    setProcessor(selectedOption?.value || "");
   };
 
   const transformedOptions = options.map((option) => ({
@@ -26,27 +25,46 @@ const LocationDropdown = ({
     label: option.name,
   }));
 
-  // Detect if dark mode is enabled
-  const isDarkMode = document.documentElement.classList.contains("dark");
+  if (error) {
+    return <div className="text-sm text-red-600">{t("error", { error })}</div>;
+  }
+
+  if (loading) {
+    return <div className="mt-2 text-sm">{t("loadingOptions")}</div>;
+  }
+
+  if (!hasOptions) {
+    return (
+      <div className="mt-2 text-sm">
+        <select
+          disabled
+          className="w-full rounded border bg-gray-100 px-2 py-2.5 text-sm text-gray-500 dark:bg-gray-600 dark:text-gray-300"
+        >
+          <option>{t("noOptionsAvailable")}</option>
+        </select>
+        {emptyHelperKey ? (
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300 md:text-xs">
+            {t(emptyHelperKey)}
+          </p>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className="mt-2 text-sm">
-      <div className="flex w-full flex-col">
-        {loading && <div>{t("qrScanner:loadingOptions")}</div>}
-        {error && <div>{t("qrScanner:error", { error })}</div>}
-        <Select
-          value={
-            transformedOptions.find((opt) => opt.value === processor) || null
-          }
-          onChange={handleChange}
-          options={transformedOptions}
-          isDisabled={disabled}
-          styles={customSelectStyles(isDarkMode)} // Pass isDarkMode here
-          placeholder={t("qrScanner:selectALocation")}
-          isClearable
-          noOptionsMessage={() => t(":noOptionsAvailable")}
-        />
-      </div>
+      <Select
+        value={
+          transformedOptions.find((opt) => opt.value === processor) || null
+        }
+        onChange={handleChange}
+        options={transformedOptions}
+        isDisabled={disabled}
+        styles={customSelectStyles(isDarkMode)}
+        placeholder={t("selectALocation")}
+        isClearable
+        noOptionsMessage={() => t("noOptionsAvailable")}
+      />
     </div>
   );
 };

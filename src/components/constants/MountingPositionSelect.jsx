@@ -1,40 +1,39 @@
 import React from "react";
 import Select from "react-select";
-import { customSelectStyle, customSelectStyles } from "../utils/selectUtils"; // Import custom select styles
+import { customSelectStyles } from "../utils/selectUtils";
+
+const MOUNTING_POSITIONS = [
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "A5",
+  "A6",
+  "A7",
+  "A8",
+  "A9",
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7",
+  "B8",
+  "B9",
+];
 
 const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
-  const mountingPositions = [
-    "A1",
-    "A2",
-    "A3",
-    "A4",
-    "A5",
-    "A6",
-    "A7",
-    "A8",
-    "A9",
-    "B1",
-    "B2",
-    "B3",
-    "B4",
-    "B5",
-    "B6",
-    "B7",
-    "B8",
-    "B9",
-  ];
+  const isDarkMode = document.documentElement.classList.contains("dark");
 
-  const options = mountingPositions.map((pos) => ({
+  const options = MOUNTING_POSITIONS.map((pos) => ({
     value: pos,
     label: pos,
   }));
 
   const handleChange = (selectedOption) => {
-    const newMountPos = selectedOption?.value || "";
-    console.log("Selected Mounting Position:", newMountPos); // Debug log
-    setMountPos(newMountPos); // Update state
+    setMountPos(selectedOption?.value || "");
   };
-  const isDarkMode = document.documentElement.classList.contains("dark");
 
   return (
     <div className="flex flex-col space-y-2">
@@ -45,9 +44,9 @@ const MountingPositionSelect = ({ mountPos, setMountPos, disabled, t }) => {
         options={options}
         isDisabled={disabled}
         styles={customSelectStyles(isDarkMode)}
-        placeholder="e.g. B1"
+        placeholder={t("selectEnginePos")}
         isClearable
-        noOptionsMessage={() => "No positions available"}
+        noOptionsMessage={() => t("noOptionsAvailable")}
       />
     </div>
   );

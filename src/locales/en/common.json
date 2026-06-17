@@ -7,9 +7,16 @@
   "anErrorOccured": "An error occurred. Please check your network connection and try again.",
   "installAppSafari": "Install on Home Screen",
   "installAppSafariInstructions": "1. Open Safari and go to this page. \n2. Tap the Share button (square with upward arrow). \n3. Scroll down and select 'Add to Home Screen'. \n4. Tap 'Add'. \n5. Find the app icon on your home screen and tap to open.",
+  "pwaInstall": {
+    "title": "Install ECCMon as PWA",
+    "message": "Add ECCMon to your home screen for faster access and a better mobile experience.",
+    "install": "Install",
+    "addToHomeScreen": "Add to Home Screen"
+  },
   "home": "Home",
   "profile": "Profile",
   "scanner": "Scanner",
+  "scanQr": "Scan QR",
   "logout": "Logout",
   "backButton": "Back",
   "backToScan": "Back to scan",
@@ -21,6 +28,34 @@
   "last7Days": "Last 7 days",
   "last30Days": "Last 30 days",
   "customDateRange": "Custom Date Range",
+  "searchHistory": "Search history",
+  "noHistoryFound": "No history found",
+  "noRecentHistory": "No recent history",
+  "noUpdatesAvailable": "No updates available for this cylinder.",
+  "updated": "Updated",
+  "close": "Close",
+  "saving": "Saving",
+  "loading": "Loading...",
+  "unknownUser": "Unknown User",
+  "language": {
+    "select": "Select Language",
+    "english": "English (US)"
+  },
+  "pwaUpdate": {
+    "message": "New content is available! Please refresh to update.",
+    "refresh": "Refresh"
+  },
+  "confirmDeletion": {
+    "title": "Confirm Deletion",
+    "message": "Are you sure you want to delete this data?",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "notFound": {
+    "imageAlt": "Page not found",
+    "title": "Page link not found",
+    "backLink": "Click here to go back"
+  },
 
   "welcomeToECCMon": "Welcome to ECCMon!",
   "getStarted": "Let's get started.",
@@ -70,6 +105,7 @@
   },
   "viewInfo": {
     "noDataToDisplay": "No data to display",
+    "noAdditionalInfoAvailable": "No additional information available",
     "details": "Details",
     "back": "Back",
     "serialNo": "Serial number",
@@ -80,7 +116,18 @@
     "cycle": "Cycle",
     "disposal": "Disposal",
     "disposalDate": "Disposal Date",
+    "readOnlyDisposed": "Disposed - Read Only",
+    "summary": "Summary",
     "additionalDetails": "Additional Details",
+    "disposalHistory": {
+      "title": "Disposal History",
+      "disposalStatus": "Disposal Status",
+      "disposalDate": "Disposal Date",
+      "disposedBy": "Disposed By",
+      "remarks": "Disposal Remarks",
+      "disposed": "Disposed",
+      "notDisposed": "Not Disposed"
+    },
     "addDetails": {
       "case": "Case",
       "isPassed": "Status",
@@ -93,6 +140,11 @@
         "newBuild": "New Build",
         "regeneration": "Regeneration",
         "maintenance": "Maintenance"
+      },
+      "statusValues": {
+        "ongoing": "Ongoing",
+        "passed": "Passed",
+        "failed": "Failed"
       }
     }
   },
@@ -129,7 +181,13 @@
     "enterEmail": "you@global.kawasaki.com",
     "password": "Password",
     "enterPassword": "Password should be at least 8 characters",
-    "reviewYourInformation": "Review Your Information"
+    "reviewYourInformation": "Review Your Information",
+    "alreadyHaveAccount": "Already have an account? ",
+    "signIn": "Sign In",
+    "submitting": "Submitting...",
+    "loadingLocations": "Loading locations...",
+    "noLocations": "No locations available.",
+    "unableToLoadLocations": "Unable to load locations."
   },
   "reqAccValidation": {
     "firstName": "First name is required",
@@ -138,6 +196,42 @@
     "affiliation": "Affiliation is required",
     "email": "Email is required",
     "password": "Password is required"
+  },
+  "authErrors": {
+    "accountNotFound": "Account not found.",
+    "emailRequired": "Email is required.",
+    "invalidCredentials": "Invalid email or password.",
+    "invalidEmail": "Please enter a valid email address.",
+    "network": "Network error. Please check your connection and try again.",
+    "passwordConfirmationMismatch": "Password confirmation does not match.",
+    "passwordRequired": "Password is required.",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "required": "This field is required.",
+    "server": "Something went wrong. Please try again."
+  },
+  "authFeedback": {
+    "changePasswordError": "Unable to change password.",
+    "changePasswordSuccess": "Password changed successfully.",
+    "confirmPassword": "Confirm Password",
+    "enterConfirmPassword": "Confirm new password",
+    "forgotPasswordDescription": "Enter your registered email address and we will send password reset instructions.",
+    "forgotPasswordTitle": "Forgot Password?",
+    "emailAddress": "Email Address",
+    "sendResetLink": "Send Reset Link",
+    "sendingResetLink": "Sending...",
+    "backToSignIn": "Back to Sign In",
+    "goToLogin": "Go to Login",
+    "passwordResetError": "Failed to reset password. Please try again.",
+    "passwordResetLinkInvalid": "Invalid password reset link.",
+    "passwordResetSent": "Password reset link has been sent to your email.",
+    "passwordResetSuccess": "Password reset successfully.",
+    "requestError": "Error Occurred",
+    "requestSubmitted": "Request Submitted!",
+    "requestSuccess": "Request successfully!",
+    "resetPasswordDescription": "You can now change your password.",
+    "resetPasswordTitle": "Reset Password",
+    "submit": "Submit",
+    "successfullyChanged": "Successfully Changed!"
   },
   "updatePassword": "Update password",
   "backToLogin": "Back to Login",

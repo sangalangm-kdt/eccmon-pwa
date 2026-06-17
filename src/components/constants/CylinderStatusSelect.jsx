@@ -54,8 +54,8 @@ export const CylinderStatusSelect = ({
       />
       {!hasOptions && (
         <p className="text-xs text-gray-500 dark:text-gray-100">
-          No options available
-        </p> // Optional message
+          {t("qrScanner:noOptionsAvailable")}
+        </p>
       )}
     </div>
   );

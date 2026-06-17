@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import SiteNameOptions from "../../../../../constants/SiteNameOptions";
 import { useAuthentication } from "../../../../../../hooks/auth";
@@ -13,54 +13,52 @@ const EngineInfo = ({
   setOpHours,
   disabled,
   showAlert,
-  setShowAlert,
+  siteRequired = false,
+  siteOptionsAvailable = true,
+  onSiteOptionsAvailabilityChange,
 }) => {
   const { t } = useTranslation("qrScanner");
   const { user } = useAuthentication();
-  // State to manage error messages
   const [engineNumError, setEngineNumError] = useState("");
   const [opHoursError, setOpHoursError] = useState("");
 
-  // Handle engine number change
   const handleEngineNumChange = (e) => {
     const value = e.target.value;
 
-    // Validate engine number (must be <= 2 characters)
     if (value.length <= 2) {
       setEngineNum(value);
-      setEngineNumError(""); // Clear error if valid
+      setEngineNumError("");
     } else {
-      setEngineNumError("Engine number cannot exceed 2 characters."); // Show error if invalid
+      setEngineNumError(t("engineNumError"));
     }
   };
 
-  // Handle operating hours change
   const handleOpHoursChange = (e) => {
     const value = e.target.value;
 
-    // Ensure operating hours is a valid non-negative number
     if (value >= 0 || value === "") {
       setOpHours(value);
-      setOpHoursError(""); // Clear error if valid
+      setOpHoursError("");
     } else {
-      setOpHoursError("Operating hours must be a non-negative number."); // Show error if invalid
+      setOpHoursError(t("opHoursError"));
     }
   };
-  console.log(site);
+
   return (
     <div className="flex flex-col p-2">
-      {/* Site Name */}
       {user.is_admin === 1 ? (
         <SiteNameOptions
           site={site}
           setSite={setSite}
           disabled={disabled}
-          showAlert={showAlert}
+          showAlert={showAlert && siteRequired && siteOptionsAvailable}
+          onOptionsAvailabilityChange={onSiteOptionsAvailabilityChange}
+          showUnconfiguredMessage={siteRequired && !siteOptionsAvailable}
         />
       ) : (
         <div className="flex w-full flex-col">
-          <label className="font-semibold">{t("qrScanner:engineInfo")}</label>
-          <label>{t("qrScanner:siteName")}</label>
+          <label className="font-semibold">{t("engineInfo")}</label>
+          <label>{t("siteName")}</label>
           <input
             className="w-full rounded border bg-transparent px-2 py-2 dark:bg-gray-600"
             type="text"
@@ -71,10 +69,9 @@ const EngineInfo = ({
         </div>
       )}
 
-      {/* Engine Number */}
       <div>
         <label>
-          {t("qrScanner:engineNo")} <strong className="text-red-500">*</strong>
+          {t("engineNo")} <strong className="text-red-500">*</strong>
         </label>
         <input
           value={engineNum}
@@ -82,24 +79,23 @@ const EngineInfo = ({
             engineNumError ? "border-red-500" : ""
           }`}
           type="number"
-          placeholder="Enter engine number (max 2 characters)"
+          placeholder={t("enterNumber")}
           onChange={handleEngineNumChange}
           disabled={disabled}
         />
         {engineNumError && (
-          <p className="text-tiny text-red-500">{engineNumError}</p>
+          <p className="text-sm text-red-500 md:text-tiny">{engineNumError}</p>
         )}
         {showAlert && !engineNum && (
-          <p className="text-xs text-red-600">
+          <p className="text-sm text-red-600 md:text-xs">
             {t("validation.engineNumberRequired")}
           </p>
         )}
       </div>
 
-      {/* Operating Hours */}
       <div>
         <label>
-          {t("qrScanner:operatingHours")}{" "}
+          {t("operatingHours")}{" "}
           <strong className="text-red-500">*</strong>
         </label>
         <input
@@ -114,12 +110,12 @@ const EngineInfo = ({
           required
         />
         {showAlert && opHours === "" && (
-          <p className="text-xs text-red-600">
+          <p className="text-sm text-red-600 md:text-xs">
             {t("validation.opHoursRequired")}
           </p>
         )}
         {opHoursError && (
-          <p className="text-tiny text-red-500">{opHoursError}</p>
+          <p className="text-sm text-red-500 md:text-tiny">{opHoursError}</p>
         )}
       </div>
     </div>

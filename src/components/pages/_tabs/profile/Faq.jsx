@@ -7,8 +7,10 @@ import {
 } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../../hooks/auth";
+import { useTranslation } from "react-i18next";
 
 const Faq = () => {
+  const { t } = useTranslation("profile");
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,7 +19,7 @@ const Faq = () => {
   const { user } = useAuthentication();
   const faqSectionRefs = useRef([]);
 
-  const employeeFirstname = user?.first_name || "Unknown User";
+  const employeeFirstname = user?.first_name || t("unknownUser");
 
   const handleBackToProfile = () => navigate("/profile");
 
@@ -30,74 +32,7 @@ const Faq = () => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
-  const faqCategories = {
-    "General Information": [
-      {
-        question: "What is ECCMon?",
-        answer:
-          "ECCMon is a QR scanning system designed to monitor cylinder covers.",
-      },
-      {
-        question: "What is ECCMon Mobile?",
-        answer:
-          "ECCMon Mobile is the progressive web app (PWA) version of ECCMon. It aims ro  ",
-      },
-      {
-        question: "What happens after scanning the QR code?",
-        answer:
-          "The app will display detailed information about the cylinder cover.",
-      },
-      {
-        question:
-          "What are the different types of operations in ECCMon mobile?",
-        answer: (
-          <>
-            ECCMon mobile tracks the following operations:
-            <br />- Storage Operations: Monitor cylinder covers stored within
-            the system.
-            <br />- Process Operations: Track cylinder covers undergoing
-            production or remanufacturing processes.
-            <br />- Mounted Operations: Keep track of cylinder covers that have
-            been mounted.
-            <br />- Dismounted Operations: Monitor cylinder covers that have
-            been dismounted.
-            <br />- Disposal Operations: Manage records of disposed cylinder
-            covers.
-          </>
-        ),
-      },
-    ],
-    "Getting Started": [
-      {
-        question: "How do I get started with ECCMon?",
-        answer: "Install the PWA, sign in, and start scanning QR codes.",
-      },
-      {
-        question: "How do I scan a cylinder cover's QR code?",
-        answer: "Tap 'Scan QR' and point your camera at the QR code.",
-      },
-    ],
-    Operations: [
-      {
-        question: "How do I add a new cylinder cover?",
-        answer: "Scan the QR code or enter the serial number manually.",
-      },
-      {
-        question: "How do I update an existing cylinder cover?",
-        answer: "Scan the QR code and select the desired operation.",
-      },
-    ],
-    "Account & Settings": [
-      {
-        question: "Can I change the language in the app?",
-        answer: "Yes, go to Settings and select your preferred language.",
-      },
-      {
-        question: "How can I log out of the app?",
-        answer: "Tap the 'Logout' button in the profile section.",
-      },
-    ],
-  };
+  const faqCategories = t("faq.categories", { returnObjects: true });
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
@@ -144,24 +79,26 @@ const Faq = () => {
           className="flex items-center gap-1 p-2"
         >
           <IoArrowBack className="text-gray-700 dark:text-gray-100" />
-          <p className="text-sm text-gray-700 dark:text-gray-100">Back</p>
+          <p className="text-sm text-gray-700 dark:text-gray-100">
+            {t("faq.back")}
+          </p>
         </button>
         <h1 className="flex-1 text-center text-sm font-medium text-gray-700 dark:text-gray-100 xs:mr-14">
-          FAQ
+          {t("faq.title")}
         </h1>
       </div>
 
       <div className="mt-28 flex flex-col text-center text-cyan-600 dark:text-gray-100">
         <p className="mb-2 text-2xl font-semibold">
-          Frequently Asked Questions
+          {t("faq.heading")}
         </p>
         <hr className="mx-auto my-2 w-48 border-t-3 border-cyanToBlue" />
         <p className="mt-2 text-sm font-medium text-gray-500">
-          Hello{" "}
+          {t("faq.greeting")}{" "}
           <strong className="font-semibold text-primary">
             {employeeFirstname}
           </strong>
-          , how can we help you?
+          {t("faq.greetingSuffix")}
         </p>
       </div>
 
@@ -170,7 +107,7 @@ const Faq = () => {
           <input
             type="text"
             className="w-full rounded-lg border py-3 pl-2 text-sm focus:outline-none dark:bg-gray-600 dark:text-gray-100"
-            placeholder="Search for a question"
+            placeholder={t("faq.searchPlaceholder")}
             value={searchQuery}
             onChange={handleSearchChange}
           />

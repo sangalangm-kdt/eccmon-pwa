@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoArrowBack, IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../../hooks/auth";
 import Loader from "../../../constants/Loader";
 import Preloader from "../../../constants/preloader/Preloader";
 import { useTranslation } from "react-i18next";
 import ChangePasswordRequestModal from "../../../constants/ChangePasswordRequestModal";
+import { getValidationErrorKey } from "../../../utils/authErrors";
 
 const ChangePass = () => {
   const [formData, setFormData] = useState({
@@ -18,45 +19,41 @@ const ChangePass = () => {
   const [errors, setErrors] = useState({});
   const [result, setResult] = useState("");
   const [message, setMessage] = useState("");
+  const [messageKey, setMessageKey] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { t } = useTranslation("profile");
+  const location = useLocation();
+  const { t, i18n } = useTranslation(["profile", "common"]);
+
+  useEffect(() => {
+    setErrors({});
+    setResult("");
+    setMessage("");
+    setMessageKey("");
+  }, [location.pathname, i18n.language]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrors({ ...errors, [name]: "" });
+    setErrors((prevErrors) => {
+      const nextErrors = { ...prevErrors };
+      delete nextErrors[name];
+      delete nextErrors.updatePassword;
+      return nextErrors;
+    });
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.currentPassword) {
-      newErrors.currentPassword =
-        t("changePassword.currentPass") +
-        " " +
-        t("isRequired", { ns: "common" });
-    }
-
-    if (!formData.newPassword) {
-      newErrors.newPassword =
-        t("changePassword.newPass") + " " + t("isRequired", { ns: "common" });
-    } else if (formData.newPassword.length < 8) {
-      newErrors.newPassword = t("changePassword.enterNewPass");
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword =
-        t("changePassword.confirmPass") +
-        " " +
-        t("isRequired", { ns: "common" });
-    } else if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = t("changePassword.enterConfirmPass");
-    }
+    ["currentPassword", "newPassword", "confirmPassword"].forEach((field) => {
+      const errorKey = getValidationErrorKey(field, formData[field], formData);
+      if (errorKey) newErrors[field] = errorKey;
+    });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -64,6 +61,9 @@ const ChangePass = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setMessageKey("");
+    setResult("");
 
     if (validateForm()) {
       setLoading(true);
@@ -78,6 +78,12 @@ const ChangePass = () => {
 
         const requestStatus = requestResult.isSuccess ? "success" : "fail";
         setResult(requestStatus);
+        setMessageKey(
+          requestResult.messageKey ||
+            (requestStatus === "success"
+              ? "common:authFeedback.changePasswordSuccess"
+              : "common:authFeedback.changePasswordError"),
+        );
 
         if (requestStatus === "success") {
           setFormData({
@@ -87,7 +93,7 @@ const ChangePass = () => {
           });
         }
 
-        setMessage(requestResult.message);
+        setMessage(requestResult.message || "");
       } catch (err) {
         console.error("Password change failed:", err);
       } finally {
@@ -163,7 +169,9 @@ const ChangePass = () => {
             </button>
           </div>
           {errors.currentPassword && (
-            <p className="text-xs text-red-500">{errors.currentPassword}</p>
+            <p className="text-xs text-red-500">
+              {t(errors.currentPassword)}
+            </p>
           )}
         </div>
 
@@ -198,7 +206,7 @@ const ChangePass = () => {
             </button>
           </div>
           {errors.newPassword && (
-            <p className="text-xs text-red-500">{errors.newPassword}</p>
+            <p className="text-xs text-red-500">{t(errors.newPassword)}</p>
           )}
         </div>
 
@@ -233,9 +241,15 @@ const ChangePass = () => {
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-xs text-red-500">{errors.confirmPassword}</p>
+            <p className="text-xs text-red-500">
+              {t(errors.confirmPassword)}
+            </p>
           )}
         </div>
+
+        {errors.updatePassword && (
+          <p className="text-xs text-red-500">{t(errors.updatePassword)}</p>
+        )}
 
         {/* Submit Button */}
         <div className="mb-10 mt-auto">
@@ -275,6 +289,7 @@ const ChangePass = () => {
         result={result}
         onClose={() => setResult("")}
         message={message}
+        messageKey={messageKey}
       />
 
       {/* Preloader Overlay */}

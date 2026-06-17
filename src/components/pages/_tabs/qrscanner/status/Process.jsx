@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+﻿/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import DateField from "../../../../constants/DateField";
@@ -14,6 +14,25 @@ import { formatDate } from "../../../../utils/formatdate";
 import { useAuthentication } from "../../../../../hooks/auth";
 import LocationDropdown from "../../../../constants/LocationDropdown";
 import { useLocationProcess } from "../../../../../hooks/locationProcess";
+import {
+  getContinueDisabledMessage,
+  getMissingRequiredFieldKeys,
+  isCaseSelected,
+  hasAvailableOptions,
+  validateSelectionField,
+} from "../../../../utils/formFieldValidation";
+import {
+  setFormDataIfChanged,
+  setStateIfChanged,
+} from "../../../../utils/syncFormState";
+
+const PROCESS_DATA_KEYS = [
+  "serialNumber",
+  "location",
+  "dateDone",
+  "cycle",
+  "otherDetails",
+];
 
 const Process = ({
   selectedProcessorStatus,
@@ -21,18 +40,23 @@ const Process = ({
   disabled,
   showAlert,
   setShowAlert,
+  setIsComplete,
+  setContinueDisabledReason,
 }) => {
   const location = useLocation();
   const cylinderData = location.state?.data;
+  const serialNumber = cylinderData?.serialNumber ?? "";
   const { user } = useAuthentication();
 
   const { t } = useTranslation("qrScanner");
-  const { data, isLoading } = useLocationProcess(
-    selectedProcessorStatus.toLowerCase(),
-  );
-  const selectedProcessor = data?.data;
+  const normalizedProcessorStatus =
+    selectedProcessorStatus?.toLowerCase?.().trim?.() ?? "";
+  const processLookupKey =
+    normalizedProcessorStatus === "process" ? null : normalizedProcessorStatus;
+  const { data: selectedProcessor, isLoading } =
+    useLocationProcess(processLookupKey);
 
-  const [initialData, setInitialData] = useState(cylinderData);
+  const [initialData] = useState(cylinderData);
 
   const [selectedCase, setSelectedCase] = useState(initialData?.case);
   const [processor, setProcessor] = useState(initialData?.location);
@@ -46,14 +70,16 @@ const Process = ({
     initialData?.updates?.otherDetails?.isPassed,
   );
   const [cycle, setCycle] = useState(initialData?.cycle);
-  const [selectedOrderNo, setSelectedOrderNo] = useState(
-    initialData?.updates?.otherDetails?.orderNumber,
-  );
+  const [selectedOrderNo, setSelectedOrderNo] = useState(() => {
+    const saved = initialData?.updates?.otherDetails?.orderNumber;
+    return saved === null || saved === undefined ? "" : `${saved}`;
+  });
 
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [infoDialogContent, setInfoDialogContent] = useState("");
 
   const [disabledProcessors, setDisabledProcessors] = useState([]);
+  const [orderOptionsAvailable, setOrderOptionsAvailable] = useState(true);
 
   useEffect(() => {
     // Only update if selectedProcessorStatus changes and it's a new operation
@@ -65,35 +91,106 @@ const Process = ({
       const today = new Date();
       setDate(formatDate(today));
 
-      setPassed(initialData?.updates?.otherDetails?.isPassed);
-      setSelectedOrderNo(initialData?.updates?.otherDetails?.orderNumber);
+      setPassed(initialData?.updates?.otherDetails?.isPassed ?? "0");
+      const savedOrder = initialData?.updates?.otherDetails?.orderNumber;
+      setSelectedOrderNo(
+        savedOrder === null || savedOrder === undefined ? "" : `${savedOrder}`,
+      );
     } else {
-      // Reset states if selectedProcessorStatus changes to a different operation
       const today = new Date();
       setDate(formatDate(today));
 
-      setPassed("0"); // Reset passed
-      setProcessor(null); // Reset location
+      setPassed("0");
+      setProcessor(null);
+      setSelectedCase(null);
+      setSelectedOrderNo("");
     }
   }, [selectedProcessorStatus]);
 
   useEffect(() => {
-    // Whenever 'passed' changes, update the date to the current time
     const today = new Date();
-    setDate(formatDate(today)); // Use formatDate function to set the new date
-  }, [passed]); // This will run when 'passed' changes
+    setDate(formatDate(today));
+  }, [passed]);
+
+  const locationOptions = {
+    disassembly: selectedProcessor?.data,
+    assembly: selectedProcessor?.data,
+    finishing: selectedProcessor?.data,
+    grooving: selectedProcessor?.data,
+    lmd: selectedProcessor?.data,
+  };
+
+  const currentOptions = (
+    locationOptions[normalizedProcessorStatus] ??
+    selectedProcessor?.data ??
+    []
+  ).filter((item) => item.status !== 2);
+
+  const hasProcessorOptions = hasAvailableOptions(currentOptions);
+  const processorRequired = user.is_admin === 1;
+  const resolvedLocation =
+    user.is_admin === 1
+      ? processor || user.affiliation || "None"
+      : user.affiliation;
 
   useEffect(() => {
-    setData({
-      serialNumber: initialData?.serialNumber,
-      location: user.is_admin === 1 ? processor : user.affiliation,
-      dateDone: date,
-      cycle: cycle,
-      otherDetails: { case: selectedCase, isPassed: passed, orderNumber: selectedOrderNo },
+    const processorCheck = validateSelectionField({
+      required: processorRequired,
+      hasOptions: hasProcessorOptions,
+      value: processor,
+      missingSelectionMessageKey: "validation.processorRequired",
     });
-    if (selectedCase && processor && date && selectedOrderNo) {
+
+    const orderRequired = true;
+    const orderCheck = validateSelectionField({
+      required: orderRequired,
+      hasOptions: orderOptionsAvailable,
+      value: selectedOrderNo,
+      missingSelectionMessageKey: "orderNoRequired",
+    });
+
+    const caseValid = isCaseSelected(selectedCase);
+    const dateValid = Boolean(date);
+    const passedValid =
+      passed !== null && passed !== undefined && `${passed}`.trim() !== "";
+
+    const fieldEntries = [
+      ["validation.caseRequired", caseValid],
+      ["validation.dateRequired", dateValid],
+      ["validation.processorRequired", processorCheck.valid],
+      ["orderNoRequired", orderCheck.valid],
+    ];
+
+    const missingKeys = getMissingRequiredFieldKeys(fieldEntries);
+    const isFormComplete = missingKeys.length === 0;
+
+    const otherDetails = JSON.stringify({
+      case: selectedCase,
+      isPassed: passed ?? "",
+      orderNumber: selectedOrderNo ?? "",
+    });
+
+    setFormDataIfChanged(
+      setData,
+      {
+        serialNumber,
+        location: resolvedLocation,
+        dateDone: date,
+        cycle,
+        otherDetails,
+      },
+      PROCESS_DATA_KEYS,
+    );
+
+    if (isFormComplete) {
       setShowAlert(false);
     }
+
+    setStateIfChanged(setIsComplete, isFormComplete);
+    setContinueDisabledReason?.((prev) => {
+      const next = getContinueDisabledMessage(missingKeys, t);
+      return prev === next ? prev : next;
+    });
   }, [
     processor,
     date,
@@ -101,12 +198,24 @@ const Process = ({
     cycle,
     selectedOrderNo,
     selectedCase,
-    initialData,
+    serialNumber,
+    resolvedLocation,
+    hasProcessorOptions,
+    processorRequired,
+    orderOptionsAvailable,
     setData,
+    setIsComplete,
+    setContinueDisabledReason,
+    setShowAlert,
+    t,
   ]);
 
   const renderLocations = () => {
-    return !isLoading ? (
+    if (isLoading) {
+      return <ProcessSkeleton />;
+    }
+
+    return (
       <div>
         <CaseButton
           handleInfoIconClick={handleInfoIconClick}
@@ -115,21 +224,24 @@ const Process = ({
           disabled={disabled}
           setDisabledProcessors={setDisabledProcessors}
         />
-        {showAlert && selectedCase === null && (
+        {showAlert && !isCaseSelected(selectedCase) && (
           <div className="p-1 text-red-600">
             <p className="text-xs">{t("validation.caseRequired")}</p>
           </div>
         )}
         <label className="mt-2 text-sm font-semibold text-primaryText dark:text-gray-100">
-          {t("qrScanner:processor")}
+          {t("processor")}
+          {processorRequired && hasProcessorOptions && (
+            <strong className="text-red-500"> *</strong>
+          )}
         </label>
         {user.is_admin === 1 ? (
           <LocationDropdown
-            options={selectedProcessor}
-            // loading={isLoading}
+            options={currentOptions ?? []}
             processor={processor}
             setProcessor={setProcessor}
-            disabled={disabled}
+            disabled={disabled || !(currentOptions ?? []).length}
+            emptyHelperKey="noOptionsForProcess"
           />
         ) : (
           <input
@@ -140,7 +252,7 @@ const Process = ({
             disabled
           />
         )}
-        {showAlert && !processor && (
+        {showAlert && processorRequired && hasProcessorOptions && !processor && (
           <div className="p-1 text-red-600">
             <p className="text-xs">{t("validation.processorRequired")}</p>
           </div>
@@ -173,29 +285,29 @@ const Process = ({
             selectedOrderNo={selectedOrderNo}
             setSelectedOrderNo={setSelectedOrderNo}
             disabled={disabled}
+            required
+            onOptionsAvailabilityChange={setOrderOptionsAvailable}
           />
-          {showAlert && !selectedOrderNo && (
+          {showAlert && orderOptionsAvailable && !selectedOrderNo && (
             <div className="p-1 text-red-600">
-              <p className="text-xs">{t("validation.orderNumberRequired")}</p>
+              <p className="text-xs">{t("orderNoRequired")}</p>
             </div>
           )}
         </div>
       </div>
-    ) : (
-      <ProcessSkeleton />
     );
   };
 
   const handleInfoIconClick = () => {
     const caseDescriptions = {
       0: t("qrScanner:dialog.case0Description", {
-        process: "LMD → Finishing → Assembly",
+        process: "LMD ΓåÆ Finishing ΓåÆ Assembly",
       }),
       1: t("qrScanner:dialog.case1Description", {
-        process: "Disassembly → Grooving → LMD → Assembly",
+        process: "Disassembly ΓåÆ Grooving ΓåÆ LMD ΓåÆ Assembly",
       }),
       2: t("qrScanner:dialog.case2Description", {
-        process: "Disassembly → Assembly",
+        process: "Disassembly ΓåÆ Assembly",
       }),
     };
 

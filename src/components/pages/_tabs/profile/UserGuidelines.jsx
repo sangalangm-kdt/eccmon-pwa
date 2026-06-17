@@ -27,7 +27,9 @@ const UserGuidelines = () => {
           className="flex items-center justify-center gap-1 rounded-full p-2"
         >
           <IoArrowBack className="text-gray-700 dark:text-gray-100" />
-          <p className="text-sm text-gray-700 dark:text-gray-100">Back</p>
+          <p className="text-sm text-gray-700 dark:text-gray-100">
+            {t("back")}
+          </p>
         </button>
         <h1 className="flex-1 text-center font-medium text-gray-700 dark:text-gray-100 xs:mr-12">
           {t('userGuidelines')}
@@ -41,7 +43,7 @@ const UserGuidelines = () => {
         </h1>
         <nav className="mt-1">
           <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">
-            Table of Contents
+            {t("tableOfContents")}
           </h2>
           <ul className="ml-8 mt-2 list-disc pl-0 text-gray-500">
             {sections.map((section) => (

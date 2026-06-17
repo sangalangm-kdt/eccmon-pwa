@@ -1,4 +1,11 @@
 {
+  "pickDate": "日付を選択",
+  "startDate": "開始日",
+  "endDate": "終了日",
+  "placeholder": "YYYY-MM-DD",
+  "time": "時刻",
+  "invalidDate": "有効な日付を入力してください。",
+  "openCalendar": "カレンダーを開く",
   "months": {
     "1": "1月",
     "2": "2月",

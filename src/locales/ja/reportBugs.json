@@ -1,11 +1,22 @@
 {
-    "reportBugsTitle":"バグを報告",
-    "reportABug":"バグを報告する",
-    "bugTitle":"バグのタイトル",
-    "enterBugTitle":"バグのタイトルを入力",
-    "reason":"理由",
-    "whatWentWrong":"何がうまくいかなかったのですか？",
-    "uploadSupportingDocument":"サポート文書をアップロード",
-    "selectFiles":"ファイルを選択",
-    "reportBtn":"報告"
+  "reportBugsTitle": "バグを報告",
+  "reportABug": "バグを報告する",
+  "bugTitle": "バグのタイトル",
+  "enterBugTitle": "バグのタイトルを入力",
+  "reason": "理由",
+  "whatWentWrong": "何がうまくいかなかったのですか？",
+  "uploadSupportingDocument": "サポート文書をアップロード",
+  "selectFiles": "ファイルを選択",
+  "reportBtn": "報告",
+  "back": "戻る",
+  "category": "カテゴリ",
+  "categories": {
+    "functional": "機能",
+    "visual": "表示",
+    "content": "コンテンツ",
+    "security": "セキュリティ",
+    "compatibility": "互換性",
+    "usability": "使いやすさ",
+    "others": "その他"
+  }
 }

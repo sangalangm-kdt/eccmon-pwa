@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import dateFormat from "dateformat";
 import { useCylinderUpdate } from "../../hooks/cylinderUpdates";
+import { getHistoryEventDate } from "./cylinderStatus";
 
 // Custom hook to combine history and updates
 export const useHistoryWithUpdates = (history) => {
@@ -39,15 +40,24 @@ export const sortHistory = (
 
 // Sort function for history based on the date
 // Sort function for history based on the date and time
+const getItemEventDate = (item) => {
+  const eventDate =
+    item?.historyDisplay?.eventDate ?? getHistoryEventDate(item);
+  return eventDate ? new Date(eventDate) : null;
+};
+
 export const sortHistoryByDate = (userHistory, sortOrder = "asc") => {
   return userHistory.sort((a, b) => {
-    // Ensure that dateDone exists and is a valid date
-    const dateA = a.updates?.dateDone ? new Date(a.updates?.dateDone) : null;
-    const dateB = b.updates?.dateDone ? new Date(b.updates?.dateDone) : null;
+    const dateA = getItemEventDate(a);
+    const dateB = getItemEventDate(b);
 
     // If any date is invalid, treat it as the lowest value (if ascending) or the highest (if descending)
-    if (isNaN(dateA)) return sortOrder === "asc" ? 1 : -1;
-    if (isNaN(dateB)) return sortOrder === "asc" ? -1 : 1;
+    if (!dateA || Number.isNaN(dateA.getTime())) {
+      return sortOrder === "asc" ? 1 : -1;
+    }
+    if (!dateB || Number.isNaN(dateB.getTime())) {
+      return sortOrder === "asc" ? -1 : 1;
+    }
 
     // Compare the dates
     return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
@@ -75,8 +85,8 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
       const last7Days = new Date();
       last7Days.setDate(currentDate.getDate() - 7);
       filteredData = filteredData?.filter((item) => {
-        const itemDate = new Date(item?.updates?.dateDone);
-        return itemDate >= last7Days;
+        const itemDate = getItemEventDate(item);
+        return itemDate && itemDate >= last7Days;
       });
       break;
 
@@ -84,8 +94,8 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
       const last30Days = new Date();
       last30Days.setDate(currentDate.getDate() - 30);
       filteredData = filteredData?.filter((item) => {
-        const itemDate = new Date(item?.updates?.dateDone);
-        return itemDate >= last30Days;
+        const itemDate = getItemEventDate(item);
+        return itemDate && itemDate >= last30Days;
       });
       break;
 
@@ -96,8 +106,8 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
           clearTime(endDate).getTime() + 24 * 60 * 60 * 1000 - 1,
         );
         filteredData = filteredData?.filter((item) => {
-          const itemDate = new Date(item?.updates?.dateDone);
-          return itemDate >= start && itemDate <= end;
+          const itemDate = getItemEventDate(item);
+          return itemDate && itemDate >= start && itemDate <= end;
         });
       }
       break;
@@ -106,8 +116,9 @@ export const filterHistory = (userHistory, filter, startDate, endDate) => {
       const currentMonth = currentDate.getMonth();
       const currentYear = currentDate.getFullYear();
       filteredData = filteredData?.filter((item) => {
-        const itemDate = new Date(item?.updates?.dateDone);
+        const itemDate = getItemEventDate(item);
         return (
+          itemDate &&
           itemDate.getMonth() === currentMonth &&
           itemDate.getFullYear() === currentYear
         );
