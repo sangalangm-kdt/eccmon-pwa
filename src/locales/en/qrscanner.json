@@ -160,7 +160,10 @@
     "cylinderNotFound": "Cylinder not found. Check the serial number or add a new cylinder."
   },
   "serialNumberFound": "Serial number found",
-  "cylinderNotFound": "Cylinder not found",
+  "cylinderNotFound": "Cylinder Not Found",
+  "cylinderNotFoundMessage": "The cylinder ID you entered was not found in the system.",
+  "cylinderNotFoundSecondary": "If you believe this cylinder should exist, please contact your administrator or supervisor for assistance.",
+  "registerNewCylinder": "Register New Cylinder",
   "addCylinderQuestion": "Cylinder does not exist. Do you want to add it?",
   "yes": "Yes",
   "cancel": "Cancel",

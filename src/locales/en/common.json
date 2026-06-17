@@ -101,7 +101,16 @@
     },
     "mounted": "Mounted",
     "dismounted": "Dismounted",
-    "disposal": "Disposal"
+    "disposal": "Disposal",
+    "zeroCylindersScanned": "0 Cylinders Scanned",
+    "scanFirstEccId": "Scan your first ECC ID to get started.",
+    "welcomeTitle": "Welcome to ECCMon",
+    "welcomeDescription": "You haven't scanned any cylinders yet. Start by scanning a QR code."
+  },
+  "dashboardEmpty": {
+    "noActivityTitle": "No activity yet",
+    "noActivityDescription": "Scanned cylinders and completed operations will appear here.",
+    "scanQrCode": "Scan QR Code"
   },
   "viewInfo": {
     "noDataToDisplay": "No data to display",

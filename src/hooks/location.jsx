@@ -1,6 +1,5 @@
 import axiosLib from "../lib/axios";
 import useSWR from "swr";
-import { parseLocationsFromResponse } from "../components/utils/affiliationOptions";
 
 export const useLocation = (
   _userId,
@@ -28,18 +27,13 @@ export const useLocation = (
     data: locations = [],
     error: affiliationError,
     isLoading: isAffiliationLoading,
-  } = useSWR(
-    affiliationKey,
-    () =>
-      axiosLib
-        .get("/api/locations")
-        .then((res) => parseLocationsFromResponse(res))
-        .catch((error) => {
-          if (error.response?.status !== 409) throw error;
-        }),
-    {
-      revalidateOnFocus: false,
-    },
+  } = useSWR("/api/locations", () =>
+    axiosLib
+      .get("/api/locations")
+      .then((res) => res.data)
+      .catch((error) => {
+        if (error.response?.status !== 409) throw error;
+      }),
   );
 
   return {

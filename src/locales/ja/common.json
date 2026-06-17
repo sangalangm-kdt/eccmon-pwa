@@ -101,7 +101,16 @@
     },
     "mounted": "装着済み",
     "dismounted": "取り外し済み",
-    "disposal": "廃棄"
+    "disposal": "廃棄",
+    "zeroCylindersScanned": "スキャンしたシリンダー 0 件",
+    "scanFirstEccId": "最初の ECC ID をスキャンして始めましょう。",
+    "welcomeTitle": "ECCMon へようこそ",
+    "welcomeDescription": "まだシリンダーをスキャンしていません。QR コードのスキャンから始めてください。"
+  },
+  "dashboardEmpty": {
+    "noActivityTitle": "まだアクティビティがありません",
+    "noActivityDescription": "スキャンしたシリンダーと完了した操作がここに表示されます。",
+    "scanQrCode": "QR コードをスキャン"
   },
   "viewInfo": {
     "noDataToDisplay": "表示するデータがありません",

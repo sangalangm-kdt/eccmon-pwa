@@ -160,7 +160,10 @@
     "cylinderNotFound": "\u30b7\u30ea\u30f3\u30c0\u30fc\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3002\u30b7\u30ea\u30a2\u30eb\u756a\u53f7\u3092\u78ba\u8a8d\u3059\u308b\u304b\u3001\u65b0\u3057\u3044\u30b7\u30ea\u30f3\u30c0\u30fc\u3092\u8ffd\u52a0\u3057\u3066\u304f\u3060\u3055\u3044\u3002"
   },
   "serialNumberFound": "シリアル番号が見つかりました",
-  "cylinderNotFound": "\u30b7\u30ea\u30f3\u30c0\u30fc\u30ab\u30d0\u30fc\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093",
+  "cylinderNotFound": "シリンダーが見つかりません",
+  "cylinderNotFoundMessage": "入力されたシリンダーIDはシステムに登録されていません。",
+  "cylinderNotFoundSecondary": "登録されているはずの場合は、管理者または上長へお問い合わせください。",
+  "registerNewCylinder": "新規シリンダーを登録",
   "addCylinderQuestion": "\u3053\u306e\u30b7\u30ea\u30f3\u30c0\u30fc\u30ab\u30d0\u30fc\u306f\u5b58\u5728\u3057\u307e\u305b\u3093\u3002\u8ffd\u52a0\u3057\u307e\u3059\u304b\uff1f",
   "yes": "はい",
   "cancel": "キャンセル",

@@ -1,8 +1,9 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { GoSortDesc, GoSortAsc } from "react-icons/go";
 import {
+  sortHistoryByDate,
   filterHistory,
   formatDate,
 } from "../../../utils/utils";
@@ -11,7 +12,7 @@ import { getStatusColors } from "../../../utils/statusColors";
 import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
-import { IoChevronForwardOutline } from "react-icons/io5";
+import { IoChevronForwardOutline, IoTimeOutline } from "react-icons/io5";
 import ResponsiveDatePicker from "../../../constants/ResponsiveDatePicker";
 import FullScreenSheet from "../../../constants/FullScreenSheet";
 import { useAuthentication } from "../../../../hooks/auth";
@@ -46,6 +47,14 @@ const getPreviewRecordLimit = () => {
 };
 
 const HISTORY_PAGE_SIZE = 50;
+
+const getUpdateTimestamp = (update) =>
+  update?.dateDone ??
+  update?.createdAt ??
+  update?.created_at ??
+  update?.updatedAt ??
+  update?.updated_at ??
+  null;
 
 const HistorySummary = () => {
   const { user, userId, isLoading: isUserLoading } = useAuthentication();
@@ -86,15 +95,41 @@ const HistorySummary = () => {
   const [loading, setLoading] = useState(true);
   const [previewLimit, setPreviewLimit] = useState(PREVIEW_LIMITS.mobile);
 
-  const cylinders = normalizeApiListResponse(cylinderListResponse);
+  const cylinders = useMemo(
+    () => normalizeApiListResponse(cylinderListResponse),
+    [cylinderListResponse],
+  );
 
-  const safeCylinderUpdates = Array.isArray(cylinderUpdates)
-    ? cylinderUpdates
-    : [];
+  const safeCylinderUpdates = useMemo(
+    () => (Array.isArray(cylinderUpdates) ? cylinderUpdates : []),
+    [cylinderUpdates],
+  );
 
-  const scopedCylinderUpdates = locationFilter
-    ? safeCylinderUpdates.filter((item) => item.location === locationFilter)
-    : safeCylinderUpdates;
+  const scopedCylinderUpdates = useMemo(() => {
+    return locationFilter
+      ? safeCylinderUpdates.filter((item) => item.location === locationFilter)
+      : safeCylinderUpdates;
+  }, [safeCylinderUpdates, locationFilter]);
+
+  const filteredCylinderUpdates = useMemo(() => {
+    if (historyUserId == null) return scopedCylinderUpdates;
+
+    return scopedCylinderUpdates.filter((update) => {
+      const updateUserId = update.userId ?? update.user_id;
+      return String(updateUserId) === String(historyUserId);
+    });
+  }, [scopedCylinderUpdates, historyUserId]);
+
+  const sortedCylinderUpdates = useMemo(() => {
+    return [...filteredCylinderUpdates].sort((a, b) => {
+      const dateA = getUpdateTimestamp(a);
+      const dateB = getUpdateTimestamp(b);
+      const timeA = dateA ? new Date(dateA).getTime() : 0;
+      const timeB = dateB ? new Date(dateB).getTime() : 0;
+
+      return timeB - timeA;
+    });
+  }, [filteredCylinderUpdates]);
 
   function filterDataByCycle(data) {
     const grouped = {};
@@ -121,10 +156,36 @@ const HistorySummary = () => {
     }, []);
   }
 
-  const cycleGroupedUpdates = filterDataByCycle(scopedCylinderUpdates);
+  const cycleGroupedUpdates = useMemo(
+    () => filterDataByCycle(scopedCylinderUpdates),
+    [scopedCylinderUpdates],
+  );
 
   const buildHistoryItems = (cylinder) =>
-    buildCylinderHistoryEvents(cylinder, scopedCylinderUpdates, historyUserId);
+    buildCylinderHistoryEvents(cylinder, sortedCylinderUpdates, historyUserId);
+
+  const cylinderBySerialNumber = useMemo(() => {
+    return new Map(
+      cylinders
+        .filter((cylinder) => cylinder?.serialNumber)
+        .map((cylinder) => [cylinder.serialNumber, cylinder]),
+    );
+  }, [cylinders]);
+
+  const buildFallbackCylinderFromUpdate = (update) => {
+    if (!update) return null;
+
+    return {
+      serialNumber: update.serialNumber,
+      status: update.process ?? update.status ?? "--",
+      process: update.process,
+      location: update.location,
+      cycle: update.cycle,
+      updates: update,
+      createdAt: update.createdAt ?? update.created_at,
+      updatedAt: update.updatedAt ?? update.updated_at,
+    };
+  };
 
   useEffect(() => {
     const updatePreviewLimit = () => {
@@ -145,49 +206,28 @@ const HistorySummary = () => {
 
     setLoading(false);
 
-    if (!scopedCylinderUpdates.length) {
-      setFilteredHistory([]);
-      return;
-    }
+    // Filter the cylinders that have matching updates for the user. If a
+    // matching cylinder record is missing, fall back to the update itself.
+    const userSerialNumbers = new Set(
+      sortedCylinderUpdates.map((update) => update.serialNumber),
+    );
+    const userHistory = Array.from(userSerialNumbers).flatMap(
+      (serialNumber) => {
+        const latestUpdate = sortedCylinderUpdates.find(
+          (update) => update.serialNumber === serialNumber,
+        );
+        const cylinder =
+          cylinderBySerialNumber.get(serialNumber) ??
+          buildFallbackCylinderFromUpdate(latestUpdate);
 
-    const updateSerialNumbers = new Set(
-      scopedCylinderUpdates.map((update) => update.serialNumber).filter(Boolean),
+        return buildHistoryItems(cylinder);
+      },
     );
 
-    const cylinderSource = cylinders.length
-      ? cylinders
-      : [...updateSerialNumbers].map((serialNumber) => {
-          const latestUpdate = scopedCylinderUpdates.find(
-            (update) => update.serialNumber === serialNumber,
-          );
+    // Apply the filter and sort logic
+    const sortedHistory = sortHistoryByDate(userHistory, sortOrder); // First sort by date
 
-          return {
-            serialNumber,
-            status: latestUpdate?.process ?? latestUpdate?.status,
-            location: latestUpdate?.location,
-            cycle: latestUpdate?.cycle,
-            updates: latestUpdate,
-          };
-        });
-
-    const userHistory = cylinderSource
-      .filter((item) => updateSerialNumbers.has(item.serialNumber))
-      .flatMap(buildHistoryItems)
-      .filter(Boolean);
-
-    const sortedHistory = [...userHistory].sort((a, b) => {
-      const dateA = getHistoryEventDate(a);
-      const dateB = getHistoryEventDate(b);
-      const timeA = dateA ? new Date(dateA).getTime() : 0;
-      const timeB = dateB ? new Date(dateB).getTime() : 0;
-
-      if (!timeA && !timeB) return 0;
-      if (!timeA) return 1;
-      if (!timeB) return -1;
-
-      return sortOrder === "asc" ? timeA - timeB : timeB - timeA;
-    });
-
+    // Then apply the custom filtering based on selected filter and date range
     const filteredData = filterHistory(
       sortedHistory,
       filter,
@@ -195,10 +235,14 @@ const HistorySummary = () => {
       endDate,
     );
 
-    setFilteredHistory(filteredData);
+    // Update the filtered history if it has changed
+    if (JSON.stringify(filteredData) !== JSON.stringify(filteredHistory)) {
+      setFilteredHistory(filteredData);
+    }
   }, [
     cylinders,
-    scopedCylinderUpdates,
+    sortedCylinderUpdates,
+    cylinderBySerialNumber,
     historyUserId,
     isUserLoading,
     isCylindersLoading,
@@ -383,6 +427,37 @@ const HistorySummary = () => {
     );
   };
 
+  const renderHistoryEmptyState = (isSearchResult = false) => {
+    if (isSearchResult) {
+      return (
+        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+          <p>{t("common:noHistoryFound")}</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center px-4 py-8 text-center md:py-10">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-600 dark:text-gray-300">
+          <IoTimeOutline className="h-7 w-7" aria-hidden="true" />
+        </div>
+        <h3 className="text-base font-semibold text-gray-800 dark:text-gray-50 md:text-lg">
+          {t("common:dashboardEmpty.noActivityTitle")}
+        </h3>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+          {t("common:dashboardEmpty.noActivityDescription")}
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate("/qrscanner")}
+          className="ecc-touch-btn mt-5 inline-flex min-h-[44px] items-center justify-center rounded-xl bg-cyan-to-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-105 active:scale-[0.99]"
+        >
+          {t("common:dashboardEmpty.scanQrCode")}
+        </button>
+      </div>
+    );
+  };
+
   const renderHistoryList = (expanded = false, items = visibleHistory) => {
     if (loading) {
       return (
@@ -393,15 +468,7 @@ const HistorySummary = () => {
     }
 
     if (items.length === 0) {
-      return (
-        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-          <p>
-            {searchQuery
-              ? t("common:noHistoryFound")
-              : t("common:noRecentHistory")}
-          </p>
-        </div>
-      );
+      return renderHistoryEmptyState(Boolean(searchQuery.trim()));
     }
 
     return (
