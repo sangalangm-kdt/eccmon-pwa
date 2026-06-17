@@ -8,7 +8,6 @@ import { useLocation } from "../../../hooks/location";
 import AccountRequestModal from "../../constants/AccountRequestModal";
 import GuestAppChrome from "../../constants/GuestAppChrome";
 import { getValidationErrorKey } from "../../utils/authErrors";
-import { resolveAffiliationOptions } from "../../utils/affiliationOptions";
 
 const primaryButtonClassName =
   "ecc-touch-btn inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-cyan-to-blue px-4 py-3 text-base font-semibold text-white transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-[8.5rem]";
@@ -75,7 +74,7 @@ const StepIndicator = ({ steps, currentStep }) => {
 const AccountRequestForm = () => {
   const { register } = useUserRequest();
   const { t, i18n } = useTranslation(["common", "login"]);
-  const { locations, affiliationError, isAffiliationLoading } = useLocation();
+  const { affiliation } = useLocation();
   const routeLocation = useRouterLocation();
 
   const [formData, setFormData] = useState({
@@ -94,21 +93,23 @@ const AccountRequestForm = () => {
   const [step, setStep] = useState(1);
   const [result, setResult] = useState("");
 
-  const affiliationOptions = useMemo(
-    () =>
-      (locations ?? [])
-        .filter((aff) => aff?.name)
-        .map((aff) => ({
-          value: aff.name,
-          label: aff.name,
-        })),
-    [locations],
-  );
+  const affiliationOptions = useMemo(() => {
+    const list = Array.isArray(affiliation)
+      ? affiliation
+      : affiliation?.data ?? [];
 
-  const isAffiliationEmpty =
-    !isAffiliationLoading &&
-    !affiliationError &&
-    affiliationOptions.length === 0;
+    return list
+      .map((aff) => {
+        const name = aff?.name ?? aff?.location ?? aff?.affiliation ?? "";
+        return name ? { value: name, label: name } : null;
+      })
+      .filter(Boolean);
+  }, [affiliation]);
+
+  useEffect(() => {
+    console.log("affiliation:", affiliation);
+    console.log("affiliationOptions:", affiliationOptions);
+  }, [affiliation, affiliationOptions]);
 
   const steps = useMemo(
     () => [
@@ -324,14 +325,6 @@ const AccountRequestForm = () => {
                     onChange={handleSelectChange}
                     placeholder={t("reqAcc.enterAffiliation")}
                     error={errors.affiliation ? t(errors.affiliation) : ""}
-                    isLoading={isAffiliationLoading}
-                    loadingMessage={t("reqAcc.loadingAffiliations")}
-                    errorMessage={
-                      affiliationError ? t("reqAcc.unableToLoadAffiliations") : ""
-                    }
-                    emptyMessage={
-                      isAffiliationEmpty ? t("reqAcc.noAffiliations") : ""
-                    }
                   />
                   <TextInput
                     variant="auth"

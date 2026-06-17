@@ -261,6 +261,17 @@ const InventorySummary = ({ userId }) => {
 
   return (
     <div className="z-10 flex w-full flex-col">
+      {totalScanned === 0 ? (
+        <div className="mb-4 rounded-xl border border-cyan-200/80 bg-gradient-to-br from-cyan-50/90 to-white p-4 shadow-sm dark:border-cyan-800/40 dark:from-cyan-950/20 dark:to-gray-700 md:p-5">
+          <h3 className="text-base font-semibold text-gray-800 dark:text-gray-50 md:text-lg">
+            {t("inventorySummary.welcomeTitle")}
+          </h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {t("inventorySummary.welcomeDescription")}
+          </p>
+        </div>
+      ) : null}
+
       <div className="flex flex-row justify-between py-1 md:px-1">
         <p className="ecc-section-title text-left text-gray-700 dark:text-gray-50">
           {t("inventorySummary.overview")}
@@ -281,23 +292,37 @@ const InventorySummary = ({ userId }) => {
         id="inventory-summary"
       >
         <div>
-          <h2 className="text-base text-gray-600 dark:text-gray-50 md:text-base">
-            {t("inventorySummary.totalCylinderScanned")}
-          </h2>
-          <p className="mb-3 py-1 text-3xl font-semibold text-gray-700 dark:text-gray-50 md:mb-5 md:py-2 md:text-xl">
-            {totalScanned}
-          </p>
+          {totalScanned === 0 ? (
+            <div className="mb-3 md:mb-5">
+              <h2 className="text-base font-semibold text-gray-700 dark:text-gray-50 md:text-lg">
+                {t("inventorySummary.zeroCylindersScanned")}
+              </h2>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {t("inventorySummary.scanFirstEccId")}
+              </p>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-base text-gray-600 dark:text-gray-50 md:text-base">
+                {t("inventorySummary.totalCylinderScanned")}
+              </h2>
+              <p className="mb-3 py-1 text-3xl font-semibold text-gray-700 dark:text-gray-50 md:mb-5 md:py-2 md:text-xl">
+                {totalScanned}
+              </p>
+            </>
+          )}
           <div className="grid w-full grid-cols-6 gap-x-2 gap-y-2 md:grid-cols-5 md:gap-4">
             {categoryCounts.map(({ name, count }, index) => {
               const { textColor, bgColor, borderColor } =
                 getCategoryColor(name);
               const icon = categories[index]?.icon;
+              const isEmptyCount = count === 0;
               return (
                 <div
                   key={name}
                   className={`col-span-2 flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg p-0.5 md:col-span-1 md:gap-2 md:p-2 ${
                     index === 3 ? "col-start-2 md:col-start-auto" : ""
-                  }`}
+                  } ${isEmptyCount ? "opacity-50" : ""}`}
                 >
                   <div className="relative inline-flex shrink-0">
                     <div
@@ -307,12 +332,18 @@ const InventorySummary = ({ userId }) => {
                     </div>
                     <CountBadge count={count} />
                   </div>
-                  <div className="flex w-full items-center justify-center p-0 leading-none">
+                  <div className="flex w-full flex-col items-center justify-center gap-0.5 p-0 leading-none">
                     <span
                       className={`line-clamp-2 text-center text-[10px] capitalize leading-tight md:text-xs ${textColor}`}
                       title={name}
                     >
                       {name}
+                    </span>
+                    <span
+                      className={`text-[10px] font-semibold tabular-nums md:text-xs ${textColor}`}
+                      aria-label={`${name} count`}
+                    >
+                      {count}
                     </span>
                   </div>
                 </div>

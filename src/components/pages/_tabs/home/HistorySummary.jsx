@@ -12,7 +12,7 @@ import { getStatusColors } from "../../../utils/statusColors";
 import HistorySummarySkeleton from "../../../constants/skeleton/HistorySummary";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
-import { IoChevronForwardOutline } from "react-icons/io5";
+import { IoChevronForwardOutline, IoTimeOutline } from "react-icons/io5";
 import ResponsiveDatePicker from "../../../constants/ResponsiveDatePicker";
 import FullScreenSheet from "../../../constants/FullScreenSheet";
 import { useAuthentication } from "../../../../hooks/auth";
@@ -109,32 +109,30 @@ const HistorySummary = () => {
 
   // Effect for handling sorting and filtering updates
   useEffect(() => {
-    if (cylinders.length && cylinderUpdates.length) {
-      setLoading(false);
+    setLoading(false);
 
-      // Filter the cylinders that have matching updates for the user
-      const userSerialNumbers = new Set(
-        filteredCylinderUpdates.map((update) => update.serialNumber),
-      );
-      const userHistory = cylinders
-        .filter((item) => userSerialNumbers.has(item.serialNumber))
-        .flatMap(buildHistoryItems);
+    // Filter the cylinders that have matching updates for the user
+    const userSerialNumbers = new Set(
+      filteredCylinderUpdates.map((update) => update.serialNumber),
+    );
+    const userHistory = cylinders
+      .filter((item) => userSerialNumbers.has(item.serialNumber))
+      .flatMap(buildHistoryItems);
 
-      // Apply the filter and sort logic
-      const sortedHistory = sortHistoryByDate(userHistory, sortOrder); // First sort by date
+    // Apply the filter and sort logic
+    const sortedHistory = sortHistoryByDate(userHistory, sortOrder); // First sort by date
 
-      // Then apply the custom filtering based on selected filter and date range
-      const filteredData = filterHistory(
-        sortedHistory,
-        filter,
-        startDate,
-        endDate,
-      );
+    // Then apply the custom filtering based on selected filter and date range
+    const filteredData = filterHistory(
+      sortedHistory,
+      filter,
+      startDate,
+      endDate,
+    );
 
-      // Update the filtered history if it has changed
-      if (JSON.stringify(filteredData) !== JSON.stringify(filteredHistory)) {
-        setFilteredHistory(filteredData);
-      }
+    // Update the filtered history if it has changed
+    if (JSON.stringify(filteredData) !== JSON.stringify(filteredHistory)) {
+      setFilteredHistory(filteredData);
     }
   }, [
     cylinders,
@@ -319,6 +317,37 @@ const HistorySummary = () => {
     );
   };
 
+  const renderHistoryEmptyState = (isSearchResult = false) => {
+    if (isSearchResult) {
+      return (
+        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+          <p>{t("common:noHistoryFound")}</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center px-4 py-8 text-center md:py-10">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-600 dark:text-gray-300">
+          <IoTimeOutline className="h-7 w-7" aria-hidden="true" />
+        </div>
+        <h3 className="text-base font-semibold text-gray-800 dark:text-gray-50 md:text-lg">
+          {t("common:dashboardEmpty.noActivityTitle")}
+        </h3>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+          {t("common:dashboardEmpty.noActivityDescription")}
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate("/qrscanner")}
+          className="ecc-touch-btn mt-5 inline-flex min-h-[44px] items-center justify-center rounded-xl bg-cyan-to-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-105 active:scale-[0.99]"
+        >
+          {t("common:dashboardEmpty.scanQrCode")}
+        </button>
+      </div>
+    );
+  };
+
   const renderHistoryList = (expanded = false, items = visibleHistory) => {
     if (loading) {
       return (
@@ -329,15 +358,7 @@ const HistorySummary = () => {
     }
 
     if (items.length === 0) {
-      return (
-        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-          <p>
-            {searchQuery
-              ? t("common:noHistoryFound")
-              : t("common:noRecentHistory")}
-          </p>
-        </div>
-      );
+      return renderHistoryEmptyState(Boolean(searchQuery.trim()));
     }
 
     return (

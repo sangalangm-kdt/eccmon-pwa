@@ -1,6 +1,11 @@
 import axiosLib from "../lib/axios";
 import useSWR from "swr";
 
+const normalizeLocations = (body) => {
+  const list = Array.isArray(body) ? body : body?.data ?? [];
+  return Array.isArray(list) ? list : [];
+};
+
 export const useLocation = (userId) => {
   const processKey = userId
     ? `/api/locations/processes?userId=${userId}`
@@ -22,7 +27,7 @@ export const useLocation = (userId) => {
   } = useSWR("/api/locations", () =>
     axiosLib
       .get("/api/locations")
-      .then((res) => res.data)
+      .then((res) => normalizeLocations(res.data))
       .catch((error) => {
         if (error.response?.status !== 409) throw error;
       }),
