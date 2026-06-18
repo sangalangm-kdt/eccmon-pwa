@@ -1,5 +1,6 @@
 import {
   buildCylinderHistoryEvents,
+  buildDisposalUpdatePayload,
   buildOperationSavePayload,
   getDisplayStatus,
   getHistoryStatusBadgeText,
@@ -272,15 +273,38 @@ describe("disposal save helpers", () => {
     expect(toDisposalDatePayload("2025-06-16T14:30")).toBe("2025-06-16");
   });
 
+  test("buildDisposalUpdatePayload matches legacy cylinder-update body", () => {
+    expect(
+      buildDisposalUpdatePayload(
+        {
+          serialNumber: "T-2",
+          location: "None",
+          dateDone: "2025-06-16T10:00",
+          cycle: 3,
+        },
+        "Disposal",
+      ),
+    ).toEqual({
+      serialNumber: "T-2",
+      process: "Disposal",
+      location: "None",
+      cycle: 3,
+      dateDone: "2025-06-16T10:00",
+      otherDetails: null,
+      other_details: null,
+    });
+  });
+
   test("buildOperationSavePayload sets disposal fields only for Disposal", () => {
     expect(
       buildOperationSavePayload(
-        { serialNumber: "T-1", dateDone: "2025-06-16T10:00" },
+        { serialNumber: "T-1", dateDone: "2025-06-16T10:00", location: "KHI" },
         "Storage",
       ),
     ).toMatchObject({
       status: "Storage",
       process: "Storage",
+      location: "None",
       is_disposed: 1,
       isDisposed: 1,
       disposalDate: null,

@@ -6,6 +6,50 @@ import { useTranslation } from "react-i18next";
 import { useAuthentication } from "../../hooks/auth";
 import { useLocation } from "../../hooks/location";
 
+const normalizeStatus = (status) => String(status).trim().toLowerCase();
+
+const buildCylinderStatusOptions = (processes = []) => {
+  const options = processes.flatMap((process, processIdx) => {
+    const normalizedProcess = normalizeStatus(process);
+
+    if (normalizedProcess === "site") {
+      return [
+        { id: processIdx, status: "Mounted", labelKey: "mounted" },
+        { id: processIdx + 1, status: "Dismounted", labelKey: "dismounted" },
+      ];
+    }
+
+    return {
+      id: processIdx,
+      status: process,
+      labelKey: normalizedProcess,
+    };
+  });
+
+  const hasDisposal = options.some(
+    (option) => normalizeStatus(option.status) === "disposal",
+  );
+
+  if (!hasDisposal) {
+    options.push({
+      id: "disposal",
+      status: "Disposal",
+      labelKey: "disposal",
+    });
+  }
+
+  const uniqueOptions = options.filter(
+    (option, index, list) =>
+      index ===
+      list.findIndex(
+        (item) =>
+          normalizeStatus(item.status) === normalizeStatus(option.status),
+      ),
+  );
+
+  return uniqueOptions;
+};
+
 export const CylinderStatusSelect = ({
   selectedStatus,
   setSelectedStatus,
@@ -15,9 +59,8 @@ export const CylinderStatusSelect = ({
   const { t } = useTranslation();
   const { user } = useAuthentication();
 
-  const { process } =
-    useLocation(user?.id, { enabled: !!user, includeAffiliation: false }) ??
-    [];
+  const { process } = useLocation(user.id) ?? [];
+  console.log(user);
   // Get cylinder status options with labelKey for translation
   const cylinderStatusOptions = [
     ...(process?.flatMap((process, processIdx) => {
@@ -35,6 +78,13 @@ export const CylinderStatusSelect = ({
     }) || []),
   ];
 
+  // Dynamically add "Disposal" at the last index
+  cylinderStatusOptions.push({
+    id: cylinderStatusOptions.length, // Last index dynamically
+    status: "Disposal",
+    labelKey: "disposal",
+  });
+
   const hasOptions = cylinderStatusOptions.length > 0;
 
   return (
@@ -50,7 +100,6 @@ export const CylinderStatusSelect = ({
         selectedStatus={selectedStatus} // Use local state for selected status
         setSelectedStatus={setSelectedStatus}
         disabled={disabled}
-        t={t}
       />
       {!hasOptions && (
         <p className="text-xs text-gray-500 dark:text-gray-100">

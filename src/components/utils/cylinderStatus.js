@@ -233,6 +233,48 @@ export const toDisposalDatePayload = (value) => {
   return `${year}-${month}-${day}`;
 };
 
+export const normalizeOtherDetails = (value) => {
+  if (!value) return null;
+  if (typeof value === "object") return value;
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    try {
+      const parsed = JSON.parse(trimmed);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+};
+
+const resolveDisposalProcess = (status) => {
+  const token = normalizeStatusToken(status);
+  return token === "disposal" ? "Disposal" : String(status ?? "").trim();
+};
+
+/**
+ * Legacy Disposal POST body for /api/cylinder-update.
+ * Matches the pre-revamp addUpdate shape that did not send disposed flags.
+ */
+export const buildDisposalUpdatePayload = (input = {}, status) => {
+  const otherDetails = normalizeOtherDetails(input.otherDetails);
+
+  return {
+    serialNumber: input.serialNumber,
+    process: resolveDisposalProcess(status),
+    location: input.location ?? "None",
+    cycle: input.cycle,
+    dateDone: input.dateDone ? input.dateDone : null,
+    otherDetails,
+    other_details: otherDetails,
+  };
+};
+
 /**
  * Canonical operation save fields for cylinder + history APIs.
  * Only Disposal sets is_disposed / isDisposed to 2.
@@ -243,6 +285,7 @@ export const buildOperationSavePayload = (
   currentCylinder = null,
 ) => {
   const isDisposal = isDisposalOperation(selectedStatus);
+  const isStorage = normalizeStatusToken(selectedStatus) === "storage";
   const resolvedStatus = isDisposal ? "Disposal" : selectedStatus;
   const disposalDate = isDisposal
     ? toDisposalDatePayload(data.disposalDate ?? data.dateDone)
@@ -250,10 +293,13 @@ export const buildOperationSavePayload = (
   const disposedFlag = isDisposal ? 2 : 1;
   const serialNumber = getCylinderSerialNumber(data);
   const cycle = resolveOperationCycle(data, selectedStatus, currentCylinder);
+  const location = isStorage || isDisposal ? "None" : data.location;
+  const normalizedOtherDetails = normalizeOtherDetails(data.otherDetails);
 
   const payload = {
     ...data,
     ...(serialNumber ? { serialNumber } : {}),
+    location,
     cycle,
     status: resolvedStatus,
     process: resolvedStatus,
@@ -261,6 +307,8 @@ export const buildOperationSavePayload = (
     is_disposed: disposedFlag,
     disposalDate,
     disposal_date: disposalDate,
+    otherDetails: normalizedOtherDetails,
+    other_details: normalizedOtherDetails,
   };
 
   if (import.meta.env.DEV) {

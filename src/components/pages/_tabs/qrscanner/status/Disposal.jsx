@@ -2,24 +2,16 @@ import React, { useEffect, useMemo, useState } from "react";
 import DateField from "../../../../constants/DateField";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { isDisposed, normalizeScannedCylinder, toDisposalDatePayload } from "../../../../utils/cylinderStatus";
+import { isDisposed, normalizeScannedCylinder } from "../../../../utils/cylinderStatus";
 import {
   setFormDataIfChanged,
   setStateIfChanged,
 } from "../../../../utils/syncFormState";
 
-const DISPOSAL_DATA_KEYS = [
-  "serialNumber",
-  "location",
-  "status",
-  "process",
-  "dateDone",
-  "disposalDate",
-  "disposal_date",
-  "cycle",
-  "is_disposed",
-  "isDisposed",
-];
+const DISPOSAL_DATA_KEYS = ["serialNumber", "location", "dateDone", "cycle"];
+
+const hasCycle = (value) =>
+  value !== undefined && value !== null && value !== "";
 
 const formatInputDate = (value) => {
   if (!value) return "";
@@ -41,22 +33,12 @@ const getCurrentInputDate = () => formatInputDate(new Date());
 const getRecordedDisposalDate = (cylinderData) =>
   formatInputDate(cylinderData?.disposalDate);
 
-const buildDisposalData = ({ serialNumber, cycle, date }) => {
-  const disposalDate = toDisposalDatePayload(date);
-
-  return {
-    serialNumber,
-    location: "None",
-    status: "Disposal",
-    process: "Disposal",
-    dateDone: date,
-    disposalDate,
-    disposal_date: disposalDate,
-    cycle,
-    is_disposed: 2,
-    isDisposed: 2,
-  };
-};
+const buildDisposalData = ({ serialNumber, cycle, date }) => ({
+  serialNumber,
+  location: "None",
+  dateDone: date,
+  cycle,
+});
 
 const Disposal = ({
   setData,
@@ -101,16 +83,27 @@ const Disposal = ({
     const nextData = buildDisposalData({ serialNumber, cycle, date });
     setFormDataIfChanged(setData, nextData, DISPOSAL_DATA_KEYS);
 
+    const serialValid = Boolean(`${serialNumber ?? ""}`.trim());
+    const cycleValid = hasCycle(cycle);
+    const dateValid = Boolean(date);
+
     if (disposed) {
       setStateIfChanged(setIsComplete, false);
       setStateIfChanged(setContinueDisabledReason, null);
       return;
     }
 
-    const dateValid = Boolean(date);
-    setStateIfChanged(setIsComplete, dateValid);
+    const isFormComplete = serialValid && cycleValid && dateValid;
+    setStateIfChanged(setIsComplete, isFormComplete);
     setContinueDisabledReason?.((prev) => {
-      const next = dateValid ? null : dateRequiredMessage;
+      let next = null;
+      if (!serialValid) {
+        next = t("errors.serialNumberRequired");
+      } else if (!cycleValid) {
+        next = t("validation.cycleRequired");
+      } else if (!dateValid) {
+        next = dateRequiredMessage;
+      }
       return prev === next ? prev : next;
     });
   }, [

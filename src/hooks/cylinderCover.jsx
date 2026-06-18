@@ -9,22 +9,14 @@ import {
   isDisposed,
   isDisposalOperation,
   normalizeApiCylinderResponse,
+  normalizeOtherDetails,
 } from "../components/utils/cylinderStatus";
 import { logLaravelValidationError } from "../components/utils/apiValidationErrors";
 
-const parseOtherDetails = (otherDetails) => {
-  if (!otherDetails) return {};
-  if (typeof otherDetails === "object") return otherDetails;
-
-  try {
-    return JSON.parse(otherDetails);
-  } catch {
-    return {};
-  }
-};
+const parseOtherDetails = normalizeOtherDetails;
 
 const getCaseValue = (otherDetails, fallbackCase = null) => {
-  const parsedOtherDetails = parseOtherDetails(otherDetails);
+  const parsedOtherDetails = parseOtherDetails(otherDetails) ?? {};
   return parsedOtherDetails.case ?? fallbackCase ?? 0;
 };
 
@@ -56,39 +48,7 @@ const buildCylinderApiPayload = ({
     case: getCaseValue(otherDetails, caseValue),
     isDisposed: saveFields.isDisposed,
     disposalDate: saveFields.disposalDate,
-    otherDetails: otherDetails || null,
-  };
-};
-
-const buildCylinderUpdatePayload = ({
-  id,
-  serialNumber,
-  status,
-  disposalDate,
-  location,
-  cycle,
-  otherDetails,
-  userId,
-  caseValue,
-}) => {
-  const saveFields = buildOperationSavePayload(
-    { disposalDate, dateDone: disposalDate },
-    status,
-  );
-  const resolvedSerialNumber = normalizeSerialNumber(serialNumber);
-
-  return {
-    id,
-    ...(resolvedSerialNumber ? { serialNumber: resolvedSerialNumber } : {}),
-    status: saveFields.status,
-    process: saveFields.process,
-    cycle: cycle ?? 1,
-    location,
-    userId,
-    case: getCaseValue(otherDetails, caseValue),
-    isDisposed: saveFields.isDisposed,
-    disposalDate: saveFields.disposalDate,
-    otherDetails: otherDetails || null,
+    otherDetails: normalizeOtherDetails(otherDetails),
   };
 };
 
@@ -216,11 +176,6 @@ export const useCylinderCover = (params = {}) => {
   }) => {
     const resolvedSerialNumber = getCylinderSerialNumber({ serialNumber });
 
-    if (import.meta.env.DEV) {
-      console.log("[createCylinder] serialNumber arg:", serialNumber);
-      console.log("[createCylinder] resolved serial:", resolvedSerialNumber);
-    }
-
     const data = buildCylinderApiPayload({
       serialNumber: resolvedSerialNumber,
       status: process,
@@ -230,10 +185,6 @@ export const useCylinderCover = (params = {}) => {
       otherDetails,
       userId,
     });
-
-    if (import.meta.env.DEV) {
-      console.log("[createCylinder] POST payload:", data);
-    }
 
     await csrf();
 
@@ -245,10 +196,7 @@ export const useCylinderCover = (params = {}) => {
         status: isDisposalOperation(process) ? 2 : 1,
       });
 
-      if (shouldFetchList) {
-        await mutate();
-      }
-
+      mutate();
       return res.data;
     } catch (error) {
       if (error.response?.status === 422) {
@@ -296,41 +244,21 @@ export const useCylinderCover = (params = {}) => {
       payload: data,
     });
 
-    try {
-      const res = await axiosLib.put(`/api/cylinder/${id}`, data);
-
-      if (shouldFetchList) {
-        await mutate();
-      }
-
-      return res.data;
-    } catch (error) {
-      if (error.response?.status === 422) {
-        logLaravelValidationError(
-          "Cylinder update validation failed",
-          error,
-          data,
-        );
-      }
-      if (error.response?.status !== 409) throw error;
-    }
-  };
-
-  const deleteCylinder = async (id) => {
-    await csrf();
-
     return axiosLib
-      .delete(`/api/cylinder/${id}`)
+      .put(`/api/cylinder/${id}`, data)
       .then((res) => {
-        if (shouldFetchList) {
-          mutate();
-        }
-
+        mutate();
         return res.data;
       })
       .catch((error) => {
+        if (error.response?.status === 422) {
+          logLaravelValidationError(
+            "Cylinder update validation failed",
+            error,
+            data,
+          );
+        }
         if (error.response?.status !== 409) throw error;
-        return null;
       });
   };
 
@@ -341,7 +269,6 @@ export const useCylinderCover = (params = {}) => {
     checkSerial,
     createCylinder,
     updateCylinder,
-    deleteCylinder,
     mutate,
   };
 };
