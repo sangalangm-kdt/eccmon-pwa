@@ -5,6 +5,9 @@ import { useCallback, useEffect, useState } from "react";
 import axiosLib from "../lib/axios";
 // import { useNavigate } from "react-router-dom";
 
+export const isAdminUser = (user) =>
+  Number(user?.is_admin ?? user?.isAdmin) === 1;
+
 export const useAuthentication = ({
   middleware,
   redirectIfAuthenticated,
@@ -149,6 +152,9 @@ export const useAuthentication = ({
   };
 
   const userId = user ? user.id : null;
+  const businessUserId = user
+    ? user.user_id ?? user.userId ?? null
+    : null;
 
   useEffect(() => {
     if (middleware === "auth" && error) {
@@ -170,6 +176,7 @@ export const useAuthentication = ({
   return {
     user,
     userId,
+    businessUserId,
     login,
     logout,
     isLoading,

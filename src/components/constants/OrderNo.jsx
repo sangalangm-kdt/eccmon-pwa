@@ -1,9 +1,23 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
-import { useLocationProcess } from "../../hooks/locationProcess";
+import { useOrderNumber } from "../../hooks/orderNumber";
 import { useTranslation } from "react-i18next";
 import OptionBottomSheet from "./OptionBottomSheet";
 import { getOrderNoValue, hasFieldValue } from "../utils/formFieldValidation";
+
+const getOrderLoadErrorMessage = (error, t) => {
+  const status = error?.response?.status;
+
+  if (status === 401 || status === 403) {
+    return t("orderNumbersUnauthorized");
+  }
+
+  if (status === 404) {
+    return t("orderNumbersNotFound");
+  }
+
+  return t("orderNumbersLoadFailed");
+};
 
 const OrderNo = ({
   selectedOrderNo,
@@ -14,25 +28,27 @@ const OrderNo = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { data, isLoading } = useLocationProcess("order-number");
-  const orderNumber = data?.data ?? [];
+  const { orderNumbers, error, isLoading } = useOrderNumber();
   const { t } = useTranslation("qrScanner");
-  const hasOptions = orderNumber.length > 0;
+  const hasOptions = orderNumbers.length > 0;
   const isRequired = required && hasOptions;
+  const loadErrorMessage = error ? getOrderLoadErrorMessage(error, t) : null;
 
   useEffect(() => {
     onOptionsAvailabilityChange?.(hasOptions);
   }, [hasOptions, onOptionsAvailabilityChange]);
 
-  const selectedValue = hasFieldValue(selectedOrderNo) ? `${selectedOrderNo}`.trim() : "";
+  const selectedValue = hasFieldValue(selectedOrderNo)
+    ? `${selectedOrderNo}`.trim()
+    : "";
 
   const filteredOrderNos = useMemo(() => {
-    if (!searchTerm.trim()) return orderNumber;
+    if (!searchTerm.trim()) return orderNumbers;
     const query = searchTerm.trim().toLowerCase();
-    return orderNumber.filter((orderNo) =>
+    return orderNumbers.filter((orderNo) =>
       getOrderNoValue(orderNo).toLowerCase().includes(query),
     );
-  }, [orderNumber, searchTerm]);
+  }, [orderNumbers, searchTerm]);
 
   const handleOpen = () => {
     if (disabled || isLoading || !hasOptions) return;
@@ -63,6 +79,18 @@ const OrderNo = ({
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
           {t("loadingOptions")}
         </p>
+      ) : loadErrorMessage ? (
+        <>
+          <select
+            disabled
+            className="mt-1 w-full rounded border bg-gray-100 px-2 py-2.5 text-sm text-gray-500 dark:bg-gray-600 dark:text-gray-300"
+          >
+            <option>{t("noOrderNumbersAvailable")}</option>
+          </select>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-300 md:text-xs">
+            {loadErrorMessage}
+          </p>
+        </>
       ) : hasOptions ? (
         <div className="relative mt-1 w-full">
           <input
@@ -121,7 +149,7 @@ const OrderNo = ({
 
               return (
                 <button
-                  key={orderNo.id ?? label}
+                  key={orderNo.id ?? orderNo.value ?? label}
                   type="button"
                   onClick={() => handleSelectOrderNo(orderNo)}
                   className={`flex min-h-12 w-full items-center rounded-lg px-3 text-left text-sm transition-colors ${

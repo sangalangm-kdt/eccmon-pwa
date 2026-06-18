@@ -10,6 +10,7 @@ const SaveButton = ({
   loading,
   disabled,
   helperText,
+  belowButton,
 }) => {
   const { t } = useTranslation("common");
 
@@ -33,6 +34,9 @@ const SaveButton = ({
         >
           {loading ? <Loader label={t("saving")} /> : text}
         </button>
+        {belowButton ? (
+          <div className="mt-4 w-full">{belowButton}</div>
+        ) : null}
       </div>
     </div>
   );

@@ -100,7 +100,6 @@ const QRScanner = () => {
   const { user } = useAuthentication();
   const { process } = useLocation(user.id);
   const { checkSerial } = useCylinderCover();
-  console.log(user);
 
   const isInsideScanBox = (x, y) => {
     const scanBox = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 }; // Adjust as needed
@@ -205,9 +204,6 @@ const QRScanner = () => {
       videoInputDevices.find((device) =>
         device.label.toLowerCase().includes("front"),
       ) || videoInputDevices[0];
-
-    console.log("FRONT CAMERA: ", frontCamera);
-    console.log("BACK CAMERA: ", backCamera);
 
     if (currentCamera === "back" && backCamera) {
       return backCamera.deviceId;
@@ -447,8 +443,6 @@ const QRScanner = () => {
 
     setTorchOn(false);
     setTorchSupported(false);
-
-    console.log("Camera stopped");
   };
 
   return (

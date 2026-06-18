@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { IoSearchOutline } from "react-icons/io5";
+import { IoLockClosedOutline, IoSearchOutline } from "react-icons/io5";
 import ResponsiveSheet from "../../../constants/ResponsiveSheet";
 
 const secondaryButtonClassName =
@@ -23,8 +23,13 @@ const ResultsModal = ({
 }) => {
   const { t } = useTranslation(["qrScanner", "common"]);
   const isCylinderNotFound = addDisable === false;
-  const titleKey = isCylinderNotFound ? "cylinderNotFound" : "serialNumberFound";
   const messageKey = message || (isCylinderNotFound ? "addCylinderQuestion" : "");
+  const isAccessError = messageKey === "noAccessCylinderCover";
+  const titleKey = isCylinderNotFound
+    ? "cylinderNotFound"
+    : isAccessError
+      ? "accessDenied"
+      : "serialNumberFound";
   const translatedMessage = messageKey ? t(`qrScanner:${messageKey}`) : "";
 
   const renderCylinderNotFoundContent = () => (
@@ -83,6 +88,42 @@ const ResultsModal = ({
     </>
   );
 
+  const renderAccessDeniedContent = () => (
+    <>
+      <div className="flex flex-col items-center text-center">
+        <div
+          className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/35 dark:text-red-300"
+          aria-hidden="true"
+        >
+          <IoLockClosedOutline className="h-8 w-8" />
+        </div>
+
+        <div className="w-full max-w-xs rounded-full border border-red-200 bg-red-50 px-4 py-2.5 shadow-sm dark:border-red-800/40 dark:bg-red-950/30">
+          <p className="break-all text-center text-base font-bold tracking-tight text-red-900 dark:text-red-50">
+            {eccId}
+          </p>
+        </div>
+
+        <div className="mt-5 w-full rounded-xl border border-red-100 bg-red-50/80 px-4 py-4 text-left dark:border-red-900/40 dark:bg-red-950/20">
+          <p className="text-center text-sm font-medium leading-relaxed text-red-800 dark:text-red-200">
+            {translatedMessage}
+          </p>
+          <p className="mt-2 text-center text-xs leading-relaxed text-red-700/80 dark:text-red-300/80">
+            {t("qrScanner:noAccessCylinderCoverSecondary")}
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        className={`${primaryButtonClassName} mt-6`}
+        onClick={onClose}
+      >
+        {t("qrScanner:backToScanner")}
+      </button>
+    </>
+  );
+
   const renderSerialFoundContent = () => (
     <>
       <div className="flex flex-col items-center">
@@ -91,7 +132,9 @@ const ResultsModal = ({
         </p>
       </div>
 
-      <p className="py-8 text-center text-sm">{translatedMessage}</p>
+      <p className="py-8 text-center text-sm text-gray-800 dark:text-gray-100">
+        {translatedMessage}
+      </p>
 
       <button
         type="button"
@@ -115,7 +158,9 @@ const ResultsModal = ({
     >
       {isCylinderNotFound
         ? renderCylinderNotFoundContent()
-        : renderSerialFoundContent()}
+        : isAccessError
+          ? renderAccessDeniedContent()
+          : renderSerialFoundContent()}
     </ResponsiveSheet>
   );
 };

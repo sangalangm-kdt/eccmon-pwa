@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { setPage } from "../../../../features/page/pageSlice";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { isAdminUser, useAuthentication } from "../../../../hooks/auth";
 import AddIcon from "../../../constants/AddIcon";
 import { TiArrowBack } from "react-icons/ti";
 import { IoArrowBack } from "react-icons/io5";
@@ -90,10 +91,16 @@ export const CylinderInfo = ({
   setContinueDisabledReason,
   showAlert,
   setShowAlert,
+  refreshCylinderLists,
 }) => {
   const { t } = useTranslation("qrScanner");
+  const { user } = useAuthentication();
   const normalizedOperation = normalizeOperation(selectedStatus);
-  const Component = statusComponentMap[normalizedOperation];
+  const isAdmin = isAdminUser(user);
+  const Component =
+    !isAdmin && normalizedOperation === "disposal"
+      ? null
+      : statusComponentMap[normalizedOperation];
 
   const selectStatusMessage = t("selectAStatus");
 
@@ -120,6 +127,7 @@ export const CylinderInfo = ({
           setContinueDisabledReason={setContinueDisabledReason}
           showAlert={showAlert}
           setShowAlert={setShowAlert}
+          refreshCylinderLists={refreshCylinderLists}
         />
       ) : (
         <div className="rounded-lg bg-white p-4 text-sm text-gray-500 dark:bg-gray-500 dark:text-gray-100">

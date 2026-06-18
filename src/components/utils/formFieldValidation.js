@@ -13,7 +13,7 @@ export const getOrderNoValue = (order) => {
   if (typeof order === "string" || typeof order === "number") {
     return `${order}`.trim();
   }
-  return `${order.name ?? order.value ?? order.id ?? ""}`.trim();
+  return `${order.name ?? order.order_number ?? order.orderNumber ?? order.label ?? order.value ?? order.id ?? ""}`.trim();
 };
 
 /**

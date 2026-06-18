@@ -2,8 +2,12 @@
 import ScanCodes from "./ScanCodes";
 import SaveButton from "../../../constants/SaveButton";
 import { CylinderInfo, QrHeader } from "./components";
-import { useCylinderUpdate } from "../../../../hooks/cylinderUpdates";
+import {
+  normalizeProcessValue,
+  useCylinderUpdate,
+} from "../../../../hooks/cylinderUpdates";
 import { useCylinderCover } from "../../../../hooks/cylinderCover";
+import { isAdminUser, useAuthentication } from "../../../../hooks/auth";
 import AddedOrUpdateSuccessfully from "../../../constants/AddedOrUpdateSuccessfully";
 import CycleModal from "../../../constants/CycleModal";
 import ResponsiveSheet from "../../../constants/ResponsiveSheet";
@@ -16,6 +20,7 @@ import {
   normalizeOtherDetails,
   normalizeScannedCylinder,
 } from "../../../utils/cylinderStatus";
+import { useDisposalPermanentRemove } from "./status/Disposal";
 import { getLaravelValidationMessage } from "../../../utils/apiValidationErrors";
 
 const resolveSerialNumber = (formData, scannedSerialNumber, cylinderData) =>
@@ -25,18 +30,27 @@ const resolveSerialNumber = (formData, scannedSerialNumber, cylinderData) =>
   cylinderData?.serial_number ||
   "";
 
-const resolveLocation = (selectedStatus, formData) =>
-  selectedStatus === "Storage" || selectedStatus === "Disposal"
-    ? "None"
-    : String(formData?.location ?? "").trim();
+const resolveLocation = (selectedStatus, formData, cylinderData) => {
+  const trimmed = String(formData?.location ?? "").trim();
+  if (trimmed && trimmed !== "None") return trimmed;
+
+  if (selectedStatus === "Storage" || selectedStatus === "Disposal") {
+    const existing = String(cylinderData?.location ?? "").trim();
+    if (existing && existing !== "None") return existing;
+    return null;
+  }
+
+  return trimmed || null;
+};
 
 const buildUpdateInput = ({
   formData,
-  selectedStatus,
+  processValue,
   resolvedSerialNumber,
   resolvedLocation,
 }) => ({
   serialNumber: resolvedSerialNumber,
+  process: processValue,
   location: resolvedLocation,
   cycle: formData.cycle,
   dateDone: formData.dateDone ?? null,
@@ -73,6 +87,13 @@ const ScannedResult = () => {
   const { addUpdate, mutate: mutateUpdates } = useCylinderUpdate();
   const { createCylinder, mutate: mutateCylinders } = useCylinderCover();
 
+  const refreshCylinderLists = async () => {
+    await Promise.all([mutateCylinders(), mutateUpdates()]);
+  };
+
+  const { user } = useAuthentication();
+  const isAdmin = isAdminUser(user);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -97,6 +118,13 @@ const ScannedResult = () => {
   const [selectedStatus, setSelectedStatus] = useState(() =>
     isNewCylinder ? "Storage" : "None",
   );
+
+  const { removeButton, removeOverlays, showPermanentRemove } =
+    useDisposalPermanentRemove({
+      readOnly: isReadOnly,
+      selectedStatus,
+      refreshCylinderLists,
+    });
 
   const [data, setData] = useState({});
   const [step, setStep] = useState("view");
@@ -193,6 +221,16 @@ const ScannedResult = () => {
     setStep("view");
   }, [selectedStatus, isReadOnly]);
 
+  useEffect(() => {
+    if (isReadOnly || isAdmin) return;
+    if (!isDisposalOperation(selectedStatus)) return;
+
+    setSelectedStatus("None");
+    setData({});
+    setIsComplete(false);
+    setContinueDisabledReason(null);
+  }, [isAdmin, isReadOnly, selectedStatus]);
+
   const handleClick = (e) => {
     e.preventDefault();
 
@@ -217,19 +255,36 @@ const ScannedResult = () => {
     }
 
     if (step === "review") {
+      const processValue = normalizeProcessValue(selectedStatus);
       const resolvedSerialNumber = resolveSerialNumber(
         data,
         scannedSerialNumber,
         cylinderData,
       );
-      const resolvedLocation = resolveLocation(selectedStatus, data);
+      const resolvedLocation = resolveLocation(
+        selectedStatus,
+        data,
+        cylinderData,
+      );
       const updateInput = buildUpdateInput({
         formData: data,
-        selectedStatus,
+        processValue,
         resolvedSerialNumber,
         resolvedLocation,
       });
-      const isDisposal = isDisposalOperation(selectedStatus);
+      const isDisposal = isDisposalOperation(processValue);
+
+      if (!processValue || processValue === "None") {
+        setShowAlert(true);
+        setContinueDisabledReason(t("qrScanner:selectAStatus"));
+        return;
+      }
+
+      if (!isAdmin && isDisposalOperation(processValue)) {
+        setSaveError(t("qrScanner:errors.disposalAdminOnly"));
+        setShowAlert(true);
+        return;
+      }
 
       if (!isNewCylinder && !`${resolvedSerialNumber}`.trim()) {
         setSaveError(t("qrScanner:errors.serialNumberRequired"));
@@ -260,7 +315,7 @@ const ScannedResult = () => {
             await createCylinder({
               serialNumber: resolvedSerialNumber,
               location: resolvedLocation,
-              process: selectedStatus,
+              process: processValue,
               cycle: updateInput.cycle,
               otherDetails: updateInput.otherDetails,
             });
@@ -268,7 +323,7 @@ const ScannedResult = () => {
             setCylinderCreated(true);
           }
 
-          await addUpdate(updateInput, selectedStatus);
+          await addUpdate(updateInput, processValue);
 
           lastSavedSignatureRef.current = getFormSignature(
             selectedStatus,
@@ -316,7 +371,7 @@ const ScannedResult = () => {
           if (import.meta.env.DEV) {
             console.error("ScannedResult save failed", {
               status: error.response?.status,
-              selectedStatus,
+              process: processValue,
               payload: updateInput,
             });
           }
@@ -406,6 +461,7 @@ const ScannedResult = () => {
             setContinueDisabledReason={setContinueDisabledReason}
             showAlert={showAlert}
             setShowAlert={setShowAlert}
+            refreshCylinderLists={refreshCylinderLists}
           />
         </div>
 
@@ -420,9 +476,20 @@ const ScannedResult = () => {
             disabled={!isComplete || loading}
             helperText={!isComplete ? continueDisabledReason : null}
             loading={loading}
+            belowButton={removeButton}
           />
         )}
+
+        {isReadOnly && showPermanentRemove && (
+          <div className="fixed inset-x-0 bottom-0">
+            <div className="flex w-full flex-col items-center justify-center bg-gray-50 p-3 dark:bg-gray-600">
+              {removeButton}
+            </div>
+          </div>
+        )}
       </div>
+
+      {removeOverlays}
 
       {modalOpen &&
         (isComplete ? (

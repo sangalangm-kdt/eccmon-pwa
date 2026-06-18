@@ -1,13 +1,11 @@
 import axiosLib from "../lib/axios";
 import { useNavigate } from "react-router-dom";
-import { useScanHistory } from "./scanHistory";
 import useSWR from "swr";
 import { useAuthentication } from "./auth";
 import {
   buildOperationSavePayload,
   getCylinderSerialNumber,
   isDisposed,
-  isDisposalOperation,
   normalizeApiCylinderResponse,
   normalizeOtherDetails,
 } from "../components/utils/cylinderStatus";
@@ -21,6 +19,23 @@ const getCaseValue = (otherDetails, fallbackCase = null) => {
 };
 
 const normalizeSerialNumber = (value) => `${value ?? ""}`.trim();
+
+const hasCylinderCoverAccess = (cylinder, user) => {
+  const isAdmin = Number(user?.is_admin ?? user?.isAdmin) === 1;
+  if (isAdmin) return true;
+
+  const userLocation = user?.affiliation ?? "";
+  const cylinderLocation =
+    cylinder?.location ??
+    cylinder?.data?.location ??
+    cylinder?.cylinder?.location ??
+    "";
+
+  return (
+    String(cylinderLocation).trim().toLowerCase() ===
+    String(userLocation).trim().toLowerCase()
+  );
+};
 
 const buildCylinderApiPayload = ({
   serialNumber,
@@ -76,6 +91,8 @@ const buildCylinderQuery = (params = {}) => {
   return queryString ? `/api/cylinder?${queryString}` : "/api/cylinder";
 };
 
+export const CYLINDER_COVER_DELETE_SUPPORTED = true;
+
 const shouldFetchCylinderList = (params = {}) =>
   params.fetchList === true ||
   [
@@ -94,8 +111,7 @@ const shouldFetchCylinderList = (params = {}) =>
 export const useCylinderCover = (params = {}) => {
   const csrf = () => axiosLib.get("/sanctum/csrf-cookie");
   const navigate = useNavigate();
-  const { addHistory } = useScanHistory();
-  const { userId } = useAuthentication();
+  const { userId, user } = useAuthentication();
   const shouldFetchList =
     params.enabled !== false && shouldFetchCylinderList(params);
   const endpoint = shouldFetchList ? buildCylinderQuery(params) : null;
@@ -135,6 +151,20 @@ export const useCylinderCover = (params = {}) => {
 
       if (res.data.data) {
         const cylinder = normalizeApiCylinderResponse(res.data);
+
+        if (!hasCylinderCoverAccess(cylinder, user)) {
+          setAddDisable(true);
+          setMessage("noAccessCylinderCover");
+          setModalOpen(true);
+
+          return {
+            exists: true,
+            hasAccess: false,
+            isDisposed: false,
+            data: cylinder,
+          };
+        }
+
         const disposed = isDisposed(cylinder);
 
         navigate("/scanned-result", {
@@ -168,7 +198,7 @@ export const useCylinderCover = (params = {}) => {
 
   const createCylinder = async ({
     serialNumber,
-    location = "None",
+    location = null,
     process = "Storage",
     disposalDate,
     otherDetails,
@@ -190,11 +220,6 @@ export const useCylinderCover = (params = {}) => {
 
     try {
       const res = await axiosLib.post("/api/cylinder", data);
-
-      addHistory({
-        serialNumber: resolvedSerialNumber,
-        status: isDisposalOperation(process) ? 2 : 1,
-      });
 
       mutate();
       return res.data;
@@ -262,6 +287,28 @@ export const useCylinderCover = (params = {}) => {
       });
   };
 
+  const deleteCylinder = async (id) => {
+    if (!CYLINDER_COVER_DELETE_SUPPORTED) {
+      throw new Error("cylinder_cover_delete_unsupported");
+    }
+
+    if (!id) {
+      throw new Error("missing_cylinder_id");
+    }
+
+    await csrf();
+
+    return axiosLib
+      .delete(`/api/cylinder/${id}`)
+      .then((res) => {
+        mutate();
+        return res.data;
+      })
+      .catch((error) => {
+        if (error.response?.status !== 409) throw error;
+      });
+  };
+
   return {
     cylinder,
     isLoading: shouldFetchList ? isLoading : false,
@@ -269,6 +316,7 @@ export const useCylinderCover = (params = {}) => {
     checkSerial,
     createCylinder,
     updateCylinder,
+    deleteCylinder,
     mutate,
   };
 };

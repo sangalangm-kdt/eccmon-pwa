@@ -3,12 +3,12 @@ import React from "react";
 // import { fetchCylinderStatus } from "../../features/status/statusSlice";
 import StatusDropdown from "./StatusDropdown";
 import { useTranslation } from "react-i18next";
-import { useAuthentication } from "../../hooks/auth";
+import { isAdminUser, useAuthentication } from "../../hooks/auth";
 import { useLocation } from "../../hooks/location";
 
 const normalizeStatus = (status) => String(status).trim().toLowerCase();
 
-const buildCylinderStatusOptions = (processes = []) => {
+const buildCylinderStatusOptions = (processes = [], includeDisposal = false) => {
   const options = processes.flatMap((process, processIdx) => {
     const normalizedProcess = normalizeStatus(process);
 
@@ -26,19 +26,13 @@ const buildCylinderStatusOptions = (processes = []) => {
     };
   });
 
-  const hasDisposal = options.some(
-    (option) => normalizeStatus(option.status) === "disposal",
-  );
+  const filteredOptions = includeDisposal
+    ? options
+    : options.filter(
+        (option) => normalizeStatus(option.status) !== "disposal",
+      );
 
-  if (!hasDisposal) {
-    options.push({
-      id: "disposal",
-      status: "Disposal",
-      labelKey: "disposal",
-    });
-  }
-
-  const uniqueOptions = options.filter(
+  return filteredOptions.filter(
     (option, index, list) =>
       index ===
       list.findIndex(
@@ -46,8 +40,6 @@ const buildCylinderStatusOptions = (processes = []) => {
           normalizeStatus(item.status) === normalizeStatus(option.status),
       ),
   );
-
-  return uniqueOptions;
 };
 
 export const CylinderStatusSelect = ({
@@ -59,31 +51,11 @@ export const CylinderStatusSelect = ({
   const { t } = useTranslation();
   const { user } = useAuthentication();
 
-  const { process } = useLocation(user.id) ?? [];
-  console.log(user);
-  // Get cylinder status options with labelKey for translation
-  const cylinderStatusOptions = [
-    ...(process?.flatMap((process, processIdx) => {
-      if (process === "site") {
-        return [
-          { id: processIdx, status: "Mounted", labelKey: "mounted" },
-          { id: processIdx + 1, status: "Dismounted", labelKey: "dismounted" },
-        ];
-      }
-      return {
-        id: processIdx,
-        status: process,
-        labelKey: process.toLowerCase(),
-      };
-    }) || []),
-  ];
-
-  // Dynamically add "Disposal" at the last index
-  cylinderStatusOptions.push({
-    id: cylinderStatusOptions.length, // Last index dynamically
-    status: "Disposal",
-    labelKey: "disposal",
-  });
+  const { process } = useLocation(user?.id) ?? [];
+  const cylinderStatusOptions = buildCylinderStatusOptions(
+    process ?? [],
+    isAdminUser(user),
+  );
 
   const hasOptions = cylinderStatusOptions.length > 0;
 

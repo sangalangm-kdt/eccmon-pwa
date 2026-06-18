@@ -1,7 +1,11 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthentication } from "../../../../../hooks/auth";
-import { useCylinderUpdate } from "../../../../../hooks/cylinderUpdates";
+import {
+  normalizeUpdateRecord,
+  useCylinderUpdate,
+} from "../../../../../hooks/cylinderUpdates";
+import axiosLib from "../../../../../lib/axios";
 import { IoArrowBack } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import { getStatusColors } from "../../../../utils/statusColors";
@@ -9,12 +13,149 @@ import {
   getDisposalHistoryDetails,
   getDisplayUpdatedAt,
   getDisplayStatus,
+  getCylinderSerialNumber,
   getHistoryEventDate,
   getLatestHistoryRecord,
   getLatestStatusHistoryRecord,
   isDisposed,
+  normalizeApiCylinderResponse,
 } from "../../../../utils/cylinderStatus";
 import { buildDisplayDetails } from "../../../../utils/displayValueUtils";
+
+const DISPOSED_STATUS_TOKENS = new Set(["disposal", "disposed"]);
+
+const resolveSelectedData = (locationState) => {
+  const raw = locationState?.data ?? locationState?.item ?? null;
+  if (!raw || typeof raw !== "object") return null;
+
+  const cylinder = raw.cylinder ?? raw;
+
+  return {
+    ...cylinder,
+    serialNumber:
+      cylinder.serialNumber ??
+      cylinder.serial_number ??
+      raw.serialNumber ??
+      raw.serial_number ??
+      "",
+    status: cylinder.status ?? raw.status,
+    process: cylinder.process ?? raw.process,
+    location: cylinder.location ?? raw.location,
+    cycle: cylinder.cycle ?? raw.cycle,
+    user: cylinder.user ?? raw.user,
+    updates:
+      raw.updates ??
+      raw.historyRecord ??
+      cylinder.updates ??
+      raw.latestUpdate ??
+      cylinder.latestUpdate ??
+      null,
+  };
+};
+
+const resolveUpdatesList = (selectedData) => {
+  if (!selectedData) return [];
+
+  let list = [];
+
+  if (Array.isArray(selectedData.updates)) {
+    list = selectedData.updates;
+  } else if (Array.isArray(selectedData.cylinderUpdates)) {
+    list = selectedData.cylinderUpdates;
+  } else if (Array.isArray(selectedData.cylinder_updates)) {
+    list = selectedData.cylinder_updates;
+  } else if (Array.isArray(selectedData.update)) {
+    list = selectedData.update;
+  } else if (selectedData.updates && typeof selectedData.updates === "object") {
+    list = [selectedData.updates];
+  } else if (selectedData.historyRecord) {
+    list = [selectedData.historyRecord];
+  } else if (selectedData.latestUpdate) {
+    list = [selectedData.latestUpdate];
+  }
+
+  if (list.length > 0) {
+    return list.map(normalizeUpdateRecord);
+  }
+
+  if (selectedData.process || selectedData.status) {
+    return [normalizeUpdateRecord(selectedData)];
+  }
+
+  return [];
+};
+
+const getLatestLocalProcessRecord = (updates = []) => {
+  const processUpdates = updates.filter((record) => {
+    const token = `${record?.process ?? record?.status ?? ""}`
+      .trim()
+      .toLowerCase();
+    return token && !DISPOSED_STATUS_TOKENS.has(token);
+  });
+
+  if (!processUpdates.length) return null;
+
+  return [...processUpdates].sort((a, b) => {
+    const dateA = new Date(
+      a.dateDone ??
+        a.date_done ??
+        a.createdAt ??
+        a.created_at ??
+        a.updatedAt ??
+        a.updated_at ??
+        0,
+    );
+    const dateB = new Date(
+      b.dateDone ??
+        b.date_done ??
+        b.createdAt ??
+        b.created_at ??
+        b.updatedAt ??
+        b.updated_at ??
+        0,
+    );
+    return dateB - dateA;
+  })[0];
+};
+
+const attachPrimaryUpdate = (cylinder, updatesList) => {
+  if (!cylinder) return null;
+  if (!updatesList.length) return cylinder;
+
+  return {
+    ...cylinder,
+    updates: updatesList.length === 1 ? updatesList[0] : updatesList,
+  };
+};
+
+const buildUserDisplayName = (user) => {
+  if (!user || typeof user !== "object") return "";
+
+  const displayName = [
+    user.firstName ?? user.first_name,
+    user.lastName ?? user.last_name,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  return displayName || user.name || user.fullName || "";
+};
+
+const resolveLastUpdateUser = (data, processHistoryRecord) => {
+  const updates = data?.updates;
+  const firstUpdateUser = Array.isArray(updates)
+    ? updates[0]?.user
+    : updates?.user;
+
+  return (
+    processHistoryRecord?.user ??
+    firstUpdateUser ??
+    data?.latestUpdate?.user ??
+    data?.user ??
+    null
+  );
+};
 
 export const ProcessStatus = ({ status, size = "md" }) => {
   const { textColor, bgColor } = getStatusColors(status);
@@ -118,53 +259,117 @@ const ViewInfo = () => {
   const navigate = useNavigate();
   const { user } = useAuthentication();
   const cylinderUpdates = useCylinderUpdate().records ?? [];
-  const [modifiedBy, setModifiedBy] = useState(null);
-  const data = location.state?.data;
+  const [fetchedCylinder, setFetchedCylinder] = useState(null);
+  const [isFetchingCylinder, setIsFetchingCylinder] = useState(false);
   const totalOperationHours = location.state?.totalOperationHours;
-  const updates = data?.updates;
   const { t } = useTranslation("common");
+
+  const selectedData = useMemo(
+    () => resolveSelectedData(location.state),
+    [location.state],
+  );
+
+  const localUpdates = useMemo(
+    () => resolveUpdatesList(selectedData),
+    [selectedData],
+  );
+
+  const serialNumber = useMemo(
+    () => getCylinderSerialNumber({ data: selectedData }) || "",
+    [selectedData],
+  );
+
+  const shouldFetchCylinder = Boolean(
+    serialNumber && selectedData && localUpdates.length === 0,
+  );
+
+  useEffect(() => {
+    if (!shouldFetchCylinder) {
+      setFetchedCylinder(null);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setIsFetchingCylinder(true);
+
+    axiosLib
+      .get(`/api/cylinder/${encodeURIComponent(serialNumber)}`)
+      .then((response) => {
+        if (!cancelled) {
+          setFetchedCylinder(normalizeApiCylinderResponse(response.data));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setFetchedCylinder(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsFetchingCylinder(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [shouldFetchCylinder, serialNumber]);
+
+  const data = useMemo(() => {
+    const base = selectedData ?? fetchedCylinder;
+    if (!base) return null;
+
+    const fetchedUpdates = resolveUpdatesList(fetchedCylinder);
+    const mergedUpdates =
+      localUpdates.length > 0 ? localUpdates : fetchedUpdates;
+
+    return attachPrimaryUpdate(
+      {
+        ...(fetchedCylinder ?? {}),
+        ...base,
+        serialNumber:
+          serialNumber || getCylinderSerialNumber({ data: fetchedCylinder }),
+        user: base.user ?? fetchedCylinder?.user,
+      },
+      mergedUpdates,
+    );
+  }, [selectedData, fetchedCylinder, localUpdates, serialNumber]);
+
+  const historyUserId = user?.is_admin === 1 ? null : user?.id;
+
+  const normalizedUpdates = useMemo(() => resolveUpdatesList(data), [data]);
 
   const disposed = data ? isDisposed(data) : false;
   const disposalHistory = data ? getDisposalHistoryDetails(data) : null;
   const latestUpdateRecord = data
-    ? getLatestHistoryRecord(data.serialNumber, cylinderUpdates, user?.id)
+    ? getLatestHistoryRecord(data.serialNumber, cylinderUpdates, historyUserId)
     : null;
   const rawDisplayUpdatedAt = data
     ? getDisplayUpdatedAt(data, latestUpdateRecord)
     : null;
 
-  const processHistoryRecord =
-    data && !disposed
-      ? getLatestStatusHistoryRecord(
-          data.serialNumber,
-          cylinderUpdates,
-          user?.id,
-        ) ??
-        (updates &&
-        !["disposal", "disposed"].includes(
-          `${updates.process ?? ""}`.trim().toLowerCase(),
-        )
-          ? updates
-          : null)
-      : null;
+  const processHistoryRecord = useMemo(() => {
+    if (!data || disposed) return null;
 
-  useEffect(() => {
-    if (!data || disposed || !processHistoryRecord) {
-      if (disposed && disposalHistory?.disposedBy) {
-        setModifiedBy(disposalHistory.disposedBy);
-      } else {
-        setModifiedBy(t("unknownUser"));
-      }
-      return;
+    const fromGlobalList = getLatestStatusHistoryRecord(
+      data.serialNumber,
+      cylinderUpdates,
+      historyUserId,
+    );
+    if (fromGlobalList) return fromGlobalList;
+
+    return getLatestLocalProcessRecord(normalizedUpdates);
+  }, [data, disposed, cylinderUpdates, historyUserId, normalizedUpdates]);
+
+  const modifiedBy = useMemo(() => {
+    if (disposed && disposalHistory?.disposedBy) {
+      return disposalHistory.disposedBy;
     }
 
-    if (processHistoryRecord.userId === data?.user?.id) {
-      setModifiedBy(
-        `${data?.user.firstName} ${data?.user.lastName}` || t("unknownUser"),
-      );
-    } else {
-      setModifiedBy(t("unknownUser"));
-    }
+    const updateUser = resolveLastUpdateUser(data, processHistoryRecord);
+    const displayName = buildUserDisplayName(updateUser);
+
+    return displayName || t("unknownUser");
   }, [data, disposed, disposalHistory, processHistoryRecord, t]);
 
   const displayStatus = data ? getDisplayStatus(data) : null;
@@ -213,6 +418,14 @@ const ViewInfo = () => {
   const hasSummaryContent =
     summaryRows.length > 0 ||
     (disposed && (displayDetails?.disposalHistoryRows?.length ?? 0) > 0);
+
+  if (isFetchingCylinder) {
+    return (
+      <div className="rounded-md bg-gray-100 p-4 dark:bg-gray-700">
+        <p className="text-lg text-gray-600 dark:text-gray-200">{t("loading")}</p>
+      </div>
+    );
+  }
 
   if (!data) {
     return (

@@ -50,20 +50,29 @@ const HISTORY_PAGE_SIZE = 50;
 
 const getUpdateTimestamp = (update) =>
   update?.dateDone ??
+  update?.date_done ??
   update?.createdAt ??
   update?.created_at ??
   update?.updatedAt ??
   update?.updated_at ??
   null;
 
+const getRecordUserId = (update) =>
+  update?.user_id ??
+  update?.userId ??
+  update?.user?.user_id ??
+  update?.user?.userId ??
+  null;
+
 const HistorySummary = () => {
-  const { user, userId, isLoading: isUserLoading } = useAuthentication();
+  const { user, isLoading: isUserLoading } = useAuthentication();
   const { t } = useTranslation(["common", "date", "qrScanner"]);
   const navigate = useNavigate();
 
   const queriesEnabled = !isUserLoading && !!user;
   const locationFilter = user?.is_admin === 1 ? "" : user?.affiliation || "";
-  const historyUserId = user?.is_admin === 1 ? null : userId;
+  const currentUserId = user?.user_id ?? user?.userId ?? null;
+  const historyUserId = user?.is_admin === 1 ? null : currentUserId;
 
   const cylinderListQuery = {
     enabled: queriesEnabled,
@@ -106,17 +115,21 @@ const HistorySummary = () => {
   );
 
   const scopedCylinderUpdates = useMemo(() => {
-    return locationFilter
-      ? safeCylinderUpdates.filter((item) => item.location === locationFilter)
-      : safeCylinderUpdates;
+    if (!locationFilter) return safeCylinderUpdates;
+
+    return safeCylinderUpdates.filter((item) => {
+      const itemLocation = item.location;
+      if (!itemLocation || itemLocation === "None") return true;
+      return itemLocation === locationFilter;
+    });
   }, [safeCylinderUpdates, locationFilter]);
 
   const filteredCylinderUpdates = useMemo(() => {
     if (historyUserId == null) return scopedCylinderUpdates;
 
     return scopedCylinderUpdates.filter((update) => {
-      const updateUserId = update.userId ?? update.user_id;
-      return String(updateUserId) === String(historyUserId);
+      const recordUserId = getRecordUserId(update);
+      return String(recordUserId) === String(historyUserId);
     });
   }, [scopedCylinderUpdates, historyUserId]);
 
@@ -135,10 +148,15 @@ const HistorySummary = () => {
     const grouped = {};
 
     [...data]
-      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+      .sort((a, b) => {
+        const dateA = a.createdAt ?? a.created_at;
+        const dateB = b.createdAt ?? b.created_at;
+        return new Date(dateA) - new Date(dateB);
+      })
       .forEach((item) => {
-        const key = `${item.serialNumber}-${item.cycle}`;
-        grouped[key] = item;
+        const serialNumber = item.serialNumber ?? item.serial_number;
+        const key = `${serialNumber}-${item.cycle}`;
+        grouped[key] = { ...item, serialNumber };
       });
 
     const filteredData = Object.values(grouped);
@@ -176,7 +194,7 @@ const HistorySummary = () => {
     if (!update) return null;
 
     return {
-      serialNumber: update.serialNumber,
+      serialNumber: update.serialNumber ?? update.serial_number,
       status: update.process ?? update.status ?? "--",
       process: update.process,
       location: update.location,
@@ -209,12 +227,15 @@ const HistorySummary = () => {
     // Filter the cylinders that have matching updates for the user. If a
     // matching cylinder record is missing, fall back to the update itself.
     const userSerialNumbers = new Set(
-      sortedCylinderUpdates.map((update) => update.serialNumber),
+      sortedCylinderUpdates.map(
+        (update) => update.serialNumber ?? update.serial_number,
+      ),
     );
     const userHistory = Array.from(userSerialNumbers).flatMap(
       (serialNumber) => {
         const latestUpdate = sortedCylinderUpdates.find(
-          (update) => update.serialNumber === serialNumber,
+          (update) =>
+            (update.serialNumber ?? update.serial_number) === serialNumber,
         );
         const cylinder =
           cylinderBySerialNumber.get(serialNumber) ??

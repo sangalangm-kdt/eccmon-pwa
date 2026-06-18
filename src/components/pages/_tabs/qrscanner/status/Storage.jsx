@@ -66,7 +66,10 @@ const Storage = ({
     location.state?.data?.location ?? "",
   );
 
-  const resolvedLocation = useMemo(() => "None", []);
+  const resolvedLocation = useMemo(() => {
+    const trimmed = String(processor ?? "").trim();
+    return trimmed || null;
+  }, [processor]);
 
   useEffect(() => {
     if (!user) return;
@@ -93,22 +96,6 @@ const Storage = ({
     ];
     const missingKeys = getMissingRequiredFieldKeys(fieldEntries);
     const isFormComplete = missingKeys.length === 0;
-
-    if (import.meta.env.DEV) {
-      console.log("[Storage] serial:", serialNumber);
-      console.log("[Storage] validation", {
-        processor,
-        hasProcessorOptions,
-        locationRequired,
-        isLoading,
-        date,
-        dateValid,
-        locationCheck,
-        isFormComplete,
-        missingKeys,
-        resolvedLocation,
-      });
-    }
 
     const nextFormData = {
       serialNumber,
