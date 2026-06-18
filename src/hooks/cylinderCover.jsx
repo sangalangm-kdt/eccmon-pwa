@@ -10,25 +10,14 @@ import {
   isDisposed,
   isDisposalOperation,
   normalizeApiCylinderResponse,
+  normalizeOtherDetails,
 } from "../components/utils/cylinderStatus";
-import {
-  getLaravelValidationMessage,
-  logLaravelValidationError,
-} from "../components/utils/apiValidationErrors";
+import { logLaravelValidationError } from "../components/utils/apiValidationErrors";
 
-const parseOtherDetails = (otherDetails) => {
-  if (!otherDetails) return {};
-  if (typeof otherDetails === "object") return otherDetails;
-
-  try {
-    return JSON.parse(otherDetails);
-  } catch {
-    return {};
-  }
-};
+const parseOtherDetails = normalizeOtherDetails;
 
 const getCaseValue = (otherDetails, fallbackCase = null) => {
-  const parsedOtherDetails = parseOtherDetails(otherDetails);
+  const parsedOtherDetails = parseOtherDetails(otherDetails) ?? {};
   return parsedOtherDetails.case ?? fallbackCase ?? 0;
 };
 
@@ -60,39 +49,7 @@ const buildCylinderApiPayload = ({
     case: getCaseValue(otherDetails, caseValue),
     isDisposed: saveFields.isDisposed,
     disposalDate: saveFields.disposalDate,
-    otherDetails: otherDetails || null,
-  };
-};
-
-const buildCylinderUpdatePayload = ({
-  id,
-  serialNumber,
-  status,
-  disposalDate,
-  location,
-  cycle,
-  otherDetails,
-  userId,
-  caseValue,
-}) => {
-  const saveFields = buildOperationSavePayload(
-    { disposalDate, dateDone: disposalDate },
-    status,
-  );
-  const resolvedSerialNumber = normalizeSerialNumber(serialNumber);
-
-  return {
-    id,
-    ...(resolvedSerialNumber ? { serialNumber: resolvedSerialNumber } : {}),
-    status: saveFields.status,
-    process: saveFields.process,
-    cycle: cycle ?? 1,
-    location,
-    userId,
-    case: getCaseValue(otherDetails, caseValue),
-    isDisposed: saveFields.isDisposed,
-    disposalDate: saveFields.disposalDate,
-    otherDetails: otherDetails || null,
+    otherDetails: normalizeOtherDetails(otherDetails),
   };
 };
 
@@ -160,11 +117,6 @@ export const useCylinderCover = () => {
   }) => {
     const resolvedSerialNumber = getCylinderSerialNumber({ serialNumber });
 
-    if (import.meta.env.DEV) {
-      console.log("[createCylinder] serialNumber arg:", serialNumber);
-      console.log("[createCylinder] resolved serial:", resolvedSerialNumber);
-    }
-
     const data = buildCylinderApiPayload({
       serialNumber: resolvedSerialNumber,
       status: process,
@@ -174,10 +126,6 @@ export const useCylinderCover = () => {
       otherDetails,
       userId,
     });
-
-    if (import.meta.env.DEV) {
-      console.log("[createCylinder] POST payload:", data);
-    }
 
     await csrf();
 
@@ -189,7 +137,7 @@ export const useCylinderCover = () => {
         status: isDisposalOperation(process) ? 2 : 1,
       });
 
-      mutate();
+      await mutate();
       return res.data;
     } catch (error) {
       if (error.response?.status === 422) {
@@ -203,63 +151,10 @@ export const useCylinderCover = () => {
     }
   };
 
-  const updateCylinder = async (input) => {
-    if (input.isAlreadyDisposed) {
-      throw new Error("disposed_read_only");
-    }
-
-    const { id, status, originalSerialNumber, ...rest } = input;
-    if (!id) {
-      throw new Error("missing_cylinder_id");
-    }
-
-    const resolvedSerialNumber = normalizeSerialNumber(
-      rest.serialNumber || originalSerialNumber,
-    );
-
-    const data = buildCylinderUpdatePayload({
-      id,
-      serialNumber: resolvedSerialNumber,
-      status,
-      disposalDate: rest.disposalDate ?? rest.dateDone,
-      location: rest.location,
-      cycle: rest.cycle,
-      otherDetails: rest.otherDetails,
-      caseValue: rest.case,
-      userId,
-    });
-
-    await csrf();
-
-    console.info("Cylinder update PUT payload", {
-      id,
-      existingSerialNumber: normalizeSerialNumber(originalSerialNumber),
-      payload: data,
-    });
-
-    return axiosLib
-      .put(`/api/cylinder/${id}`, data)
-      .then((res) => {
-        mutate();
-        return res.data;
-      })
-      .catch((error) => {
-        if (error.response?.status === 422) {
-          logLaravelValidationError(
-            "Cylinder update validation failed",
-            error,
-            data,
-          );
-        }
-        if (error.response?.status !== 409) throw error;
-      });
-  };
-
   return {
     cylinder,
     checkSerial,
     createCylinder,
-    updateCylinder,
     mutate,
   };
 };

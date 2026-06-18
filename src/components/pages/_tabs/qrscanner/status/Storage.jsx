@@ -27,6 +27,9 @@ const STORAGE_DATA_KEYS = [
   "dateDone",
 ];
 
+const hasCycle = (value) =>
+  value !== undefined && value !== null && value !== "";
+
 const Storage = ({
   showAlert,
   selectedStatus,
@@ -63,13 +66,7 @@ const Storage = ({
     location.state?.data?.location ?? "",
   );
 
-  const resolvedLocation = useMemo(
-    () =>
-      isAdmin
-        ? processor || user?.affiliation || "Storage"
-        : user?.affiliation || "Storage",
-    [processor, user?.affiliation, isAdmin],
-  );
+  const resolvedLocation = useMemo(() => "None", []);
 
   useEffect(() => {
     if (!user) return;
@@ -83,12 +80,16 @@ const Storage = ({
         })
       : { valid: true, blockReasonKey: null };
 
+    const serialValid = Boolean(`${serialNumber ?? ""}`.trim());
+    const cycleValid = hasCycle(cycle);
     const dateValid = Boolean(date);
     const fieldEntries = [
+      ["validation.serialNumberRequired", serialValid],
+      ["validation.cycleRequired", cycleValid],
+      ["validation.dateRequired", dateValid],
       ...(hasProcessorOptions
         ? [["validation.locationRequired", locationCheck.valid]]
         : []),
-      ["validation.dateRequired", dateValid],
     ];
     const missingKeys = getMissingRequiredFieldKeys(fieldEntries);
     const isFormComplete = missingKeys.length === 0;
@@ -181,7 +182,7 @@ const Storage = ({
               ) : (
                 <input
                   type="text"
-                  value={user?.affiliation || "Storage"}
+                  value="None"
                   readOnly
                   className="w-full rounded border bg-gray-100 p-2 text-sm dark:bg-gray-600"
                   disabled

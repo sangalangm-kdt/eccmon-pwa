@@ -101,7 +101,9 @@
     "engineNumberRequired": "Engine number is required.",
     "opHoursRequired": "Operating hours is required.",
     "enginePosRequired": "Engine position is required.",
-    "completionDateRequired": "Completion date is required."
+    "completionDateRequired": "Completion date is required.",
+    "cycleRequired": "Cycle is required.",
+    "serialNumberRequired": "Serial number is required."
   },
   "label": {
     "serialNo": "Serial No.",
@@ -143,8 +145,13 @@
     "enterSerialCode": "Please enter a serial code.",
     "noStoragePermission": "You don’t have permission to add a new cylinder. Please check your access rights and try again.",
     "disposedReadOnly": "This cylinder has already been disposed and can no longer be modified.",
+    "disposalSaveBlocked": "Disposal cannot be saved due to current server validation settings.",
     "saveFailed": "Failed to save cylinder. Please review the form and try again.",
     "saveFailedTitle": "Unable to save cylinder",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "operationNotPermitted": "You do not have permission to perform this operation.",
+    "cylinderRecordNotFound": "The cylinder record could not be found.",
+    "newCylinderCreateFailed": "The new cylinder could not be registered. Please try again or contact your administrator.",
     "serialNumberRequired": "Serial number is required to update this cylinder. Please rescan the cylinder and try again.",
     "serialAlreadyExists": "This serial number is already registered.",
     "invalidScannedCode": "The scanned code does not contain a valid code.",

@@ -5,7 +5,29 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { CylinderStatusSelect } from "../../../constants/CylinderStatusSelect";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { getDisplayStatus, normalizeScannedCylinder } from "../../../utils/cylinderStatus";
+import { normalizeScannedCylinder } from "../../../utils/cylinderStatus";
+
+const getInitialOperationStatus = (cylinderData) => {
+  const candidates = [
+    cylinderData?.updates?.process,
+    cylinderData?.updates?.status,
+    cylinderData?.process,
+    cylinderData?.status,
+  ];
+
+  for (const candidate of candidates) {
+    if (
+      candidate !== undefined &&
+      candidate !== null &&
+      `${candidate}`.trim() !== "" &&
+      `${candidate}`.trim() !== "--"
+    ) {
+      return `${candidate}`.trim();
+    }
+  }
+
+  return "None";
+};
 
 const ScanCodes = ({
   selectedStatus,
@@ -38,10 +60,7 @@ const ScanCodes = ({
     if (isNewCylinder) {
       setSelectedStatus("Storage");
     } else {
-      const displayStatus = getDisplayStatus(cylinderData);
-      setSelectedStatus(
-        displayStatus === "--" ? cylinderData.status || "None" : displayStatus,
-      );
+      setSelectedStatus(getInitialOperationStatus(cylinderData));
     }
 
     initializedRef.current = true;
